@@ -156,7 +156,6 @@
             :data="menus"
             :default-checked-keys="menuIdList"
             accordion
-            check-strictly
             node-key="id"
             show-checkbox
           />
