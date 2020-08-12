@@ -228,7 +228,24 @@ public class UserResource extends BaseResource {
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
   public Result<RegisterUserData> register(@RequestBody RegisterUserData registerUserData) {
-    return Result.buildOkData(registerUserData, "");
+  	//个人想法，还是和userDto结合起来，邀请码字段可以不用存储吧
+	  //1.检验密码输入正确
+	  if(!registerUserData.getPassword().equals(registerUserData.getRePassword())){
+	  	return Result.buildFailData(registerUserData,"密码不一致");
+	  }
+	  //2.如果有邀请码，加入企业？默认无邀请码为0
+//	  if (registerUserData.getInvitationCode()!=0){
+//
+//	  }
+	  //3.注册新用户（参考上面的 save 方法）
+	  UserDto userDto=new UserDto();
+	  log.debug("REST request to save userDto:{}",userDto);
+	  //设置一些初始数据
+	  userDto.setUsername(registerUserData.getUsername());
+	  userDto.setPassword(registerUserData.getPassword());
+	  userDto.setPhone(registerUserData.getPhone());
+	  userService.saveOrUpdate(userDto);
+	  return Result.buildOkData(registerUserData, "新增成功");
   }
 
 }
