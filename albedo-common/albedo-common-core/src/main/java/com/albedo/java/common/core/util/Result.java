@@ -83,12 +83,12 @@ public class Result<T> implements Serializable {
     this.code = CommonConstants.FAIL;
   }
 
-  public static Result buildOk(String... messages) {
-    return new Result(messages);
+  public static Result<String> buildOk(String... messages) {
+    return new Result<>(messages);
   }
 
-  public static Result buildByFlag(boolean flag) {
-    return new Result<>(flag, flag ? CommonConstants.SUCCESS : CommonConstants.FAIL, flag ? "操作成功" : "操作失败");
+  public static <T> Result<T> buildByFlag(boolean flag) {
+    return new Result(flag, flag ? CommonConstants.SUCCESS : CommonConstants.FAIL, flag ? "操作成功" : "操作失败");
   }
 
   public static <T> Result<T> buildOkData(T data, String... messages) {
@@ -99,16 +99,16 @@ public class Result<T> implements Serializable {
     return new Result<>(data, CommonConstants.FAIL, messages);
   }
 
-  public static <T> Result buildFail(String... messages) {
-    return new Result(null, CommonConstants.FAIL, messages);
+  public static <T> Result<T> buildFail(String... messages) {
+    return new Result<>(null, CommonConstants.FAIL, messages);
   }
 
-  public static <T> Result build(T data, int code, String... messages) {
-    return new Result(data, code, messages);
+  public static <T> Result<T> build(T data, int code, String... messages) {
+    return new Result<>(data, code, messages);
   }
 
-  public static <T> Result build(int code, String... messages) {
-    return new Result(null, code, messages);
+  public static <T> Result<T> build(int code, String... messages) {
+    return new Result<>(null, code, messages);
   }
 
   public String getMessage() {

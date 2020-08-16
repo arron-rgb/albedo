@@ -16,13 +16,17 @@
 
 package com.albedo.java.modules.sys.service.impl;
 
+import static com.albedo.java.common.core.constant.CommonConstants.*;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.constant.SecurityConstants;
@@ -252,7 +257,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public Boolean removeByIds(List<String> idList) {
-    idList.stream().forEach(id -> {
+    idList.forEach(id -> {
       Assert.isTrue(!StringUtil.equals(SecurityUtil.getUser().getId(), id), "不能操作当前登录用户");
       User user = repository.selectById(id);
       SysCacheUtil.delUserCaches(user.getId(), user.getUsername());
@@ -308,12 +313,11 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     Assert.isTrue(passwordRestVo.getCode().equals(tempCode), "验证码输入有误");
     User user =
       repository.selectOne(Wrappers.<User>query().lambda().eq(User::getUsername, passwordRestVo.getUsername()));
-    updatePassword(user, passwordRestVo.getPasswordPlaintext(), passwordRestVo.getNewPassword());
+    updatePassword(user, passwordRestVo.getNewPassword());
   }
 
-  private void updatePassword(User user, String passwordPlaintext, String newPassword) {
+  private void updatePassword(User user, String newPassword) {
     user.setPassword(newPassword);
-    // user.setPasswordPlaintext(passwordPlaintext);
     SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
     repository.updateById(user);
     log.debug("Changed password for User: {}", user);
@@ -330,7 +334,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
     passwordChangeVo.setNewPassword(passwordEncoder.encode(passwordChangeVo.getNewPassword()));
 
-    updatePassword(user, passwordChangeVo.getConfirmPassword(), passwordChangeVo.getNewPassword());
+    updatePassword(user, passwordChangeVo.getNewPassword());
   }
 
   @Override
@@ -375,9 +379,69 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void register(RegisterUserData userData) {
+    // 2. 用户角色-系统角色-部门对应
+    switch (userData.getUserType()) {
+      case "personal":
+        registerPersonalUser(userData);
+        return;
+      case "business":
+        registerBusinessUser(userData);
+        return;
+      default:
+        break;
+    }
+
+  }
+
+  private void registerBusinessUser(RegisterUserData userData) {
+    String deptId;
+    String roleId;
+    if (StringUtils.isNotEmpty(userData.getNewCompanyName())) {
+      // 新建一个企业的流程：1. new 一个dept 2. 将企业管理员roleId与deptId绑定 3. 将userId与企业管理员roleId绑定起来
+      Dept dept = new Dept();
+      dept.setName(userData.getNewCompanyName());
+      deptService.save(dept);
+      deptId = dept.getId();
+      roleId = BUSINESS_ADMIN_ROLE_ID;
+    } else {
+      // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
+      String companyName = userData.getCompanyName();
+      Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
+      RoleDept roleDept =
+        roleDeptService.getOne(Wrappers.<RoleDept>query().eq("dept_id", dept.getId()).ne("", BUSINESS_COMMON_ROLE_ID));
+      deptId = dept.getId();
+      roleId = roleDept.getRoleId();
+    }
+    String userId = saveUser(userData, deptId);
+    saveUserRole(userId, roleId);
+  }
+
+  @Resource
+  RoleDeptService roleDeptService;
+  @Resource
+  ApplicationProperties applicationProperties;
+
+  private void registerPersonalUser(RegisterUserData userData) {
+    String userId = saveUser(userData, PUBLIC_DEPT_ID);
+    // 个人用户默认所属公共用户部门，角色为个人。个人角色已在系统中与默认公共部门硬编码
+    saveUserRole(userId, PERSONAL_USER_ROLE_ID);
+  }
+
+  private String saveUser(RegisterUserData userData, String deptId) {
     User user = new User();
-    // BeanUtils.copyProperties(user, userData);// todo
-    repository.insert(user);
+    user.setUsername(userData.getUsername());
+    user.setPassword(passwordEncoder.encode(userData.getPassword()));
+    user.setPhone(userData.getPhone());
+    user.setDeptId(deptId);
+    baseMapper.insert(user);
+    return user.getId();
+  }
+
+  private boolean saveUserRole(String userId, String roleId) {
+    UserRole userRole = new UserRole();
+    userRole.setRoleId(roleId);
+    userRole.setUserId(userId);
+    return userRoleService.save(userRole);
   }
 
 }

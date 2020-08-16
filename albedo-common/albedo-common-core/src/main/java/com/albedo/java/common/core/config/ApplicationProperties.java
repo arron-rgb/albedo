@@ -1,14 +1,17 @@
 package com.albedo.java.common.core.config;
 
-import com.albedo.java.common.core.util.StringUtil;
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import com.albedo.java.common.core.util.StringUtil;
+
+import lombok.Data;
 
 /**
  * Properties specific to albedo.
@@ -24,127 +27,115 @@ import java.util.List;
 @Data
 public class ApplicationProperties {
 
-	private String adminPath = "/a";
-	private String defaultView;
-	private Boolean addressEnabled = true;
-	private int dbSyncSessionPeriod = 1;
-	private String name = "albedo";
-	private String urlSuffix = ".html";
-	private Boolean developMode = true;
-	private Boolean cluster = false;
-	private String logPath = ".logs/";
-	private Security security = new Security();
-	private Http http = new Http();
-	private Rsa rsa = new Rsa();
-	private CorsConfiguration cors = new CorsConfiguration();
+  private String adminPath = "/a";
+  private String defaultView;
+  private Boolean addressEnabled = true;
+  private int dbSyncSessionPeriod = 1;
+  private String name = "albedo";
+  private String urlSuffix = ".html";
+  private Boolean developMode = true;
+  private Boolean cluster = false;
+  private String logPath = ".logs/";
+  private Security security = new Security();
+  private Http http = new Http();
+  private Rsa rsa = new Rsa();
+  private CorsConfiguration cors = new CorsConfiguration();
 
+  public String getAdminPath(String url) {
+    return StringUtil.toAppendStr(adminPath, url);
+  }
 
-	public String getAdminPath(String url) {
-		return StringUtil.toAppendStr(adminPath, url);
-	}
+  @Data
+  public static class Security {
 
+    private final RememberMe rememberMe = new RememberMe();
+    private final ClientAuthorization clientAuthorization = new ClientAuthorization();
+    private final Authentication authentication = new Authentication();
 
-	@Data
-	public static class Security {
+    private List<String> authorize = new ArrayList<>();
+    private List<String> authorizePermitAll = new ArrayList<>();
+    private String encodeKey;
 
-		private final RememberMe rememberMe = new RememberMe();
-		private final ClientAuthorization clientAuthorization = new ClientAuthorization();
-		private final Authentication authentication = new Authentication();
+    public Security() {}
 
-		private List<String> authorize = new ArrayList<>();
-		private List<String> authorizePermitAll = new ArrayList<>();
-		private String encodeKey;
+    @Data
+    public static class RememberMe {
+      @NotNull
+      private String key;
 
-		public Security() {
-		}
+      public RememberMe() {}
 
-		@Data
-		public static class RememberMe {
-			@NotNull
-			private String key;
+    }
 
-			public RememberMe() {
-			}
+    @Data
+    public static class Authentication {
+      private final Oauth oauth = new Oauth();
+      private final Jwt jwt = new Jwt();
 
-		}
+      public Authentication() {}
 
-		@Data
-		public static class Authentication {
-			private final Oauth oauth = new Oauth();
-			private final Jwt jwt = new Jwt();
+      @Data
+      public static class Jwt {
+        private String base64Secret;
+        private long tokenValidityInSeconds = 1800L;
+        private long tokenValidityInSecondsForRememberMe = 2592000L;
 
-			public Authentication() {
-			}
+        public Jwt() {}
+      }
 
+      @Data
+      public static class Oauth {
+        private String clientId;
+        private String clientSecret;
+        private int tokenValidityInSeconds = 1800;
 
-			@Data
-			public static class Jwt {
-				private String base64Secret;
-				private long tokenValidityInSeconds = 1800L;
-				private long tokenValidityInSecondsForRememberMe = 2592000L;
+        public Oauth() {}
 
-				public Jwt() {
-				}
-			}
+      }
+    }
 
-			@Data
-			public static class Oauth {
-				private String clientId;
-				private String clientSecret;
-				private int tokenValidityInSeconds = 1800;
+    @Data
+    public static class ClientAuthorization {
+      private String accessTokenUri;
+      private String tokenServiceId;
+      private String clientId;
+      private String clientSecret;
 
-				public Oauth() {
-				}
+      public ClientAuthorization() {}
 
-			}
-		}
+    }
+  }
 
-		@Data
-		public static class ClientAuthorization {
-			private String accessTokenUri;
-			private String tokenServiceId;
-			private String clientId;
-			private String clientSecret;
+  @Data
+  public static class Rsa {
 
-			public ClientAuthorization() {
-			}
+    private String publicKey;
+    private String privateKey;
 
-		}
-	}
+  }
 
-	@Data
-	public static class Rsa {
+  @Data
+  public static class Http {
 
-		private String publicKey;
-		private String privateKey;
+    private final Cache cache = new Cache();
+    public Version version;
 
-	}
+    public Http() {
+      this.version = Version.V_1_1;
+    }
 
-	@Data
-	public static class Http {
+    public enum Version {
+      V_1_1, V_2_0;
 
-		private final Cache cache = new Cache();
-		public Version version;
+      Version() {}
+    }
 
-		public Http() {
-			this.version = Version.V_1_1;
-		}
+    @Data
+    public static class Cache {
+      private int timeToLiveInDays = 1461;
 
-		public enum Version {
-			V_1_1,
-			V_2_0;
+      public Cache() {}
 
-			Version() {
-			}
-		}
-
-		@Data
-		public static class Cache {
-			private int timeToLiveInDays = 1461;
-
-			public Cache() {
-			}
-
-		}
-	}
+    }
+  }
 }

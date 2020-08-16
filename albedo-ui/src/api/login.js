@@ -27,7 +27,14 @@ const loginService = {
       url: '/logout',
       method: 'post'
     })
+  },
+  register(user) {
+    return request({
+      url: '/sys/user/register',
+      method: 'post',
+      data: user
+    })
   }
 }
 
-export default loginService
+export default loginService;

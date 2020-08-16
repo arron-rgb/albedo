@@ -1,7 +1,7 @@
 import commonUtil from '@/utils/common'
 import loginService from '@/api/login'
 import storeApi from '@/utils/store'
-import { MSG_TYPE_SUCCESS } from '@/const/common'
+import {MSG_TYPE_SUCCESS} from '@/const/common'
 
 const user = {
   state: {
@@ -40,7 +40,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, user) {
+    Login({commit}, user) {
       const params = commonUtil.encryption({
         data: user,
         key: 'somewhere-albedo',
@@ -58,9 +58,27 @@ const user = {
         })
       })
     },
+    Register({commit}, user) {
+      const params = commonUtil.encryption({
+        data: user,
+        key: 'somewhere-albedo',
+        param: []
+      });
+      return new Promise((resolve, reject) => {
+        loginService.register(params).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            commit('SET_LOGIN_SUCCESS', true)
+            commit('SET_LOAD_MENUS', true)
+            resolve()
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
 
     // 获取用户信息
-    GetUser({ commit }) {
+    GetUser({commit}) {
       return new Promise((resolve, reject) => {
         loginService.getUser().then((res) => {
           const data = res.data || {}
@@ -72,7 +90,7 @@ const user = {
       })
     },
     // 登出
-    LogOut({ commit }) {
+    LogOut({commit}) {
       return new Promise((resolve, reject) => {
         loginService.logout().then(res => {
           logOut(commit)
@@ -84,7 +102,7 @@ const user = {
       })
     },
 
-    updateLoadMenus({ commit }) {
+    updateLoadMenus({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_LOAD_MENUS', false)
       })

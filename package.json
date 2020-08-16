@@ -1,0 +1,22 @@
+{
+  "name": "albedo",
+  "version": "1.0.0",
+  "description": "岗康?",
+  "dependencies": {},
+  "devDependencies": {
+    "conventional-changelog": "^3.1.21",
+    "cz-conventional-changelog": "^3.2.0"
+  },
+  "scripts": {
+  },
+  "author": "",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "repository": {
+    "github": "https://github.com/arron-rgb/csye6200.git",
+    "gitee": "https://gitee.com/arronrgb/albedo.git"
+  }
+}

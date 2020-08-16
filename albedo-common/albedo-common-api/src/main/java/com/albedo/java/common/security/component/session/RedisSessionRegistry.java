@@ -3,6 +3,7 @@ package com.albedo.java.common.security.component.session;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -123,7 +124,7 @@ public class RedisSessionRegistry implements SessionRegistry, ApplicationListene
 
     Set<String> sessionsUsedByPrincipal = getPrincipals(principal);
     if (sessionsUsedByPrincipal == null) {
-      sessionsUsedByPrincipal = new CopyOnWriteArraySet();
+      sessionsUsedByPrincipal = new CopyOnWriteArraySet<>();
       Set<String> prevSessionsUsedByPrincipal = this.putIfAbsentPrincipals(principal, sessionsUsedByPrincipal);
       if (prevSessionsUsedByPrincipal != null) {
         sessionsUsedByPrincipal = prevSessionsUsedByPrincipal;
@@ -160,21 +161,15 @@ public class RedisSessionRegistry implements SessionRegistry, ApplicationListene
     if (log.isTraceEnabled()) {
       log.debug("Removing session " + sessionId + " from set of registered sessions");
     }
-
     redisTemplate.boundHashOps(SESSIONIDS).delete(sessionId);
-
     Set<String> sessionsUsedByPrincipal = getPrincipals(info.getPrincipal());
-
     if (sessionsUsedByPrincipal == null) {
       return;
     }
-
     if (log.isDebugEnabled()) {
       log.debug("Removing session " + sessionId + " from principal's set of registered sessions");
     }
-
     sessionsUsedByPrincipal.remove(sessionId);
-
     if (sessionsUsedByPrincipal.isEmpty()) {
       // No need to keep object in principals Map anymore
       if (log.isDebugEnabled()) {
@@ -196,13 +191,15 @@ public class RedisSessionRegistry implements SessionRegistry, ApplicationListene
     return hashOperations.get(userDetail.getId());
   }
 
-  public Set<String> getPrincipals(Object principal) {
-    UserDetail userDetail = (UserDetail)principal;
-    return (Set<String>)redisTemplate.boundHashOps(PRINCIPALS).get(userDetail.getId());
+  private Set<String> getPrincipals(Object principal) {
+    MyUserDetail detail = new MyUserDetail();
+    BeanUtils.copyProperties(principal, detail);
+    return (Set<String>)redisTemplate.boundHashOps(PRINCIPALS).get(detail.getId());
   }
 
-  public void removePrincipal(Object principal) {
-    UserDetail userDetail = (UserDetail)principal;
-    redisTemplate.boundHashOps(PRINCIPALS).delete(userDetail.getId());
+  private void removePrincipal(Object principal) {
+    MyUserDetail detail = new MyUserDetail();
+    BeanUtils.copyProperties(principal, detail);
+    redisTemplate.boundHashOps(PRINCIPALS).delete(detail.getId());
   }
 }

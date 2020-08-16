@@ -185,4 +185,5 @@ public interface UserService extends DataService<User, UserDto, String> {
   void updateAvatar(String username, String avatar);
 
   void register(RegisterUserData userData);
+
 }

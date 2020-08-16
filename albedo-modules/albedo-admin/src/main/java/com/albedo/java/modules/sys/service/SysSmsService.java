@@ -9,9 +9,8 @@ import com.albedo.java.modules.sys.domain.dto.SysSmsDto;
 
 /**
  * 管理短信Service sys_sms
+ *
  * @author admin
  * @version 2020-08-12 15:46:27
  */
-public interface SysSmsService extends DataService<SysSms, SysSmsDto, String>{
-
-}
+public interface SysSmsService extends DataService<SysSms, SysSmsDto, String> {}
