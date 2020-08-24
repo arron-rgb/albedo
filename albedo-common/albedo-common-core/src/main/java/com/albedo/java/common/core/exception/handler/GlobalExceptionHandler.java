@@ -30,10 +30,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.albedo.java.common.core.exception.BadRequestException;
-import com.albedo.java.common.core.exception.EntityExistException;
-import com.albedo.java.common.core.exception.EntityNotFoundException;
-import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.common.core.exception.*;
 import com.albedo.java.common.core.util.BeanValidators;
 import com.albedo.java.common.core.util.ResponseEntityBuilder;
 import com.albedo.java.common.core.util.Result;
@@ -122,4 +119,13 @@ public class GlobalExceptionHandler {
     log.error(ExceptionUtil.stacktraceToString(e));
     return ResponseEntityBuilder.buildFail(NOT_FOUND, e.getMessage());
   }
+
+  /**
+   * 处理 EntityNotFound
+   */
+  @ExceptionHandler(value = AccountException.class)
+  public Result accountException(AccountException e) {
+    return Result.buildFail(e.getMsg());
+  }
+
 }

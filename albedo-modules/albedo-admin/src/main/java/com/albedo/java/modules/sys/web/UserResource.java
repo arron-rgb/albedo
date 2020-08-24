@@ -28,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.BeanUtil;
 import com.albedo.java.common.core.util.ResponseEntityBuilder;
@@ -225,16 +226,15 @@ public class UserResource extends BaseResource {
     util.exportExcel(Lists.newArrayList(new UserExcelVo()), "操作日志", response);
   }
 
+  @AnonymousAccess
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
-  public Result<String> register(@Valid @RequestBody RegisterUserData registerUserData) {
+  public Result register(@Valid @RequestBody RegisterUserData registerUserData) {
     if (!registerUserData.getPassword().equals(registerUserData.getRePassword())) {
       return Result.buildFail("两次密码输入不一致");
     }
-
     userService.register(registerUserData);
-    // 设置一些初始数据
-    return Result.buildOk("注册成功");
+    return Result.buildOk("");
   }
 
 }

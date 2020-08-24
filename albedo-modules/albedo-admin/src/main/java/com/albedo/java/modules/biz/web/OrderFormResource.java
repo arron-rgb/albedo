@@ -15,6 +15,7 @@ import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.dto.OrderFormDto;
 import com.albedo.java.modules.biz.domain.dto.OrderFormQueryCriteria;
@@ -74,6 +75,8 @@ public class OrderFormResource extends BaseResource {
   @PostMapping
   public Result save(@Valid @RequestBody OrderFormDto orderFormDto) {
     log.debug("REST request to save OrderFormDto : {}", orderFormDto);
+    String userId = SecurityUtil.getUser().getId();
+    orderFormDto.setUserId(userId);
     service.saveOrUpdate(orderFormDto);
     return Result.buildOk("保存OrderForm成功");
 

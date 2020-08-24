@@ -21,6 +21,8 @@ package com.albedo.java.common.core.constant;
  * @date 2019/2/1
  */
 public interface CommonConstants {
+  String ok = "OK";
+  int CAPTCHA_EXPIRES_TIME = 300;
 
   /**
    * todo 放入mysql

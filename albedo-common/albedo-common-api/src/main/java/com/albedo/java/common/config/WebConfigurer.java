@@ -162,7 +162,7 @@ public class WebConfigurer
     CorsConfiguration config = applicationProperties.getCors();
     if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
       log.debug("Registering CORS filter");
-      source.registerCorsConfiguration(applicationProperties.getAdminPath("/**"), config);
+      // source.registerCorsConfiguration(applicationProperties.getAdminPath("/**"), config);
       source.registerCorsConfiguration("/management/**", config);
       source.registerCorsConfiguration("/v2/api-docs", config);
     }
