@@ -9,9 +9,10 @@ import com.albedo.java.modules.biz.domain.dto.OrderFormDto;
 
 /**
  * 表单Service OrderForm
+ *
  * @author admin
  * @version 2020-08-18 10:19:40
  */
-public interface OrderFormService extends DataService<OrderForm, OrderFormDto, String>{
+public interface OrderFormService extends DataService<OrderForm, OrderFormDto, String> {
 
 }

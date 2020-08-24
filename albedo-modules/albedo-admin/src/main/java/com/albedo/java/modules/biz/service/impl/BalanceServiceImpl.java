@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.CommonConstants.BUSINESS_ADMIN_ROLE_ID;
+import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
@@ -17,13 +19,9 @@ import com.albedo.java.modules.biz.repository.BalanceRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.UserRole;
-import com.albedo.java.modules.sys.service.DeptService;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author arronshentu
@@ -33,10 +31,9 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   // todo 对接支付宝的逻辑均无，默认使用在支付接口验证完毕后的业务方法
 
   @Override
-  public void addTimes() {
+  public void addTimes(int times) {
     // 直接充进个人账号即可
     String userId = SecurityUtil.getUser().getId();
-    int times = 0;
     Balance balance = new Balance();
     // 判断有无
     List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().eq("user_id", userId));
@@ -51,48 +48,48 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   }
 
   @Override
-  public void leftTimes() {
-    // String userId = SecurityUtil.getUser().getId();
+  public int leftTimes() {
+    String userId = SecurityUtil.getUser().getId();
     String deptId = SecurityUtil.getUser().getDeptId();
+    // 1. 个人用户直接返回
+    if (deptId.equals(PERSONAL_USER_ROLE_ID)) {
+      Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
+      if (balance != null) {
+        return balance.getTimes();
+      }
+    }
     List<String> userIds = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getId)
       .collect(Collectors.toList());
     List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().in("user_id", userIds));
     // 整个公司
-    int leftTimes = users.stream().mapToInt(Balance::getTimes).sum();
+    return users.stream().mapToInt(Balance::getTimes).sum();
   }
 
   @Override
-  public void consumeTimes() {
-    // 默认扣公司 公司不够再扣个人
+  public void consumeTimes() throws TimesOverspendException {
     String deptId = SecurityUtil.getUser().getDeptId();
-    // 确定部门后可以确定角色
-    // 找到公司负责人
+    // 1. 个人用户直接扣
+    if (deptId.equals(PERSONAL_USER_ROLE_ID)) {
+      consumeStaffTimes();
+      return;
+    }
+    // 2. 企业用户默认扣公司 公司不够再扣个人
+    // 先获取deptId来获得所有员工id
     List<String> userIds = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getId)
       .collect(Collectors.toList());
+    // userRole中找到这些员工中role为admin的员工
     List<UserRole> list =
       userRoleService.list(Wrappers.<UserRole>query().eq("role_id", BUSINESS_ADMIN_ROLE_ID).in("user_id", userIds));
-    // 扣负责人的次数，负责人次数不够再扣自己 自己不够就return
+    // 扣这个负责人的次数，负责人次数不够再扣自己 自己不够就return
     if (CollectionUtils.isNotEmpty(list)) {
       String adminId = list.get(0).getUserId();
       try {
         consumeTimes(adminId);
-        return;
-      } catch (TimesOverspendException ignored) {
+      } catch (TimesOverspendException e) {
+        consumeStaffTimes();
       }
     }
 
-    try {
-      consumeStaffTimes();
-    } catch (TimesOverspendException ignored) {
-      // todo 返回次数不够的消息
-    }
-
-  }
-
-  @AllArgsConstructor
-  class TimesOverspendException extends Exception {
-    @Getter
-    private final String msg;
   }
 
   private boolean consumeTimes(String userId) throws TimesOverspendException {
@@ -100,7 +97,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     if (balance.getTimes() > 1) {
       balance.setTimes(balance.getTimes() - 1);
     } else {
-      throw new TimesOverspendException("");
+      throw new TimesOverspendException("次数已耗尽");
     }
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {
@@ -115,8 +112,6 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   @Resource
   UserService userService;
-  @Resource
-  DeptService deptService;
   @Resource
   UserRoleService userRoleService;
 }
