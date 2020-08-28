@@ -73,6 +73,12 @@ public class OrderForm extends IdEntity<OrderForm> {
   @TableField("plus_service")
   private String plusService;
 
+  /**
+   * 0不加速 1加速 加速单价?
+   */
+  @TableField("accelerate")
+  private Integer accelerate;
+
   @Override
   public boolean equals(Object o) {
     return super.equals(o);

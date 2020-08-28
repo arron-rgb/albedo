@@ -184,6 +184,12 @@ public interface UserService extends DataService<User, UserDto, String> {
    */
   void updateAvatar(String username, String avatar);
 
+  /**
+   * 注册账号
+   *
+   * @param userData
+   *          账号表单
+   */
   void register(RegisterUserData userData);
 
 }

@@ -21,7 +21,30 @@ package com.albedo.java.common.core.constant;
  * @date 2019/2/1
  */
 public interface CommonConstants {
-
+  /**
+   * 创建未付款
+   */
+  Integer ORDER_STATUS_0 = 0;
+  /**
+   * 付款未制作
+   */
+  Integer ORDER_STATUS_1 = 1;
+  /**
+   * 员工接单，制作中
+   */
+  Integer ORDER_STATUS_2 = 2;
+  /**
+   * 视频已上传
+   */
+  Integer ORDER_STATUS_3 = 3;
+  /**
+   * 商品、logo、贴片
+   */
+  Integer ORDER_STATUS_4 = 4;
+  /**
+   * 结单
+   */
+  Integer ORDER_STATUS_5 = 5;
   /**
    * todo 放入mysql
    */

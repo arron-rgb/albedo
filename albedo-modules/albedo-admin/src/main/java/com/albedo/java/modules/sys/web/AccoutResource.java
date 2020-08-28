@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +31,6 @@ import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.vo.EmailVo;
 import com.albedo.java.modules.tool.service.EmailService;
-import com.albedo.java.modules.tool.service.SmsService;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;
@@ -178,13 +176,13 @@ public class AccoutResource extends BaseResource {
     return Result.buildOk("验证成功");
   }
 
-  @Resource
-  SmsService smsService;
+  // @Resource
+  // SmsService smsService;
 
   @PostMapping("/forget/pass")
   @ApiOperation("验证码重置密码")
   public Result<String> validatedByPhone(@RequestParam String phone, @RequestParam String code) {
-    smsService.sendMsg(phone, code);
+    // smsService.sendMsg(phone, code);
     return Result.buildOk("验证成功");
   }
 

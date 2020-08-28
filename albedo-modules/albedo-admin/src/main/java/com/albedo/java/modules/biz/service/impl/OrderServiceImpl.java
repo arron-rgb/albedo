@@ -1,5 +1,8 @@
 package com.albedo.java.modules.biz.service.impl;
 
+import static com.albedo.java.common.core.constant.CommonConstants.ORDER_STATUS_1;
+import static com.albedo.java.common.core.constant.CommonConstants.ORDER_STATUS_2;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +43,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
     order.setType("0");
-    order.setState(1);
+    order.setState(ORDER_STATUS_1);
     order.setStaffId("");
   }
 
@@ -51,7 +54,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       return;
     }
     order.setStaffId(staffId);
-    order.setState(2);
+    order.setState(ORDER_STATUS_2);
     saveOrUpdate(order);
   }
 
@@ -67,7 +70,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public void availableOrder() {
     List<Order> orders = baseMapper.selectList(Wrappers.query());
-    orders = orders.stream().filter((order -> order.getState() == 1)).collect(Collectors.toList());
+    orders = orders.stream().filter((order -> ORDER_STATUS_1.equals(order.getState()))).collect(Collectors.toList());
     orders.forEach(System.out::println);
   }
 

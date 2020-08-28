@@ -27,30 +27,33 @@ USE `albedo`;
 -- Table structure for gen_scheme
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_scheme`;
-CREATE TABLE `gen_scheme`
+use albedo;
+CREATE TABLE `t_plan`
 (
-    `id`                   varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci   NOT NULL COMMENT '编号',
-    `name`                 varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '名称',
-    `category`             varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL     DEFAULT NULL COMMENT '分类',
-    `view_type`            char(2) CHARACTER SET utf8 COLLATE utf8_general_ci       NULL     DEFAULT NULL COMMENT '视图类型 0  普通表格 1  表格采用ajax刷新',
-    `package_name`         varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '生成包路径',
-    `module_name`          varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci   NULL     DEFAULT NULL COMMENT '生成模块名',
-    `sub_module_name`      varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci   NULL     DEFAULT NULL COMMENT '生成子模块名',
-    `function_name`        varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '生成功能名',
-    `function_name_simple` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '生成功能名（简写）',
-    `function_author`      varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '生成功能作者',
-    `gen_table_id`         varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '生成表编号',
-    `version`              int(11)                                                  NULL     DEFAULT 0 COMMENT '默认0，必填，离线乐观锁',
-    `description`          varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL COMMENT '描述',
-    `created_by`           varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci   NOT NULL,
-    `created_date`         timestamp(3)                                             NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-    `last_modified_by`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci   NULL     DEFAULT NULL,
-    `last_modified_date`   timestamp(3)                                             NULL     DEFAULT NULL,
-    `del_flag`             char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin        NULL     DEFAULT '0' COMMENT '0-正常，1-删除',
+    `id`                 varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL COMMENT '编号',
+    `price`              decimal(18, 2)                                                   DEFAULT '0.00' COMMENT '套餐价格',
+    `goods_quantity`     int(11)                                                 null     default 0 COMMENT '可上传的商品数量',
+    `video_time`         int(11)                                                 null     default 0 COMMENT '单条视频最大时长',
+    `child_account`      int(1)                                                  null     default 0 COMMENT '子账户数量',
+    `edit_time`          int(1)                                                  null     default 0 COMMENT '人物/场景可修改次数',
+    `storage`            int(1)                                                  null     default 0 COMMENT '存储空间，单位GB',
+    `history`            int(1)                                                  null     default 0 COMMENT '历史版本数',
+    `anchor_amount`      int(1)                                                  null     default 0 COMMENT '虚拟人物',
+    `env_amount`         int(1)                                                  null     default 0 COMMENT '虚拟场景个数',
+    `anchor_amount_plus` int(1)                                                  null     default 0 COMMENT '存储空间，单位GB',
+    `env_amount_plus`    int(1)                                                  null     default 0 COMMENT '存储空间，单位GB',
+    `times`              int(1)                                                  null     default 0 COMMENT '可下单次数',
+    `version`            int(11)                                                 NULL     DEFAULT 0 COMMENT '默认0，必填，离线乐观锁',
+    `description`        varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL     DEFAULT NULL COMMENT '描述',
+    `created_by`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL,
+    `created_date`       timestamp(3)                                            NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    `last_modified_by`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci  NULL     DEFAULT NULL,
+    `last_modified_date` timestamp(3)                                            NULL     DEFAULT NULL,
+    `del_flag`           char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin       NULL     DEFAULT '0' COMMENT '0-正常，1-删除',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8
-  COLLATE = utf8_general_ci COMMENT = '生成方案'
+  COLLATE = utf8_general_ci COMMENT = '套餐表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
