@@ -85,12 +85,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
       + "    \"extend_params\":{" + "    \"sys_service_provider_id\":\"" + alipay.getSysServiceProviderId() + "\""
       + "    }" + "  }");// 填充业务参数
     // 调用SDK生成表单, 通过GET方式，口可以获取url
-    AlipayTradePagePayResponse get = alipayClient.pageExecute(request, "GET");
-    if (get.isSuccess()) {
-      return get.getBody();
-    } else {
-      return null;
-    }
+	  return alipayClient.pageExecute(request, "GET").getBody();
   }
 
   @Override
