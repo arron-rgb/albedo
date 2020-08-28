@@ -64,7 +64,6 @@ public class ApplicationProperties {
       private String key;
 
       public RememberMe() {}
-
     }
 
     @Data

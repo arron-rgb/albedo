@@ -18,11 +18,11 @@ import lombok.*;
  * @author admin
  * @version 2020-08-12 15:46:27
  */
-@TableName(value = "sys_sms")
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName(value = "sys_sms")
 @EqualsAndHashCode(callSuper = true)
 public class SysSms extends IdEntity<SysSms> {
 
@@ -65,13 +65,4 @@ public class SysSms extends IdEntity<SysSms> {
 
   private String status;
 
-  @Override
-  public boolean equals(Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
 }

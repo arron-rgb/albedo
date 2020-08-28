@@ -32,6 +32,7 @@ import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.service.EmailService;
 import com.albedo.java.modules.tool.service.SmsService;
+import com.albedo.java.modules.tool.util.SmsEnum;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;
@@ -154,7 +155,7 @@ public class AccountResource extends BaseResource {
   @ApiOperation("验证码重置密码")
   public Result<String> validatedByPhone(@RequestParam String phone) {
     String code = "reset";
-    smsService.sendMsg(phone, code, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
+    smsService.sendMsg(phone, code, SmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
     return Result.buildOk("发送成功");
   }
 
@@ -162,7 +163,7 @@ public class AccountResource extends BaseResource {
   @ApiOperation("注册账号")
   public Result<String> getCode(@RequestParam String phone) {
     String code = "register";
-    smsService.sendMsg(phone, code, DySmsEnum.REGISTER_TEMPLATE_CODE);
+    smsService.sendMsg(phone, code, SmsEnum.REGISTER_TEMPLATE_CODE);
     return Result.buildOk("发送成功");
   }
 

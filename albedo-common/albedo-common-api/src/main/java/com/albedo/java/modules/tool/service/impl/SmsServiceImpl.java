@@ -8,7 +8,7 @@ import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.tool.service.SmsService;
-import com.albedo.java.modules.tool.util.DySmsEnum;
+import com.albedo.java.modules.tool.util.SmsEnum;
 import com.albedo.java.modules.tool.util.SmsSingleton;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
@@ -32,7 +32,7 @@ public class SmsServiceImpl implements SmsService {
   }
 
   @Override
-  public void sendMsg(String phone, String key, DySmsEnum type) {
+  public void sendMsg(String phone, String key, SmsEnum type) {
     String redisKey = key + phone;
     Object oldCode = RedisUtil.getCacheString(redisKey);
     if (oldCode == null) {

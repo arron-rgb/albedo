@@ -13,6 +13,9 @@ import com.aliyuncs.profile.DefaultProfile;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author arronshentu
+ */
 @Slf4j
 public class SmsSingleton {
 
@@ -22,16 +25,15 @@ public class SmsSingleton {
     DefaultProfile.getProfile("cn-hangzhou", ACCESS_KEY_ID, ACCESS_KEY_SECRET);
   private static final IAcsClient ACS_CLIENT = new DefaultAcsClient(PROFILE);
 
-  public static boolean sendSms(String phone, JSONObject templateParamJson, DySmsEnum dySmsEnum)
-    throws ClientException {
+  public static boolean sendSms(String phone, JSONObject templateParamJson, SmsEnum smsEnum) throws ClientException {
     // 可自助调整超时时间
     System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
     System.setProperty("sun.net.client.defaultReadTimeout", "10000");
-    validateParam(templateParamJson, dySmsEnum);
+    validateParam(templateParamJson, smsEnum);
     SendSmsRequest request = new SendSmsRequest();
     request.setPhoneNumbers(phone);
-    request.setSignName(dySmsEnum.getSignName());
-    request.setTemplateCode(dySmsEnum.getTemplateCode());
+    request.setSignName(smsEnum.getSignName());
+    request.setTemplateCode(smsEnum.getTemplateCode());
     request.setTemplateParam(templateParamJson.toJSONString());
 
     boolean result = false;
@@ -45,21 +47,14 @@ public class SmsSingleton {
     return result;
   }
 
-  private static void validateParam(JSONObject templateParamJson, DySmsEnum dySmsEnum) {
-    String keys = dySmsEnum.getKeys();
+  private static void validateParam(JSONObject templateParamJson, SmsEnum smsEnum) {
+    String keys = smsEnum.getKeys();
     String[] keyArr = keys.split(",");
     for (String item : keyArr) {
       if (!templateParamJson.containsKey(item)) {
         throw new RuntimeException("模板缺少参数：" + item);
       }
     }
-  }
-
-  public static void main(String[] args) throws ClientException {
-    JSONObject obj = new JSONObject();
-    obj.put("code", "1234");
-    String phone = "13346161445";
-    sendSms(phone, obj, DySmsEnum.REGISTER_TEMPLATE_CODE);
   }
 
 }

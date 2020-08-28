@@ -2,7 +2,7 @@ package com.albedo.java.modules.tool.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum DySmsEnum {
+public enum SmsEnum {
 
   // LOGIN_TEMPLATE_CODE("SMS_175435174", "vlivest", "code"),
   FORGET_PASSWORD_TEMPLATE_CODE("SMS_200188565", "ABC商城", "code"),
@@ -21,7 +21,7 @@ public enum DySmsEnum {
    */
   private String keys;
 
-  DySmsEnum(String templateCode, String signName, String keys) {
+  SmsEnum(String templateCode, String signName, String keys) {
     this.templateCode = templateCode;
     this.signName = signName;
     this.keys = keys;
@@ -51,11 +51,11 @@ public enum DySmsEnum {
     this.keys = keys;
   }
 
-  public static DySmsEnum toEnum(String templateCode) {
+  public static SmsEnum toEnum(String templateCode) {
     if (StringUtils.isEmpty(templateCode)) {
       return null;
     }
-    for (DySmsEnum item : DySmsEnum.values()) {
+    for (SmsEnum item : SmsEnum.values()) {
       if (item.getTemplateCode().equals(templateCode)) {
         return item;
       }

@@ -76,39 +76,6 @@ public class Invoice extends IdEntity<Invoice> {
   @Size(max = 32)
   @TableField("account_number")
   private String accountNumber;
-  /** userId 用户id */
-  @Size(max = 32)
-  @TableField("user_id")
-  private String userId;
-  /** type 0-个人，1-企业 */
-  @NotNull
-
-  private Integer type;
-  /** name 企业名称/个人名称 */
-  @NotBlank
-  @Size(max = 255)
-
-  private String name;
-  /** taxNum 公司税号 */
-  @Size(max = 0)
-  @TableField("tax_num")
-  private String taxNum;
-  /** companyLocation 注册地址 */
-  @Size(max = 255)
-  @TableField("company_location")
-  private String companyLocation;
-  /** companyPhone 公司电话 */
-  @Size(max = 255)
-  @TableField("company_phone")
-  private String companyPhone;
-  /** accountBank 开户公司 */
-  @Size(max = 255)
-  @TableField("account_bank")
-  private String accountBank;
-  /** accountNumber 开户账号 */
-  @Size(max = 32)
-  @TableField("account_number")
-  private String accountNumber;
 
   @Override
   public boolean equals(Object o) {
