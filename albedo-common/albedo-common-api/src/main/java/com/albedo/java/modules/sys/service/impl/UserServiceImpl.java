@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
@@ -41,6 +42,7 @@ import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.constant.SecurityConstants;
+import com.albedo.java.common.core.exception.AccountException;
 import com.albedo.java.common.core.exception.EntityExistException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.BeanUtil;
@@ -161,6 +163,13 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
           .map(MenuVo::getPermission).collect(Collectors.toList());
       permissions.addAll(permissionList);
     });
+    if (roleIds.contains(PERSONAL_USER_ROLE_ID)) {
+      userInfo.setUserType("1");
+    } else if (roleIds.contains(BUSINESS_ADMIN_ROLE_ID) || roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
+      userInfo.setUserType("2");
+    } else {
+      userInfo.setUserType("3");
+    }
     userInfo.setPermissions(ArrayUtil.toArray(permissions, String.class));
     return userInfo;
   }
@@ -379,18 +388,32 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void register(RegisterUserData userData) {
+    Object code = RedisUtil.getCacheString("register" + userData.getPhone());
+    if (code == null) {
+      throw new AccountException("验证码无效，请重新申请");
+    }
+
+    List<User> list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_USERNAME, userData.getUsername()));
+    if (CollectionUtils.isNotEmpty(list)) {
+      throw new AccountException("用户名已存在");
+    }
+
+    list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_SQL_PHONE, userData.getPhone()));
+    if (CollectionUtils.isNotEmpty(list)) {
+      throw new AccountException("该手机号已绑定其他账号");
+    }
+
     // 2. 用户角色-系统角色-部门对应
     switch (userData.getUserType()) {
       case "personal":
         registerPersonalUser(userData);
-        return;
+        break;
       case "business":
         registerBusinessUser(userData);
-        return;
-      default:
         break;
+      default:
+        throw new AccountException("未知用户类型");
     }
-
   }
 
   private void registerBusinessUser(RegisterUserData userData) {
@@ -404,9 +427,18 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       deptId = dept.getId();
       roleId = BUSINESS_ADMIN_ROLE_ID;
     } else {
+      // todo 再看一遍流程行不行
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
       String companyName = userData.getCompanyName();
       Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
+      List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
+      // 3 对应 企业账号数量限制
+      // todo 加表 企业和购买的服务的表
+      int accountSize = 3;
+      if (users.size() > accountSize) {
+        throw new AccountException("该企业名下账号注册数量已超过限制");
+      }
+
       RoleDept roleDept =
         roleDeptService.getOne(Wrappers.<RoleDept>query().eq("dept_id", dept.getId()).ne("", BUSINESS_COMMON_ROLE_ID));
       deptId = dept.getId();
@@ -424,7 +456,10 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   private void registerPersonalUser(RegisterUserData userData) {
     String userId = saveUser(userData, PUBLIC_DEPT_ID);
     // 个人用户默认所属公共用户部门，角色为个人。个人角色已在系统中与默认公共部门硬编码
-    saveUserRole(userId, PERSONAL_USER_ROLE_ID);
+    boolean flag = saveUserRole(userId, PERSONAL_USER_ROLE_ID);
+    if (!flag) {
+      throw new AccountException("插入失败");
+    }
   }
 
   private String saveUser(RegisterUserData userData, String deptId) {

@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum DySmsEnum {
 
-  LOGIN_TEMPLATE_CODE("SMS_175435174", "JEECG", "code"),
-  FORGET_PASSWORD_TEMPLATE_CODE("SMS_175435174", "JEECG", "code"),
-  REGISTER_TEMPLATE_CODE("SMS_175430166", "JEECG", "code");
+  // LOGIN_TEMPLATE_CODE("SMS_175435174", "vlivest", "code"),
+  FORGET_PASSWORD_TEMPLATE_CODE("SMS_200188565", "ABC商城", "code"),
+  REGISTER_TEMPLATE_CODE("SMS_200183062", "ABC商城", "code");
 
   /**
    * 短信模板编码
@@ -21,7 +21,7 @@ public enum DySmsEnum {
    */
   private String keys;
 
-  private DySmsEnum(String templateCode, String signName, String keys) {
+  DySmsEnum(String templateCode, String signName, String keys) {
     this.templateCode = templateCode;
     this.signName = signName;
     this.keys = keys;

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +30,8 @@ import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordChangeVo;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
-import com.albedo.java.modules.tool.domain.vo.EmailVo;
 import com.albedo.java.modules.tool.service.EmailService;
+import com.albedo.java.modules.tool.service.SmsService;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;
@@ -49,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("${application.admin-path}")
 @Slf4j
 @AllArgsConstructor
-public class AccoutResource extends BaseResource {
+public class AccountResource extends BaseResource {
 
   private final UserService userService;
   private final Producer producer;
@@ -146,44 +147,36 @@ public class AccoutResource extends BaseResource {
     return Result.buildOk("发送成功");
   }
 
-  @PostMapping(value = "/reset/email-send")
-  @ApiOperation("重置邮箱，发送验证码")
-  public Result<String> resetEmail(@RequestParam String email) {
-    EmailVo emailVo = emailService.sendEmail(email, CommonConstants.EMAIL_RESET_EMAIL_CODE);
-    emailService.send(emailVo, emailService.find());
-    return Result.buildOk("发送成功");
-  }
+  @Resource
+  SmsService smsService;
 
-  @PostMapping(value = "/reset/pass-send")
-  @ApiOperation("重置密码，发送验证码")
-  public Result<String> resetPass(@RequestParam String email) {
-    EmailVo emailVo = emailService.sendEmail(email, CommonConstants.EMAIL_RESET_PWD_CODE);
-    emailService.send(emailVo, emailService.find());
-    return Result.buildOk("发送成功");
-  }
-
-  @GetMapping(value = "/validate-pass")
-  @ApiOperation("验证码验证重置密码")
-  public Result<String> validatedByPass(@RequestParam String email, @RequestParam String code) {
-    emailService.validated(CommonConstants.EMAIL_RESET_PWD_CODE + email, code);
-    return Result.buildOk("验证成功");
-  }
-
-  @GetMapping(value = "/validate-email")
-  @ApiOperation("验证码验证重置邮箱")
-  public Result<String> validatedByEmail(@RequestParam String email, @RequestParam String code) {
-    emailService.validated(CommonConstants.EMAIL_RESET_EMAIL_CODE + email, code);
-    return Result.buildOk("验证成功");
-  }
-
-  // @Resource
-  // SmsService smsService;
-
-  @PostMapping("/forget/pass")
+  @GetMapping("/password/reset")
   @ApiOperation("验证码重置密码")
-  public Result<String> validatedByPhone(@RequestParam String phone, @RequestParam String code) {
-    // smsService.sendMsg(phone, code);
-    return Result.buildOk("验证成功");
+  public Result<String> validatedByPhone(@RequestParam String phone) {
+    String code = "reset";
+    smsService.sendMsg(phone, code, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
+    return Result.buildOk("发送成功");
+  }
+
+  @GetMapping("/account/register")
+  @ApiOperation("注册账号")
+  public Result<String> getCode(@RequestParam String phone) {
+    String code = "register";
+    smsService.sendMsg(phone, code, DySmsEnum.REGISTER_TEMPLATE_CODE);
+    return Result.buildOk("发送成功");
+  }
+
+  @GetMapping("/validate")
+  public Result<String> validate(@RequestParam String phone, @RequestParam String code, @RequestParam String key) {
+    String redisKey = key + phone;
+    Object oldCode = RedisUtil.getCacheString(redisKey);
+    if (oldCode == null) {
+      return Result.buildFail("验证码无效");
+    }
+    if (code.equals(oldCode)) {
+      return Result.buildOk("成功");
+    }
+    return Result.buildFail("验证码无效");
   }
 
 }

@@ -45,6 +45,10 @@ public interface CommonConstants {
    * 结单
    */
   Integer ORDER_STATUS_5 = 5;
+
+  String ok = "OK";
+  int CAPTCHA_EXPIRES_TIME = 300;
+
   /**
    * todo 放入mysql
    */

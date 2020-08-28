@@ -120,6 +120,15 @@ public class GlobalExceptionHandler {
     return ResponseEntityBuilder.buildFail(NOT_FOUND, e.getMessage());
   }
 
+  /**
+   * 处理 EntityNotFound
+   */
+  @ExceptionHandler(value = AccountException.class)
+  public Result accountException(AccountException e) {
+    return Result.buildFail(e.getMsg());
+  }
+
+
   @ExceptionHandler(value = TimesOverspendException.class)
   public Result<String> overspendException(TimesOverspendException e) {
     // 打印堆栈信息

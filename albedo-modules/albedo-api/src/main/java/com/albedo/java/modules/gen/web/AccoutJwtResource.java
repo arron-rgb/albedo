@@ -27,7 +27,6 @@ import com.albedo.java.common.core.constant.SecurityConstants;
 import com.albedo.java.common.core.util.*;
 import com.albedo.java.common.security.filter.PasswordDecoderFilter;
 import com.albedo.java.common.security.jwt.TokenProvider;
-import com.albedo.java.common.security.util.LoginUtil;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.sys.domain.vo.account.LoginVo;
@@ -88,9 +87,9 @@ public class AccoutJwtResource extends BaseResource {
       return ResponseEntityBuilder.buildFail(HttpStatus.UNAUTHORIZED,
         "您的账号在" + DateUtil.format(canLoginDate) + "后才可登录");
     }
-    if (!SpringContextHolder.isDevelopment()) {
-      LoginUtil.checkCode(loginVo);
-    }
+    // if (!SpringContextHolder.isDevelopment()) {
+    // LoginUtil.checkCode(loginVo);
+    // }
     try {
       String s =
         PasswordDecoderFilter.decryptAes(loginVo.getPassword(), applicationProperties.getSecurity().getEncodeKey());
@@ -104,7 +103,7 @@ public class AccoutJwtResource extends BaseResource {
     try {
       Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      boolean rememberMe = (loginVo.getRememberMe() == null) ? false : loginVo.getRememberMe();
+      boolean rememberMe = loginVo.getRememberMe() != null && loginVo.getRememberMe();
       String jwt = tokenProvider.createToken(authentication, rememberMe);
       log.info("jwt:{}", jwt);
       RedisUtil.delete(keyLoginCount);
@@ -115,7 +114,7 @@ public class AccoutJwtResource extends BaseResource {
         }
       });
     } catch (AuthenticationException ae) {
-      log.warn("Authentication exception trace: {}", ae);
+      log.warn("Authentication exception trace: {}", ae.getMessage());
       String msg = ae.getMessage();
       if (ae instanceof BadCredentialsException) {
         Integer cacheObject = RedisUtil.getCacheObject(keyLoginCount);

@@ -227,7 +227,6 @@ export default {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
           this.$store.dispatch('Register', this.registerForm).then(() => {
-            console.log(this.registerForm);
             // this.$router.push({path: this.redirect || '/'})
             this.centerDialogVisible = false;
           }).catch((e) => {
