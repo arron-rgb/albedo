@@ -1,3 +1,34 @@
+# 数据表语义
+``` sql
+plan 套餐
+balance 次数
+balance_history 次数变更
+invoice 发票抬头
+order 订单
+order_form 表单参数
+video 渲染视频
+
+todo 
+- 消费记录表: 1. 套餐消费 2. 订单消费（包括是否加速）
+id
+user_id
+out_trade_no 对接支付宝id
+type 0 套餐 1 订单
+total_amount 支付金额
+===
+- 开发票记录表
+id
+invoice_id 抬头id
+total_amount
+消费记录ids
+===
+- 直播间风格、主播风格静态图片表
+id
+name
+url
+plan_type 套餐权限
+type 0直播间风格 1主播风格
+```
 # 项目约定
 
 ## 材料文档

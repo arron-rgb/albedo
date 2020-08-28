@@ -18,6 +18,11 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     OssSingleton.uploadFile(null, "");
   }
 
+  @Override
+  public boolean storageState() {
+    return false;
+  }
+
   /**
    * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
    * 只能包括小写字母、数字和短划线（-）。

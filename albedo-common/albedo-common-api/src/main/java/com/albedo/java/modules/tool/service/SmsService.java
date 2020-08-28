@@ -1,6 +1,6 @@
 package com.albedo.java.modules.tool.service;
 
-import com.albedo.java.modules.tool.util.SmsEnum;
+import com.albedo.java.modules.tool.domain.SmsEnum;
 
 /**
  * @author arronshentu

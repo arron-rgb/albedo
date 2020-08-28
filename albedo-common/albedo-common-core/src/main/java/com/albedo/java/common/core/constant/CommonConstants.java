@@ -24,27 +24,27 @@ public interface CommonConstants {
   /**
    * 创建未付款
    */
-  Integer ORDER_STATUS_0 = 0;
+  Integer ORDER_STATE_0 = 0;
   /**
    * 付款未制作
    */
-  Integer ORDER_STATUS_1 = 1;
+  Integer ORDER_STATE_1 = 1;
   /**
    * 员工接单，制作中
    */
-  Integer ORDER_STATUS_2 = 2;
+  Integer ORDER_STATE_2 = 2;
   /**
    * 视频已上传
    */
-  Integer ORDER_STATUS_3 = 3;
+  Integer ORDER_STATE_3 = 3;
   /**
    * 商品、logo、贴片
    */
-  Integer ORDER_STATUS_4 = 4;
+  Integer ORDER_STATE_4 = 4;
   /**
    * 结单
    */
-  Integer ORDER_STATUS_5 = 5;
+  Integer ORDER_STATE_5 = 5;
 
   String ok = "OK";
   int CAPTCHA_EXPIRES_TIME = 300;

@@ -30,9 +30,9 @@ import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordChangeVo;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.EmailService;
 import com.albedo.java.modules.tool.service.SmsService;
-import com.albedo.java.modules.tool.util.SmsEnum;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;

@@ -22,11 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 @Slf4j
 public class OssSingleton {
-  /**
-   * 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。
-   * 强烈建议您创建并使用RAM账号进行API访问或日常运维，
-   * 请登录 https://ram.console.aliyun.com 创建RAM账号。
-   */
   private final String ACCESS_KEY_ID = "LTAI4G9GELKL2AM8BxufjLUE";
   private final String ACCESS_KEY_SECRET = "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg";
   private final String ENDPOINT = "http://oss-cn-hangzhou.aliyuncs.com";

@@ -1,6 +1,10 @@
-package com.albedo.java.modules.tool.util;
+package com.albedo.java.modules.tool.domain;
 
 import org.apache.commons.lang3.StringUtils;
+
+/**
+ * @author arronshentu
+ */
 
 public enum SmsEnum {
 
