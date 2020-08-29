@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
+import javax.annotation.Resource;
+
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.VideoDto;
@@ -13,9 +15,12 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, VideoDto, String>
   implements VideoService {
 
+  @Resource
+  OssSingleton ossSingleton;
+
   @Override
   public void uploadVideoToOss() {
-    OssSingleton.uploadFile(null, "");
+    ossSingleton.uploadFile(null, "");
   }
 
   @Override

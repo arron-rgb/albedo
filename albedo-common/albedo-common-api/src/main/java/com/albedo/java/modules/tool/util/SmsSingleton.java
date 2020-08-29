@@ -1,7 +1,14 @@
 package com.albedo.java.modules.tool.util;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 import static com.albedo.java.common.core.constant.CommonConstants.ok;
 
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
+import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -17,16 +24,20 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author arronshentu
  */
+@Component
 @Slf4j
 public class SmsSingleton {
 
-  private static final String ACCESS_KEY_ID = "LTAI4G9GELKL2AM8BxufjLUE";
-  private static final String ACCESS_KEY_SECRET = "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg";
-  private static final DefaultProfile PROFILE =
-    DefaultProfile.getProfile("cn-hangzhou", ACCESS_KEY_ID, ACCESS_KEY_SECRET);
-  private static final IAcsClient ACS_CLIENT = new DefaultAcsClient(PROFILE);
+  @Resource
+  ApplicationProperties applicationProperties;
 
-  public static boolean sendSms(String phone, JSONObject templateParamJson, SmsEnum smsEnum) throws ClientException {
+  private final String ACCESS_KEY_ID = applicationProperties.getKey(ALIBABA_ID);
+  private final String ACCESS_KEY_SECRET = applicationProperties.getKey(ALIBABA_SECRET);
+
+  private final DefaultProfile PROFILE = DefaultProfile.getProfile("cn-hangzhou", ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+  private final IAcsClient ACS_CLIENT = new DefaultAcsClient(PROFILE);
+
+  public boolean sendSms(String phone, JSONObject templateParamJson, SmsEnum smsEnum) throws ClientException {
     // 可自助调整超时时间
     System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
     System.setProperty("sun.net.client.defaultReadTimeout", "10000");
@@ -48,7 +59,7 @@ public class SmsSingleton {
     return result;
   }
 
-  private static void validateParam(JSONObject templateParamJson, SmsEnum smsEnum) {
+  private void validateParam(JSONObject templateParamJson, SmsEnum smsEnum) {
     String keys = smsEnum.getKeys();
     String[] keyArr = keys.split(",");
     for (String item : keyArr) {

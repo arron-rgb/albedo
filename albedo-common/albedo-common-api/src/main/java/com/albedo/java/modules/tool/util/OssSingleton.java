@@ -1,5 +1,8 @@
 package com.albedo.java.modules.tool.util;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,25 +10,35 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
+import com.albedo.java.common.core.config.ApplicationProperties;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.internal.OSSHeaders;
 import com.aliyun.oss.model.*;
 
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author arronshentu
  */
-@UtilityClass
+@Component
 @Slf4j
 public class OssSingleton {
-  private final String ACCESS_KEY_ID = "LTAI4G9GELKL2AM8BxufjLUE";
-  private final String ACCESS_KEY_SECRET = "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg";
+
+  @Resource
+  ApplicationProperties applicationProperties;
+
+  private final String ACCESS_KEY_ID = applicationProperties.getKey(ALIBABA_ID);
+  private final String ACCESS_KEY_SECRET = applicationProperties.getKey(ALIBABA_SECRET);
+
   private final String ENDPOINT = "http://oss-cn-hangzhou.aliyuncs.com";
   private final String BUCKET_NAME = "vlivest";
+
   private final OSS client = new OSSClientBuilder().build(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
 
   public void uploadFile(File file, String objectName) {

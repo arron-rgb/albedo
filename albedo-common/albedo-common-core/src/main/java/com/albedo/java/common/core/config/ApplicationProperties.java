@@ -1,7 +1,11 @@
 package com.albedo.java.common.core.config;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import com.albedo.java.common.core.util.StringUtil;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Properties specific to albedo.
@@ -23,9 +28,12 @@ import lombok.Data;
  * @author somewhere
  */
 @Configuration
+@Slf4j
 @ConfigurationProperties(prefix = "application", ignoreInvalidFields = true)
 @Data
 public class ApplicationProperties {
+
+  private static Map<String, String> params;
 
   private String adminPath = "/a";
   private String defaultView;
@@ -43,6 +51,26 @@ public class ApplicationProperties {
 
   public String getAdminPath(String url) {
     return StringUtil.toAppendStr(adminPath, url);
+  }
+
+  public String getKey(String key) {
+    return params.get(key);
+  }
+
+  static {
+    params = new HashMap<>() {
+      {
+        put(ALIBABA_ID, ALIBABA_ID);
+        put(ALIBABA_SECRET, ALIBABA_SECRET);
+        put(TENCENT_ID, TENCENT_ID);
+        put(TENCENT_SECRET, TENCENT_SECRET);
+      }
+    };
+    params.forEach((key, value) -> {
+      value = System.getenv(key);
+      params.put(key, value);
+    });
+
   }
 
   @Data
@@ -123,18 +151,18 @@ public class ApplicationProperties {
       this.version = Version.V_1_1;
     }
 
-    public enum Version {
+    public enum Version
+    {
       V_1_1, V_2_0;
 
-      Version() {}
-    }
-
-    @Data
-    public static class Cache {
-      private int timeToLiveInDays = 1461;
-
-      public Cache() {}
-
-    }
+    Version() {}
   }
-}
+
+  @Data
+  public static class Cache {
+    private int timeToLiveInDays = 1461;
+
+    public Cache() {}
+
+  }
+}}

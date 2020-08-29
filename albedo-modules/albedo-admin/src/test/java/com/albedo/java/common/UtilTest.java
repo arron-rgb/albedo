@@ -1,22 +1,31 @@
 package com.albedo.java.common;
 
+import java.util.HashMap;
+import java.util.Map;
 
-import cn.hutool.core.util.EscapeUtil;
-import cn.hutool.http.HtmlUtil;
-import com.albedo.java.common.core.util.Json;
-import com.albedo.java.common.core.util.StringUtil;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import com.alibaba.fastjson.JSON;
 
 public class UtilTest {
-	public static void main(String[] args) throws UnsupportedEncodingException {
-		String rs = "Webhook \u7684 payload POST \u65f6\u5fc5\u987b\u662f JSON \u5b57\u7b26\u4e32";
-		System.out.println(EscapeUtil.unescapeHtml4(rs));
-		System.out.println(HtmlUtil.escape("测试"));
-		String s = "%5B%7B%22format%22:%22%22,%22fieldName%22:%22a.username%22,%22attrType%22:%22String%22,%22fieldNode%22:%22%22,%22operate%22:%22like%22,%22weight%22:0,%22value%22:%22%E5%86%9C%E4%BF%A1%22,%22endValue%22:%22%22%7D%5D";
-		System.out.println(EscapeUtil.unescape(s));
-		System.out.println(URLDecoder.decode(s, "utf-8"));
-		System.out.println(Json.toJSONString("utf-8".split(StringUtil.SPLIT_DEFAULT)));
-	}
+
+  public static void main(String[] args) {
+    String ALIBABA_ID = "ALIBABA_ID";
+    String ALIBABA_SECRET = "ALIBABA_SECRET";
+    String TENCENT_ID = "TENCENT_ID";
+    String TENCENT_SECRET = "TENCENT_SECRET";
+    Map<String, String> params = new HashMap<>() {
+      {
+        put(ALIBABA_ID, ALIBABA_ID);
+        put(ALIBABA_SECRET, ALIBABA_SECRET);
+        put(TENCENT_ID, TENCENT_ID);
+        put(TENCENT_SECRET, TENCENT_SECRET);
+      }
+    };
+    params.forEach((key, value) -> {
+      value = System.getenv(key);
+      params.put(key, value);
+    });
+
+    System.out.println(JSON.toJSONString(params));
+  }
+
 }
