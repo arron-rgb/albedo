@@ -21,7 +21,6 @@ import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
-import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 /**
@@ -29,8 +28,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
  */
 @Service
 public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balance> implements BalanceService {
-  @Resource
-  AliPayService aliPayService;
 
   @Override
   public void addTimes(int times) {

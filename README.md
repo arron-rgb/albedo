@@ -47,6 +47,8 @@ type 0直播间风格 1主播风格
 2. [OSS](https://help.aliyun.com/product/31815.html?spm=5176.10695662.5694434980.7.2f2d36b92lYrEe)
 3. [语音合成](https://help.aliyun.com/document_detail/84437.html?spm=5176.12061040.1228750.3.4e724779xH8QRr)
 4. [支付宝支付文档](https://opendocs.alipay.com/apis/api_1/alipay.trade.wap.pay#%E5%93%8D%E5%BA%94%E5%8F%82%E6%95%B0)
+5. [沙箱切换至正式环境](https://opensupport.alipay.com/support/helpcenter/190/201602483976?ant_source=antsupport)
+6. [交易状态查询](https://opensupport.alipay.com/support/helpcenter/194/201602516393?ant_source=antsupport)
 
 # 项目介绍
 详情见github-albedo，readme

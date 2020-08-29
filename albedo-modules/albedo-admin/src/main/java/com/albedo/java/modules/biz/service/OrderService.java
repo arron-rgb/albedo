@@ -18,6 +18,14 @@ public interface OrderService extends BaseService<Order> {
   void place(OrderForm form);
 
   /**
+   * 用户付款
+   *
+   * @param orderId
+   * @return 付款链接
+   */
+  String price(String orderId);
+
+  /**
    * 员工认领
    *
    * @param staffId

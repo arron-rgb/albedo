@@ -16,6 +16,7 @@
 
 package com.albedo.java.modules.tool.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
+import com.albedo.java.common.core.jackson.JavaTimeModule;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.repository.AliPayConfigRepository;
 import com.albedo.java.modules.tool.service.AliPayService;
@@ -37,6 +40,10 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import lombok.AllArgsConstructor;
 
@@ -49,6 +56,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, AlipayConfig> implements AliPayService {
   private final AliPayConfigRepository alipayRepository;
+  private final AliPayUtils aliPayUtils;
 
   @Override
   @Cacheable(key = "'id:1'")
@@ -69,7 +77,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   @Override
   public String toPayAsPc(TradeVo trade) throws Exception {
     AlipayConfig alipay = find();
-    trade.setOutTradeNo(AliPayUtils.getOrderCode());
+    trade.setOutTradeNo(aliPayUtils.getOrderCode());
     return toPayAsPc(alipay, trade);
   }
 
@@ -79,21 +87,20 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
       throw new BadRequestException("请先添加相应配置，再操作");
     }
     AlipayClient alipayClient = buildAlipayClient();
-    // 创建API对应的request(电脑网页版)
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-
-    // 订单完成后返回的页面和异步通知地址
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
-
-    // 填充订单参数 todo 修改字段值 与业务对齐
-    request.setBizContent("{" + "'out_trade_no':'" + trade.getOutTradeNo() + "',"
-      + "'product_code':'FAST_INSTANT_TRADE_PAY'," + "'total_amount':" + trade.getTotalAmount() + "," + "'subject':'"
-      + trade.getSubject() + "'," + "'body':'" + trade.getBody() + "'," + "'extend_params':{"
-      + "'sys_service_provider_id':'" + alipay.getSysServiceProviderId() + "'" + "}" + "  }");// 填充业务参数
-    // 调用SDK生成表单, 通过GET方式，口可以获取url
+    // {"out_trade_no":"202008292138176837","product_code":"FAST_INSTANT_TRADE_PAY","total_amount":"1","subject":"1"}
+    TradePlus plus = new TradePlus();
+    BeanUtils.copyProperties(trade, plus);
+    request.setBizContent(mapper.writeValueAsString(plus));
     return alipayClient.pageExecute(request, "GET").getBody();
   }
+
+  private final ObjectMapper mapper =
+    new ObjectMapper().registerModule(new JavaTimeModule()).registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
   @Override
   public String toPayAsWeb(AlipayConfig alipay, TradeVo trade) throws Exception {
@@ -109,6 +116,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     // 创建API对应的request(手机网页版)
     AlipayTradeWapPayRequest request = new AlipayTradeWapPayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
+    // 收不到异步通知自查方案-支付宝接口常见错误系列 https://openclub.alipay.com/club/history/read/1677
     request.setNotifyUrl(alipay.getNotifyUrl());
     request.setBizContent("{" + "'out_trade_no':'" + trade.getOutTradeNo() + "',"
       + "'product_code':'FAST_INSTANT_TRADE_PAY'," + "'total_amount':" + trade.getTotalAmount() + "," + "'subject':'"
@@ -122,16 +130,16 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     AlipayClient alipayClient = buildAlipayClient();
 
     AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
-    request.setBizContent("{" + "'out_trade_no':'20150320010101001'," + "'trade_no':'2014112611001004680 073956707',"
+    request.setBizContent("{" + "'out_trade_no':'" + outTradeNo + "'," + "'trade_no':'2014112611001004680 073956707',"
       + "'org_pid':'2088101117952222'," + "      'query_options':[" + "        'trade_settle_info'" + "      ]"
       + "  }");
     AlipayTradeQueryResponse response = alipayClient.execute(request);
-    if (response.isSuccess()) {
-      System.out.println("调用成功");
-    } else {
-      System.out.println("调用失败");
+    if (!response.isSuccess()) {
+      return "";
     }
-    // todo 查询订单状态
+    // WAIT_BUYER_PAY 待支付（只有扫码或在web登录后才会创建订单）
+    // TRADE_SUCCESS 支付成功
+    String tradeStatus = response.getTradeStatus();
     return "";
   }
 

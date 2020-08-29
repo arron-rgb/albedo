@@ -44,8 +44,7 @@ public class AliPayUtils {
    */
   public String getOrderCode() {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    int a = (int)(Math.random() * 9000.0D) + 1000;
-    System.out.println(a);
+    int random = (int)(Math.random() * 9000.0D) + 1000;
     Date date = new Date();
     String str = sdf.format(date);
     String[] split = str.split("-");
@@ -53,7 +52,7 @@ public class AliPayUtils {
     String[] split1 = s.split(" ");
     String s1 = split1[0] + split1[1];
     String[] split2 = s1.split(":");
-    return split2[0] + split2[1] + split2[2] + a;
+    return split2[0] + split2[1] + split2[2] + random;
   }
 
   /**

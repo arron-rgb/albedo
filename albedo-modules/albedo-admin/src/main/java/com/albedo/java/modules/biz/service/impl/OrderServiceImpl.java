@@ -34,20 +34,42 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   implements OrderService {
 
   @Resource
+  AliPayService aliPayService;
+  @Resource
   BalanceService balanceService;
 
   @Override
   public void place(OrderForm form) {
-    // 下订单流程
+    Order order = new Order();
+    order.setUserId(SecurityUtil.getUser().getId());
+    order.setType(form.getAccelerate().toString());
+    order.setState(ORDER_STATE_0);
+    order.setTotalAmount(calculatePrice(form));
+    baseMapper.insert(order);
+  }
+
+  @Override
+  public String price(String orderId) {
+    // 1. 消耗次数
     try {
       balanceService.consumeTimes();
     } catch (TimesOverspendException ignored) {
     }
-    Order order = new Order();
-    order.setUserId(SecurityUtil.getUser().getId());
-    order.setType("0");
-    order.setState(ORDER_STATE_1);
-    order.setStaffId("");
+    // 2. 付款链接
+    TradeVo trade = new TradeVo();
+    // todo 更新tradevo
+    try {
+      return aliPayService.toPayAsPc(trade);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return "";
+  }
+
+  // public void
+
+  private String calculatePrice(OrderForm form) {
+    return "";
   }
 
   @Override
@@ -117,6 +139,4 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setType("加速");
   }
 
-  @Resource
-  AliPayService aliPayService;
 }

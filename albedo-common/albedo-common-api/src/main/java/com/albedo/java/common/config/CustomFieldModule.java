@@ -15,26 +15,22 @@ import com.fasterxml.jackson.databind.ser.std.BeanSerializerBase;
  */
 public class CustomFieldModule extends SimpleModule {
 
+  @Override
+  public void setupModule(Module.SetupContext context) {
+    super.setupModule(context);
 
-	@Override
-	public void setupModule(Module.SetupContext context) {
-		super.setupModule(context);
+    context.addBeanSerializerModifier(new BeanSerializerModifier() {
 
-		context.addBeanSerializerModifier(new BeanSerializerModifier() {
+      @Override
+      public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc,
+        JsonSerializer<?> serializer) {
+        if (serializer instanceof BeanSerializerBase) {
+          return new ExtraFieldSerializer((BeanSerializerBase)serializer);
+        }
+        return serializer;
 
-			@Override
-			public JsonSerializer<?> modifySerializer(
-				SerializationConfig config,
-				BeanDescription beanDesc,
-				JsonSerializer<?> serializer) {
-				if (serializer instanceof BeanSerializerBase) {
-					return new ExtraFieldSerializer(
-						(BeanSerializerBase) serializer);
-				}
-				return serializer;
-
-			}
-		});
-	}
+      }
+    });
+  }
 
 }
