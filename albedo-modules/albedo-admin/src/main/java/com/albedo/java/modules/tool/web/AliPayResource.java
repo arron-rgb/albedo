@@ -15,6 +15,9 @@
  */
 package com.albedo.java.modules.tool.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_FINISHED;
+import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_SUCCESS;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -31,7 +34,6 @@ import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
-import com.albedo.java.modules.tool.util.AliPayStatusEnum;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 
 import io.swagger.annotations.Api;
@@ -136,8 +138,7 @@ public class AliPayResource {
       String totalAmount =
         new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
       // 验证
-      if (tradeStatus.equals(AliPayStatusEnum.SUCCESS.getValue())
-        || tradeStatus.equals(AliPayStatusEnum.FINISHED.getValue())) {
+      if (tradeStatus.equals(TRADE_SUCCESS) || tradeStatus.equals(TRADE_FINISHED)) {
         // 验证通过后应该根据业务需要处理订单 todo 1. 加套餐余量
       }
       return new Result<>(HttpStatus.OK);

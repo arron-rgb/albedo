@@ -30,7 +30,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   /** F_USERID user_id : 购买的用户id */
   public static final String F_USERID = "userId";
   /** F_OUTTRADENO out_trade_no : 对接支付宝id */
-  public static final String F_OUTTRADENO = "outTradeNo";
+  public static final String F_OUT_TRADE_NO = "outTradeNo";
   /** F_TYPE type : 购买类型 */
   public static final String F_TYPE = "type";
   /** F_OUTERID outer_id : 购买id */
@@ -46,7 +46,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   @Size(max = 64)
   @TableField("out_trade_no")
   private String outTradeNo;
-  /** type 购买类型 */
+  /** type 购买类型 0 套餐 1 订单 */
   @Size(max = 2)
   private String type;
   /** outerId 购买id */

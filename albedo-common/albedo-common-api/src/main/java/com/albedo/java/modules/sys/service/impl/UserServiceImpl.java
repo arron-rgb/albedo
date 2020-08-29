@@ -427,13 +427,12 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       deptId = dept.getId();
       roleId = BUSINESS_ADMIN_ROLE_ID;
     } else {
-      // todo 再看一遍流程行不行
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
       String companyName = userData.getCompanyName();
       Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
       List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
       // 3 对应 企业账号数量限制
-      // todo 加表 企业和购买的服务的表
+      // todo 加表 企业和购买的服务的表 余量/使用量表
       int accountSize = 3;
       if (users.size() > accountSize) {
         throw new AccountException("该企业名下账号注册数量已超过限制");

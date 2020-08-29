@@ -44,8 +44,7 @@ public class SmsServiceImpl implements SmsService {
     param.put("code", oldCode);
     try {
       SmsSingleton.sendSms(phone, param, type);
-    } catch (ClientException e) {
-      e.printStackTrace();// todo
+    } catch (ClientException ignored) {
     }
   }
 

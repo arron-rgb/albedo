@@ -5,6 +5,8 @@ package com.albedo.java.common.core.constant;
  */
 public interface BusinessConstants {
 
+  String ORDER = "1";
+  String PLAN = "0";
   String PERSONAL_TYPE = "1";
   String ENTERPRISE_TYPE = "2";
 

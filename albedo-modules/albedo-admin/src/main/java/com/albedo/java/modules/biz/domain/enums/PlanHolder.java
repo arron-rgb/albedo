@@ -39,4 +39,26 @@ public enum PlanHolder {
     return this.entity;
   }
 
+  /**
+   * 对应数据库中的实体，内存与数据库同步情况待定
+   *
+   * @param id
+   *          主键
+   * @return 实体
+   */
+  public static Plan getPlan(String id) {
+    switch (id) {
+      case "3c734f2104ab77ecdaba2bb96baa929c":
+        return PLUS.entity;
+      case "44fb4bc69ff88e3e7113c597b0fa99cb":
+        return CUSTOMIZED.entity;
+      case "71af84e41a0e9783f4a21f4a5ea2bdd0":
+        return FLAGSHIP.entity;
+      case "6d89ea978f83243c3a137f3d25d9f10e":
+        return STANDARD.entity;
+      default:
+        return null;
+    }
+  }
+
 }
