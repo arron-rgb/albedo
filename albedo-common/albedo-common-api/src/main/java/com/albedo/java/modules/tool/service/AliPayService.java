@@ -18,6 +18,7 @@ package com.albedo.java.modules.tool.service;
 
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.alipay.api.AlipayApiException;
 
@@ -79,6 +80,8 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    *           异常
    */
   String toPayAsPc(TradeVo trade) throws Exception;
+
+  String toPayAsPc(TradePlus trade) throws Exception;
 
   /**
    * 查询订单支付状态

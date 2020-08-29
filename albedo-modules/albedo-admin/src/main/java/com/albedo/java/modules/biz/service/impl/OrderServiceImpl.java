@@ -1,6 +1,6 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.CommonConstants.*;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
 import java.math.BigDecimal;
 import java.util.List;

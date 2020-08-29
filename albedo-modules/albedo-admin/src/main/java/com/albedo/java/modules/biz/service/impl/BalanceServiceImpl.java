@@ -30,11 +30,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balance> implements BalanceService {
 
   @Override
-  public void addTimes(int times) {
-    // todo 验证充值是否成功 成功则继续
-
-    // 直接充进个人账号即可
-    String userId = SecurityUtil.getUser().getId();
+  public void addTimes(int times, String userId) {
     Balance balance = new Balance();
     // 判断有无
     List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().eq("user_id", userId));

@@ -43,11 +43,6 @@ public class TradePlus {
   @NotBlank
   private String subject;
 
-  // /**
-  // * 订单描述
-  // */
-  // private String body;
-
   /**
    * 绝对超时时间，格式为 yyyy-MM-dd HH:mm:ss
    */

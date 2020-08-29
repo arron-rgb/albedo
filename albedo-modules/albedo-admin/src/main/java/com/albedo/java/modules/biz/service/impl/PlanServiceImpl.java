@@ -1,18 +1,21 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import java.math.BigDecimal;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.dto.PlanDto;
 import com.albedo.java.modules.biz.repository.PlanRepository;
+import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.PlanService;
-import com.albedo.java.modules.tool.domain.vo.TradeVo;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
+import com.albedo.java.modules.tool.util.AliPayUtils;
+import com.alipay.api.AlipayApiException;
 
 /**
  * @author arronshentu
@@ -21,21 +24,37 @@ import com.albedo.java.modules.tool.service.AliPayService;
 public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanDto, String> implements PlanService {
 
   @Resource
+  AliPayUtils aliPayUtils;
+  @Resource
   AliPayService aliPayService;
 
   @Override
   public String purchase(Plan plan) {
-    TradeVo trade = new TradeVo();
-    BigDecimal price = plan.getPrice();
-    trade.setBody(plan.getDescription());
-    trade.setSubject(plan.getName());
-    trade.setState("");
-    trade.setTotalAmount(price.toPlainString());
+    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
+      .subject(plan.getName()).build();
+    // todo 存消费记录
     try {
-      aliPayService.toPayAsPc(trade);
-    } catch (Exception e) {
-      e.printStackTrace();
+      return aliPayService.toPayAsPc(trade);
+    } catch (Exception ignored) {
     }
-    return null;
+    return "";
   }
+
+  @Override
+  public String updateTimes() {
+    String status = "";
+    try {
+      status = aliPayService.queryOrderStatus("");
+    } catch (AlipayApiException ignored) {
+    }
+    if (BusinessConstants.TRADE_FINISHED.equals(status)) {
+      // todo 查询消费记录确定增加的次数；用户id如何确定
+      balanceService.addTimes(1, SecurityUtil.getUser().getId());
+    }
+
+    return "";
+  }
+
+  @Resource
+  BalanceService balanceService;
 }

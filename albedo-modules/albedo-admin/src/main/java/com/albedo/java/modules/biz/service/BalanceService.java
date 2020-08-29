@@ -9,13 +9,18 @@ import com.albedo.java.modules.biz.domain.Balance;
  */
 public interface BalanceService extends BaseService<Balance> {
   /**
+   * 给某个特定的用户添加次数
+   *
    * @param times
-   *          加次数
-   *          1. 验证交易是否完成 2. 给该用户所在部门或个人加上次数
+   *          次数
+   * @param userId
+   *          用户
    */
-  void addTimes(int times);
+  void addTimes(int times, String userId);
 
   /**
+   * 查询某组织剩余次数
+   *
    * @return
    *         企业剩余次数、个人剩余次数
    */

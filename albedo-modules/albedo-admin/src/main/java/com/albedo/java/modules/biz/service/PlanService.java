@@ -16,4 +16,12 @@ public interface PlanService extends BaseService<Plan> {
    * @return
    */
   String purchase(Plan plan);
+
+  /**
+   * 用途： 1. 支付宝异步通知接口更新
+   * 验证订单支付成功后更新用户套餐使用情况
+   *
+   * @return
+   */
+  String updateTimes();
 }

@@ -14,6 +14,7 @@ id
 user_id
 out_trade_no 对接支付宝id
 type 0 套餐 1 订单
+outer_id 套餐id 或 订单id 用于查询其他信息
 total_amount 支付金额
 ===
 - 开发票记录表
