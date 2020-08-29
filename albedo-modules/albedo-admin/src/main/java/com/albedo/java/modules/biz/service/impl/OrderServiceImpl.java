@@ -2,7 +2,6 @@ package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,11 +15,11 @@ import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderForm;
-import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -54,19 +53,17 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     try {
       balanceService.consumeTimes();
     } catch (TimesOverspendException ignored) {
+      return "success";
     }
     // 2. 付款链接
-    TradeVo trade = new TradeVo();
-    // todo 更新tradevo
+    TradePlus plus = TradePlus.builder().build();
     try {
-      return aliPayService.toPayAsPc(trade);
+      return aliPayService.toPayAsPc(plus);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return "";
+    return "failed";
   }
-
-  // public void
 
   private String calculatePrice(OrderForm form) {
     return "";
@@ -92,21 +89,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setVideoId(videoId);
     order.setState(ORDER_STATE_3);
     // todo 员工自行上传视频逻辑
-  }
-
-  @Override
-  public String payAsPcForPlan(Plan plan) {
-    BigDecimal totalAmount = plan.getPrice();
-    TradeVo tradeVo = new TradeVo();
-    tradeVo.setSubject(plan.getName());
-    tradeVo.setTotalAmount(totalAmount.toPlainString());
-    tradeVo.setBody("");
-    try {
-      return aliPayService.toPayAsPc(tradeVo);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return "";
   }
 
   @Override

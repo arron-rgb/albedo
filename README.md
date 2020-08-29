@@ -2,20 +2,14 @@
 ``` sql
 plan 套餐
 balance 次数
-balance_history 次数变更
+balance_record 次数变更记录
 invoice 发票抬头
 order 订单
 order_form 表单参数
 video 渲染视频
+purchase_record 消费记录表
 
 todo 
-- 消费记录表: 1. 套餐消费 2. 订单消费（包括是否加速）
-id
-user_id
-out_trade_no 对接支付宝id
-type 0 套餐 1 订单
-outer_id 套餐id 或 订单id 用于查询其他信息
-total_amount 支付金额
 ===
 - 开发票记录表
 id

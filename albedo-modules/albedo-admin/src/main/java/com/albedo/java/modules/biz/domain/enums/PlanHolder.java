@@ -1,6 +1,8 @@
-package com.albedo.java.modules.biz.domain;
+package com.albedo.java.modules.biz.domain.enums;
 
 import java.math.BigDecimal;
+
+import com.albedo.java.modules.biz.domain.Plan;
 
 /**
  * @author arronshentu

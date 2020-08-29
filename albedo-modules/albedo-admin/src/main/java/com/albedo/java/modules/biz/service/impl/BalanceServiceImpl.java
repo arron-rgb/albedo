@@ -98,6 +98,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {
+
       // todo 记录进balanceHistory中追溯
     }
     return flag;

@@ -3,7 +3,6 @@ package com.albedo.java.modules.biz.service;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderForm;
-import com.albedo.java.modules.biz.domain.Plan;
 
 /**
  * @author arronshentu
@@ -18,7 +17,7 @@ public interface OrderService extends BaseService<Order> {
   void place(OrderForm form);
 
   /**
-   * 用户付款
+   * 用户付款 or 扣次数
    *
    * @param orderId
    * @return 付款链接
@@ -34,7 +33,7 @@ public interface OrderService extends BaseService<Order> {
   void consume(String staffId, String orderId);
 
   /**
-   * 可认领的订单
+   * 员工可认领的订单
    */
   void availableOrder();
 
@@ -47,16 +46,6 @@ public interface OrderService extends BaseService<Order> {
    *          视频id
    */
   void uploadVideo(String orderId, String videoId);
-
-  /**
-   * 套餐付费
-   *
-   * @param plan
-   *          套餐实体
-   * @return
-   *         付费链接
-   */
-  String payAsPcForPlan(Plan plan);
 
   /**
    * 订单付费。

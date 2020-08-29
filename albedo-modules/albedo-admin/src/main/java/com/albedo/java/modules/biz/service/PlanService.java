@@ -9,7 +9,7 @@ import com.albedo.java.modules.biz.domain.Plan;
 public interface PlanService extends BaseService<Plan> {
 
   /**
-   * 生成购买链接
+   * 生成购买链接并插入一条购买记录
    *
    * @param plan
    *          套餐实体
