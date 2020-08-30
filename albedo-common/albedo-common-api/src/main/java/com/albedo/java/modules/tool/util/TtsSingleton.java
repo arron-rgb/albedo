@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.annotation.Resource;
-
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
@@ -30,26 +28,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TtsSingleton {
 
-  @Resource
   ApplicationProperties applicationProperties;
 
-  private final String SECRET_ID = applicationProperties.getKey(TENCENT_ID);
-  private final String SECRET_KEY = applicationProperties.getKey(TENCENT_SECRET);
-
-  private final String endpoint = "tts.tencentcloudapi.com";
-  private final String region = "ap-shanghai";
-
-  private final HttpProfile httpProfile;
-  private final Credential cred;
-  private final ClientProfile clientProfile;
   private final TtsClient client;
 
-  static {
-    cred = new Credential(SECRET_ID, SECRET_KEY);
-    httpProfile = new HttpProfile();
+  public TtsSingleton(ApplicationProperties applicationProperties) {
+    this.applicationProperties = applicationProperties;
+    String secretId = applicationProperties.getKey(TENCENT_ID);
+    String secretKey = applicationProperties.getKey(TENCENT_SECRET);
+    Credential cred = new Credential(secretId, secretKey);
+    HttpProfile httpProfile = new HttpProfile();
+    String endpoint = "tts.tencentcloudapi.com";
     httpProfile.setEndpoint(endpoint);
-    clientProfile = new ClientProfile();
+    ClientProfile clientProfile = new ClientProfile();
     clientProfile.setHttpProfile(httpProfile);
+    String region = "ap-shanghai";
     client = new TtsClient(cred, region, clientProfile);
   }
 

@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
@@ -30,23 +28,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OssSingleton {
 
-  @Resource
   ApplicationProperties applicationProperties;
 
-  private final String ACCESS_KEY_ID = applicationProperties.getKey(ALIBABA_ID);
-  private final String ACCESS_KEY_SECRET = applicationProperties.getKey(ALIBABA_SECRET);
+  public OssSingleton(ApplicationProperties applicationProperties) {
+    this.applicationProperties = applicationProperties;
+    String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
+    String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
 
-  private final String ENDPOINT = "http://oss-cn-hangzhou.aliyuncs.com";
-  private final String BUCKET_NAME = "vlivest";
+    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+  }
 
-  private final OSS client = new OSSClientBuilder().build(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+  private final OSS client;
 
   public void uploadFile(File file, String objectName) {
     // 如果需要上传时设置存储类型与访问权限，请参考以下示例代码。
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
     metadata.setObjectAcl(CannedAccessControlList.Private);
-    uploadFile(file, objectName, metadata, BUCKET_NAME);
+    uploadFile(file, objectName, metadata, "vlivest");
     // 上传文件。
   }
 
