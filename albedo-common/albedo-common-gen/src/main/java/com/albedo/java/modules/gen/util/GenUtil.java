@@ -75,13 +75,13 @@ public class GenUtil {
 			column.setTitle("备注");
 		}
 		// 创建者、更新者
-		else if (StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_CREATEDBY) || StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_LASTMODIFIEDBY)) {
+		else if (StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_CREATED_BY) || StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_LAST_MODIFIED_BY)) {
 			column.setJavaType(User.class.getName());
 			column.setJavaField(column.getJavaField());
 			column.setNull(false);
 		}
 		// 创建时间、更新时间
-		else if (StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_CREATEDDATE) || StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_LASTMODIFIEDDATE)) {
+		else if (StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_CREATED_DATE) || StringUtil.startWithIgnoreCase(column.getName(), BaseDataEntity.F_LASTMODIFIEDDATE)) {
 			column.setShowType("dateselect");
 			column.setNull(false);
 		}
@@ -90,7 +90,7 @@ public class GenUtil {
 			column.setShowType("textarea");
 		}
 		// 删除标记
-		else if (StringUtil.equalsIgnoreCase(column.getJavaField(), BaseDataEntity.F_DELFLAG)) {
+		else if (StringUtil.equalsIgnoreCase(column.getJavaField(), BaseDataEntity.F_DEL_FLAG)) {
 			column.setShowType("radio");
 			column.setDictType(DictNameConstants.SYS_FLAG);
 			column.setNull(false);

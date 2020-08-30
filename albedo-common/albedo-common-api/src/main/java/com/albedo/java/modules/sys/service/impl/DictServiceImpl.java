@@ -1,12 +1,12 @@
 /*
- *  Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- *  <p>
- *  Licensed under the GNU Lesser General Public License 3.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *  <p>
+ * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
+ * <p>
+ * Licensed under the GNU Lesser General Public License 3.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
  * https://www.gnu.org/licenses/lgpl.html
- *  <p>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,21 @@
  */
 
 package com.albedo.java.modules.sys.service.impl;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.albedo.java.common.core.annotation.BaseInterface;
 import com.albedo.java.common.core.constant.CacheNameConstants;
@@ -41,21 +56,8 @@ import com.albedo.java.modules.sys.util.DictUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 
 /**
  * <p>
@@ -68,92 +70,88 @@ import java.util.stream.Collectors;
 @Service
 @CacheConfig(cacheNames = CacheNameConstants.DICT_DETAILS)
 @AllArgsConstructor
-public class DictServiceImpl extends
-	TreeServiceImpl<DictRepository, Dict, DictDto> implements DictService, BaseInterface {
+public class DictServiceImpl extends TreeServiceImpl<DictRepository, Dict, DictDto>
+  implements DictService, BaseInterface {
 
-	private final CacheManager cacheManager;
+  private final CacheManager cacheManager;
 
-	@Override
-	public void init() {
-		Cache cache = cacheManager.getCache(CacheNameConstants.DICT_DETAILS);
-		List<Dict> dictList = findAllOrderBySort();
-		if (ObjectUtil.isNotEmpty(dictList)) {
-			cache.put(CacheNameConstants.DICT_ALL, dictList);
-		}
-	}
+  @Override
+  public void init() {
+    Cache cache = cacheManager.getCache(CacheNameConstants.DICT_DETAILS);
+    List<Dict> dictList = findAllOrderBySort();
+    if (ObjectUtil.isNotEmpty(dictList)) {
+      cache.put(CacheNameConstants.DICT_ALL, dictList);
+    }
+  }
 
-	@Override
-	public List<Dict> findAllOrderBySort() {
-		return repository.selectList(Wrappers.<Dict>lambdaQuery().orderByAsc(Dict::getSort));
-	}
+  @Override
+  public List<Dict> findAllOrderBySort() {
+    return repository.selectList(Wrappers.<Dict>lambdaQuery().orderByAsc(Dict::getSort));
+  }
 
-	public Boolean exitUserByCode(DictDto dictDto) {
-		return getOne(Wrappers.<Dict>query()
-			.ne(StringUtil.isNotEmpty(dictDto.getId()), DictDto.F_ID, dictDto.getId())
-			.eq(DictDto.F_CODE, dictDto.getCode())) != null;
-	}
+  public Boolean exitUserByCode(DictDto dictDto) {
+    return getOne(Wrappers.<Dict>query().ne(StringUtil.isNotEmpty(dictDto.getId()), DictDto.F_ID, dictDto.getId())
+      .eq(DictDto.F_CODE, dictDto.getCode())) != null;
+  }
 
-	@Override
-	@CacheEvict(allEntries = true)
-	public void saveOrUpdate(DictDto dictDto) {
-		// code before comparing with database
-		if (exitUserByCode(dictDto)) {
-			throw new EntityExistException(DictDto.class, "code", dictDto.getCode());
-		}
+  @Override
+  @CacheEvict(allEntries = true)
+  public void saveOrUpdate(DictDto dictDto) {
+    // code before comparing with database
+    if (exitUserByCode(dictDto)) {
+      throw new EntityExistException(DictDto.class, "code", dictDto.getCode());
+    }
 
-		super.saveOrUpdate(dictDto);
-	}
+    super.saveOrUpdate(dictDto);
+  }
 
-	@Override
-	@Cacheable(key = "'findCodes:' + #p0")
-	@Transactional(readOnly = true, rollbackFor = Exception.class)
-	public Map<String, List<SelectResult>> findCodes(String codes) {
-		List<Dict> dictList = findAllOrderBySort();
-		return codes != null ? DictUtil.getSelectResultListByCodes(dictList, codes.split(StringUtil.SPLIT_DEFAULT)) :
-			DictUtil.getSelectResultListByCodes(dictList);
-	}
+  @Override
+  @Cacheable(key = "'findCodes:' + #p0")
+  @Transactional(readOnly = true, rollbackFor = Exception.class)
+  public Map<String, List<SelectResult>> findCodes(String codes) {
+    List<Dict> dictList = findAllOrderBySort();
+    return codes != null ? DictUtil.getSelectResultListByCodes(dictList, codes.split(StringUtil.SPLIT_DEFAULT))
+      : DictUtil.getSelectResultListByCodes(dictList);
+  }
 
-	@Override
-	@Cacheable(key = "'findTreeNode:' + #p0")
-	public <Q> List<TreeNode> findTreeNode(Q queryCriteria) {
-		return super.findTreeNode(queryCriteria);
-	}
+  @Override
+  @Cacheable(key = "'findTreeNode:' + #p0")
+  public <Q> List<TreeNode> findTreeNode(Q queryCriteria) {
+    return super.findTreeNode(queryCriteria);
+  }
 
-	@Override
-	@Transactional(readOnly = true, rollbackFor = Exception.class)
-	public IPage<DictVo> findTreeList(DictQueryCriteria dictQueryCriteria) {
-		List<DictVo> dictVoList = repository.findDictVoList(QueryWrapperUtil.<Dict>getWrapper(dictQueryCriteria)
-			.eq(TreeEntity.F_SQL_DELFLAG, TreeEntity.FLAG_NORMAL).orderByAsc(TreeEntity.F_SQL_SORT));
-		return new PageModel<>(Lists.newArrayList(TreeUtil.buildByLoopAutoRoot(dictVoList)),
-			dictVoList.size());
-	}
+  @Override
+  @Transactional(readOnly = true, rollbackFor = Exception.class)
+  public IPage<DictVo> findTreeList(DictQueryCriteria dictQueryCriteria) {
+    List<DictVo> dictVoList = repository.findDictVoList(QueryWrapperUtil.<Dict>getWrapper(dictQueryCriteria)
+      .eq(TreeEntity.F_SQL_DEL_FLAG, TreeEntity.FLAG_NORMAL).orderByAsc(TreeEntity.F_SQL_SORT));
+    return new PageModel<>(Lists.newArrayList(TreeUtil.buildByLoopAutoRoot(dictVoList)), dictVoList.size());
+  }
 
-	@Override
-	@CacheEvict(allEntries = true)
-	public void lockOrUnLock(Set<String> ids) {
-		List<Dict> dictList = Lists.newArrayList();
-		repository.selectBatchIds(ids).forEach(dict -> {
-			dictList.addAll(repository.selectList(Wrappers.<Dict>lambdaQuery().likeRight(Dict::getParentIds,
-				TreeUtil.ROOT.equals(dict.getParentId()) ? (dict.getId() + ",") : (dict.getParentIds() + dict.getId()))));
-			dictList.add(dict);
-			repository.updateAvailableByIdList(dictList.stream().map(Dict::getId).collect(Collectors.toList()),
-				CommonConstants.YES.equals(dict.getAvailable()) ? CommonConstants.NO : CommonConstants.YES);
-		});
-	}
+  @Override
+  @CacheEvict(allEntries = true)
+  public void lockOrUnLock(Set<String> ids) {
+    List<Dict> dictList = Lists.newArrayList();
+    repository.selectBatchIds(ids).forEach(dict -> {
+      dictList.addAll(repository.selectList(Wrappers.<Dict>lambdaQuery().likeRight(Dict::getParentIds,
+        TreeUtil.ROOT.equals(dict.getParentId()) ? (dict.getId() + ",") : (dict.getParentIds() + dict.getId()))));
+      dictList.add(dict);
+      repository.updateAvailableByIdList(dictList.stream().map(Dict::getId).collect(Collectors.toList()),
+        CommonConstants.YES.equals(dict.getAvailable()) ? CommonConstants.NO : CommonConstants.YES);
+    });
+  }
 
-	@Override
-	@CacheEvict(allEntries = true)
-	public boolean removeByIds(Collection<? extends Serializable> ids) {
-		ids.forEach(id -> {
-			// 查询父节点为当前节点的节点
-			List<Dict> menuList = this.list(Wrappers.<Dict>query()
-				.lambda().eq(Dict::getParentId, id));
-			if (CollUtil.isNotEmpty(menuList)) {
-				throw new BadRequestException("字典含有下级不能删除");
-			}
-		});
-		return super.removeByIds(ids);
-	}
-
+  @Override
+  @CacheEvict(allEntries = true)
+  public boolean removeByIds(Collection<? extends Serializable> ids) {
+    ids.forEach(id -> {
+      // 查询父节点为当前节点的节点
+      List<Dict> menuList = this.list(Wrappers.<Dict>query().lambda().eq(Dict::getParentId, id));
+      if (CollUtil.isNotEmpty(menuList)) {
+        throw new BadRequestException("字典含有下级不能删除");
+      }
+    });
+    return super.removeByIds(ids);
+  }
 
 }

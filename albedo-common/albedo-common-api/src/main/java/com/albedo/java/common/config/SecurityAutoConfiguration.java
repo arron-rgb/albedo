@@ -75,12 +75,6 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
   private final CorsFilter corsFilter;
   private final ApplicationContext applicationContext;
 
-  /**
-   * https://spring.io/blog/2017/11/01/spring-security-5-0-0-rc1-released#password-storage-updated
-   * Encoded password does not look like BCrypt
-   *
-   * @return PasswordEncoder
-   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();

@@ -18,6 +18,8 @@ package com.albedo.java.modules.sys.service.impl;
 
 import static com.albedo.java.common.core.constant.CommonConstants.*;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +34,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +55,7 @@ import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.persistence.datascope.DataScope;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
+import com.albedo.java.common.util.ExcelUtil;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.sys.domain.*;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
@@ -85,11 +88,19 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @CacheConfig(cacheNames = CacheNameConstants.USER_DETAILS)
 public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserDto, String> implements UserService {
-  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-  private final MenuService menuService;
-  private final RoleService roleService;
-  private final DeptService deptService;
-  private final UserRoleService userRoleService;
+  @Resource
+  RoleDeptService roleDeptService;
+  @Resource
+  ApplicationProperties applicationProperties;
+  private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  @Resource
+  MenuService menuService;
+  @Resource
+  RoleService roleService;
+  @Resource
+  DeptService deptService;
+  @Resource
+  UserRoleService userRoleService;
 
   /**
    * 功能描述: 检查密码长度
@@ -447,11 +458,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     saveUserRole(userId, roleId);
   }
 
-  @Resource
-  RoleDeptService roleDeptService;
-  @Resource
-  ApplicationProperties applicationProperties;
-
   private void registerPersonalUser(RegisterUserData userData) {
     String userId = saveUser(userData, PUBLIC_DEPT_ID);
     // 个人用户默认所属公共用户部门，角色为个人。个人角色已在系统中与默认公共部门硬编码
@@ -476,6 +482,43 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     userRole.setRoleId(roleId);
     userRole.setUserId(userId);
     return userRoleService.save(userRole);
+  }
+
+  @Override
+  public List<String> importUser(InputStream inputStream) {
+
+    ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
+    List<UserExcelVo> errors = new ArrayList<>();
+    try {
+      List<UserExcelVo> data = util.importExcel(inputStream);
+      if (CollectionUtils.isEmpty(data)) {
+        return new ArrayList<>();
+      }
+      User user = new User();
+      for (UserExcelVo datum : data) {
+        BeanUtils.copyProperties(datum, user);
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        user.setNickname(datum.getName());
+        user.setDeptId(ADMIN_DEPT_ID);
+        baseMapper.insert(user);
+        if (StringUtils.isBlank(user.getId())) {
+          errors.add(datum);
+          continue;
+        }
+        // user的默认role
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(ADMIN_ROLE_ID);
+        userRoleService.save(userRole);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (!CollectionUtils.isEmpty(errors)) {
+      return errors.stream().map(UserExcelVo::getUsername).collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
 
 }

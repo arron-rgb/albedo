@@ -56,8 +56,9 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public Result exception(Exception e) {
+  public Result<String> exception(Exception e) {
     log.error("全局异常信息 ex={}", e.getMessage());
+    e.printStackTrace();
     return Result.buildFail(e.getMessage());
   }
 
