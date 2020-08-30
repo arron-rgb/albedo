@@ -16,6 +16,7 @@
 
 package com.albedo.java.modules.sys.service;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -186,4 +187,8 @@ public interface UserService extends DataService<User, UserDto, String> {
 
   void register(RegisterUserData userData);
 
+  /**
+   * 导入用户
+   */
+  void importUser(InputStream inputStream);
 }

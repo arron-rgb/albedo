@@ -31,6 +31,11 @@ public interface CommonConstants {
   String BUSINESS_COMMON_ROLE_ID = "49dbe45a4e2a06a56730851e0c87f166";
   String BUSINESS_ADMIN_ROLE_ID = "cdff3f167ae3dfc7984cd6e36976ddf8";
   String PUBLIC_DEPT_ID = "4d20ae207d9c836a732480429af58273";
+  /**
+   * 后台用户默认部门
+   */
+  String ADMIN_DEPT_ID = "c095173c3aebcd7ff9c6177fbf7a8b69";
+  String ADMIN_ROLE_ID = "3570f348af7214a976e5d6bfbdd97df1";
 
   /**
    * 编码

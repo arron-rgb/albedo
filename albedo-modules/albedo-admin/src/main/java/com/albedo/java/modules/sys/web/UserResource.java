@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.BeanUtil;
-import com.albedo.java.common.core.util.ResponseEntityBuilder;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.core.vo.PageModel;
@@ -200,12 +198,11 @@ public class UserResource extends BaseResource {
   @PostMapping(value = "/upload")
   @PreAuthorize("@pms.hasPermission('sys_user_upload')")
   @LogOperate(value = "用户管理导入")
-  public ResponseEntity uploadData(@RequestParam("uploadFile") MultipartFile dataFile, HttpServletResponse response)
-    throws Exception {
+  public Result<String> uploadData(@RequestParam("uploadFile") MultipartFile dataFile) throws Exception {
     if (dataFile.isEmpty()) {
-      return ResponseEntityBuilder.buildFail("上传文件为空");
+      return Result.buildFail("上传文件为空");
     }
-    ExcelUtil<UserExcelVo> util = new ExcelUtil(UserExcelVo.class);
+    ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
     List<UserExcelVo> dataList = util.importExcel(dataFile.getInputStream());
     for (UserExcelVo userExcelVo : dataList) {
       if (userExcelVo.getPhone().length() != 11) {
@@ -214,7 +211,7 @@ public class UserResource extends BaseResource {
       }
       userService.save(userExcelVo);
     }
-    return ResponseEntityBuilder.buildOk("操作成功");
+    return Result.buildOk("操作成功");
 
   }
 
@@ -229,7 +226,7 @@ public class UserResource extends BaseResource {
   @AnonymousAccess
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
-  public Result register(@Valid @RequestBody RegisterUserData registerUserData) {
+  public Result<String> register(@Valid @RequestBody RegisterUserData registerUserData) {
     if (!registerUserData.getPassword().equals(registerUserData.getRePassword())) {
       return Result.buildFail("两次密码输入不一致");
     }
