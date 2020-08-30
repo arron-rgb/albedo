@@ -70,7 +70,6 @@ import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.repository.UserRepository;
 import com.albedo.java.modules.sys.service.*;
 import com.albedo.java.modules.sys.util.SysCacheUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -487,13 +486,14 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   }
 
   @Override
-  public void importUser(InputStream inputStream) {
+  public List<String> importUser(InputStream inputStream) {
+
+    ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
+    List<UserExcelVo> errors = new ArrayList<>();
     try {
-      ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
       List<UserExcelVo> data = util.importExcel(inputStream);
-      List<UserExcelVo> errors = new ArrayList<>();
       if (CollectionUtils.isEmpty(data)) {
-        return;
+        return new ArrayList<>();
       }
       User user = new User();
       for (UserExcelVo datum : data) {
@@ -512,12 +512,14 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
         userRole.setRoleId(ADMIN_ROLE_ID);
         userRoleService.save(userRole);
       }
-
-      if (!CollectionUtils.isEmpty(errors)) {
-        log.info(JSON.toJSONString(errors));
-      }
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    if (!CollectionUtils.isEmpty(errors)) {
+      return errors.stream().map(UserExcelVo::getUsername).collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
+
 }

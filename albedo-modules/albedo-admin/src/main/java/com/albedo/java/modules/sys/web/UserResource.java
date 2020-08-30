@@ -16,13 +16,13 @@
 
 package com.albedo.java.modules.sys.web;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -198,29 +198,23 @@ public class UserResource extends BaseResource {
   @PostMapping(value = "/upload")
   @PreAuthorize("@pms.hasPermission('sys_user_upload')")
   @LogOperate(value = "用户管理导入")
-  public Result<String> uploadData(@RequestParam("uploadFile") MultipartFile dataFile) throws Exception {
+  public Result<List<String>> uploadData(@RequestParam("uploadFile") MultipartFile dataFile) throws Exception {
     if (dataFile.isEmpty()) {
       return Result.buildFail("上传文件为空");
     }
-    ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
-    List<UserExcelVo> dataList = util.importExcel(dataFile.getInputStream());
-    for (UserExcelVo userExcelVo : dataList) {
-      if (userExcelVo.getPhone().length() != 11) {
-        BigDecimal bd = new BigDecimal(userExcelVo.getPhone());
-        userExcelVo.setPhone(bd.toPlainString());
-      }
-      userService.save(userExcelVo);
+    List<String> errors = userService.importUser(dataFile.getInputStream());
+    if (CollectionUtils.isEmpty(errors)) {
+      return Result.buildOkData(errors);
     }
-    return Result.buildOk("操作成功");
-
+    return Result.buildFailData(errors);
   }
 
-  @GetMapping(value = "/importTemplate")
+  @GetMapping(value = "/exportTemplate")
   @PreAuthorize("@pms.hasPermission('sys_user_view')")
   @LogOperate(value = "用户导入模板导出")
   public void importTemplate(HttpServletResponse response) {
     ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
-    util.exportExcel(Lists.newArrayList(new UserExcelVo()), "操作日志", response);
+    util.exportExcel(Lists.newArrayList(), "Sheet1", response);
   }
 
   @AnonymousAccess
