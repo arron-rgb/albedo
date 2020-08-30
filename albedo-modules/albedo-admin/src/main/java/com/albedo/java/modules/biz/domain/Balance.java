@@ -9,15 +9,16 @@ import lombok.EqualsAndHashCode;
 /**
  * @author arronshentu
  */
-@TableName("t_balance")
 @Data
+@TableName("t_balance")
 @EqualsAndHashCode
 public class Balance {
 
   private String userId;
   private Integer times;
-
   @Version
   private Integer version;
+  private Integer accountAvailable;
+  private Integer storage;
 
 }

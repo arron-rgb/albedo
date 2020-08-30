@@ -112,13 +112,4 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     orders.forEach(System.out::println);
   }
 
-  public void updateType(String orderId) {
-    // todo 支付宝验证逻辑 or 回调 分支付订单、购买套餐和生成购买记录
-    Order order = baseMapper.selectById(orderId);
-    if (order == null) {
-      return;
-    }
-    order.setType("加速");
-  }
-
 }

@@ -9,11 +9,15 @@ import com.albedo.java.modules.biz.domain.Plan;
 public interface PlanService extends BaseService<Plan> {
 
   /**
-   * 生成购买链接并插入一条购买记录
+   *
+   * 购买套餐流程： 1. 通过post请求生成一条支付宝pc消费记录
+   * 2. return_url接口生成消费记录
+   * 3. 给用户更新套餐使用情况
    *
    * @param plan
    *          套餐实体
    * @return
+   *         购买链接
    */
   String purchase(Plan plan);
 
@@ -23,5 +27,5 @@ public interface PlanService extends BaseService<Plan> {
    *
    * @return
    */
-  String updateTimes();
+  String updateTimes(String outTradeNo);
 }

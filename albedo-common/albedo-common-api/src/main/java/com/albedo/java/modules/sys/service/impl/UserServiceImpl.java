@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- * <p>
- * Licensed under the GNU Lesser General Public License 3.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * https://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.albedo.java.modules.sys.service.impl;
 
 import static com.albedo.java.common.core.constant.CommonConstants.*;
@@ -413,6 +397,9 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     if (CollectionUtils.isNotEmpty(list)) {
       throw new AccountException("该手机号已绑定其他账号");
     }
+    // # 1. 传入用户id
+    // # 2. 定位购买的最高级的套餐
+    // # 3. 获取数量
 
     // 2. 用户角色-系统角色-部门对应
     switch (userData.getUserType()) {
@@ -442,10 +429,12 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       String companyName = userData.getCompanyName();
       Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
       List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
+      String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
       // 3 对应 企业账号数量限制
-      // todo 加表 企业和购买的服务的表 余量/使用量表
-      int accountSize = 3;
-      if (users.size() > accountSize) {
+      List<String> outTradeNos = baseMapper.getOutTradeNosByUserId(adminId);
+      // 找到tradeNo后再查询购买的套餐的最大的套餐
+
+      if (users.size() > 3) {
         throw new AccountException("该企业名下账号注册数量已超过限制");
       }
 
@@ -519,6 +508,11 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       return errors.stream().map(UserExcelVo::getUsername).collect(Collectors.toList());
     }
     return new ArrayList<>();
+  }
+
+  @Override
+  public String getOutTradeNosByUserId(String deptId) {
+    return baseMapper.getDeptAdminIdByDeptId(deptId);
   }
 
 }

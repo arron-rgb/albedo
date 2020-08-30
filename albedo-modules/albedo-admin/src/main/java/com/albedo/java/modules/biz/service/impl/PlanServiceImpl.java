@@ -1,7 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.PLAN;
-import static com.albedo.java.common.persistence.domain.GeneralEntity.F_SQL_CREATEDDATE;
+import static com.albedo.java.common.persistence.domain.GeneralEntity.F_SQL_CREATED_DATE;
 import static com.albedo.java.modules.biz.domain.PurchaseRecord.F_OUT_TRADE_NO;
 
 import java.util.List;
@@ -57,17 +57,16 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   }
 
   @Override
-  public String updateTimes() {
+  public String updateTimes(String outTradeNo) {
     // 验证没问题后，给用户添加次数
     String status = "";
-    String outTradeNo = "";
     try {
       status = aliPayService.queryOrderStatus(outTradeNo);
     } catch (AlipayApiException ignored) {
     }
     if (BusinessConstants.TRADE_FINISHED.equals(status)) {
       List<PurchaseRecord> records = recordService
-        .list(Wrappers.<PurchaseRecord>query().eq(F_OUT_TRADE_NO, outTradeNo).orderByAsc(F_SQL_CREATEDDATE));
+        .list(Wrappers.<PurchaseRecord>query().eq(F_OUT_TRADE_NO, outTradeNo).orderByAsc(F_SQL_CREATED_DATE));
       if (CollectionUtils.isEmpty(records)) {
         return "";
       }
@@ -86,4 +85,5 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
 
   @Resource
   BalanceService balanceService;
+
 }

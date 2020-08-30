@@ -90,6 +90,8 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    *          支付宝订单号
    * @return
    *         支付状态
+   * @throws AlipayApiException
+   *           Api调用异常
    */
   String queryOrderStatus(String outTradeNo) throws AlipayApiException;
 }

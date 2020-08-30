@@ -21,6 +21,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_SUCCE
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
+import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
@@ -140,9 +142,13 @@ public class AliPayResource {
       // 验证
       if (tradeStatus.equals(TRADE_SUCCESS) || tradeStatus.equals(TRADE_FINISHED)) {
         // 验证通过后应该根据业务需要处理订单 todo 1. 加套餐余量
+        planService.updateTimes(outTradeNo);
       }
       return new Result<>(HttpStatus.OK);
     }
     return new Result<>(HttpStatus.BAD_REQUEST);
   }
+
+  @Resource
+  PlanService planService;
 }

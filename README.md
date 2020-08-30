@@ -1,19 +1,19 @@
-# todo
-1. 消费记录表的对接
-
 
 # 数据表语义
 ``` sql
-plan 套餐
 balance 次数
 balance_record 次数变更记录
 invoice 发票抬头
 order 订单
 order_form 表单参数
 video 渲染视频
+plan 套餐
 purchase_record 消费记录表
 
-todo 
+套餐限制：1. 子账号数量 2. 下单次数 3. 存储空间 4(todo).可选项
+套餐使用量：1. 子账号数量 2. 下单次数 3. 存储空间
+套餐变更记录：1. 变更维度 2. 新增or删减 3. 变更数量
+
 ===
 - 开发票记录表
 id
@@ -48,26 +48,3 @@ type 0直播间风格 1主播风格
 4. [支付宝支付文档](https://opendocs.alipay.com/apis/api_1/alipay.trade.wap.pay#%E5%93%8D%E5%BA%94%E5%8F%82%E6%95%B0)
 5. [沙箱切换至正式环境](https://opensupport.alipay.com/support/helpcenter/190/201602483976?ant_source=antsupport)
 6. [交易状态查询](https://opensupport.alipay.com/support/helpcenter/194/201602516393?ant_source=antsupport)
-
-# 项目介绍
-详情见github-albedo，readme
-
-## 使用的框架
-1. Spring Boot 后端
-2. Mybatis Plus ORM
-3. Element UI 前端（Vue的组件库）
-
-## 开发环境（以下均需安装）
-1. JDK 1.8
-2. MySQL 5.7
-3. [Maven] IDEA内部有提供，可选
-4. node.js(npm)
-5. Redis
-
-### 本地运行
-1. 安装好开发环境后，将db目录下的albedo.sql导入数据库
-2. 修改配置文件，在application-prod.yml中将datasource中的url和账号密码修改为自己本地的数据库/账号密码
-3. 启动Redis，需根据情况调整配置文件下的redis端口
-4. 在IDEA中按maven project导入该项目，左侧目录会出现部分加粗黑体字，等安装好依赖后进入albedo-modules下的albedo-admin中的AlbedoAdminApplication运行main方法即可
-5. 在终端/命令行中进入albedo-ui目录下，输入npm install安装前端依赖，等安装完毕后执行npm run dev即可运行去前端项目
-6. 在浏览器中输入第五步输出的链接即可访问，使用账号可查看数据库中sys_user表。顶级管理员账号密码为admin/amin

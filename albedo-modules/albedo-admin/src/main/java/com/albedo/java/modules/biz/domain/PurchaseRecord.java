@@ -58,4 +58,6 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   @TableField("total_amount")
   private String totalAmount;
 
+  private String productCode = "FAST_INSTANT_TRADE_PAY";
+
 }

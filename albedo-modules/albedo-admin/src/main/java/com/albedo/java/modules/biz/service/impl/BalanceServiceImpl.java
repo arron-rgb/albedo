@@ -1,6 +1,5 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.CommonConstants.BUSINESS_ADMIN_ROLE_ID;
 import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.exception.TimesOverspendException;
@@ -18,7 +16,6 @@ import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.repository.BalanceRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.sys.domain.User;
-import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -71,22 +68,12 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
       return;
     }
     // 2. 企业用户默认扣公司 公司不够再扣个人
-    // 先获取deptId来获得所有员工id
-    List<String> userIds = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getId)
-      .collect(Collectors.toList());
-    // userRole中找到这些员工中role为admin的员工
-    List<UserRole> list =
-      userRoleService.list(Wrappers.<UserRole>query().eq("role_id", BUSINESS_ADMIN_ROLE_ID).in("user_id", userIds));
-    // 扣这个负责人的次数，负责人次数不够再扣自己 自己不够就return
-    if (CollectionUtils.isNotEmpty(list)) {
-      String adminId = list.get(0).getUserId();
-      try {
-        consumeTimes(adminId);
-      } catch (TimesOverspendException e) {
-        consumeStaffTimes();
-      }
+    String adminId = userService.getOutTradeNosByUserId(deptId);
+    try {
+      consumeTimes(adminId);
+    } catch (TimesOverspendException e) {
+      consumeStaffTimes();
     }
-
   }
 
   private boolean consumeTimes(String userId) throws TimesOverspendException {
@@ -98,8 +85,8 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {
-
       // todo 记录进balanceHistory中追溯
+
     }
     return flag;
   }

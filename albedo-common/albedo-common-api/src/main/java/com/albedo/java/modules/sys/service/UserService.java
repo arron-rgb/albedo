@@ -201,4 +201,13 @@ public interface UserService extends DataService<User, UserDto, String> {
    * @return 导入异常的账号
    */
   List<String> importUser(InputStream inputStream);
+
+  /**
+   * 获取某部门管理员id
+   *
+   * @param deptId
+   *          部门id
+   * @return 管理员id
+   */
+  String getOutTradeNosByUserId(String deptId);
 }
