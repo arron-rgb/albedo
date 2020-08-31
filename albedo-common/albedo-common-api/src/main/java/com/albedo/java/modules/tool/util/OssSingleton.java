@@ -4,13 +4,9 @@ import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.aliyun.oss.ClientException;
@@ -24,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author arronshentu
  */
-@Component
+// @Component
 @Slf4j
 public class OssSingleton {
 
@@ -39,15 +35,18 @@ public class OssSingleton {
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
+  public OssSingleton(String accessKeyId, String accessKeySecret) {
+    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+  }
+
   private final OSS client;
 
   public void uploadFile(File file, String objectName) {
-    // 如果需要上传时设置存储类型与访问权限，请参考以下示例代码。
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
     metadata.setObjectAcl(CannedAccessControlList.Private);
     uploadFile(file, objectName, metadata, "vlivest");
-    // 上传文件。
   }
 
   public void uploadFile(File file, String objectName, String bucketName) {
@@ -63,12 +62,11 @@ public class OssSingleton {
     client.shutdown();
   }
 
-  public void uploadFileStream(String filePath, String bucketName, String key) throws FileNotFoundException {
-    InputStream inputStream = new FileInputStream(filePath);
-    client.putObject(bucketName, key, inputStream);
+  public PutObjectResult uploadFileStream(InputStream inputStream, String bucketName, String key) {
+    return client.putObject(bucketName, key, inputStream);
   }
 
-  public List<Bucket> getBuckets() {
+  public List<Bucket> listBuckets() {
     try {
       return client.listBuckets();
     } catch (ClientException e) {
@@ -78,31 +76,46 @@ public class OssSingleton {
     }
   }
 
-  public List<OSSObjectSummary> getFiles(String bucketName, String keyPrefix) {
+  public List<OSSObjectSummary> listFiles(String bucketName, String keyPrefix) {
     // 列举文件。 如果不设置KeyPrefix，则列举存储空间下所有的文件。KeyPrefix，则列举包含指定前缀的文件。
     ObjectListing objectListing = client.listObjects(bucketName, keyPrefix);
     return objectListing.getObjectSummaries();
+  }
+
+  public long getBucketStorage(String bucketName) {
+    return listFiles(bucketName, "").stream().mapToLong(OSSObjectSummary::getSize).sum();
+  }
+
+  public long getBucketStorage(String bucketName, String keyPrefix) {
+    return listFiles(bucketName, keyPrefix).stream().mapToLong(OSSObjectSummary::getSize).sum();
   }
 
   public void remove(String bucketName, String objectName) {
     client.deleteObject(bucketName, objectName);
   }
 
-  public long getFileSize(String bucketName, String keyPrefix) {
-    return getFiles(bucketName, keyPrefix).stream().mapToLong(OSSObjectSummary::getSize).sum();
+  public boolean doesBucketExist(String bucketName) {
+    return client.doesBucketExist(bucketName);
   }
 
   public void shutdown() {
     client.shutdown();
   }
 
-  // public void restart() {
-  // client = new OSSClientBuilder().build(ENDPOINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
-  // }
-
-  public void create(String bucketName) {
+  /**
+   * 存储空间的命名规范如下：
+   *
+   * 只能包括小写字母、数字和短划线（-）。
+   * 必须以小写字母或者数字开头和结尾。
+   * 长度必须在3~63字节之间。
+   *
+   * @param bucketName
+   *          bucket命名
+   */
+  public void create(String bucketName, Integer storageSize) {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
     createBucketRequest.setStorageClass(StorageClass.Standard);
+    client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
     client.createBucket(createBucketRequest);
   }
 }
