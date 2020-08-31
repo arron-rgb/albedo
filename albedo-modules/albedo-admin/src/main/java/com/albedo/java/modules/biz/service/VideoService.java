@@ -21,7 +21,7 @@ public interface VideoService extends BaseService<Video> {
   /**
    * 验证用户oss存储空间是否已满
    *
-   * @return 是否已满
+   * @return 满 true
    */
   boolean storageState();
 }

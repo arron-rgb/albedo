@@ -1,9 +1,15 @@
 package com.albedo.java.modules.tool.util;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.TENCENT_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.TENCENT_SECRET;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.springframework.stereotype.Component;
+
+import com.albedo.java.common.core.config.ApplicationProperties;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.common.profile.ClientProfile;
@@ -13,32 +19,30 @@ import com.tencentcloudapi.tts.v20190823.models.TextToVoiceRequest;
 import com.tencentcloudapi.tts.v20190823.models.TextToVoiceResponse;
 
 import cn.hutool.core.codec.Base64;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author arronshentu
  */
-@UtilityClass
+@Component
 @Slf4j
 public class TtsSingleton {
 
-  private final String secretId = "AKIDwe7SXMd2UfZ0ADwZsvFJwINJ9i0DRpDK";
-  private final String secretKey = "pSotkLfiUDgurkbCYxxwc2AHPHsCRglc";
-  private final String endpoint = "tts.tencentcloudapi.com";
-  private final String region = "ap-shanghai";
+  ApplicationProperties applicationProperties;
 
-  private final HttpProfile httpProfile;
-  private final Credential cred;
-  private final ClientProfile clientProfile;
   private final TtsClient client;
 
-  static {
-    cred = new Credential(secretId, secretKey);
-    httpProfile = new HttpProfile();
+  public TtsSingleton(ApplicationProperties applicationProperties) {
+    this.applicationProperties = applicationProperties;
+    String secretId = applicationProperties.getKey(TENCENT_ID);
+    String secretKey = applicationProperties.getKey(TENCENT_SECRET);
+    Credential cred = new Credential(secretId, secretKey);
+    HttpProfile httpProfile = new HttpProfile();
+    String endpoint = "tts.tencentcloudapi.com";
     httpProfile.setEndpoint(endpoint);
-    clientProfile = new ClientProfile();
+    ClientProfile clientProfile = new ClientProfile();
     clientProfile.setHttpProfile(httpProfile);
+    String region = "ap-shanghai";
     client = new TtsClient(cred, region, clientProfile);
   }
 

@@ -3,15 +3,13 @@ package com.albedo.java.modules.biz.domain;
 import com.albedo.java.common.persistence.domain.IdEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * @author arronshentu
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_video")

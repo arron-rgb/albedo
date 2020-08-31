@@ -2,6 +2,8 @@ package com.albedo.java.modules.tool.service.impl;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.constant.CommonConstants;
@@ -20,6 +22,9 @@ import cn.hutool.core.util.RandomUtil;
  */
 @Service
 public class SmsServiceImpl implements SmsService {
+
+  @Resource
+  SmsSingleton smsSingleton;
 
   @Override
   public void validated(String key, String code) {
@@ -43,8 +48,9 @@ public class SmsServiceImpl implements SmsService {
     JSONObject param = new JSONObject();
     param.put("code", oldCode);
     try {
-      SmsSingleton.sendSms(phone, param, type);
-    } catch (ClientException ignored) {
+      smsSingleton.sendSms(phone, param, type);
+    } catch (ClientException e) {
+      e.printStackTrace();// todo
     }
   }
 

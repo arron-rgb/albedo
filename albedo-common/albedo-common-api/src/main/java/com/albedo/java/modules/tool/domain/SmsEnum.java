@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 public enum SmsEnum {
 
   // LOGIN_TEMPLATE_CODE("SMS_175435174", "vlivest", "code"),
-  FORGET_PASSWORD_TEMPLATE_CODE("SMS_200188565", "ABC商城", "code"),
-  REGISTER_TEMPLATE_CODE("SMS_200183062", "ABC商城", "code");
+  FORGET_PASSWORD_TEMPLATE_CODE("SMS_200188565", "虚拟工坊", "code"),
+  REGISTER_TEMPLATE_CODE("SMS_200183062", "虚拟工坊", "code");
 
   /**
    * 短信模板编码
