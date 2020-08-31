@@ -14,12 +14,12 @@ public interface PlanService extends BaseService<Plan> {
    * 2. return_url接口生成消费记录
    * 3. 给用户更新套餐使用情况
    *
-   * @param plan
-   *          套餐实体
+   * @param planId
+   *          套餐id
    * @return
    *         购买链接
    */
-  String purchase(Plan plan);
+  String purchase(String planId);
 
   /**
    * 用途： 1. 支付宝异步通知接口更新

@@ -43,9 +43,11 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   PurchaseRecordService recordService;
 
   @Override
-  public String purchase(Plan plan) {
+  public String purchase(String planId) {
+    Plan plan = baseMapper.selectById(planId);
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
       .subject(plan.getName()).build();
+    // todo 购买记录应该区分下单未支付 已支付 已过期
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId())
       .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
     recordService.save(record);

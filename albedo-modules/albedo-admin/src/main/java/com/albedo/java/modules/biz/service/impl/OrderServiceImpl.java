@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +21,6 @@ import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
-import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -44,11 +44,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setType(form.getAccelerate().toString());
     order.setState(ORDER_STATE_0);
     order.setTotalAmount(calculatePrice(form));
-    baseMapper.insert(order);
+    save(order);
   }
 
   @Override
   public String price(String orderId) {
+    // todo 付费前先查填的表单为扣次数还是扣钱
     // 1. 消耗次数
     try {
       balanceService.consumeTimes();
@@ -70,7 +71,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void consume(String staffId, String orderId) {
+  public void consume(String orderId) {
+    String staffId = SecurityUtil.getUser().getId();
+    List<String> roles = SecurityUtil.getRoles();
+    // 非后台工作人员无法认领
+    if (!roles.contains(ADMIN_ROLE_ID)) {
+      return;
+    }
     Order order = baseMapper.selectById(orderId);
     if (order == null) {
       return;
@@ -81,35 +88,15 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void uploadVideo(String orderId, String videoId) {
-    Order order = baseMapper.selectById(orderId);
-    if (order == null) {
-      return;
-    }
-    order.setVideoId(videoId);
-    order.setState(ORDER_STATE_3);
-    // todo 员工自行上传视频逻辑
-  }
-
-  @Override
-  public String payAsPcForOrder(Order order) {
-    TradeVo tradeVo = new TradeVo();
-    tradeVo.setSubject(order.getId());
-    tradeVo.setBody("");
-    try {
-      return aliPayService.toPayAsPc(tradeVo);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    // todo order费用怎么计算
-    return "";
-  }
-
-  @Override
-  public void availableOrder() {
+  public List<Order> availableOrder() {
     List<Order> orders = baseMapper.selectList(Wrappers.query());
     orders = orders.stream().filter((order -> ORDER_STATE_1.equals(order.getState()))).collect(Collectors.toList());
-    orders.forEach(System.out::println);
+    return orders;
+  }
+
+  @Override
+  public void updateForm() {
+    // todo 上传贴片等素材
   }
 
 }

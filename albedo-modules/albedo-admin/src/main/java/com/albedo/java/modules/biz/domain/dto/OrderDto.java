@@ -2,10 +2,7 @@ package com.albedo.java.modules.biz.domain.dto;
 
 import com.albedo.java.common.core.vo.DataDto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author arronshentu
@@ -14,13 +11,13 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class OrderDto extends DataDto<String> {
 
   private String userId;
-  private Integer state;
+  private String staffId;
+  private Integer status;
   private String type;
   private String videoId;
-  private String userName;
-  private String userPhone;
 
 }

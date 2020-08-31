@@ -38,7 +38,7 @@ public class Order extends IdEntity<Invoice> {
   private String staffId;
 
   /**
-   * todo 订单价格 加表
+   * 订单价格
    */
   private String totalAmount;
 

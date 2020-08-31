@@ -1,14 +1,12 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_ADMIN_ROLE_ID;
-import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
 import java.io.InputStream;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
@@ -59,7 +57,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
    */
-  private void createBucket(String userId) {
+  @Override
+  public void createBucket(String userId) {
     // userId应该是通过订单获取，视频是由工作人员上传的
     List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
     // if (roleIds.contains(PERSONAL_USER_ROLE_ID)) {
@@ -74,15 +73,18 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
   }
 
-  private void uploadVideo(String orderId, InputStream inputStream) {
+  @Override
+  public void uploadVideo(String orderId, InputStream inputStream) {
     // 更新订单状态
     Order order = orderService.getById(orderId);
-    order.setState(CommonConstants.ORDER_STATE_3);
-    orderService.updateById(order);
-    // 上传视频
+    order.setState(ORDER_STATE_3);
+    // 上传视频至oss
     String userId = order.getUserId();
+    // 保存视频记录至数据库
     Video video = Video.builder().userId(userId).orderId(orderId).build();
     baseMapper.insert(video);
+    order.setVideoId(video.getId());
+    orderService.updateById(order);
     PutObjectResult result = ossSingleton.uploadFileStream(inputStream, video.getId(), userId);
   }
 }

@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.service;
 
+import java.io.InputStream;
+
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Video;
 
@@ -24,4 +26,22 @@ public interface VideoService extends BaseService<Video> {
    * @return 满 true
    */
   boolean storageState();
+
+  /**
+   * 创bucket
+   *
+   * @param userId
+   *          用户
+   */
+  void createBucket(String userId);
+
+  /**
+   * 工作人员上传视频
+   *
+   * @param orderId
+   *          订单id
+   * @param inputStream
+   *          流
+   */
+  void uploadVideo(String orderId, InputStream inputStream);
 }
