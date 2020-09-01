@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.UUID;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,11 +26,6 @@ public class TestResource extends BaseResource {
 
   @Resource
   VideoService videoService;
-
-  @GetMapping()
-  public Result get(HttpServletRequest request, HttpServletResponse response) {
-    return Result.buildOk(response.getHeader("X-CSRF-TOKEN"));
-  }
 
   @RequestMapping(value = "upload", method = RequestMethod.POST)
   @ResponseBody

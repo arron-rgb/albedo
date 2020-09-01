@@ -1,9 +1,9 @@
 logging:
   level:
-    ROOT: ${logback.loglevel}
+    ROOT: INFO
     com.albedo.java: DEBUG
 server:
-  port: 8061
+  port: 9090
   servlet:
     session:
       timeout: 30m
@@ -22,10 +22,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: stkdsb
+    #    password: 924c80a71a83d95d
     url: jdbc:mysql://localhost:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-  web:
-    root:
-      prefix: /Users/arronshentu/project/albedo/albedo-ui
 
 
 # ===================================================================
@@ -33,8 +31,11 @@ spring:
 # ===================================================================
 
 application:
+  adminPath: /a
   developMode: true
   security:
+    remember-me:
+      key: albedo-admin
     authentication:
       jwt:
         # 必须使用最少88位的Base64对该令牌进行编码

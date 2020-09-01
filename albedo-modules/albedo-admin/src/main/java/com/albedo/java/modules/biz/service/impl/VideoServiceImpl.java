@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Service;
+
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
@@ -22,6 +24,7 @@ import com.aliyun.oss.model.PutObjectResult;
 /**
  * @author arronshentu
  */
+@Service
 public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, VideoDto, String>
   implements VideoService {
 

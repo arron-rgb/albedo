@@ -133,7 +133,7 @@ public class SysLogAspect {
     logOperateVo.setMethod(methodName);
     logOperateVo.setParams(Json.toJsonString(paramMap));
     logOperateVo.setOperatorType(logOperate.operatorType().name());
-
+    log.info(String.valueOf(beforeReqLog));
     // aop 执行后的日志
     StringBuilder afterReqLog = new StringBuilder(200);
     // 日志参数
@@ -156,6 +156,7 @@ public class SysLogAspect {
       afterReqLog.append(" time ({} ms) Result:{}");
       afterReqArgs.add(tookMs);
       afterReqArgs.add(Json.toJsonString(result));
+      log.info(String.valueOf(afterReqLog));
     }
     return result;
   }

@@ -1,5 +1,6 @@
 package com.albedo.java.modules.biz.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 
@@ -14,6 +15,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class Balance {
 
+  @TableId
   private String userId;
   private Integer times;
   @Version

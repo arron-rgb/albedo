@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
@@ -20,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author arronshentu
  */
-// @Component
+@Component
 @Slf4j
 public class OssSingleton {
 
@@ -31,11 +33,6 @@ public class OssSingleton {
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
 
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-  }
-
-  public OssSingleton(String accessKeyId, String accessKeySecret) {
     String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
