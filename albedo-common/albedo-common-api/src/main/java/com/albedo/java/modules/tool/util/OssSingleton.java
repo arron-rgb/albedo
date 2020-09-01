@@ -109,7 +109,7 @@ public class OssSingleton {
    * @param bucketName
    *          bucket命名
    */
-  public void create(String bucketName, Integer storageSize) {
+  public void create(String bucketName, int storageSize) {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
     createBucketRequest.setStorageClass(StorageClass.Standard);
     client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));

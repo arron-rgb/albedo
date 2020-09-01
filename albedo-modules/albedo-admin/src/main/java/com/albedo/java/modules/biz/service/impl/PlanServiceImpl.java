@@ -1,16 +1,13 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.PLAN;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.persistence.domain.GeneralEntity.F_SQL_CREATED_DATE;
 import static com.albedo.java.modules.biz.domain.PurchaseRecord.F_OUT_TRADE_NO;
-
-import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
@@ -23,6 +20,8 @@ import com.albedo.java.modules.biz.repository.PlanRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.sys.domain.UserRole;
+import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
@@ -47,7 +46,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     Plan plan = baseMapper.selectById(planId);
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
       .subject(plan.getName()).build();
-    // todo 购买记录应该区分下单未支付 已支付 已过期
+    // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId())
       .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
     recordService.save(record);
@@ -59,7 +58,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   }
 
   @Override
-  public String updateTimes(String outTradeNo) {
+  public String callback(String outTradeNo) {
     // 验证没问题后，给用户添加次数
     String status = "";
     try {
@@ -67,12 +66,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     } catch (AlipayApiException ignored) {
     }
     if (BusinessConstants.TRADE_FINISHED.equals(status)) {
-      List<PurchaseRecord> records = recordService
-        .list(Wrappers.<PurchaseRecord>query().eq(F_OUT_TRADE_NO, outTradeNo).orderByAsc(F_SQL_CREATED_DATE));
-      if (CollectionUtils.isEmpty(records)) {
-        return "";
-      }
-      PurchaseRecord record = records.get(0);
+      PurchaseRecord record = recordService
+        .getOne(Wrappers.<PurchaseRecord>query().eq(F_OUT_TRADE_NO, outTradeNo).orderByAsc(F_SQL_CREATED_DATE));
       if (StringUtils.equals(record.getType(), PLAN)) {
         String outerId = record.getOuterId();
         Plan plan = PlanHolder.getPlan(outerId);
@@ -80,11 +75,16 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
           return "";
         }
         balanceService.addTimes(plan.getTimes(), record.getUserId());
+
+        userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
+          .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
       }
     }
     return "";
   }
 
+  @Resource
+  UserRoleService userRoleService;
   @Resource
   BalanceService balanceService;
 

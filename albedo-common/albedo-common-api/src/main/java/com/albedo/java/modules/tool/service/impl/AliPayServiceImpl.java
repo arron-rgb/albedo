@@ -78,13 +78,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   }
 
   @Override
-  public String toPayAsPc(TradeVo trade) throws Exception {
-    AlipayConfig alipay = find();
-    trade.setOutTradeNo(aliPayUtils.getOrderCode());
-    return toPayAsPc(alipay, trade);
-  }
-
-  @Override
   public String toPayAsPc(TradePlus trade) throws Exception {
     AlipayConfig alipay = find();
     trade.setOutTradeNo(aliPayUtils.getOrderCode());
@@ -100,7 +93,17 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
     request.setBizContent(mapper.writeValueAsString(trade));
+    // todo 添加sellerId到Record表
     return alipayClient.pageExecute(request, "GET").getBody();
+  }
+
+  class TradePagePayResponse {
+    String code;
+    String msg;
+    String tradeNo;
+    String outTradeNo;
+    String totalAmount;
+    String sellerId;
   }
 
   @Override
@@ -112,7 +115,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
-    // {"out_trade_no":"202008292138176837","product_code":"FAST_INSTANT_TRADE_PAY","total_amount":"1","subject":"1"}
     TradePlus plus = new TradePlus();
     BeanUtils.copyProperties(trade, plus);
     request.setBizContent(mapper.writeValueAsString(plus));

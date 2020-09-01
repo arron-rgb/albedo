@@ -44,6 +44,25 @@ public interface OrderService extends BaseService<Order> {
    */
   List<Order> availableOrder();
 
+  /**
+   * 更新表单
+   */
   void updateForm();
 
+  /**
+   * 返回员工名下的订单
+   *
+   * @return 员工名下的订单
+   */
+  List<Order> belongs();
+
+  /**
+   * 上传音频
+   *
+   * @param orderId
+   *          订单
+   * @param content
+   *          base64
+   */
+  void uploadRadio(String orderId, String content);
 }

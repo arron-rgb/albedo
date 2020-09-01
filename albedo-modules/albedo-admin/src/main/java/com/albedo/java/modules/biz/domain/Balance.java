@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +12,7 @@ import lombok.EqualsAndHashCode;
  * @author arronshentu
  */
 @Data
+@Builder
 @TableName("t_balance")
 @EqualsAndHashCode
 public class Balance {
@@ -21,6 +23,9 @@ public class Balance {
   @Version
   private Integer version;
   private Integer accountAvailable;
-  private Integer storage;
+  /**
+   * 存储空间单位 GB
+   */
+  private Double storage;
 
 }

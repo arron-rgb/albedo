@@ -77,13 +77,4 @@ public class Invoice extends IdEntity<Invoice> {
   @TableField("account_number")
   private String accountNumber;
 
-  @Override
-  public boolean equals(Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
 }

@@ -16,10 +16,13 @@ import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderForm;
+import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
+import com.albedo.java.modules.biz.service.OrderFormService;
 import com.albedo.java.modules.biz.service.OrderService;
+import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -47,23 +50,25 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     save(order);
   }
 
+  @Resource
+  OrderFormService formService;
+
   @Override
   public String price(String orderId) {
-    // todo 付费前先查填的表单为扣次数还是扣钱
-    // 1. 消耗次数
+    Order order = baseMapper.selectById(orderId);
+    // 1. 有次数就消耗次数
     try {
       balanceService.consumeTimes();
     } catch (TimesOverspendException ignored) {
-      return "success";
+      // 次数不够扣，返回付款链接 or 购买链接
+      TradePlus plus = TradePlus.builder().subject("subject").totalAmount(order.getTotalAmount()).build();
+      try {
+        return aliPayService.toPayAsPc(plus);
+      } catch (Exception ignored2) {
+        return "";
+      }
     }
-    // 2. 付款链接
-    TradePlus plus = TradePlus.builder().build();
-    try {
-      return aliPayService.toPayAsPc(plus);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return "failed";
+    return "success";
   }
 
   private String calculatePrice(OrderForm form) {
@@ -99,4 +104,19 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // todo 上传贴片等素材
   }
 
+  @Override
+  public List<Order> belongs() {
+    return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
+  }
+
+  @Resource
+  VideoService videoService;
+
+  @Override
+  public void uploadRadio(String orderId, String content) {
+    Order order = baseMapper.selectById(orderId);
+    String videoId = order.getVideoId();
+    Video video = videoService.getById(videoId);
+
+  }
 }

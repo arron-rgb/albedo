@@ -49,11 +49,4 @@ public class PlanResource extends BaseResource {
     return Result.buildOk(service.purchase(planId));
   }
 
-  @GetMapping("/callback")
-  public Result<String> callback() {
-    // todo 购买套餐的支付宝回调接口
-    // 验证没问题后才更新套餐次数
-    return Result.buildOk("");
-  }
-
 }

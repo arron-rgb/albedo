@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.ADD;
+import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_TIMES;
 import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.domain.BalanceRecord;
+import com.albedo.java.modules.biz.repository.BalanceRecordRepository;
 import com.albedo.java.modules.biz.repository.BalanceRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.sys.domain.User;
@@ -28,17 +32,18 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   @Override
   public void addTimes(int times, String userId) {
-    Balance balance = new Balance();
-    // 判断有无
-    List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().eq("user_id", userId));
-    if (users.size() == 1) {
-      balance = users.get(0);
-      balance.setTimes(balance.getTimes() + times);
-      baseMapper.updateById(balance);
-    } else {
-      balance.setTimes(times);
-      baseMapper.insert(balance);
+    Balance one = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
+    // 不存在的话直接返回
+    if (one == null) {
+      return;
     }
+    int update = one.getTimes() + times;
+    one.setTimes(update);
+    baseMapper.updateById(one);
+    BalanceRecord record =
+      BalanceRecord.builder().type(ADD).amount(times).dimension(ORDER_TIMES).userId(userId).build();
+    recordRepository.insert(record);
+
   }
 
   @Override
@@ -76,7 +81,11 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
   }
 
+  @Resource
+  BalanceRecordRepository recordRepository;
+
   private boolean consumeTimes(String userId) throws TimesOverspendException {
+    // 消耗传入的userId的次数
     Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
     if (balance.getTimes() > 1) {
       balance.setTimes(balance.getTimes() - 1);
@@ -85,8 +94,10 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {
-      // todo 记录进balanceHistory中追溯
-
+      // 记录使用者的id
+      BalanceRecord record =
+        BalanceRecord.builder().amount(1).dimension(ORDER_TIMES).userId(SecurityUtil.getUser().getId()).build();
+      recordRepository.insert(record);
     }
     return flag;
   }

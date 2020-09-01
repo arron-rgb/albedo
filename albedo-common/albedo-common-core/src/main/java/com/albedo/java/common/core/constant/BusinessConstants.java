@@ -10,6 +10,9 @@ public interface BusinessConstants {
   String TENCENT_ID = "TENCENT_ID";
   String TENCENT_SECRET = "TENCENT_SECRET";
 
+  Integer ADD = 1;
+  Integer DEL = 0;
+
   String ORDER = "1";
   String PLAN = "0";
   String PERSONAL_TYPE = "1";
@@ -75,5 +78,9 @@ public interface BusinessConstants {
    * 个人用户所属部门
    */
   String PUBLIC_DEPT_ID = "4d20ae207d9c836a732480429af58273";
+
+  Integer ORDER_TIMES = 0;
+  Integer CHILD_ACCOUNT = 1;
+  Integer STORAGE = 2;
 
 }

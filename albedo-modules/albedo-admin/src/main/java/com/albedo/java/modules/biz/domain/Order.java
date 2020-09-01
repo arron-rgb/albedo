@@ -41,5 +41,9 @@ public class Order extends IdEntity<Invoice> {
    * 订单价格
    */
   private String totalAmount;
+  /**
+   * 填写的表单信息
+   */
+  private String formId;
 
 }

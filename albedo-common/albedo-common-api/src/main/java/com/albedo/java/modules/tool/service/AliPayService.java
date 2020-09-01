@@ -70,17 +70,6 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    */
   String toPayAsWeb(AlipayConfig alipay, TradeVo trade) throws Exception;
 
-  /**
-   * 处理来自PC的交易请求
-   *
-   * @param trade
-   *          交易详情
-   * @return String
-   * @throws Exception
-   *           异常
-   */
-  String toPayAsPc(TradeVo trade) throws Exception;
-
   String toPayAsPc(TradePlus trade) throws Exception;
 
   /**

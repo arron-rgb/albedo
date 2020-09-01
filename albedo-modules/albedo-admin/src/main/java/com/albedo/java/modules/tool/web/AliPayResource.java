@@ -15,16 +15,15 @@
  */
 package com.albedo.java.modules.tool.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_FINISHED;
 import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_SUCCESS;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -81,16 +80,6 @@ public class AliPayResource {
     return Result.buildOkData(payUrl);
   }
 
-  @LogOperate("支付宝手机网页支付")
-  @ApiOperation("手机网页支付")
-  @PostMapping(value = "/toPayAsWeb")
-  public Result<String> toPayAsWeb(@Validated @RequestBody TradeVo trade) throws Exception {
-    AlipayConfig alipay = alipayService.find();
-    trade.setOutTradeNo(alipayUtils.getOrderCode());
-    String payUrl = alipayService.toPayAsWeb(alipay, trade);
-    return Result.buildOkData(payUrl);
-  }
-
   @ApiIgnore
   @GetMapping("/return")
   @AnonymousAccess
@@ -101,13 +90,9 @@ public class AliPayResource {
     // 内容验签，防止黑客篡改参数
     if (alipayUtils.rsaCheck(request, alipay)) {
       // 商户订单号
-      String outTradeNo =
-        new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+      String outTradeNo = getParam(request, "out_trade_no");
       // 支付宝交易号
-      String tradeNo =
-        new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-      System.out.println("商户订单号" + outTradeNo + "  " + "第三方交易号" + tradeNo);
-
+      String tradeNo = getParam(request, "trade_no");
       // 根据业务需要返回数据，这里统一返回OK
       // return new Result<>("payment successful", HttpStatus.OK);
     } else {
@@ -120,30 +105,24 @@ public class AliPayResource {
   @ApiIgnore
   @RequestMapping("/notify")
   @AnonymousAccess
-  @SuppressWarnings("all")
-  @ApiOperation("支付异步通知(要公网访问)，接收异步通知，检查通知内容app_id、out_trade_no、total_amount是否与请求中的一致，根据trade_status进行后续业务处理")
+  @ApiOperation("")
   public Result<Object> notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
-    Map<String, String[]> parameterMap = request.getParameterMap();
-    // 内容验签，防止黑客篡改参数
+
     if (alipayUtils.rsaCheck(request, alipay)) {
       // 交易状态
-      String tradeStatus =
-        new String(request.getParameter("trade_status").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-      // 商户订单号
-      String outTradeNo =
-        new String(request.getParameter("out_trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-      // 支付宝交易号
-      String tradeNo =
-        new String(request.getParameter("trade_no").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-      // 付款金额
-      String totalAmount =
-        new String(request.getParameter("total_amount").getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-      // 验证
-      if (tradeStatus.equals(TRADE_SUCCESS) || tradeStatus.equals(TRADE_FINISHED)) {
-        // 验证通过后应该根据业务需要处理订单 todo 1. 加套餐余量
-        planService.updateTimes(outTradeNo);
+      String tradeStatus = getParam(request, "trade_status");
+      if (!StringUtils.equals(tradeStatus, TRADE_SUCCESS)) {
+        return new Result<>(HttpStatus.BAD_REQUEST);
       }
+      // 商户订单号
+      String outTradeNo = getParam(request, "out_trade_no");
+      // 付款金额
+      String totalAmount = getParam(request, "total_amount");
+      // 支付宝交易号
+      String tradeNo = getParam(request, "trade_no");
+      // 验证通过后应该根据业务需要处理订单
+      planService.callback(outTradeNo);
       return new Result<>(HttpStatus.OK);
     }
     return new Result<>(HttpStatus.BAD_REQUEST);
@@ -151,4 +130,8 @@ public class AliPayResource {
 
   @Resource
   PlanService planService;
+
+  private String getParam(HttpServletRequest request, String paramName) {
+    return new String(request.getParameter(paramName).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+  }
 }
