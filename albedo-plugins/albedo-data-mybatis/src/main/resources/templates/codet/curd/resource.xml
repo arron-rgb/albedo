@@ -17,6 +17,7 @@ import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.log.enums.BusinessType;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.common.core.util.Result;
+import ${packageName}.${moduleName}.domain.<#if subModuleName != "">.${subModuleName}</#if>.${ClassName};
 import ${packageName}.${moduleName}.domain.dto<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Dto;
 import ${packageName}.${moduleName}.domain.dto<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}QueryCriteria;
 import ${packageName}.${moduleName}.service<#if subModuleName != "">.${subModuleName}</#if>.${ClassName}Service;
@@ -47,7 +48,7 @@ public class ${ClassName}Resource extends BaseResource {
 	 */
 	@GetMapping(CommonConstants.URL_ID_REGEX)
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_view')")
-	public Result<${ClassName}> get(@PathVariable String id) {
+	public Result<${ClassName}Dto> get(@PathVariable String id) {
 		log.debug("REST request to get Entity : {}", id);
 		return  Result.buildOkData(service.getOneDto(id));
 	}
