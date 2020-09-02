@@ -58,18 +58,18 @@ public class ApplicationProperties {
   }
 
   static {
-    params = new HashMap<>() {
+    params = new HashMap<String, String>() {
       {
-        put(ALIBABA_ID, ALIBABA_ID);
-        put(ALIBABA_SECRET, ALIBABA_SECRET);
-        put(TENCENT_ID, TENCENT_ID);
-        put(TENCENT_SECRET, TENCENT_SECRET);
+        put(ALIBABA_ID, "LTAI4G9GELKL2AM8BxufjLUE");
+        put(ALIBABA_SECRET, "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg");
+        put(TENCENT_ID, "AKIDwe7SXMd2UfZ0ADwZsvFJwINJ9i0DRpDK");
+        put(TENCENT_SECRET, "pSotkLfiUDgurkbCYxxwc2AHPHsCRglc");
       }
     };
-    params.forEach((key, value) -> {
-      value = System.getenv(key);
-      params.put(key, value);
-    });
+//    params.forEach((key, value) -> {
+//      value = System.getenv(key);
+//      params.put(key, value);
+//    });
 
   }
 
