@@ -59,7 +59,6 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
 
   @Override
   public String callback(String outTradeNo) {
-    // 验证没问题后，给用户添加次数
     String status = "";
     try {
       status = aliPayService.queryOrderStatus(outTradeNo);

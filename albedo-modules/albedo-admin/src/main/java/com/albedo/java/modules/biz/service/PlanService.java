@@ -20,11 +20,11 @@ public interface PlanService extends BaseService<Plan> {
   String purchase(String planId);
 
   /**
-   * 用途： 1. 支付宝异步通知接口更新
-   * 2. return_url接口生成消费记录
-   * 3. 给用户更新套餐使用情况
-   * 4. 将用户角色设为企业管理员
-   * 验证订单支付成功后更新用户套餐使用情况
+   * 只负责更新 验证由上层负责
+   *
+   * return_url接口生成消费记录
+   * 给用户更新套餐使用情况
+   * 将用户角色设为企业管理员
    *
    * @return
    */
