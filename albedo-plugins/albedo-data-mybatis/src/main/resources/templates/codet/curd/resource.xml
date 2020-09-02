@@ -47,7 +47,7 @@ public class ${ClassName}Resource extends BaseResource {
 	 */
 	@GetMapping(CommonConstants.URL_ID_REGEX)
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_view')")
-	public Result get(@PathVariable String id) {
+	public Result<${ClassName}> get(@PathVariable String id) {
 		log.debug("REST request to get Entity : {}", id);
 		return  Result.buildOkData(service.getOneDto(id));
 	}
@@ -61,8 +61,8 @@ public class ${ClassName}Resource extends BaseResource {
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_view')")
 	@GetMapping
 	@LogOperate(value = "${functionName}查看")
-	public Result getPage(PageModel pm, ${ClassName}QueryCriteria ${className}QueryCriteria) {
-		QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, ${className}QueryCriteria);
+	public Result<PageModel<${ClassName}>> getPage(PageModel<${ClassName}> pm, ${ClassName}QueryCriteria ${className}QueryCriteria) {
+		QueryWrapper<${ClassName}> wrapper = QueryWrapperUtil.getWrapper(pm, ${className}QueryCriteria);
 		return Result.buildOkData(service.page(pm, wrapper));
 	}
 
@@ -74,10 +74,10 @@ public class ${ClassName}Resource extends BaseResource {
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_edit')")
 	@LogOperate(value = "${functionName}编辑")
 	@PostMapping
-	public Result save(@Valid @RequestBody ${ClassName}Dto ${className}Dto) {
+	public Result<String> save(@Valid @RequestBody ${ClassName}Dto ${className}Dto) {
 		log.debug("REST request to save ${ClassName}Dto : {}", ${className}Dto);
 		service.saveOrUpdate(${className}Dto);
-		return Result.buildOk("保存${functionNameSimple}成功");
+		return Result.buildOk("保存${functionName}成功");
 
 	}
 
@@ -90,10 +90,9 @@ public class ${ClassName}Resource extends BaseResource {
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_del')")
 	@LogOperate(value = "${functionName}删除")
 	@DeleteMapping
-	public Result delete(@RequestBody Set<String> ids) {
-		log.debug("REST request to delete ${ClassName}: {}", ids);
+	public Result<String> delete(@RequestBody Set<String> ids) {
 		service.removeByIds(ids);
-		return Result.buildOk("删除${functionNameSimple}成功");
+		return Result.buildOk("删除${functionName}成功");
 	}
 }]]>
 	</content>

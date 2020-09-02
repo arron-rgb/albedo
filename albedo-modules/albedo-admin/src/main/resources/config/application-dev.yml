@@ -3,7 +3,7 @@ logging:
     ROOT: INFO
     com.albedo.java: DEBUG
 server:
-  port: 9090
+  port: 8061
   servlet:
     session:
       timeout: 30m

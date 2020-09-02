@@ -18,7 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +76,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   RoleDeptService roleDeptService;
   @Resource
   ApplicationProperties applicationProperties;
-  private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   @Resource
   MenuService menuService;
   @Resource
@@ -308,7 +308,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void resetPassword(PasswordRestVo passwordRestVo) {
-
     Assert.isTrue(passwordRestVo.getNewPassword().equals(passwordRestVo.getConfirmPassword()), "两次输入密码不一致");
     passwordRestVo.setPasswordPlaintext(passwordRestVo.getNewPassword());
     passwordRestVo.setNewPassword(passwordEncoder.encode(passwordRestVo.getNewPassword()));
@@ -383,19 +382,21 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void register(RegisterUserData userData) {
-    Object code = RedisUtil.getCacheString("register" + userData.getPhone());
-    if (code == null) {
-      throw new AccountException("验证码无效，请重新申请");
-    }
+    // Object code = RedisUtil.getCacheString("register" + userData.getPhone());
+    // if (code == null) {
+    // throw new AccountException("验证码无效，请重新申请");
+    // }
 
     List<User> list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_USERNAME, userData.getUsername()));
     if (CollectionUtils.isNotEmpty(list)) {
       throw new AccountException("用户名已存在");
     }
 
-    list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_SQL_PHONE, userData.getPhone()));
-    if (CollectionUtils.isNotEmpty(list)) {
-      throw new AccountException("该手机号已绑定其他账号");
+    if (StringUtils.isNotBlank(userData.getPhone())) {
+      list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_SQL_PHONE, userData.getPhone()));
+      if (CollectionUtils.isNotEmpty(list)) {
+        throw new AccountException("该手机号已绑定其他账号");
+      }
     }
     // # 1. 传入用户id
     // # 2. 定位购买的最高级的套餐

@@ -117,6 +117,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     String videoId = order.getVideoId();
     Video video = videoService.getById(videoId);
+    // todo tts合成音频or上传音频
+  }
 
+  @Override
+  public boolean callback(String orderId) {
+    Order order = baseMapper.selectById(orderId);
+    order.setState(ORDER_STATE_1);
+    return baseMapper.updateById(order) == 1;
   }
 }
