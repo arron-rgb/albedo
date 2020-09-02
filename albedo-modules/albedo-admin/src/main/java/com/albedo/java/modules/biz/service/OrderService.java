@@ -65,4 +65,7 @@ public interface OrderService extends BaseService<Order> {
    *          base64
    */
   void uploadRadio(String orderId, String content);
+
+  boolean callback(String orderId);
+
 }
