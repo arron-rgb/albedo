@@ -16,6 +16,7 @@ import com.albedo.java.modules.biz.domain.Config;
 import com.albedo.java.modules.biz.repository.ConfigRepository;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/config")
+@Api(tags = "表单项配置")
 @AllArgsConstructor
 public class ConfigResource {
   @Resource

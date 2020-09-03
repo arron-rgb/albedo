@@ -16,6 +16,7 @@ import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.service.PlanService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -27,6 +28,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/plan")
 @AllArgsConstructor
+@Api(tags = "套餐")
 public class PlanResource extends BaseResource {
 
   private final PlanService service;
