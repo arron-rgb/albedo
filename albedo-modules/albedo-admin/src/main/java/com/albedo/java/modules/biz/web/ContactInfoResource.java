@@ -19,6 +19,7 @@ import com.albedo.java.modules.biz.domain.dto.ContactInfoQueryCriteria;
 import com.albedo.java.modules.biz.service.ContactInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -39,6 +40,7 @@ public class ContactInfoResource extends BaseResource {
    * @return
    */
   @GetMapping(CommonConstants.URL_ID_REGEX)
+  @ApiOperation("联系单获取")
   @PreAuthorize("@pms.hasPermission('biz_contactInfo_view')")
   public Result<ContactInfoDto> get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
@@ -55,6 +57,7 @@ public class ContactInfoResource extends BaseResource {
 
   @PreAuthorize("@pms.hasPermission('biz_contactInfo_view')")
   @GetMapping
+  @ApiOperation("联系单查看")
   @LogOperate(value = "联系单查看")
   public Result<PageModel<ContactInfo>> getPage(PageModel<ContactInfo> pm,
     ContactInfoQueryCriteria contactInfoQueryCriteria) {
@@ -70,6 +73,7 @@ public class ContactInfoResource extends BaseResource {
    */
   @PreAuthorize("@pms.hasPermission('biz_contactInfo_edit')")
   @LogOperate(value = "联系单编辑")
+  @ApiOperation("联系单编辑")
   @PostMapping
   public Result<String> save(@Valid @RequestBody ContactInfoDto contactInfoDto) {
     log.debug("REST request to save ContactInfoDto : {}", contactInfoDto);
@@ -87,6 +91,7 @@ public class ContactInfoResource extends BaseResource {
    */
   @PreAuthorize("@pms.hasPermission('biz_contactInfo_del')")
   @LogOperate(value = "联系单删除")
+  @ApiOperation(value = "联系单删除")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> ids) {
     service.removeByIds(ids);

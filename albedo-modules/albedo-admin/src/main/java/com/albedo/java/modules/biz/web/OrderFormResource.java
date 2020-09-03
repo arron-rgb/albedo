@@ -22,10 +22,11 @@ import com.albedo.java.modules.biz.domain.dto.OrderFormQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderFormService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
- * 表单Controller OrderForm
+ * 订单内容Controller OrderForm
  *
  * @author admin
  * @version 2020-08-18 10:19:40
@@ -58,7 +59,8 @@ public class OrderFormResource extends BaseResource {
 
   @PreAuthorize("@pms.hasPermission('biz_orderForm_view')")
   @GetMapping
-  @LogOperate(value = "表单查看")
+  @LogOperate(value = "订单内容查看")
+  @ApiOperation(value = "订单内容查看")
   public Result getPage(PageModel pm, OrderFormQueryCriteria orderFormQueryCriteria) {
     QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, orderFormQueryCriteria);
     return Result.buildOkData(service.page(pm, wrapper));
@@ -71,14 +73,15 @@ public class OrderFormResource extends BaseResource {
    *          the HTTP orderForm
    */
   @PreAuthorize("@pms.hasPermission('biz_orderForm_edit')")
-  @LogOperate(value = "表单编辑")
+  @LogOperate(value = "订单内容修改")
+  @ApiOperation(value = "订单内容修改")
   @PostMapping
   public Result save(@Valid @RequestBody OrderFormDto orderFormDto) {
     log.debug("REST request to save OrderFormDto : {}", orderFormDto);
     String userId = SecurityUtil.getUser().getId();
     orderFormDto.setUserId(userId);
     service.saveOrUpdate(orderFormDto);
-    return Result.buildOk("保存OrderForm成功");
+    return Result.buildOk("保存订单内容成功");
 
   }
 
@@ -90,11 +93,12 @@ public class OrderFormResource extends BaseResource {
    * @return the Result with status 200 (OK)
    */
   @PreAuthorize("@pms.hasPermission('biz_orderForm_del')")
-  @LogOperate(value = "表单删除")
+  @LogOperate(value = "订单内容删除")
+  @ApiOperation(value = "订单内容删除")
   @DeleteMapping
   public Result delete(@RequestBody Set<String> ids) {
     log.debug("REST request to delete OrderForm: {}", ids);
     service.removeByIds(ids);
-    return Result.buildOk("删除OrderForm成功");
+    return Result.buildOk("删除成功");
   }
 }

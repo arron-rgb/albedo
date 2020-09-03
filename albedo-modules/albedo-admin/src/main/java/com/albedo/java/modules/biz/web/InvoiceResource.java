@@ -21,6 +21,7 @@ import com.albedo.java.modules.biz.domain.dto.InvoiceQueryCriteria;
 import com.albedo.java.modules.biz.service.InvoiceService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -41,6 +42,7 @@ public class InvoiceResource extends BaseResource {
    * @return
    */
   @GetMapping(CommonConstants.URL_ID_REGEX)
+  @ApiOperation("抬头查看")
   @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
   public Result get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
@@ -57,7 +59,8 @@ public class InvoiceResource extends BaseResource {
 
   @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
   @GetMapping
-  @LogOperate(value = "发票抬头管理查看")
+  @LogOperate(value = "发票抬头查询")
+  @ApiOperation(value = "发票抬头查询")
   public Result getPage(PageModel pm, InvoiceQueryCriteria invoiceQueryCriteria) {
     QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, invoiceQueryCriteria);
     return Result.buildOkData(service.page(pm, wrapper));
@@ -70,7 +73,8 @@ public class InvoiceResource extends BaseResource {
    *          the HTTP invoice
    */
   @PreAuthorize("@pms.hasPermission('biz_invoice_edit')")
-  @LogOperate(value = "发票抬头管理编辑")
+  @LogOperate(value = "发票抬头编辑")
+  @ApiOperation(value = "发票抬头编辑")
   @PostMapping
   public Result save(@Valid @RequestBody InvoiceDto invoiceDto) {
     log.debug("REST request to save InvoiceDto : {}", invoiceDto);
@@ -87,7 +91,8 @@ public class InvoiceResource extends BaseResource {
    * @return the Result with status 200 (OK)
    */
   @PreAuthorize("@pms.hasPermission('biz_invoice_del')")
-  @LogOperate(value = "发票抬头管理删除")
+  @LogOperate(value = "发票抬头删除")
+  @ApiOperation(value = "发票抬头删除")
   @DeleteMapping
   public Result delete(@RequestBody Set<String> ids) {
     log.debug("REST request to delete Invoice: {}", ids);
