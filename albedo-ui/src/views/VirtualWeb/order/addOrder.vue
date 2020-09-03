@@ -109,8 +109,134 @@ export default {
           { text : "单人坐播", img : "https://img.xiaopiu.com/userImages/img42507173b7e04c88.png"}],
         [{text : "双人站播", img : "https://img.xiaopiu.com/userImages/img42507173b7e04c88.png"},
           { text : "双人坐播", img : "https://img.xiaopiu.com/userImages/img42507173b7e04c88.png"}]
-      ]
-
+      ],
+      data : {
+        "anchorNum": [
+          {
+            "id": 6,
+            "name": "anchorNum",
+            "value": "单人主播"
+          },
+          {
+            "id": 7,
+            "name": "anchorNum",
+            "value": "双人主播"
+          }
+        ],
+        "seat": [
+          {
+            "id": 8,
+            "name": "seat",
+            "value": "站姿"
+          },
+          {
+            "id": 9,
+            "name": "seat",
+            "value": "坐姿"
+          }
+        ],
+        "style": [
+          {
+            "id": 13,
+            "name": "style",
+            "url": "http://www.baidu.com",
+            "value": "度假"
+          },
+          {
+            "id": 14,
+            "name": "style",
+            "url": "http://www.baidu.com",
+            "value": "海边"
+          }
+        ],
+        "label": [
+          {
+            "id": 4,
+            "name": "label",
+            "value": "美妆护肤"
+          },
+          {
+            "id": 5,
+            "name": "label",
+            "value": "时尚配饰"
+          }
+        ],
+        "anchorType": [
+          {
+            "id": 10,
+            "name": "anchorType",
+            "value": "活力青春型"
+          },
+          {
+            "id": 11,
+            "name": "anchorType",
+            "value": "成熟稳重型"
+          },
+          {
+            "id": 12,
+            "name": "anchorType",
+            "value": "浪漫古风型"
+          }
+        ],
+        "plusService": {
+          "component": [
+            {
+              "id": 17,
+              "name": "component",
+              "url": "http://www.baidu.com",
+              "value": "气球"
+            },
+            {
+              "id": 18,
+              "name": "component",
+              "url": "http://www.baidu.com",
+              "value": "狗"
+            }
+          ],
+          "color": [
+            {
+              "id": 23,
+              "name": "color",
+              "url": "http://www.baidu.com",
+              "value": "red"
+            },
+            {
+              "id": 24,
+              "name": "color",
+              "url": "http://www.baidu.com",
+              "value": "#000"
+            }
+          ],
+          "clothes": [
+            {
+              "id": 21,
+              "name": "clothes",
+              "url": "http://www.baidu.com",
+              "value": "衣服1"
+            },
+            {
+              "id": 22,
+              "name": "clothes",
+              "url": "http://www.baidu.com",
+              "value": "衣服2"
+            }
+          ],
+          "hairstyle": [
+            {
+              "id": 19,
+              "name": "hairstyle",
+              "url": "http://www.baidu.com",
+              "value": "发型1"
+            },
+            {
+              "id": 20,
+              "name": "hairstyle",
+              "url": "http://www.baidu.com",
+              "value": "发型2"
+            }
+          ]
+        }
+      }
   //   {label : "您喜欢的主播", msg : [{text : "活力青春型1号", img : "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"},
   //     { text : "活力青春型2号", img : "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"},
   //     { text : "成熟稳重型1号", img : "https://img.xiaopiu.com/userImages/img42233173b7924bc8.png"},
