@@ -22,10 +22,13 @@ import com.albedo.java.modules.sys.service.SysSmsService;
 @Transactional(rollbackFor = Exception.class)
 public class SysSmsServiceImpl extends DataServiceImpl<SysSmsRepository, SysSms, SysSmsDto, String>
   implements SysSmsService {
+
   @Override
   public void saveOrUpdate(SysSmsDto sysSmsDto) {
     super.saveOrUpdate(sysSmsDto);
   }
 
-  public void test() {}
+  public void test() {
+
+  }
 }

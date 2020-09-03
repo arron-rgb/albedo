@@ -1,23 +1,9 @@
-/*
- * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- * <p>
- * Licensed under the GNU Lesser General Public License 3.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * https://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.albedo.java.modules.sys.service.impl;
 
 import static com.albedo.java.common.core.constant.CommonConstants.*;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
@@ -41,6 +28,7 @@ import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.constant.SecurityConstants;
+import com.albedo.java.common.core.exception.AccountException;
 import com.albedo.java.common.core.exception.EntityExistException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.BeanUtil;
@@ -51,6 +39,7 @@ import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.persistence.datascope.DataScope;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
+import com.albedo.java.common.util.ExcelUtil;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.sys.domain.*;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
@@ -83,11 +72,19 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @CacheConfig(cacheNames = CacheNameConstants.USER_DETAILS)
 public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserDto, String> implements UserService {
+  @Resource
+  RoleDeptService roleDeptService;
+  @Resource
+  ApplicationProperties applicationProperties;
   private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-  private final MenuService menuService;
-  private final RoleService roleService;
-  private final DeptService deptService;
-  private final UserRoleService userRoleService;
+  @Resource
+  MenuService menuService;
+  @Resource
+  RoleService roleService;
+  @Resource
+  DeptService deptService;
+  @Resource
+  UserRoleService userRoleService;
 
   /**
    * 功能描述: 检查密码长度
@@ -161,6 +158,13 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
           .map(MenuVo::getPermission).collect(Collectors.toList());
       permissions.addAll(permissionList);
     });
+    if (roleIds.contains(PERSONAL_USER_ROLE_ID)) {
+      userInfo.setUserType("1");
+    } else if (roleIds.contains(BUSINESS_ADMIN_ROLE_ID) || roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
+      userInfo.setUserType("2");
+    } else {
+      userInfo.setUserType("3");
+    }
     userInfo.setPermissions(ArrayUtil.toArray(permissions, String.class));
     return userInfo;
   }
@@ -304,7 +308,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void resetPassword(PasswordRestVo passwordRestVo) {
-
     Assert.isTrue(passwordRestVo.getNewPassword().equals(passwordRestVo.getConfirmPassword()), "两次输入密码不一致");
     passwordRestVo.setPasswordPlaintext(passwordRestVo.getNewPassword());
     passwordRestVo.setNewPassword(passwordEncoder.encode(passwordRestVo.getNewPassword()));
@@ -379,18 +382,37 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void register(RegisterUserData userData) {
+    // Object code = RedisUtil.getCacheString("register" + userData.getPhone());
+    // if (code == null) {
+    // throw new AccountException("验证码无效，请重新申请");
+    // }
+
+    List<User> list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_USERNAME, userData.getUsername()));
+    if (CollectionUtils.isNotEmpty(list)) {
+      throw new AccountException("用户名已存在");
+    }
+
+    if (StringUtils.isNotBlank(userData.getPhone())) {
+      list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_SQL_PHONE, userData.getPhone()));
+      if (CollectionUtils.isNotEmpty(list)) {
+        throw new AccountException("该手机号已绑定其他账号");
+      }
+    }
+    // # 1. 传入用户id
+    // # 2. 定位购买的最高级的套餐
+    // # 3. 获取数量
+
     // 2. 用户角色-系统角色-部门对应
     switch (userData.getUserType()) {
       case "personal":
         registerPersonalUser(userData);
-        return;
+        break;
       case "business":
         registerBusinessUser(userData);
-        return;
-      default:
         break;
+      default:
+        throw new AccountException("未知用户类型");
     }
-
   }
 
   private void registerBusinessUser(RegisterUserData userData) {
@@ -407,6 +429,16 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
       String companyName = userData.getCompanyName();
       Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
+      List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
+      String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
+      // 3 对应 企业账号数量限制
+      List<String> outTradeNos = baseMapper.getOutTradeNosByUserId(adminId);
+      // 找到tradeNo后再查询购买的套餐的最大的套餐
+
+      if (users.size() > 3) {
+        throw new AccountException("该企业名下账号注册数量已超过限制");
+      }
+
       RoleDept roleDept =
         roleDeptService.getOne(Wrappers.<RoleDept>query().eq("dept_id", dept.getId()).ne("", BUSINESS_COMMON_ROLE_ID));
       deptId = dept.getId();
@@ -416,15 +448,13 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     saveUserRole(userId, roleId);
   }
 
-  @Resource
-  RoleDeptService roleDeptService;
-  @Resource
-  ApplicationProperties applicationProperties;
-
   private void registerPersonalUser(RegisterUserData userData) {
     String userId = saveUser(userData, PUBLIC_DEPT_ID);
     // 个人用户默认所属公共用户部门，角色为个人。个人角色已在系统中与默认公共部门硬编码
-    saveUserRole(userId, PERSONAL_USER_ROLE_ID);
+    boolean flag = saveUserRole(userId, PERSONAL_USER_ROLE_ID);
+    if (!flag) {
+      throw new AccountException("插入失败");
+    }
   }
 
   private String saveUser(RegisterUserData userData, String deptId) {
@@ -442,6 +472,48 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     userRole.setRoleId(roleId);
     userRole.setUserId(userId);
     return userRoleService.save(userRole);
+  }
+
+  @Override
+  public List<String> importUser(InputStream inputStream) {
+
+    ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
+    List<UserExcelVo> errors = new ArrayList<>();
+    try {
+      List<UserExcelVo> data = util.importExcel(inputStream);
+      if (CollectionUtils.isEmpty(data)) {
+        return new ArrayList<>();
+      }
+      User user = new User();
+      for (UserExcelVo datum : data) {
+        BeanUtils.copyProperties(datum, user);
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        user.setNickname(datum.getName());
+        user.setDeptId(ADMIN_DEPT_ID);
+        baseMapper.insert(user);
+        if (StringUtils.isBlank(user.getId())) {
+          errors.add(datum);
+          continue;
+        }
+        // user的默认role
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(ADMIN_ROLE_ID);
+        userRoleService.save(userRole);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (!CollectionUtils.isEmpty(errors)) {
+      return errors.stream().map(UserExcelVo::getUsername).collect(Collectors.toList());
+    }
+    return new ArrayList<>();
+  }
+
+  @Override
+  public String getOutTradeNosByUserId(String deptId) {
+    return baseMapper.getDeptAdminIdByDeptId(deptId);
   }
 
 }

@@ -3,57 +3,29 @@ package com.albedo.java.common.security.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.WebUtil;
-import com.albedo.java.common.log.enums.LogType;
-import com.albedo.java.common.log.util.SysLogUtils;
-import com.albedo.java.common.security.service.UserDetail;
 import com.albedo.java.common.security.util.LoginUtil;
-import com.albedo.java.common.util.AsyncUtil;
-import com.albedo.java.modules.sys.domain.LogOperate;
-
-import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.http.HttpUtil;
-import lombok.AllArgsConstructor;
 
 /**
- * @author somewhere
- * @description Returns a 401 error code (Unauthorized) to the client, when Ajax authentication fails.
- * @date 2020/5/30 11:23 下午
+ * Returns a 401 error code (Unauthorized) to the client, when Ajax authentication fails.
  */
-@AllArgsConstructor
 public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-
-  private final UserDetailsService userDetailsService;
+  private static final String BAD_CREDENTIALS = "Bad credentials";
 
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
     AuthenticationException exception) {
     String useruame = request.getParameter("username");
     LoginUtil.isValidateCodeLogin(useruame, true, false);
-    String message = exception instanceof BadCredentialsException && "Bad credentials".equals(exception.getMessage())
-      ? "密码填写错误！" : exception.getClass().getName();
-    LogOperate logOperate = SysLogUtils.getSysLog();
-    logOperate.setParams(HttpUtil.toParams(request.getParameterMap()));
-    logOperate.setUsername(useruame);
-    try {
-      UserDetail userDetails = (UserDetail)userDetailsService.loadUserByUsername(useruame);
-      if (userDetails != null) {
-        logOperate.setCreatedBy(userDetails.getId());
-      }
-    } catch (Exception ignored) {
+    String message = exception.getMessage();
+    if (BAD_CREDENTIALS.equals(message)) {
+      message = "密码错误";
     }
-    logOperate.setLogType(LogType.WARN.name());
-    logOperate.setTitle("用户登录失败");
-    logOperate.setDescription(message);
-    logOperate.setException(ExceptionUtil.stacktraceToString(exception));
-    AsyncUtil.recordLogLogin(logOperate);
-    response.setStatus(HttpServletResponse.SC_OK);
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     WebUtil.renderJson(response, Result.buildFail(message));
   }
 }

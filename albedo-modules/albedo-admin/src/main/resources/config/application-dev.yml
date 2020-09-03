@@ -1,6 +1,6 @@
 logging:
   level:
-    ROOT: ${logback.loglevel}
+    ROOT: INFO
     com.albedo.java: DEBUG
 server:
   port: 8061
@@ -20,12 +20,10 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: stkdsb
-    url: jdbc:mysql://localhost:3306/daycare?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-  web:
-    root:
-      prefix: /Users/arronshentu/project/albedo/albedo-ui
+    username: gavin
+    password: g1126ang
+    #    password: 924c80a71a83d95d
+    url: jdbc:mysql://47.100.1.162:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 
 
 # ===================================================================
@@ -33,8 +31,11 @@ spring:
 # ===================================================================
 
 application:
+  adminPath: /a
   developMode: true
   security:
+    remember-me:
+      key: albedo-admin
     authentication:
       jwt:
         # 必须使用最少88位的Base64对该令牌进行编码

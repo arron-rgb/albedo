@@ -24,16 +24,14 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.albedo.java.common.core.exception.BadRequestException;
-import com.albedo.java.common.core.exception.EntityExistException;
-import com.albedo.java.common.core.exception.EntityNotFoundException;
-import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.common.core.exception.*;
 import com.albedo.java.common.core.util.BeanValidators;
 import com.albedo.java.common.core.util.ResponseEntityBuilder;
 import com.albedo.java.common.core.util.Result;
@@ -59,9 +57,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public Result exception(Exception e) {
+  public Result<String> exception(Exception e) {
     log.error("全局异常信息 ex={}", e.getMessage());
-    return Result.buildFail(e.getMessage());
+    e.printStackTrace();
+    return Result.buildFail("未知错误");
   }
 
   /**
@@ -122,4 +121,24 @@ public class GlobalExceptionHandler {
     log.error(ExceptionUtil.stacktraceToString(e));
     return ResponseEntityBuilder.buildFail(NOT_FOUND, e.getMessage());
   }
+
+  /**
+   * 处理 账号相关异常
+   */
+  @ExceptionHandler(value = AccountException.class)
+  public Result<String> accountException(AccountException e) {
+    return Result.buildFail(e.getMsg());
+  }
+
+  @ExceptionHandler(value = TimesOverspendException.class)
+  public Result<String> overspendException(TimesOverspendException e) {
+    // 打印堆栈信息
+    return Result.buildFail(e.getMessage());
+  }
+
+  @ExceptionHandler(value = UsernameNotFoundException.class)
+  public Result<String> usernameException(UsernameNotFoundException e) {
+    return Result.buildFail("系统中未查询到该用户");
+  }
+
 }

@@ -16,6 +16,7 @@
 
 package com.albedo.java.modules.sys.service;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -184,6 +185,29 @@ public interface UserService extends DataService<User, UserDto, String> {
    */
   void updateAvatar(String username, String avatar);
 
+  /**
+   * 对外开放的注册接口
+   *
+   * @param userData
+   *          注册信息
+   */
   void register(RegisterUserData userData);
 
+  /**
+   * 导入用户
+   *
+   * @param inputStream
+   *          输入流
+   * @return 导入异常的账号
+   */
+  List<String> importUser(InputStream inputStream);
+
+  /**
+   * 获取某部门管理员id
+   *
+   * @param deptId
+   *          部门id
+   * @return 管理员id
+   */
+  String getOutTradeNosByUserId(String deptId);
 }

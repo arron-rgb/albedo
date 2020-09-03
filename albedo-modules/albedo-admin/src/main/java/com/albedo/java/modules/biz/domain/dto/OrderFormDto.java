@@ -7,11 +7,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.albedo.java.common.core.vo.DataDto;
+import com.baomidou.mybatisplus.annotation.TableField;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 表单Dto OrderForm
@@ -23,6 +21,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class OrderFormDto extends DataDto<String> {
 
   private static final long serialVersionUID = 1L;
@@ -45,18 +44,34 @@ public class OrderFormDto extends DataDto<String> {
   private String labels;
   /** userId user_id */
   @Size(max = 200)
+  @TableField("user_id")
   private String userId;
-  /** anchorNum 是否站立，0站1坐 */
+  /**
+   * 主播数量
+   */
   @Size(max = 500)
+  @TableField("anchor_num")
   private String anchorNum;
-  /** seat 活力青春 */
+  /**
+   * 0站 1坐
+   */
   @Size(max = 20)
   private String seat;
-  /** anchorType 直播间风格 */
+  /**
+   * 主播风格
+   */
   @Size(max = 50)
+  @TableField("anchor_type")
   private String anchorType;
-  /** plusService vip服务 */
+  /**
+   * plusService vip服务
+   * 1. 搭配服装颜色
+   * 2. 直播间配色
+   * 3. logo
+   * 4. 产品广告屏
+   */
   @Size(max = 100)
+  @TableField("plus_service")
   private String plusService;
 
 }
