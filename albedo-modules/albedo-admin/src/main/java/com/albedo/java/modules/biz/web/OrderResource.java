@@ -24,6 +24,7 @@ import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -62,6 +63,7 @@ public class OrderResource extends BaseResource {
   @PreAuthorize("@pms.hasPermission('biz_order_view')")
   @GetMapping
   @LogOperate(value = "订单查询")
+  @ApiOperation(value = "订单查询")
   public Result<PageModel<Order>> getPage(PageModel<Order> pm, OrderQueryCriteria orderQueryCriteria) {
     QueryWrapper<Order> wrapper = QueryWrapperUtil.getWrapper(pm, orderQueryCriteria);
     return Result.buildOkData(service.page(pm, wrapper));
@@ -75,6 +77,7 @@ public class OrderResource extends BaseResource {
    */
   @PreAuthorize("@pms.hasPermission('biz_order_edit')")
   @LogOperate(value = "订单编辑")
+  @ApiOperation(value = "订单编辑")
   @PostMapping
   public Result<String> save(@Valid @RequestBody Order orderDto) {
     service.saveOrUpdate(orderDto);
@@ -90,6 +93,7 @@ public class OrderResource extends BaseResource {
    */
   @PreAuthorize("@pms.hasPermission('biz_order_del')")
   @LogOperate(value = "订单删除")
+  @ApiOperation(value = "订单删除")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> ids) {
     log.debug("REST request to delete Order: {}", ids);
@@ -97,21 +101,25 @@ public class OrderResource extends BaseResource {
     return Result.buildOk("删除订单成功");
   }
 
+  @ApiOperation(value = "订单支付")
   @GetMapping("/purchase?orderId={orderId}")
   public Result<String> purchase(@PathVariable(value = "orderId") String orderId) {
     return Result.buildOk(service.price(orderId));
   }
 
+  @ApiOperation(value = "员工查看待处理订单")
   @GetMapping("/list")
   public Result<List<Order>> list() {
     return Result.buildOkData(service.availableOrder());
   }
 
+  @ApiOperation(value = "员工查看个人名下订单")
   @GetMapping("/list/belong")
   public Result<List<Order>> listBelongs() {
     return Result.buildOkData(service.belongs());
   }
 
+  @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
   public Result<String> uploadVideo(@RequestParam("file") MultipartFile file, String orderId) {
     try {

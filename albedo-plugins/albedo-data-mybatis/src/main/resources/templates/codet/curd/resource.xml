@@ -27,6 +27,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 
+
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.Set;
 
@@ -46,6 +48,7 @@ public class ${ClassName}Resource extends BaseResource {
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation(value = "获取单个${functionName}")
 	@GetMapping(CommonConstants.URL_ID_REGEX)
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_view')")
 	public Result<${ClassName}Dto> get(@PathVariable String id) {
@@ -61,6 +64,7 @@ public class ${ClassName}Resource extends BaseResource {
 
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_view')")
 	@GetMapping
+	@ApiOperation(value = "查询${functionName}")
 	@LogOperate(value = "${functionName}查看")
 	public Result<PageModel<${ClassName}>> getPage(PageModel<${ClassName}> pm, ${ClassName}QueryCriteria ${className}QueryCriteria) {
 		QueryWrapper<${ClassName}> wrapper = QueryWrapperUtil.getWrapper(pm, ${className}QueryCriteria);
@@ -74,12 +78,12 @@ public class ${ClassName}Resource extends BaseResource {
 	 */
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_edit')")
 	@LogOperate(value = "${functionName}编辑")
+	@ApiOperation(value = "编辑${functionName}")
 	@PostMapping
 	public Result<String> save(@Valid @RequestBody ${ClassName}Dto ${className}Dto) {
 		log.debug("REST request to save ${ClassName}Dto : {}", ${className}Dto);
 		service.saveOrUpdate(${className}Dto);
 		return Result.buildOk("保存${functionName}成功");
-
 	}
 
 	/**
@@ -90,6 +94,7 @@ public class ${ClassName}Resource extends BaseResource {
 	 */
 	@PreAuthorize("@pms.hasPermission('${permissionPrefix}_del')")
 	@LogOperate(value = "${functionName}删除")
+	@ApiOperation(value = "删除${functionName}")
 	@DeleteMapping
 	public Result<String> delete(@RequestBody Set<String> ids) {
 		service.removeByIds(ids);
