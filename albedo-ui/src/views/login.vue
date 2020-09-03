@@ -196,6 +196,13 @@ export default {
   },
   created() {
     this.refreshCode()
+    if(this.$route.query.func === 'toRegister'){
+      this.centerDialogVisible = true
+    }
+    if(this.$route.query.func === 'createBusiness'){
+      this.centerDialogVisible = true
+      this.registerForm.userType = 'business'
+    }
   },
   methods: {
     validateConfirmPass: (rule, value, callback) => {
@@ -238,7 +245,7 @@ export default {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
           this.$store.dispatch('Register', this.registerForm).then(() => {
-            console.log(this.registerForm);
+            // console.log(this.registerForm);
             // this.$router.push({path: this.redirect || '/'})
             this.centerDialogVisible = false;
           }).catch((e) => {

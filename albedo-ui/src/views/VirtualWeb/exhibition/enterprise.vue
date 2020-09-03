@@ -6,8 +6,8 @@
         <div class="exhibition_title word_container" >虚拟直播企业版</div>
         <div class="exhibition_desc word_container">批量下单更优惠，客户服务更到位</div>
         <div class="exhibition_link word_container">
-          <a class="exhibition_link_login">登录企业账户</a>
-          <a class="exhibition_link_register">创建企业账户</a>
+          <a class="exhibition_link_login" @click="goTo('/login')">登录企业账户</a>
+          <a class="exhibition_link_register" @click="goTo('/login', 'createBusiness')">创建企业账户</a>
         </div>
         <div class="exhibition_phone">咨询电话：0571-88888888</div>
       </div>
@@ -141,6 +141,7 @@
 </template>
 
 <script>
+
 export default {
   name: "exhibition",
   data(){
@@ -195,7 +196,11 @@ export default {
     }
   },
   methods:{
-
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 }
 </script>

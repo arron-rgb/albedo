@@ -133,14 +133,14 @@
       <div class="serviceContainer">
         <span class="descriSpan">企业账户面向大客户，提供品牌专属定制服务，方便企业进行统一支付及员工账户管理</span>
         <el-form ref="form" label-position="top" :model="form" label-width="80px" :rules="rules" class="demo-ruleForm">
-          <el-form-item label="企业名称" prop="enterprise">
-            <el-input v-model="form.enterprise" placeholder="请输入您所在的企业名称"></el-input>
+          <el-form-item label="企业名称" prop="companyName">
+            <el-input v-model="form.companyName" placeholder="请输入您所在的企业名称"></el-input>
           </el-form-item>
           <el-form-item label="您的姓名" prop="name">
             <el-input v-model="form.name" placeholder='请输入您的姓名'></el-input>
           </el-form-item>
-          <el-form-item label="联系电话" prop="tel">
-            <el-input v-model="form.tel" placeholder="我们将稍后联系您"></el-input>
+          <el-form-item label="联系电话" prop="phone">
+            <el-input v-model="form.phone" placeholder="我们将稍后联系您"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm('form')">提交咨询</el-button>
@@ -159,6 +159,10 @@
 
 <script>
 import myVideo from "@/components/VirtualWeb/video";
+import crudContactInfo from '@/views/biz/contact-info/contact-info-service'
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+
+
 export default {
   name: "NormalUser",
   components : {
@@ -179,19 +183,21 @@ export default {
 
 
       form: {
-        enterprise:'',
-        name:'',
-        tel:''
+        companyName: null,
+        name: null,
+        phone: null,
+        status: null,
+        description: null,
       },
       rules: {
-        enterprise:[
+        companyName:[
           {required:true,message:'请输入您所在的企业名称', trigger:'blur'}
         ],
         name: [
           { required: true, message: '请输入您的姓名', trigger: 'blur' },
           { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
-        tel:[
+        phone:[
           {required:true,message:'请输入您的联系方式',trigger:'blur'},
           {
             min:11,max:11,message:'请输入11位电话号码',trigger:'blur'
@@ -214,15 +220,24 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          alert(111)
+          this.submitContact()
         } else {
           console.log('error submit!!');
           return false;
         }
       });
-      this.form.enterprise=''
-      this.form.name=''
-      this.form.tel=''
+    },
+    submitContact(){
+      return new Promise((resolve, reject) => {
+        crudContactInfo.save(this.form).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            resolve(res)
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
     },
     goTo(path){
       this.$router.push({path: path});
