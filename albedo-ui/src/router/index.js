@@ -9,7 +9,40 @@ import validate from '../utils/validate'
 
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
-const whiteList = ['/login']// no redirect whitelist
+const whiteList = [
+  '/login',
+  '/',
+  '/proService',
+
+  //delete later
+  '/contact',
+  '/siteGuide',
+  '/taobaoGuide',
+  '/problems',
+  '/contactUs',
+
+  '/personal',
+  // '/myData',
+  '/memberCenter',
+  '/myOrder',
+  '/myReceipt',
+  '/security',
+
+  '/addOrder',
+  '/addDetail',
+  '/machineDub',
+  '/newProduct',
+  '/addMark',
+  '/selfDub',
+  '/dubDetail',
+  '/uploadDub',
+  '/selfMark',
+  '/manualDub',
+  '/selectAttri',
+  '/paymentPage',
+
+
+]// no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {

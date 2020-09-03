@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import 'normalize.css/normalize.css'
 
 import Element from 'element-ui'
+import VideoPlayer from 'vue-video-player'
 //
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
@@ -31,6 +32,9 @@ Vue.use(permission)
 Vue.use(Element, {
   size: Cookies.get('size') || 'small' // set element-ui default size
 })
+require('video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
+Vue.use(VideoPlayer)
 
 Vue.config.productionTip = false
 

@@ -37,13 +37,11 @@
                   <!-- <div>24小时不断直播，持续增加品牌曝光度</div> -->
                 </el-card>
               </div>
+              </div>
             </el-col>
              <el-col :span="5">
-<<<<<<< HEAD
                <div class="cardBox" @click='goTo("selectAttri")'>
-=======
                <div class="cardBox" @click='goTo("uploadDub")'>
->>>>>>> f25931a03284d65882e8cfa9176a9c3795f80f4c
                 <el-card shadow='hover' >
                   <div slot='header' class='clearfix'>
                     <i class='el-icon-magic-stick'></i>
@@ -51,6 +49,7 @@
                   <h3 class='cardTitle'>人工配音</h3>
                   <!-- <div>情绪表达饱满，主播形象更加生动</div> -->
                 </el-card>
+               </div>
                </div>
             </el-col>
              <el-col :span="5">

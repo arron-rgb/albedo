@@ -2,11 +2,11 @@
   <div id="banner" v-show='$route.meta.showHeader'>
     <el-menu :default-active="$route.path" router id="banner_container" active-text-color="#ff5000" mode="horizontal">
       <!--      <el-menu-item index="logo">-->
-      <el-button index="logo" type="text" id="logo" @click = "goTo('/')">
+      <el-link :underline="false" index="logo" type="text" id="logo" @click = "goTo('/')">
         <img alt="Vue logo" style="height: 60px" :src="logo_src">
-      </el-button>
+      </el-link>
       <!--      </el-menu-item>-->
-      <el-menu-item index="virtual_live">
+      <el-menu-item index="addOrder">
         虚拟直播服务
       </el-menu-item>
       <el-menu-item index="proService">
@@ -18,11 +18,13 @@
 
       <template>
         <div  v-show='!$store.getters.loginSuccess'>
-          <div class="sign" index="sign_in">
-            <el-button style="width: 90px;background-color: #ff5000;color: white" @click="makeChange">登录</el-button>
+          <div class="sign" index="sign-in">
+            <el-button style="width: 90px;background-color: #ff5000;color: white" @click="goTo('login')">登录</el-button>
           </div>
-          <div class="sign" index="sign_up">
-            <el-button @click='$router.replace("/signupPage")' style="color: #909399" type="text">注册</el-button>
+          <div style="float: right; margin-right: 10px" index="sign_up">
+            <el-link :underline="false" style="color: #909399;line-height: 60px" type="text" @click="goTo('login', 'toRegister')">
+              <a class="sign-up">注册</a>
+            </el-link>
           </div>
         </div>
       </template>
@@ -34,11 +36,11 @@
               <span @click='this.$router.replace("personal")'>我的</span>
             </template>
             <el-menu-item index="myData">个人资料</el-menu-item>
-            <el-menu-item index="memberCenter">会员中心</el-menu-item>
+            <el-menu-item index="memberCenter" v-show="this.$store.getters.user.roleNames !== '个人用户'">会员{{showMember}}中心</el-menu-item>
             <el-menu-item index="myOrder">我的订单</el-menu-item>
             <el-menu-item index="myReceipt">我的发票</el-menu-item>
-            <el-menu-item index="security">安全中心</el-menu-item>
-            <el-menu-item @click='logOut'>退出登录</el-menu-item>
+<!--            <el-menu-item index="security">安全中心</el-menu-item>-->
+            <el-menu-item @click="open">退出登录</el-menu-item>
           </el-submenu>
         </div>
       </template>
@@ -57,17 +59,26 @@ export default {
     }
   },
   methods: {
-    goTo(url){
+    goTo(url, data){
       //带参数跳转
-      this.$router.push({path:url,query:{setid:123456}});
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
     },
-    makeChange(){
-      this.$router.push('pass')
+    open() {
+      this.$confirm('确定注销并退出系统吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        cancelButtonClass: 'cancel-btn',
+        type: 'warning'
+      }).then(() => {
+        this.logout()
+      })
     },
-    logOut(){
-      this.$store.commit('Login',0)
+    logout() {
+      this.$store.dispatch('LogOut').then(() => {
+        this.$router.push({path:'/'});
+      })
     }
-
   },
   mounted(){
     // console.log(this.$store.state.isLogin)
@@ -85,7 +96,7 @@ export default {
   position: sticky;
   background-color: white;
   top: 0;
-  z-index: 9999;
+  z-index: 10;
   #banner_container{
     max-width: 1200px;
     min-width: 700px;
@@ -102,7 +113,11 @@ export default {
 }
 .sign{
   float: right;
-  margin: 10px;
+  margin-left: 10px;
+  line-height: 60px;
+}
+.sign-up:hover{
+  color: #ff5000;
 }
 
 .personal{
@@ -140,8 +155,10 @@ export default {
     min-width:93px !important;
 
   }
-
-
+}
+.cancel-btn{
+  color: #ff5000 !important;
+  background-color: rgba(255, 80, 0, 0.1) !important;
 }
 
 </style>
