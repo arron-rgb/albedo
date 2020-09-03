@@ -1,0 +1,39 @@
+$light-orange:rgba(255,237,229,0.4);
+$bg-orange:#ff5000;
+$orange:#ff8249;
+// $orange:rgb(255,156,110);
+$linkBlue:#409EFF;
+$textColor:#303133;
+
+@mixin guideStyle{
+  width:100%;
+  padding:20px 50px;
+  display:flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  .pageTitle{
+    text-align: left;
+    color:$textColor;
+    font-size: 20px;
+    font-weight:500;
+  }
+}
+
+@mixin pageTitle{
+  width:100%;
+  border-bottom:1px solid #ccc;
+  text-align:left;
+  padding:10px 20px;
+  font-size:18px;
+  color:#7d7d7d
+}
+@mixin blockTitle($color:white){
+  background-color:$color;
+  .blockTitle{
+    font-size: 36px;
+    margin-bottom:10px;
+    color:rgb(41,32,33);
+  }
+
+}
