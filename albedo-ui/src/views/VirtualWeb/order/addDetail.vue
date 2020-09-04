@@ -24,11 +24,8 @@
       <div class="setDubway">
           <el-row :gutter="12">
             <el-col :span="5">
-<<<<<<< HEAD
               <div class="cardBox" @click='goTo("uploadDub")'>
-=======
               <div class="cardBox" @click='goTo("newProduct")'>
->>>>>>> f25931a03284d65882e8cfa9176a9c3795f80f4c
                 <el-card shadow='hover'>
                   <div slot='header' class='clearfix'>
                     <i class='el-icon-video-camera'></i>
