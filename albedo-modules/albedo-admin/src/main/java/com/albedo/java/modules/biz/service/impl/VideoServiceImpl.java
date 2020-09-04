@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
@@ -24,8 +25,10 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
+import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.aliyun.oss.model.PutObjectResult;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -145,6 +148,17 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 一样处理
 
   }
+
+  public void generateAudio() {
+    try {
+      ttsSingleton.generateAudio(TtsSingleton.Params.builder().build(), "");
+    } catch (TencentCloudSDKException e) {
+      throw new RuntimeMsgException("生成语音时出现错误");
+    }
+  }
+
+  @Resource
+  TtsSingleton ttsSingleton;
 
   static FFprobe ffprobe;
   static FFmpeg ffmpeg;

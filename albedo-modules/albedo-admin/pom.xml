@@ -40,7 +40,6 @@
 			<artifactId>albedo-common-module</artifactId>
 			<version>${project.release.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.albedo.java</groupId>
 			<artifactId>albedo-common-gen</artifactId>
@@ -146,9 +145,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.bramp.ffmpeg</groupId>
-			<artifactId>ffmpeg</artifactId>
-			<version>0.6.2</version>
+			<groupId>com.github.jsonzou</groupId>
+			<artifactId>jmockdata</artifactId>
+			<version>4.2.0</version>
 		</dependency>
 
 	</dependencies>

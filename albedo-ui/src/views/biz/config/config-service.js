@@ -4,14 +4,14 @@ import qs from 'qs'
 
 export function page(params) {
   return request({
-    url: '/biz/order-form/?' + qs.stringify(params, { indices: false }),
+    url: '/biz/config/?' + qs.stringify(params, { indices: false }),
     method: 'get'
   })
 }
 
 export function save(data) {
   return request({
-    url: '/biz/order-form',
+    url: '/biz/config',
     method: 'post',
     data
   })
@@ -19,7 +19,7 @@ export function save(data) {
 
 export function del(ids) {
   return request({
-    url: '/biz/order-form',
+    url: '/biz/config',
     method: 'delete',
     data: ids
   })
@@ -28,7 +28,7 @@ export function del(ids) {
 
 export function get(id) {
   return request({
-    url: '/biz/order-form/' + id,
+    url: '/biz/config/' + id,
     method: 'get'
   })
 }

@@ -83,7 +83,7 @@ public class TtsSingleton {
   @Data
   @Builder
   @EqualsAndHashCode
-  static class Params {
+  public static class Params {
     @JSONField(name = "Text")
     String text;
     @JSONField(name = "SessionId")

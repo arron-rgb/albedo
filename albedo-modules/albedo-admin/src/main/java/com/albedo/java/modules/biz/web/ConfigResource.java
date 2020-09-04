@@ -1,23 +1,31 @@
 package com.albedo.java.modules.biz.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
+import com.albedo.java.common.core.vo.PageModel;
+import com.albedo.java.common.data.util.QueryWrapperUtil;
+import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.biz.domain.Config;
+import com.albedo.java.modules.biz.domain.PlusService;
+import com.albedo.java.modules.biz.domain.dto.ConfigQueryCriteria;
 import com.albedo.java.modules.biz.repository.ConfigRepository;
+import com.albedo.java.modules.biz.service.ConfigService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 表单可选项配置内容
@@ -25,45 +33,75 @@ import lombok.AllArgsConstructor;
  * @author arronshentu
  */
 @RestController
+@Slf4j
 @RequestMapping(value = "${application.admin-path}/biz/config")
 @Api(tags = "表单项配置")
 @AllArgsConstructor
 public class ConfigResource {
   @Resource
+  ConfigService service;
+  @Resource
   ConfigRepository repository;
 
-  @GetMapping
-  public Result<Map<String, Object>> get() {
-    return Result.buildOkData(getMap());
+  @GetMapping("/list")
+  public Result<PlusService> get() {
+    PlusService build = PlusService.builder().build();
+    for (String elementName : PlusService.ELEMENT_NAMES) {
+      List<Config> left = repository.selectList(Wrappers.<Config>query().eq("type", elementName));
+      String title = left.get(0).getTitle();
+      build.addList(left, "请选择" + title);
+    }
+    build.setPlusService(PlusService.builder().build());
+    List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", "plusService"));
+    build.getPlusService().addList(plusService, "请选择增值服务");
+    return Result.buildOkData(build);
   }
 
-  private Map<String, Object> getMap() {
-    List<Config> configs = repository.selectList(Wrappers.emptyWrapper());
-    Map<String, Object> map = new HashMap<>();
-    configs.forEach(config -> {
-      map.putIfAbsent(config.getType(), new ArrayList<Config>());
-      map.computeIfPresent(config.getType(), (key, value) -> {
-        if (value instanceof ArrayList) {
-          ((ArrayList<Config>)value).add(config);
-        }
-        return value;
-      });
-    });
-    Object plusService = map.get("plusService");
-    map.replace("plusService", new HashMap<String, List<Config>>());
-    Map plusServiceMap = (Map)map.get("plusService");
-    if (plusService instanceof List) {
-      ((ArrayList<Config>)plusService).forEach(config -> {
-        plusServiceMap.putIfAbsent(config.getName(), new ArrayList<Config>());
-        plusServiceMap.computeIfPresent(config.getName(), (key, value) -> {
-          if (value instanceof ArrayList) {
-            ((ArrayList<Config>)value).add(config);
-          }
-          return value;
-        });
-      });
-    }
-    return map;
+  @GetMapping(CommonConstants.URL_ID_REGEX)
+  @ApiOperation("表单项配置获取")
+  public Result<Config> get(@PathVariable String id) {
+    return Result.buildOkData(service.getById(id));
+  }
+
+  /**
+   * GET / : get all Config.
+   *
+   * @param pm
+   *          the pagination information
+   * @return the Result with status 200 (OK) and with body all Config
+   */
+
+  @GetMapping
+  @ApiOperation("表单项配置查看")
+  @LogOperate(value = "表单项配置查看")
+  public Result<PageModel<Config>> getPage(PageModel<Config> pm, ConfigQueryCriteria configQueryCriteria) {
+    QueryWrapper<Config> wrapper = QueryWrapperUtil.getWrapper(pm, configQueryCriteria);
+    return Result.buildOkData(service.page(pm, wrapper));
+  }
+
+  @PreAuthorize("@pms.hasPermission('biz_Config_edit')")
+  @LogOperate(value = "表单项配置编辑")
+  @ApiOperation("表单项配置编辑")
+  @PostMapping
+  public Result<String> save(@Valid @RequestBody Config config) {
+    service.saveOrUpdate(config);
+    return Result.buildOk("保存表单项配置成功");
+  }
+
+  /**
+   * DELETE //:ids : delete the "ids" Config.
+   *
+   * @param ids
+   *          the id of the Config to delete
+   * @return the Result with status 200 (OK)
+   */
+  @PreAuthorize("@pms.hasPermission('biz_Config_del')")
+  @LogOperate(value = "表单项配置删除")
+  @ApiOperation(value = "表单项配置删除")
+  @DeleteMapping
+  public Result<String> delete(@RequestBody Set<String> ids) {
+    service.removeByIds(ids);
+    return Result.buildOk("删除表单项配置成功");
   }
 
 }

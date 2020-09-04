@@ -7,6 +7,7 @@ import com.albedo.java.modules.biz.domain.Plan;
 /**
  * @author arronshentu
  */
+@Deprecated
 public enum PlanHolder {
   /**
    * 标准版套餐
