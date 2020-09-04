@@ -156,8 +156,8 @@ public class SysLogAspect {
       afterReqLog.append(" time ({} ms) Result:{}");
       afterReqArgs.add(tookMs);
       afterReqArgs.add(Json.toJsonString(result));
-      log.info(String.valueOf(afterReqLog));
     }
+    log.info(String.valueOf(afterReqLog));
     return result;
   }
 

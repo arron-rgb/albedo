@@ -242,6 +242,7 @@ public class WebUtil extends org.springframework.web.util.WebUtils {
     if (delim == -1) {
       throw new CheckedException("Invalid basic authentication token");
     }
+
     return new String[] {token.substring(0, delim), token.substring(delim + 1)};
   }
 
