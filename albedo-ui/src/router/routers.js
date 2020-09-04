@@ -146,17 +146,26 @@ export const constantRouterMap = [
   },
 
   {
-    path: '/addOrder',
-    meta: { showHeader: true },
-    component: (resolve) => require(['@/views/VirtualWeb/order/addOrder'], resolve),
+    path: '/Order',
+    meta: { title: "订单页面",showHeader: true },
+    component: (resolve) => require(['@/views/VirtualWeb/order/order'], resolve),
     hidden: true,
-    children: {
-      path: '/payDetail',
-      meta: { showHeader: true },
-      component: (resolve) => require(['@/views/VirtualWeb/order/payOrder'], resolve),
-      hidden: true,
-    }
+    children: [
+      {
+        path: '/addOrder',
+        meta: { showHeader: true },
+        component: (resolve) => require(['@/views/VirtualWeb/order/addOrder'], resolve),
+        hidden: true,
+      },
+      {
+        path: '/payOrder',
+        meta: { showHeader: true },
+        component: (resolve) => require(['@/views/VirtualWeb/order/payOrder'], resolve),
+        hidden: true,
+      },
+    ]
   },
+
   {
     path: '/addDetail',
     meta: { showHeader: true },

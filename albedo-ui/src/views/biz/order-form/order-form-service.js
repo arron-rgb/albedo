@@ -33,11 +33,5 @@ export function get(id) {
   })
 }
 
-export function getVedioConfig() {
-  return request({
-    url: '/biz/config',
-    method: 'get'
-  })
-}
 
-export default { page, del, save, get, getVedioConfig }
+export default { page, del, save, get }
