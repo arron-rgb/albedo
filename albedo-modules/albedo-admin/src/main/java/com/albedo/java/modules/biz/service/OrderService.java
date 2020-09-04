@@ -5,7 +5,6 @@ import java.util.List;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.OrderForm;
 
 /**
  * @author arronshentu
@@ -18,7 +17,7 @@ public interface OrderService extends BaseService<Order> {
    * @param form
    *          表单
    */
-  void place(OrderForm form);
+  void place(Order form);
 
   /**
    * 用户付款 or 扣次数

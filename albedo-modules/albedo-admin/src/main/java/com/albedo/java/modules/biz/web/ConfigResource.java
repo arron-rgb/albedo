@@ -51,7 +51,6 @@ public class ConfigResource {
       String title = left.get(0).getTitle();
       build.addList(left, "请选择" + title);
     }
-
     build.setPlusService(PlusService.builder().build());
     List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", "plusService"));
     build.getPlusService().addList(plusService, "请选择增值服务");

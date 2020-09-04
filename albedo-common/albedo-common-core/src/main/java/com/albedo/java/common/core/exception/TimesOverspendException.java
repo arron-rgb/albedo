@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
  * @author arronshentu
  */
 @AllArgsConstructor
-public class TimesOverspendException extends Exception {
+public class TimesOverspendException extends RuntimeException {
 
   private static final long serialVersionUID = -7285211528095468156L;
 

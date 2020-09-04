@@ -10,22 +10,25 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.albedo.java.common.core.exception.OrderException;
+import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
+import com.albedo.java.modules.biz.domain.Config;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.OrderForm;
+import com.albedo.java.modules.biz.domain.PlusService;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
-import com.albedo.java.modules.biz.service.OrderFormService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 /**
@@ -42,17 +45,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   BalanceService balanceService;
 
   @Override
-  public void place(OrderForm form) {
+  public void place(Order form) {
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
-    order.setType(form.getAccelerate().toString());
     order.setState(ORDER_STATE_0);
     order.setTotalAmount(calculatePrice(form));
     save(order);
   }
-
-  @Resource
-  OrderFormService formService;
 
   @Override
   public String price(String orderId) {
@@ -65,15 +64,29 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       TradePlus plus = TradePlus.builder().subject("subject").totalAmount(order.getTotalAmount()).build();
       try {
         return aliPayService.toPayAsPc(plus);
-      } catch (Exception ignored2) {
-        return "";
+      } catch (Exception e) {
+        throw new RuntimeMsgException("调用支付链接发生错误");
       }
     }
     return "success";
   }
 
-  private String calculatePrice(OrderForm form) {
-    return "";
+  private String calculatePrice(Order order) {
+    String content = order.getContent();
+    PlusService plusService = JSON.parseObject(content, PlusService.class);
+    return String.valueOf(
+      plusService.getData().stream().filter((element -> "anchorNum".equals(element.getTitle()))).mapToInt(ele -> {
+        List<Config> data = ele.getData();
+        if (CollectionUtils.isEmpty(data)) {
+          return 0;
+        }
+        if (data.size() > 1) {
+          throw new RuntimeException("参数异常");
+        }
+        Config config = data.get(0);
+        // todo 999 从配置项中读取
+        return "单人主播".equals(config.getValue()) ? 999 : 1999;
+      }));
   }
 
   @Override

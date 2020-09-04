@@ -50,7 +50,7 @@ public class SmsServiceImpl implements SmsService {
     try {
       smsSingleton.sendSms(phone, param, type);
     } catch (ClientException e) {
-      e.printStackTrace();// todo
+      throw new RuntimeException("发送短信失败");
     }
   }
 

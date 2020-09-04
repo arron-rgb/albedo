@@ -74,7 +74,6 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
           return "";
         }
         balanceService.addTimes(plan.getTimes(), record.getUserId());
-
         userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
           .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
       }
