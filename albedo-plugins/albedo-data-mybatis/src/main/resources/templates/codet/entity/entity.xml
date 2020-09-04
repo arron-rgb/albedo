@@ -36,15 +36,6 @@ public class ${ClassName} extends IdEntity<${ClassName}> {
 	</#list>
 
 	<@generateFields/>
-
-	@Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }
 <#macro generateFields>
 

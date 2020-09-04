@@ -4,10 +4,6 @@
       <el-input v-model="form.appId" style="width: 40%" />
       <span style="color: #C0C0C0;margin-left: 10px;">应用APPID,收款账号既是APPID对应支付宝账号</span>
     </el-form-item>
-    <el-form-item label="商家账号" prop="sysServiceProviderId">
-      <el-input v-model="form.sysServiceProviderId" style="width: 40%;" />
-      <span style="color: #C0C0C0;margin-left: 10px;">商家账号</span>
-    </el-form-item>
     <el-form-item label="商户私钥" prop="privateKey">
       <el-input v-model="form.privateKey" type="password" style="width: 40%;" />
       <span style="color: #C0C0C0;margin-left: 10px;">商户私钥，你的PKCS8格式RSA2私钥</span>
@@ -37,13 +33,10 @@ export default {
   data() {
     return {
       loading: false,
-      form: { appId: '', sysServiceProviderId: '', privateKey: '', publicKey: '', returnUrl: '', notifyUrl: '' },
+      form: { appId: '',  privateKey: '', publicKey: '', returnUrl: '', notifyUrl: '' },
       rules: {
         appId: [
           { required: true, message: '请输入appID', trigger: 'blur' }
-        ],
-        sysServiceProviderId: [
-          { required: true, message: '请输入商家账号', trigger: 'blur' }
         ],
         privateKey: [
           { required: true, message: '商户私钥不能为空', trigger: 'blur' }

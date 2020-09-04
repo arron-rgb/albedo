@@ -1,10 +1,10 @@
 import axios from 'axios'
 import router from '@/router/routers'
-import { MessageBox, Notification } from 'element-ui'
+import {MessageBox, Notification} from 'element-ui'
 import store from '../store'
 import Config from '@/settings'
 import commonUtil from './common'
-import { MSG_TYPE_FAIL, MSG_TYPE_SUCCESS } from '@/const/common'
+import {MSG_TYPE_FAIL, MSG_TYPE_SUCCESS} from '@/const/common'
 import validate from './validate'
 
 export const errorCode = {
@@ -98,7 +98,8 @@ service.interceptors.response.use(
           })
         })
       } else if (status === 403) {
-        router.push({ path: '/401' })
+        console.log('进入403分支')
+        router.push({path: '/401'})
       } else {
         const errorMsg = error.response.data.message
         if (errorMsg !== undefined) {

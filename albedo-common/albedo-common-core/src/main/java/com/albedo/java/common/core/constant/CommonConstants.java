@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- * <p>
- * Licensed under the GNU Lesser General Public License 3.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * https://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.albedo.java.common.core.constant;
 
 /**
@@ -22,6 +6,9 @@ package com.albedo.java.common.core.constant;
  */
 public interface CommonConstants {
 
+  String ok = "OK";
+  int CAPTCHA_EXPIRES_TIME = 300;
+
   /**
    * todo 放入mysql
    */
@@ -29,6 +16,11 @@ public interface CommonConstants {
   String BUSINESS_COMMON_ROLE_ID = "49dbe45a4e2a06a56730851e0c87f166";
   String BUSINESS_ADMIN_ROLE_ID = "cdff3f167ae3dfc7984cd6e36976ddf8";
   String PUBLIC_DEPT_ID = "4d20ae207d9c836a732480429af58273";
+  /**
+   * 后台用户默认部门
+   */
+  String ADMIN_DEPT_ID = "c095173c3aebcd7ff9c6177fbf7a8b69";
+  String ADMIN_ROLE_ID = "3570f348af7214a976e5d6bfbdd97df1";
 
   /**
    * 编码

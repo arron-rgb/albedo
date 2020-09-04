@@ -1,5 +1,6 @@
 package com.albedo.java.modules.biz.service;
 
+import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Balance;
 
@@ -8,17 +9,28 @@ import com.albedo.java.modules.biz.domain.Balance;
  */
 public interface BalanceService extends BaseService<Balance> {
   /**
-   * 1. 验证交易是否完成 2. 给该用户所在部门或个人加上次数
+   * 给某个特定的用户添加次数
+   *
+   * @param times
+   *          次数
+   * @param userId
+   *          用户
    */
-  void addTimes();
+  void addTimes(int times, String userId);
 
   /**
-   * 企业剩余次数、个人剩余次数
+   * 查询某组织剩余次数
+   *
+   * @return
+   *         企业剩余次数、个人剩余次数
    */
-  void leftTimes();
+  int leftTimes();
 
   /**
-   * 减次数
+   * 减次数逻辑
+   *
+   * @throws TimesOverspendException
+   *           次数不够扣
    */
-  void consumeTimes();
+  void consumeTimes() throws TimesOverspendException;
 }

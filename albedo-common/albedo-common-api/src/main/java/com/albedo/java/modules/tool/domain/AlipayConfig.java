@@ -69,7 +69,6 @@ public class AlipayConfig implements Serializable {
 	@ApiModelProperty(value = "类型")
 	private String format = "JSON";
 
-	@NotBlank
 	@ApiModelProperty(value = "商户号")
 	private String sysServiceProviderId;
 

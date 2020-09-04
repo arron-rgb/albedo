@@ -1,9 +1,9 @@
 logging:
   level:
-    ROOT: ${logback.loglevel}
+    ROOT: INFO
     com.albedo.java: INFO
 server:
-  port: 4000
+  port: 9090
 
 spring:
   profiles:
@@ -15,11 +15,11 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 94f53cba44c2b7d7
-    url: jdbc:mysql://192.168.0.251:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    password: 924c80a71a83d95d
+    url: jdbc:mysql://localhost:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
   web:
     root:
-      prefix: albedo-ui/dist/
+      prefix: /www/wwwroot/albedo/dist/
 
 
 # ===================================================================
@@ -28,6 +28,8 @@ spring:
 
 application:
   security:
+    remember-me:
+      key: albedo-admin
     authentication:
       jwt:
         base64-secret: bXktc2VjcmV0LWtleS13aGljaC1zaG91bGQtYmUtY2hhbmdlZC1pbi1wcm9kdWN0aW9uLWFuZC1iZS1iYXNlNjQtZW5jb2RlZAo=
