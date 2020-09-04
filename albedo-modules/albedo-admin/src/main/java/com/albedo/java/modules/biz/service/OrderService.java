@@ -46,8 +46,11 @@ public interface OrderService extends BaseService<Order> {
 
   /**
    * 更新表单
+   *
+   * @param orderId
+   *          订单id
    */
-  void updateForm();
+  void updateForm(String orderId);
 
   /**
    * 返回员工名下的订单
@@ -57,12 +60,12 @@ public interface OrderService extends BaseService<Order> {
   List<Order> belongs();
 
   /**
-   * 上传音频
+   * 上传音频 todo 应该要修改 交由videoService来处理
    *
    * @param orderId
    *          订单
    * @param content
-   *          base64
+   *          base64编码
    */
   void uploadRadio(String orderId, String content);
 

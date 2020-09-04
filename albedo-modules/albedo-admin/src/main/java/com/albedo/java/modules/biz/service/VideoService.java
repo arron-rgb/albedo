@@ -45,4 +45,16 @@ public interface VideoService extends BaseService<Video> {
    *          流
    */
   void uploadVideo(String orderId, MultipartFile file) throws IOException;
+
+  /**
+   * 给某条video添加配音处理
+   *
+   * @param videoId
+   */
+  void addAudio(String videoId);
+
+  /**
+   * 给某条video记录添加语音
+   */
+  void uploadAudio(String radioPath);
 }

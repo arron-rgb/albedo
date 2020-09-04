@@ -180,7 +180,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   @Transactional(readOnly = true, rollbackFor = Exception.class)
   public IPage<UserVo> findPage(PageModel pm, UserQueryCriteria userQueryCriteria, DataScope dataScope) {
     // pm.addOrder(OrderItem.desc("a.created_date"));
-    QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, userQueryCriteria);
+    QueryWrapper wrapper = QueryWrapperUtil.<IPage<UserVo>>getWrapper(pm, userQueryCriteria);
     wrapper.eq("a.del_flag", User.FLAG_NORMAL);
     IPage<UserVo> userVosPage = repository.findUserVoPage(pm, wrapper, dataScope);
     return userVosPage;
@@ -188,7 +188,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public List<UserVo> findPage(UserQueryCriteria userQueryCriteria, DataScope dataScope) {
-    QueryWrapper wrapper = QueryWrapperUtil.<User>getWrapper(userQueryCriteria);
+    QueryWrapper<User> wrapper = QueryWrapperUtil.<User>getWrapper(userQueryCriteria);
     wrapper.eq("a.del_flag", User.FLAG_NORMAL);
     wrapper.orderByDesc("a.created_date");
     return repository.findUserVoPage(wrapper, dataScope);
@@ -303,7 +303,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       SysCacheUtil.delUserCaches(user.getId(), user.getUsername());
       int i = repository.updateById(user);
       Assert.isTrue(i != 0, "无法更新ID为" + id + "的数据");
-    } ;
+    }
   }
 
   @Override
@@ -398,9 +398,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
         throw new AccountException("该手机号已绑定其他账号");
       }
     }
-    // # 1. 传入用户id
-    // # 2. 定位购买的最高级的套餐
-    // # 3. 获取数量
 
     // 2. 用户角色-系统角色-部门对应
     switch (userData.getUserType()) {
@@ -429,13 +426,12 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
       String companyName = userData.getCompanyName();
       Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
-      List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
       String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
       // 3 对应 企业账号数量限制
-      List<String> outTradeNos = baseMapper.getOutTradeNosByUserId(adminId);
-      // 找到tradeNo后再查询购买的套餐的最大的套餐
+      Integer leftAccountAmount = baseMapper.getOutTradeNosByUserId(adminId);
+      // todo 找到tradeNo后再查询购买的套餐的最大的套餐
 
-      if (users.size() > 3) {
+      if (leftAccountAmount-- < 0) {
         throw new AccountException("该企业名下账号注册数量已超过限制");
       }
 

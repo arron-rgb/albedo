@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.service.impl;
 import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_STATE_3;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -25,6 +26,13 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.model.PutObjectResult;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+import net.bramp.ffmpeg.FFmpeg;
+import net.bramp.ffmpeg.FFmpegExecutor;
+import net.bramp.ffmpeg.FFprobe;
+import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import net.bramp.ffmpeg.job.FFmpegJob;
+import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 
 /**
  * @author arronshentu
@@ -110,4 +118,53 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
   }
 
+  private static final String PATH = System.getenv("PWD");
+  private static final String SEPARATOR = File.separator;
+
+  @Override
+  public void addAudio(String videoId) {
+    Video video = baseMapper.selectById(videoId);
+    String audioPath = video.getLogoUrl();
+    String videoPath = PATH + SEPARATOR + "jojo.mp4";
+    String outPut = PATH + SEPARATOR + "result.mp4";
+    video.setOutputUrl(outPut);
+    String codec = "copy";
+    FFmpegBuilder builder = new FFmpegBuilder().addInput(videoPath).addInput(audioPath).addOutput(outPut)
+      .setVideoCodec(codec).setAudioCodec(codec).done();
+
+    FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+    // todo 加上线程池配置 不打印进度 job执行完毕添加callback方法设定路径并决定是否上传
+    FFmpegJob job = executor.createJob(builder);
+    job.run();
+  }
+
+  @Override
+  public void uploadAudio(String radioPath) {
+    // 1. 人工上传的配音
+    // 2. tts合成的语音
+    // 一样处理
+
+  }
+
+  static FFprobe ffprobe;
+  static FFmpeg ffmpeg;
+
+  static {
+    try {
+      ffprobe = new FFprobe("/usr/local/bin/ffprobe");
+      ffmpeg = new FFmpeg("/usr/local/bin/ffmpeg");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public FFmpegProbeResult getVideoMetadata(String filePath) {
+    try {
+      return ffprobe.probe(filePath);
+    } catch (IOException e) {
+      // 打印ffmpeg返回的错误
+      log.info(e.getMessage());
+      return null;
+    }
+  }
 }

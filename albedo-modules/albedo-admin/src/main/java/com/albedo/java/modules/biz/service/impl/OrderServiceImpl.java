@@ -100,7 +100,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void updateForm() {
+  public void updateForm(String orderId) {
     // todo 上传贴片等素材
   }
 
