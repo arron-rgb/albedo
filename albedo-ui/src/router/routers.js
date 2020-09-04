@@ -149,7 +149,13 @@ export const constantRouterMap = [
     path: '/addOrder',
     meta: { showHeader: true },
     component: (resolve) => require(['@/views/VirtualWeb/order/addOrder'], resolve),
-    hidden: true
+    hidden: true,
+    children: {
+      path: '/payDetail',
+      meta: { showHeader: true },
+      component: (resolve) => require(['@/views/VirtualWeb/order/payOrder'], resolve),
+      hidden: true,
+    }
   },
   {
     path: '/addDetail',

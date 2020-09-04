@@ -22,7 +22,7 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <span>已选需求</span>
-              <el-button style="float: right; padding: 3px 0" type="text">前往支付></el-button>
+              <el-button style="float: right; padding: 3px 0" type="text" @click="toPay()">前往支付></el-button>
             </div>
             <el-tag v-for="item in backData" v-show="backData.length > 0" type="warning" :key="item" class="mytabs">
               {{item.data}}
@@ -35,6 +35,9 @@
 </template>
 <script>
 import stepLine from "@/components/VirtualWeb/stepLine";
+import crudOrderForm from '@/views/biz/order-form/order-form-service'
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+
 export default {
   name: "page order 1",
   components : {
@@ -47,127 +50,57 @@ export default {
       anchorType: 0,
       selectData : "",
       backData : [],
-      data : [
-        {
-          "title" : "您的所属类型",
-          "data": [
-            {
-              "id": 1,
-              "name": "label",
-              "value": "美妆护肤、时尚配饰"
-            },
-            {
-              "id": 2,
-              "name": "label",
-              "value": "美食吃货、乡村味道"
-            },
-            {
-              "id": 3,
-              "name": "label",
-              "value": "母婴萌娃"
-            },
-            {
-              "id": 4,
-              "name": "label",
-              "value": "旅行看世界"
-            },
-            {
-              "id": 5,
-              "name": "label",
-              "value": "家电乐器、骑车嗨购"
-            },
-            {
-              "id": 6,
-              "name": "label",
-              "value": "日用小百货、鲜花萌宠"
-            },
-
-          ],
-        },
-        {
-          "title" : "您想要的主播数量",
-          "data": [
-            {
-              "id": 7,
-              "name": "anchorNum",
-              "value": "单人主播"
-            },
-            {
-              "id": 8,
-              "name": "anchorNum",
-              "value": "双人主播"
-            }
-          ],
-        },
-        {
-          "title" : "您期待的主播姿势",
-          "data": [
-            {
-              "id": 9,
-              "name": "seat",
-              "value": "站姿",
-              "url": "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"
-            },
-            {
-              "id": 10,
-              "name": "seat",
-              "value": "坐姿",
-              "url": "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"
-            }
-          ],
-        },
-        {
-          "title" : "您喜欢的主播类型",
-          "data": [
-            {
-              "id": 9,
-              "name": "anchorType",
-              "value": "活力青春型1号",
-              "url": "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"
-            },
-            {
-              "id": 10,
-              "name": "anchorType",
-              "value": "活力青春型2号",
-              "url": "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"
-            }
-          ],
-        },
-      ]
-  //   {label : "您喜欢的主播", msg : [{text : "活力青春型1号", img : "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"},
-  //     { text : "活力青春型2号", img : "https://img.xiaopiu.com/userImages/img42082173b7808cd0.png"},
-  //     { text : "成熟稳重型1号", img : "https://img.xiaopiu.com/userImages/img42233173b7924bc8.png"},
-  //     { text : "成熟稳重型2号", img : "https://img.xiaopiu.com/userImages/img42236173b7928e30.png"},
-  //   ]},
-  // ]
+      data : []
     }
   },
+  created() {
+    this.getData()
+  },
   methods : {
-    // dataChange(data){
-    //   console.log(data)
-    //   this.backData.belongType = data;
-    // },
-    // paneShow(){
-    //   if(this.backData.anchorType === 0)
-    //   {
-    //     this.isShow = !this.isShow;
-    //   }
-    // },
-    videoList(title, data){
+    getData(){
+      //获得视频属性数据
+      return new Promise((resolve, reject) => {
+        crudOrderForm.getVedioConfig().then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            this.data = res.data.data
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    videoList(title, data) {
       var dataIndex = this.backData.findIndex(o => o.title === title);
-      if(dataIndex === -1){
+      if (dataIndex === -1) {
         //列表中没有数据
         this.backData.push(
           {
-            title : title,
-            data : data
+            title: title,
+            data: data
           }
         )
-      }
-      else{
+      } else {
         //修改数据
         this.backData[dataIndex].data = data;
       }
+    },
+    toPay() {
+      //没有选完选项
+      if (this.data.length > this.backData.length) {
+        //找到没有选择的第一个选项
+        for (var i = 0; i < this.data.length ; i++) {
+          console.log(this.data[i].title)
+          var dataIndex = this.backData.findIndex(o => o.title === this.data[i].title);
+          console.log(dataIndex)
+          if (dataIndex === -1) {
+            this.$alert('“' + this.data[i].title + '”尚未选择', '警告', {
+              confirmButtonText: '确定',
+            });
+          }
+        }
+      }
+
     }
   }
 }

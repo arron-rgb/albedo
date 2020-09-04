@@ -29,6 +29,7 @@ const whiteList = [
   '/security',
 
   '/addOrder',
+  '/payOrder',
   '/addDetail',
   '/machineDub',
   '/newProduct',
