@@ -1,9 +1,6 @@
 package com.albedo.java.modules.biz.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -13,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.modules.biz.domain.Config;
+import com.albedo.java.modules.biz.domain.PlusService;
 import com.albedo.java.modules.biz.repository.ConfigRepository;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -33,37 +31,14 @@ public class ConfigResource {
   ConfigRepository repository;
 
   @GetMapping
-  public Result<Map<String, Object>> get() {
-    return Result.buildOkData(getMap());
-  }
-
-  private Map<String, Object> getMap() {
-    List<Config> configs = repository.selectList(Wrappers.emptyWrapper());
-    Map<String, Object> map = new HashMap<>();
-    configs.forEach(config -> {
-      map.putIfAbsent(config.getType(), new ArrayList<Config>());
-      map.computeIfPresent(config.getType(), (key, value) -> {
-        if (value instanceof ArrayList) {
-          ((ArrayList<Config>)value).add(config);
-        }
-        return value;
-      });
-    });
-    Object plusService = map.get("plusService");
-    map.replace("plusService", new HashMap<String, List<Config>>());
-    Map plusServiceMap = (Map)map.get("plusService");
-    if (plusService instanceof List) {
-      ((ArrayList<Config>)plusService).forEach(config -> {
-        plusServiceMap.putIfAbsent(config.getName(), new ArrayList<Config>());
-        plusServiceMap.computeIfPresent(config.getName(), (key, value) -> {
-          if (value instanceof ArrayList) {
-            ((ArrayList<Config>)value).add(config);
-          }
-          return value;
-        });
-      });
+  public Result<PlusService> get() {
+    PlusService build = PlusService.builder().build();
+    for (String elementName : PlusService.ELEMENT_NAMES) {
+      List<Config> left = repository.selectList(Wrappers.<Config>query().eq("type", elementName));
+      String title = left.get(0).getTitle();
+      build.addList(left, "请选择" + title);
     }
-    return map;
+    return Result.buildOkData(build);
   }
 
 }

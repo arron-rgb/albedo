@@ -19,6 +19,8 @@ import lombok.*;
 public class Config {
   @TableId(type = IdType.AUTO)
   private Integer id;
+  @JSONField(serialize = false)
+  private String title;
   private String value;
   private String name;
   private String url;
