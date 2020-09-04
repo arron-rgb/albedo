@@ -2,6 +2,7 @@ package com.albedo.java.modules.biz.service;
 
 import java.util.List;
 
+import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderForm;
@@ -34,7 +35,7 @@ public interface OrderService extends BaseService<Order> {
    * @param orderId
    *          订单id
    */
-  void consume(String orderId);
+  void consume(String orderId) throws OrderException;
 
   /**
    * 员工可认领的订单

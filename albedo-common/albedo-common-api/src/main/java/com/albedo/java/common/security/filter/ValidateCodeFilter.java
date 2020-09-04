@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -14,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.SecurityConstants;
 import com.albedo.java.common.core.util.SpringContextHolder;
-import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.security.util.LoginUtil;
 import com.albedo.java.modules.sys.domain.vo.account.LoginVo;
 
@@ -36,8 +36,8 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
     throws ServletException, IOException {
-    if (StringUtil.equals(applicationProperties.getAdminPath(SecurityConstants.AUTHENTICATE_URL),
-      request.getRequestURI()) && StringUtil.equalsIgnoreCase(request.getMethod(), "post")) {
+    if (StringUtils.equals(applicationProperties.getAdminPath(SecurityConstants.AUTHENTICATE_URL),
+      request.getRequestURI()) && StringUtils.equalsIgnoreCase(request.getMethod(), "post")) {
       if (!SpringContextHolder.isDevelopment()) {
         LoginVo loginVo = new LoginVo();
         loginVo.setCode(request.getParameter("code"));

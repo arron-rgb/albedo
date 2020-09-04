@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
@@ -76,12 +77,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void consume(String orderId) {
+  public void consume(String orderId) throws OrderException {
     String staffId = SecurityUtil.getUser().getId();
     List<String> roles = SecurityUtil.getRoles();
     // 非后台工作人员无法认领
     if (!roles.contains(ADMIN_ROLE_ID)) {
-      return;
+      throw new OrderException("非后台员工无法认领订单");
     }
     Order order = baseMapper.selectById(orderId);
     if (order == null) {

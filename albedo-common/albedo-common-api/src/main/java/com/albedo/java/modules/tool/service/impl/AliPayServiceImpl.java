@@ -97,15 +97,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     return alipayClient.pageExecute(request, "GET").getBody();
   }
 
-  class TradePagePayResponse {
-    String code;
-    String msg;
-    String tradeNo;
-    String outTradeNo;
-    String totalAmount;
-    String sellerId;
-  }
-
   @Override
   public String toPayAsPc(AlipayConfig alipay, TradeVo trade) throws Exception {
     if (alipay.getId() == null) {
