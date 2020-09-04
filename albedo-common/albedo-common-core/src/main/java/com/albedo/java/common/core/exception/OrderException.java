@@ -6,11 +6,12 @@ import lombok.AllArgsConstructor;
  * @author arronshentu
  */
 @AllArgsConstructor
-public class TimesOverspendException extends RuntimeException {
+public class OrderException extends RuntimeException {
 
   private static final long serialVersionUID = -7285211528095468156L;
 
-  public TimesOverspendException(String msg) {
+  public OrderException(String msg) {
     super(msg);
   }
+
 }

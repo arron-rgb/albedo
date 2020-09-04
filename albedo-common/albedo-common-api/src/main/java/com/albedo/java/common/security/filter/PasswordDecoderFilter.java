@@ -18,6 +18,7 @@ package com.albedo.java.common.security.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.spec.IvParameterSpec;
@@ -27,11 +28,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.SecurityConstants;
 import com.albedo.java.common.security.filter.warpper.ParameterRequestWrapper;
+import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.repository.UserRepository;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
@@ -48,14 +54,17 @@ import lombok.extern.slf4j.Slf4j;
  *       密码解密工具类
  */
 @Slf4j
+@Component
 public class PasswordDecoderFilter extends OncePerRequestFilter {
   private static final String PASSWORD = "password";
   private static final String KEY_ALGORITHM = "AES";
 
   private final ApplicationProperties applicationProperties;
+  private final UserRepository userRepository;
 
-  public PasswordDecoderFilter(ApplicationProperties applicationProperties) {
+  public PasswordDecoderFilter(ApplicationProperties applicationProperties, UserRepository userRepository) {
     this.applicationProperties = applicationProperties;
+    this.userRepository = userRepository;
   }
 
   public static String decryptAes(String data, String pass) {
@@ -76,6 +85,11 @@ public class PasswordDecoderFilter extends OncePerRequestFilter {
     }
     String queryParam = request.getQueryString();
     Map<String, String> paramMap = HttpUtil.decodeParamMap(queryParam, CharsetUtil.CHARSET_UTF_8);
+    String username = request.getParameter("username");
+    List<User> users = userRepository.selectList(Wrappers.<User>query().eq("username", username));
+    if (users.size() < 1) {
+      throw new UsernameNotFoundException("用户不存在");
+    }
     String password = request.getParameter(PASSWORD);
     if (StrUtil.isNotBlank(password)) {
       try {

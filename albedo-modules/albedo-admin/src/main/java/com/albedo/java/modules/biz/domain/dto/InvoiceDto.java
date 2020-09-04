@@ -47,10 +47,10 @@ public class InvoiceDto extends DataDto<String> {
   @Size(max = 32)
   private String userId;
   /** type 0-个人，1-企业 */
-  @NotNull
+  @NotNull(message = "请选择抬头类型")
   private Integer type;
   /** name 企业名称/个人名称 */
-  @NotBlank
+  @NotBlank(message = "请填入名称")
   @Size(max = 255)
   private String name;
   /** taxNum 公司税号 */

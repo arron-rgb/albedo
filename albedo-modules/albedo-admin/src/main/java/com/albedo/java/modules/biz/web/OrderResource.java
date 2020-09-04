@@ -11,7 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.constant.CommonConstants;
+import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
@@ -103,16 +105,34 @@ public class OrderResource extends BaseResource {
     return Result.buildOk("删除订单成功");
   }
 
-  @ApiOperation(value = "订单支付")
-  @GetMapping("/purchase?orderId={orderId}")
-  public Result<String> purchase(@PathVariable(value = "orderId") String orderId) {
+  @ApiOperation(value = "获取订单支付链接")
+  @Token
+  @PostMapping("/purchase")
+  public Result<String> purchase(@RequestParam(value = "token", required = false) String token,
+    @RequestParam(value = "orderId") String orderId) {
     return Result.buildOk(service.price(orderId));
+  }
+
+  static class PurchaseDto {
+    String orderId;
+    String token;
   }
 
   @ApiOperation(value = "员工查看待处理订单")
   @GetMapping("/list")
   public Result<List<Order>> list() {
     return Result.buildOkData(service.availableOrder());
+  }
+
+  @ApiOperation(value = "员工接单")
+  @GetMapping("/consume?orderId={orderId}")
+  public Result<String> consume(@PathVariable("orderId") String orderId) {
+    try {
+      service.consume(orderId);
+      return Result.buildOk("接单成功");
+    } catch (OrderException e) {
+      return Result.buildFail(e.getMessage());
+    }
   }
 
   @ApiOperation(value = "员工查看个人名下订单")
@@ -138,4 +158,10 @@ public class OrderResource extends BaseResource {
   @Resource
   VideoService videoService;
 
+  @ApiOperation(value = "用户下单")
+  @PostMapping(value = "/place")
+  public Result<String> place(Order order) {
+    service.place(order);
+    return Result.buildOk("下单成功");
+  }
 }

@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtFilter extends GenericFilterBean {
 
   private final String PREFIX_TOKEN = "Bearer ";
-  private TokenProvider tokenProvider;
-  private ApplicationProperties applicationProperties;
+  private final TokenProvider tokenProvider;
+  private final ApplicationProperties applicationProperties;
 
   public JwtFilter(TokenProvider tokenProvider, ApplicationProperties applicationProperties) {
     this.tokenProvider = tokenProvider;
@@ -51,7 +51,7 @@ public class JwtFilter extends GenericFilterBean {
         WebUtil.removeCookie((HttpServletResponse)servletResponse, HttpHeaders.AUTHORIZATION);
       }
     }
-    // filterChain.doFilter(servletRequest, servletResponse);
+    filterChain.doFilter(servletRequest, servletResponse);
   }
 
   private String resolveToken(HttpServletRequest request) {

@@ -111,13 +111,13 @@ public interface UserRepository extends BaseRepository<User> {
   List<User> findListByMenuId(String menuId);
 
   /**
-   * 查找某位用户购买的所有套餐
+   * 查找某位用户剩余可使用的账号数量
    *
    * @param userId
    *          用户id
    * @return 购买的套餐的outTradeNo列表
    */
-  List<String> getOutTradeNosByUserId(String userId);
+  String getOutTradeNosByUserId(String userId);
 
   /**
    * 找到某部门管理员id

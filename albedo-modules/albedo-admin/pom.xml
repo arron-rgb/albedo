@@ -40,7 +40,6 @@
 			<artifactId>albedo-common-module</artifactId>
 			<version>${project.release.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.albedo.java</groupId>
 			<artifactId>albedo-common-gen</artifactId>
@@ -144,6 +143,13 @@
 			<artifactId>tencentcloud-sdk-java</artifactId>
 			<version>3.1.118</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.jsonzou</groupId>
+			<artifactId>jmockdata</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

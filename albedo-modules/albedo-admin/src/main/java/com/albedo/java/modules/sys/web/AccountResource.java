@@ -38,6 +38,7 @@ import com.google.code.kaptcha.Producer;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("${application.admin-path}")
 @Slf4j
+@Api("账号相关")
 @AllArgsConstructor
 public class AccountResource extends BaseResource {
 

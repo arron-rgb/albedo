@@ -146,9 +146,9 @@ public class AliPayResource {
         return "";
       }
       // 验证通过后应该根据业务需要处理订单
-      if (record.getType().equals(PLAN)) {
+      if (record.getType().equals(PLAN_TYPE)) {
         planService.callback(outTradeNo);
-      } else if (record.getType().equals(ORDER)) {
+      } else if (record.getType().equals(ORDER_TYPE)) {
         orderService.callback(record.getOuterId());
       }
       return "success";

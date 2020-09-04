@@ -27,6 +27,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -122,23 +123,20 @@ public class GlobalExceptionHandler {
     return ResponseEntityBuilder.buildFail(NOT_FOUND, e.getMessage());
   }
 
-  /**
-   * 处理 账号相关异常
-   */
-  @ExceptionHandler(value = AccountException.class)
-  public Result<String> accountException(AccountException e) {
-    return Result.buildFail(e.getMsg());
-  }
-
-  @ExceptionHandler(value = TimesOverspendException.class)
-  public Result<String> overspendException(TimesOverspendException e) {
-    // 打印堆栈信息
+  @ExceptionHandler(value = {TimesOverspendException.class, OrderException.class, AccountException.class,
+    TokenException.class, TokenException.class})
+  public Result<String> overspendException(Exception e) {
     return Result.buildFail(e.getMessage());
   }
 
   @ExceptionHandler(value = UsernameNotFoundException.class)
   public Result<String> usernameException(UsernameNotFoundException e) {
     return Result.buildFail("系统中未查询到该用户");
+  }
+
+  @ExceptionHandler(value = MissingServletRequestParameterException.class)
+  public Result<String> missingServletRequestParameterException(MissingServletRequestParameterException e) {
+    return Result.buildFail("请求缺少参数");
   }
 
 }

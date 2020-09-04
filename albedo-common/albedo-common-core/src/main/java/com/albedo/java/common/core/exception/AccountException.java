@@ -6,7 +6,6 @@ import lombok.Setter;
 /**
  * @author arronshentu
  */
-
 public class AccountException extends RuntimeException {
 
   @Getter
