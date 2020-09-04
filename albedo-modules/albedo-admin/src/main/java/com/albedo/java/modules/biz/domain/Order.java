@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Order extends IdEntity<Invoice> {
 
-  private static final long serialVersionUID = -7669566132599781021L;
+  private static final Long serialVersionUID = -7669566132599781021L;
 
   /**
    * 下单用户Id

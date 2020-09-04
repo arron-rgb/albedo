@@ -1,4 +1,4 @@
-package com.albedo.java.common.core.resource;
+package com.albedo.java.modules.tool.web;
 
 import java.time.Duration;
 
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cn.hutool.core.util.IdUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -26,6 +27,7 @@ public class TokenResource {
   RedisTemplate<String, String> redisTemplate;
 
   @GetMapping
+  @ApiOperation("获取token")
   public String get() {
     String token = IdUtil.fastSimpleUUID();
     redisTemplate.opsForValue().set(token, token);

@@ -12,6 +12,8 @@ import com.albedo.java.common.security.util.LoginUtil;
 
 /**
  * Returns a 401 error code (Unauthorized) to the client, when Ajax authentication fails.
+ *
+ * @author arronshentu
  */
 public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
   private static final String BAD_CREDENTIALS = "Bad credentials";
@@ -19,8 +21,8 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
     AuthenticationException exception) {
-    String useruame = request.getParameter("username");
-    LoginUtil.isValidateCodeLogin(useruame, true, false);
+    String username = request.getParameter("username");
+    LoginUtil.isValidateCodeLogin(username, true, false);
     String message = exception.getMessage();
     if (BAD_CREDENTIALS.equals(message)) {
       message = "密码错误";

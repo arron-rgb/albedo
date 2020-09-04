@@ -418,32 +418,33 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   private void registerBusinessUser(RegisterUserData userData) {
     String deptId;
     String roleId;
+    Dept dept;
     if (StringUtils.isNotEmpty(userData.getNewCompanyName())) {
       // 新建一个企业的流程：1. new 一个dept 2. 将企业管理员roleId与deptId绑定 3. 将userId与企业管理员roleId绑定起来
-      Dept dept = new Dept();
+      dept = new Dept();
+      dept.setAvailable(1);
       dept.setName(userData.getNewCompanyName());
       deptService.save(dept);
-      deptId = dept.getId();
       roleId = BUSINESS_ADMIN_ROLE_ID;
     } else {
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
-      String companyName = userData.getCompanyName();
-      Dept dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, companyName));
-      List<User> users = baseMapper.selectList(Wrappers.<User>query().eq("dept_id", dept.getId()));
-      String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
-      // 3 对应 企业账号数量限制
-      List<String> outTradeNos = baseMapper.getOutTradeNosByUserId(adminId);
-      // 找到tradeNo后再查询购买的套餐的最大的套餐
-
-      if (users.size() > 3) {
-        throw new AccountException("该企业名下账号注册数量已超过限制");
+      String ownedCompanyName = userData.getOwnedCompanyName();
+      dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, ownedCompanyName));
+      if (dept == null) {
+        throw new RuntimeMsgException("未查询到该企业，请检查后重试");
       }
-
-      RoleDept roleDept =
-        roleDeptService.getOne(Wrappers.<RoleDept>query().eq("dept_id", dept.getId()).ne("", BUSINESS_COMMON_ROLE_ID));
-      deptId = dept.getId();
-      roleId = roleDept.getRoleId();
+      String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
+      // 验证 对应 企业账号数量限制
+      String left = baseMapper.getOutTradeNosByUserId(adminId);
+      if (StringUtils.isEmpty(left)) {
+        throw new AccountException("该企业管理员未购买任何套餐，无法绑定子账号");
+      }
+      if (Integer.parseInt(left) < 1) {
+        throw new AccountException("该企业管理员套餐下可账号注册数量已超过限制");
+      }
+      roleId = BUSINESS_COMMON_ROLE_ID;
     }
+    deptId = dept.getId();
     String userId = saveUser(userData, deptId);
     saveUserRole(userId, roleId);
   }
@@ -453,7 +454,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     // 个人用户默认所属公共用户部门，角色为个人。个人角色已在系统中与默认公共部门硬编码
     boolean flag = saveUserRole(userId, PERSONAL_USER_ROLE_ID);
     if (!flag) {
-      throw new AccountException("插入失败");
+      throw new AccountException("注册失败");
     }
   }
 
@@ -476,7 +477,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public List<String> importUser(InputStream inputStream) {
-
     ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
     List<UserExcelVo> errors = new ArrayList<>();
     try {

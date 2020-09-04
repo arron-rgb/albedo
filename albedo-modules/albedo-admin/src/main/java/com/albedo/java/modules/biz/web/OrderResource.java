@@ -158,4 +158,10 @@ public class OrderResource extends BaseResource {
   @Resource
   VideoService videoService;
 
+  @ApiOperation(value = "用户下单")
+  @PostMapping(value = "/place")
+  public Result<String> place(Order order) {
+    service.place(order);
+    return Result.buildOk("下单成功");
+  }
 }

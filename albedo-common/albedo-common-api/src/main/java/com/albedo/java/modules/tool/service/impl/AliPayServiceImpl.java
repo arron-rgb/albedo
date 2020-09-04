@@ -81,7 +81,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   @Override
   public String toPayAsPc(TradePlus trade) throws Exception {
     AlipayConfig alipay = find();
-    trade.setOutTradeNo(aliPayUtils.getOrderCode());
     return toPayAsPc(alipay, trade);
   }
 
@@ -89,6 +88,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
+    trade.setProductCode("FAST_INSTANT_TRADE_PAY");
     AlipayClient alipayClient = buildAlipayClient();
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());

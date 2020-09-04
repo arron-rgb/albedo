@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -72,9 +73,8 @@ public class LoginUtil {
    * @return
    */
   public static boolean isValidateCodeLogin(String useruame, boolean isFail, boolean clean) {
-    @SuppressWarnings("unchecked")
     Map<String, Integer> loginFailMap = RedisUtil.getCacheMap(LOGIN_FAIL_MAP);
-    if (loginFailMap == null) {
+    if (CollectionUtils.isEmpty(loginFailMap)) {
       loginFailMap = Maps.newHashMap();
       RedisUtil.setCacheMap(LOGIN_FAIL_MAP, loginFailMap);
     }
