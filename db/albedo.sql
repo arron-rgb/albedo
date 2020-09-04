@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 02/09/2020 13:54:51
+ Date: 04/09/2020 17:32:53
 */
 
 SET NAMES utf8mb4;
@@ -674,7 +674,17 @@ CREATE TABLE `sys_log_operate` (
   KEY `sys_log_create_by` (`created_by`) USING BTREE,
   KEY `sys_log_request_uri` (`request_uri`) USING BTREE,
   KEY `sys_log_create_date` (`created_date`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+
+-- ----------------------------
+-- Records of sys_log_operate
+-- ----------------------------
+BEGIN;
+INSERT INTO `sys_log_operate` VALUES (1, '用户登录', 'INFO', 'account', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', '/a/authenticate', NULL, 'password=account&randomStr=85441599038944882&code=1&rememberMe=false&username=account', NULL, 'MANAGE', '0', NULL, '127713cfa8706e73721ae07748637508', '2020-09-02 17:29:24.594', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (2, '用户登录', 'INFO', 'account3', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', '/a/authenticate', NULL, 'password=account&randomStr=36091599039653312&code=1&rememberMe=false&username=account3', NULL, 'MANAGE', '0', NULL, '286cf7378ccb6d74f912f71387448199', '2020-09-02 17:41:55.006', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (3, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=74821599112518264&code=1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-03 13:55:24.768', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (4, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=48771599117602532&code=1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-03 15:20:04.052', NULL, '0');
+COMMIT;
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -1147,6 +1157,8 @@ CREATE TABLE `sys_user` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `sys_user` VALUES ('1', 'admin', '$2a$10$xPFxiboHiwEyURoblSWrv.i.7tGP6Vop.77IqIMLo6CzOw/ygvSw6', 'albedo', '17034642999', '22@ss.com', NULL, '1', NULL, 'o_0FT0uyg_H1vVy2H0JpSwlVGhWQ', '1', '', '2018-04-20 07:15:18.000', '1', '2020-09-02 12:35:58.255', '11', 47, '0');
+INSERT INTO `sys_user` VALUES ('127713cfa8706e73721ae07748637508', 'account', '$2a$10$Gu1QbyZiLpm98v37YyQ5DOyN2ISN5IMDqf/CJW8/KWFdTq1I3qdGa', NULL, '', NULL, NULL, '4d20ae207d9c836a732480429af58273', NULL, NULL, '1', 'system', '2020-09-02 17:29:15.275', 'system', '2020-09-02 17:29:15.275', NULL, 0, '0');
+INSERT INTO `sys_user` VALUES ('286cf7378ccb6d74f912f71387448199', 'account3', '$2a$10$7H/oIT2/eFNr9b4hX3zSm.18ZyRAP5Hp.8t/5I3LW.gW/3HZ89FLS', NULL, '', NULL, NULL, '4d20ae207d9c836a732480429af58273', NULL, NULL, '1', 'system', '2020-09-02 17:41:48.669', 'system', '2020-09-02 17:41:48.669', NULL, 0, '0');
 INSERT INTO `sys_user` VALUES ('4c2796f3667e3e5907a04623d7fd8de4', 'ttttt', '$2a$10$KYuAjYBhucUG4GbYQTuRO.YOl6JJlGdEdD5zGLkfrSumnjEF59S7G', '1', '13245678975', '1@e.com', NULL, 'c095173c3aebcd7ff9c6177fbf7a8b69', NULL, NULL, '1', '1', '2020-05-29 16:41:21.126', '4c2796f3667e3e5907a04623d7fd8de4', '2020-05-29 16:48:48.526', NULL, 7, '0');
 INSERT INTO `sys_user` VALUES ('5168fcfd16b8bad9fb38edfab4409023', 'www', '$2a$10$hZ5daUd8k4LSOgmFuRlSZuEnYRndkGjMJ/wsl6UQ5.rlWFqNcmPSe', NULL, '13258465211', 'qq@ee.com', NULL, '1', NULL, NULL, '1', '1', '2020-05-12 10:22:11.393', '1', '2020-05-29 16:42:57.181', NULL, 18, '0');
 INSERT INTO `sys_user` VALUES ('51e995c64ed5982b9ce8ad5d559f100c', 'dddd', '$2a$10$hZ5daUd8k4LSOgmFuRlSZuEnYRndkGjMJ/wsl6UQ5.rlWFqNcmPSe', 'dd', '13258465214', '1@1.com', NULL, '1', NULL, NULL, '1', '1', '2020-05-28 03:08:17.639', '1', '2020-05-29 16:42:57.184', NULL, 0, '0');
@@ -1188,7 +1200,7 @@ CREATE TABLE `sys_user_online` (
 BEGIN;
 INSERT INTO `sys_user_online` VALUES ('-o8ZCk8YAneRqVF_4pEExR-WCSFS-12WyW8KIy6f', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-18 10:26:48', '2020-08-18 10:31:06', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('0mbzAvfIQQ3xnQGyOSMEDNgdNuKJ1S3SRj_PIlW0', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-11 20:38:48', '2020-08-11 20:38:48', 1800, '1');
-INSERT INTO `sys_user_online` VALUES ('2Vab9gSXXw295JaLtLFh_T0U_lLn9dKyth_THhtV', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 13:50:04', '2020-09-02 13:53:09', 1800, '0');
+INSERT INTO `sys_user_online` VALUES ('2Vab9gSXXw295JaLtLFh_T0U_lLn9dKyth_THhtV', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 13:50:04', '2020-09-02 13:53:09', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('3HfD7cCT6qLhNtveoRlTVr-BqAK3BJu7XzpXcHeY', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-30 14:29:38', '2020-08-30 14:34:22', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('3izPP6MPep4-V9nz42bH4bPXCsC_lwk-xtTso4mg', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 16:45:21', '2020-08-16 16:45:21', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('3LjZYi8gtmUYalxlEQJquY76dsQuXgGwGTBWqNaF', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 21:20:29', '2020-08-08 21:20:29', 1800, '1');
@@ -1207,6 +1219,7 @@ INSERT INTO `sys_user_online` VALUES ('dCnUhxEUEQZ5susuf5UvM65VkH56LGZN3gqMLmYl'
 INSERT INTO `sys_user_online` VALUES ('EE03nWBJOO-GAlItFkO-8pgJS3nOOm5H6543N7N-', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 01:38:09', '2020-08-29 01:39:22', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('eg1paaOcIs-P1Wc3c9rU--Ejn2zOwPyi3nCjSA1b', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:16:42', '2020-09-02 12:16:42', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('FCdsNGqVHUBTuMBEXZ048CXSrhIDSA-jxpG3l4Sc', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:13:31', '2020-08-08 20:13:31', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('fYGl0-RhBOkGUxBDZVkwHXxC0r0RP6MnSlSproSW', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-03 15:20:04', '2020-09-03 15:20:04', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('GoRn67n2L0KImEBCWZLPwQt0N8xp5OZjg-TSqh0e', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-31 18:12:05', '2020-08-31 18:13:24', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('gyWU3xVwJgzzUTh1WtbIPSj0jUM4KkYi3-OxbrBm', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 17:14:28', '2020-08-29 17:16:05', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('H52SJ8aOnSCA79Y0ZAC_UawWClUm_o5UQ8xSOipP', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:24:28', '2020-08-08 20:28:16', 1800, '1');
@@ -1215,6 +1228,7 @@ INSERT INTO `sys_user_online` VALUES ('h6zKmb8peKKt1yKBgzuKMAHUGn7gUwEMEWYrBL_g'
 INSERT INTO `sys_user_online` VALUES ('Hfrq0oYZIrleRPbKNgxjmLQG7tzf0A57gm6HHf8z', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:55:16', '2020-08-29 21:55:16', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Hy3GveZcp1h7srb8T82AZO7K16vvv6UQNB9IArkG', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-11 20:38:48', '2020-08-11 20:38:48', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('IG80kxodGa-et8Ej895iPjXLIqCv4tmyhLTInVEF', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-18 09:26:59', '2020-08-18 09:28:11', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('iPMgw0rS_XvtmP5wvYMtJLgeLK7zUVy9jTrc75Ia', '286cf7378ccb6d74f912f71387448199', 'account3', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 17:41:55', '2020-09-02 17:41:55', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('jHwnLXWm98WMNs_gZBC8FlsqRLQlQv5D5EmG8Y6E', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 21:24:03', '2020-08-08 21:24:03', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('JRDwrO-tfPPnsJfMxmIoenbmst4X5UhhVZKfI7z_', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 21:12:50', '2020-08-08 21:12:50', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('JrEQ6LZlt-d8fcqaZ0ja4mIRxDzWFss9J2rAoc7P', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 16:03:55', '2020-08-16 16:21:55', 1800, '1');
@@ -1223,7 +1237,9 @@ INSERT INTO `sys_user_online` VALUES ('KKQcC928C7Zul61feRrK5Zb6OuopuqiEmqNnyz-b'
 INSERT INTO `sys_user_online` VALUES ('l7eRiAdbIF-ZfX3FYmvI8h_KnW7BE4TqyyCRHQkX', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 17:43:11', '2020-08-29 20:58:23', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('LTU82B7Kyks2OPf25putr6NOak6qRJC1ca2_gXX3', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-01 04:13:01', '2020-09-01 04:13:01', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('mZZcU7en_oZuFjo1fO7cCVjbHO9Pp9NyEvpzLtfa', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 19:58:21', '2020-08-08 20:04:02', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('nI6aHOZeJj8UFRu1O_1mNdPQUbMQ_i_SLYf7B1JL', '127713cfa8706e73721ae07748637508', 'account', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 17:29:25', '2020-09-02 17:29:25', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('nLkFARp-jLEU_4vqTEnp86g5VYtnEv8kenS4pb7t', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:36:06', '2020-09-02 12:36:06', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('Oip3hVDwx38V9ob9Ntjl9wVcGjSEgw_e5dGt8Otd', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-03 13:55:25', '2020-09-03 13:55:25', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('omwcBE_RYztW9LnXwHYc3DIdXlgS5_SEwJmGNU-N', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:24:43', '2020-08-29 21:24:43', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('PEc6lodKVH7jJGbF-aZ0R2Pb0wlxP6MrqtMP5_im', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:45:22', '2020-08-29 21:48:43', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('pRyV15e3_jjTYgc7Yssmxd6DV2O9r01LMSVzToGT', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 16:22:03', '2020-08-16 16:22:03', 1800, '1');
@@ -1263,8 +1279,10 @@ CREATE TABLE `sys_user_role` (
 BEGIN;
 INSERT INTO `sys_user_role` VALUES ('05342c371c18c7519dabeb38da454bf5', '');
 INSERT INTO `sys_user_role` VALUES ('1', '1');
+INSERT INTO `sys_user_role` VALUES ('127713cfa8706e73721ae07748637508', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('18320c6ecc92e1509836778b6b6634b5', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('2740f753a29cdddbe5fa6d66d8160414', '904a870be22c6b84845dbd1699655b4a');
+INSERT INTO `sys_user_role` VALUES ('286cf7378ccb6d74f912f71387448199', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('33f0f04578dff1e3909102a2d7b370f6', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('49f40b21c1dbdc83255d5c64119fcd4d', '2');
 INSERT INTO `sys_user_role` VALUES ('4c2796f3667e3e5907a04623d7fd8de4', '2');
@@ -1313,6 +1331,46 @@ CREATE TABLE `t_balance_record` (
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='次数变更记录';
+
+-- ----------------------------
+-- Table structure for t_config
+-- ----------------------------
+DROP TABLE IF EXISTS `t_config`;
+CREATE TABLE `t_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `value` varchar(20) NOT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `type` varchar(20) DEFAULT NULL,
+  `url` varchar(20) DEFAULT NULL,
+  `title` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `t_config_id_uindex` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COMMENT='配置项';
+
+-- ----------------------------
+-- Records of t_config
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_config` VALUES (4, '美妆护肤', 'label', 'label', NULL, 'label');
+INSERT INTO `t_config` VALUES (5, '时尚配饰', 'label', 'label', NULL, 'label');
+INSERT INTO `t_config` VALUES (6, '单人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum');
+INSERT INTO `t_config` VALUES (7, '双人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum');
+INSERT INTO `t_config` VALUES (8, '站姿', 'seat', 'seat', NULL, 'seat');
+INSERT INTO `t_config` VALUES (9, '坐姿', 'seat', 'seat', NULL, 'seat');
+INSERT INTO `t_config` VALUES (10, '活力青春型', 'anchorType', 'anchorType', NULL, 'anchorType');
+INSERT INTO `t_config` VALUES (11, '成熟稳重型', 'anchorType', 'anchorType', NULL, 'anchorType');
+INSERT INTO `t_config` VALUES (12, '浪漫古风型', 'anchorType', 'anchorType', NULL, 'anchorType');
+INSERT INTO `t_config` VALUES (13, '度假', 'style', 'style', 'http://www.baidu.com', 'style');
+INSERT INTO `t_config` VALUES (14, '海边', 'style', 'style', 'http://www.baidu.com', 'style');
+INSERT INTO `t_config` VALUES (17, '气球', 'component', 'plusService', 'http://www.baidu.com', 'component');
+INSERT INTO `t_config` VALUES (18, '狗', 'component', 'plusService', 'http://www.baidu.com', 'component');
+INSERT INTO `t_config` VALUES (19, '发型1', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle');
+INSERT INTO `t_config` VALUES (20, '发型2', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle');
+INSERT INTO `t_config` VALUES (21, '衣服1', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes');
+INSERT INTO `t_config` VALUES (22, '衣服2', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes');
+INSERT INTO `t_config` VALUES (23, 'red', 'color', 'plusService', 'http://www.baidu.com', 'color');
+INSERT INTO `t_config` VALUES (24, '#000', 'color', 'plusService', 'http://www.baidu.com', 'color');
+COMMIT;
 
 -- ----------------------------
 -- Table structure for t_contact_info

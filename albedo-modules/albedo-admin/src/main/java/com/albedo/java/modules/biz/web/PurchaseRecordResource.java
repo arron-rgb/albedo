@@ -19,6 +19,7 @@ import com.albedo.java.modules.biz.domain.dto.PurchaseRecordQueryCriteria;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -31,6 +32,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/purchase-record")
 @AllArgsConstructor
+@Api(tags = "购买记录")
 public class PurchaseRecordResource extends BaseResource {
 
   private final PurchaseRecordService service;

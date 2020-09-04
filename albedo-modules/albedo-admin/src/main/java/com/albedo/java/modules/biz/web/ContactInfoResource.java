@@ -19,6 +19,7 @@ import com.albedo.java.modules.biz.domain.dto.ContactInfoQueryCriteria;
 import com.albedo.java.modules.biz.service.ContactInfoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -31,6 +32,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/contact-info")
 @AllArgsConstructor
+@Api(tags = "企业联系方式")
 public class ContactInfoResource extends BaseResource {
 
   private final ContactInfoService service;
@@ -79,7 +81,17 @@ public class ContactInfoResource extends BaseResource {
     log.debug("REST request to save ContactInfoDto : {}", contactInfoDto);
     service.saveOrUpdate(contactInfoDto);
     return Result.buildOk("保存联系单成功");
+  }
 
+  @PreAuthorize("@pms.hasPermission('biz_contactInfo_edit')")
+  @LogOperate(value = "联系单更新")
+  @ApiOperation("联系单状态更新")
+  @GetMapping("/update")
+  public Result<String> save(String id) {
+    ContactInfo info = service.getById(id);
+    info.setStatus("1");
+    service.updateById(info);
+    return Result.buildOk("更新成功");
   }
 
   /**

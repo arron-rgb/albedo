@@ -24,6 +24,7 @@ import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -36,6 +37,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/order")
 @AllArgsConstructor
+@Api(tags = "订单")
 public class OrderResource extends BaseResource {
 
   private final OrderService service;
