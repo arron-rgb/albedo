@@ -280,9 +280,9 @@ export default {
   .block{
     min-width: 1200px;
     margin: auto;
-    .banner{
-      height:100%;
-    }
+    //.banner{
+    //  w:100%;
+    //}
     width: 100%;
     margin: auto;
   }
