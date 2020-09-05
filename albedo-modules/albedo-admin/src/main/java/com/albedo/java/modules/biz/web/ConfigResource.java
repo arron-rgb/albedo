@@ -2,6 +2,7 @@ package com.albedo.java.modules.biz.web;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -53,7 +54,9 @@ public class ConfigResource {
     }
     build.setPlusService(PlusService.builder().build());
     List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", "plusService"));
-    build.getPlusService().addList(plusService, "请选择增值服务");
+    plusService.stream().collect(Collectors.groupingBy(Config::getName)).forEach((key, value) -> {
+      build.getPlusService().addList(value, "请选择" + key);
+    });
     return Result.buildOkData(build);
   }
 

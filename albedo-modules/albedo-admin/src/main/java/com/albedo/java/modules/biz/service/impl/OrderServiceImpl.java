@@ -2,10 +2,8 @@ package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
-import static com.albedo.java.common.core.util.StringUtil.SPLIT_DEFAULT;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +12,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.albedo.java.common.core.exception.OrderException;
@@ -32,10 +29,8 @@ import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
-import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 
 /**
  * @author arronshentu
@@ -167,27 +162,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void updateForm(SubOrderVo orderVo) {
-    orderVo.getLabels().sort(Comparator.comparing(Label::getOrder));
-    Order order = baseMapper.selectById(orderVo.getOrderId());
-    String videoId = order.getVideoId();
-    Assert.isTrue(StringUtils.isNotBlank(videoId), "未查询到该订单相关的视频信息");
-    Video video = videoService.getById(videoId);
-    Assert.isTrue(video != null, "未查询到该订单相关的视频信息");
-
-    StringBuilder stringBuilder = new StringBuilder();
-    for (Label label : orderVo.getLabels()) {
-      stringBuilder.append(label.getLabel()).append(SPLIT_DEFAULT);
-    }
-
-    String radioPath = uploadRadio(order.getId(), stringBuilder.toString());
-
-    // todo ffmpeg整合
-    video.setLogoUrl(orderVo.getLogoUrl());
-    videoService.updateById(video);
-
-    order.setState(ORDER_STATE_4);
-    baseMapper.updateById(order);
+  public void updateForm() {
+    // todo 上传贴片等素材
   }
 
   @Override
@@ -196,18 +172,14 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Resource
-  TtsSingleton ttsSingleton;
-
-  @Resource
   VideoService videoService;
 
   @Override
-  public String uploadRadio(String orderId, String content) {
-    try {
-      return ttsSingleton.generateRadio(content).getAbsolutePath();
-    } catch (TencentCloudSDKException e) {
-    }
-    return "";
+  public void uploadRadio(String orderId, String content) {
+    Order order = baseMapper.selectById(orderId);
+    String videoId = order.getVideoId();
+    Video video = videoService.getById(videoId);
+    // todo tts合成音频or上传音频
   }
 
   @Override

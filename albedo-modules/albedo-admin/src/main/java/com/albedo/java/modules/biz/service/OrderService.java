@@ -5,7 +5,7 @@ import java.util.List;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.OrderVo;
 
 /**
  * @author arronshentu
@@ -18,7 +18,7 @@ public interface OrderService extends BaseService<Order> {
    * @param form
    *          表单json
    */
-  void place(Order order);
+  void place(OrderVo order);
 
   /**
    * 用户付款 or 扣次数
@@ -49,10 +49,8 @@ public interface OrderService extends BaseService<Order> {
 
   /**
    * 更新表单
-   *
-   * @param orderVo
    */
-  void updateForm(SubOrderVo orderVo);
+  void updateForm();
 
   /**
    * 返回员工名下的订单
@@ -67,9 +65,9 @@ public interface OrderService extends BaseService<Order> {
    * @param orderId
    *          订单
    * @param content
-   * @return
+   *          base64
    */
-  String uploadRadio(String orderId, String content);
+  void uploadRadio(String orderId, String content);
 
   boolean callback(String orderId);
 

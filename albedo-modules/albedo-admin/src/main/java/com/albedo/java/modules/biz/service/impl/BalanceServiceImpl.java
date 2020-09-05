@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.ADD;
-import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_TIMES;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
 import java.util.List;
@@ -11,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
@@ -23,6 +23,8 @@ import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+import io.micrometer.core.instrument.util.StringUtils;
 
 /**
  * @author arronshentu
@@ -67,18 +69,35 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   @Override
   public void consumeTimes() throws TimesOverspendException {
     String deptId = SecurityUtil.getUser().getDeptId();
-    // 1. 个人用户直接扣
-    if (deptId.equals(PERSONAL_USER_ROLE_ID)) {
+    String userId = SecurityUtil.getUser().getId();
+    List<String> roles = SecurityUtil.getRoles();
+    // 1. 个人角色 && 公共部门 直接扣
+    if (deptId.equals(PUBLIC_DEPT_ID) && roles.contains(PERSONAL_USER_ROLE_ID)) {
       consumeStaffTimes();
       return;
     }
     // 2. 企业用户默认扣公司 公司不够再扣个人
-    String adminId = userService.getOutTradeNosByUserId(deptId);
-    try {
-      consumeTimes(adminId);
-    } catch (TimesOverspendException e) {
-      consumeStaffTimes();
+    if (roles.contains(BUSINESS_ADMIN_ROLE_ID) || roles.contains(BUSINESS_COMMON_ROLE_ID)) {
+      String adminId = userService.getOutTradeNosByUserId(deptId);
+      if (StringUtils.isBlank(adminId)) {
+        return;
+      }
+      try {
+        if (!consumeTimes(adminId)) {
+          throw new RuntimeMsgException("扣费失败");
+        }
+      } catch (TimesOverspendException e) {
+        consumeStaffTimes();
+      }
     }
+    // 既不是个人 也不是企业 但有次数的情况 todo 方便测试 或 产生了脏数据
+    List<Balance> balances = baseMapper.selectList(Wrappers.<Balance>query().eq("user_id", userId));
+    if (balances.size() == 1) {
+      consumeStaffTimes();
+    } else {
+      throw new RuntimeMsgException("当前用户余量出现问题");
+    }
+
   }
 
   @Resource
@@ -87,6 +106,9 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   private boolean consumeTimes(String userId) throws TimesOverspendException {
     // 消耗传入的userId的次数
     Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
+    if (balance == null) {
+      throw new RuntimeMsgException("当前用户或企业未购买任何套餐");
+    }
     if (balance.getTimes() > 1) {
       balance.setTimes(balance.getTimes() - 1);
     } else {

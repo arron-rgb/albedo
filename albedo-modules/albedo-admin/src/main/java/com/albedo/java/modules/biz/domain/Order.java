@@ -25,7 +25,7 @@ public class Order extends IdEntity<Invoice> {
    */
   private Integer state;
   /**
-   * 1. 普通 2. 加速
+   * 0. 普通 1. 加速
    */
   private String type;
   /**
