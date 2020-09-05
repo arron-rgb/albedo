@@ -1,3 +1,8 @@
+# todo
+1. record延迟到回调或异步通知接口
+2. 二次表单生成的过程
+3. ffmpeg调用gpu渲染
+
 # 数据表语义
 ``` sql
 balance 次数
