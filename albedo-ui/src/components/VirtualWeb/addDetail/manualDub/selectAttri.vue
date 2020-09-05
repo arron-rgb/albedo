@@ -63,6 +63,15 @@ export default {
                     this.selectedAttri.splice(i,1)
             })
         }
+        else{
+            let prevAttri = this.attriType[listid].list[this.attriType[listid].active]
+            this.selectedAttri.filter((item,i)=>{
+                if(item===prevAttri)
+                    this.selectedAttri.splice(i,1)
+            })
+            this.attriType[listid].active=id
+            this.selectedAttri.push(selectedItem)
+        }
     },
     next(){
         this.$router.replace('paymentPage')
