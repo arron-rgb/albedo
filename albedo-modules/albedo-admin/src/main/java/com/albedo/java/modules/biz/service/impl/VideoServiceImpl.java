@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.albedo.java.common.core.exception.RuntimeMsgException;
@@ -23,6 +24,7 @@ import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.albedo.java.modules.tool.util.TtsSingleton;
@@ -36,6 +38,9 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 
 /**
  * @author arronshentu
@@ -62,12 +67,11 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   @Override
-  public boolean storageState() {
+  public boolean storageState(Double byteSize) {
     // 以下语义类似 1为已使用空间 2为剩余量 3如何获取购买套餐记录使其与使用量/剩余量绑定
-    // long storage = ossSingleton.getBucketStorage("");
-    // Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", ""));
-    //
-    return false;
+    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", ""));
+    Assert.notNull(balance, "该账号下无任何存储空间");
+    return byteSize.compareTo(balance.getStorage()) > 0;
   }
 
   /**
@@ -88,37 +92,50 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     Double storageSize = balance.getStorage();
     if (!ossSingleton.doesBucketExist(userId)) {
-      ossSingleton.create(userId, storageSize.intValue());
+      try {
+        ossSingleton.create(userId, storageSize.intValue());
+      } catch (IllegalArgumentException e) {
+        // buck命名失败时使用uuid 并更新uuid为qqOpenId
+        String bucketName = IdUtil.fastUUID();
+        ossSingleton.create(bucketName, storageSize.intValue());
+        User user = userService.getById(userId);
+        user.setQqOpenId(bucketName);
+        userService.updateById(user);
+      }
     }
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void uploadVideo(String orderId, MultipartFile file) throws IOException {
     // 更新订单状态
     Order order = orderService.getById(orderId);
-    order.setState(ORDER_STATE_3);
-    // 上传视频至oss
+
     String userId = order.getUserId();
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
+    Assert.notNull(balance, "该账号下无任何存储空间");
     double storage = balance.getStorage() - ((double)file.getSize() / 1073741824);
     // 存储空间不足
-    if (storage < 0) {
-      return;
-    }
+    Assert.isTrue(storage > 0, "该账号下存储空间不足以容纳该视频");
     balance.setStorage(storage);
-    if (!ossSingleton.doesBucketExist(userId)) {
-      createBucket(userId);
+    String bucketName = userId;
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      bucketName = userService.getById(userId).getQqOpenId();
+      if (!ossSingleton.doesBucketExist(bucketName)) {
+        createBucket(bucketName);
+      }
     }
     InputStream inputStream = file.getInputStream();
     // 保存视频记录至数据库
     Video video = Video.builder().userId(userId).orderId(orderId).build();
     baseMapper.insert(video);
+    order.setState(ORDER_STATE_3);
     order.setVideoId(video.getId());
     orderService.updateById(order);
-    PutObjectResult result = ossSingleton.uploadFileStream(inputStream, video.getId(), userId);
+    // 上传视频至oss
+    PutObjectResult result = ossSingleton.uploadFileStream(inputStream, bucketName, video.getId());
     balanceService.updateById(balance);
-
   }
 
   private static final String PATH = System.getenv("PWD");

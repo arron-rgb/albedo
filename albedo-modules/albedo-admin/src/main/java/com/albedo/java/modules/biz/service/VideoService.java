@@ -26,7 +26,7 @@ public interface VideoService extends BaseService<Video> {
    *
    * @return 满 true
    */
-  boolean storageState();
+  boolean storageState(Double byteSize);
 
   /**
    * 创bucket
