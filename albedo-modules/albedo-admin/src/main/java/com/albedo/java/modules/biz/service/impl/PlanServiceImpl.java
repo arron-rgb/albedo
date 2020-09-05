@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.exception.RuntimeMsgException;
-import com.albedo.java.common.core.constant.BusinessConstants;
-import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
@@ -25,7 +23,6 @@ import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
-import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.alipay.api.AlipayApiException;
@@ -50,12 +47,14 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
       .subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
-    PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId())
+    PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(PLAN_TYPE)
       .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
     recordService.save(record);
     try {
       return aliPayService.toPayAsPc(trade);
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("生成支付链接时发生异常");
     }
   }
 

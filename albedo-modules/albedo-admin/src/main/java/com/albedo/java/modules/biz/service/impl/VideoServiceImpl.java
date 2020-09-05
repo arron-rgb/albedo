@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
@@ -30,17 +29,15 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.aliyun.oss.model.PutObjectResult;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
-
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.IdUtil;
 
 /**
  * @author arronshentu
@@ -60,11 +57,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
   @Resource
   BalanceService balanceService;
-
-  @Override
-  public void uploadVideoToOss() {
-    ossSingleton.uploadFile(null, "", "vlivest");
-  }
 
   @Override
   public boolean storageState(Double byteSize) {
@@ -164,14 +156,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 2. tts合成的语音
     // 一样处理
 
-  }
-
-  public void generateAudio() {
-    try {
-      ttsSingleton.generateAudio(TtsSingleton.Params.builder().build(), "");
-    } catch (TencentCloudSDKException e) {
-      throw new RuntimeMsgException("生成语音时出现错误");
-    }
   }
 
   @Resource
