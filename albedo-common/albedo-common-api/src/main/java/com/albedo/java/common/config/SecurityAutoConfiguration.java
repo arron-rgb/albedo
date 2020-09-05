@@ -1,6 +1,7 @@
 package com.albedo.java.common.config;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -77,11 +78,6 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public PasswordDecoderFilter passwordDecoderFilter() {
-    return new PasswordDecoderFilter(applicationProperties);
-  }
-
-  @Bean
   public ValidateCodeFilter validateCodeFilter() {
     return new ValidateCodeFilter(ajaxAuthenticationFailureHandler(), applicationProperties);
   }
@@ -129,12 +125,15 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
     return new HttpSessionEventPublisher();
   }
 
+  @Resource
+  PasswordDecoderFilter passwordDecoderFilter;
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
     http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
       .addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class)
-      .addFilterBefore(passwordDecoderFilter(), CsrfFilter.class).addFilterBefore(corsFilter, CsrfFilter.class)
+      .addFilterBefore(passwordDecoderFilter, CsrfFilter.class).addFilterBefore(corsFilter, CsrfFilter.class)
       .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint()).and().rememberMe()
       .rememberMeServices(rememberMeServices).key(applicationProperties.getSecurity().getRememberMe().getKey()).and()
       .formLogin().loginProcessingUrl(applicationProperties.getAdminPath("/authenticate"))

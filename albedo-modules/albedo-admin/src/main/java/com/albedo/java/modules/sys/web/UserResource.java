@@ -31,6 +31,8 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Lists;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -39,6 +41,7 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @RequestMapping("${application.admin-path}/sys/user")
+@Api("用户相关")
 @AllArgsConstructor
 public class UserResource extends BaseResource {
 
@@ -180,8 +183,9 @@ public class UserResource extends BaseResource {
   }
 
   @PostMapping(value = "/upload")
-  @PreAuthorize("@pms.hasPermission('sys_user_upload')")
-  @LogOperate(value = "用户管理导入")
+  @PreAuthorize("@pms.hasPermission('sys_user_edit')")
+  @LogOperate(value = "用户导入")
+  @ApiOperation(value = "导入用户")
   public Result<List<String>> uploadData(@RequestParam("uploadFile") MultipartFile dataFile) throws Exception {
     if (dataFile.isEmpty()) {
       return Result.buildFail("上传文件为空");
@@ -196,6 +200,7 @@ public class UserResource extends BaseResource {
   @GetMapping(value = "/exportTemplate")
   @PreAuthorize("@pms.hasPermission('sys_user_view')")
   @LogOperate(value = "用户导入模板导出")
+  @ApiOperation(value = "用户导入模板导出")
   public void importTemplate(HttpServletResponse response) {
     ExcelUtil<UserExcelVo> util = new ExcelUtil<>(UserExcelVo.class);
     util.exportExcel(Lists.newArrayList(), "Sheet1", response);

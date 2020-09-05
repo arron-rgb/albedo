@@ -13,8 +13,8 @@ public interface BusinessConstants {
   Integer ADD = 1;
   Integer DEL = 0;
 
-  String ORDER = "1";
-  String PLAN = "0";
+  String ORDER_TYPE = "1";
+  String PLAN_TYPE = "0";
   String PERSONAL_TYPE = "1";
   String ENTERPRISE_TYPE = "2";
 

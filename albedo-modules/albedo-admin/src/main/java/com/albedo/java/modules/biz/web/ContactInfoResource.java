@@ -86,8 +86,8 @@ public class ContactInfoResource extends BaseResource {
   @PreAuthorize("@pms.hasPermission('biz_contactInfo_edit')")
   @LogOperate(value = "联系单更新")
   @ApiOperation("联系单状态更新")
-  @GetMapping("/update")
-  public Result<String> save(String id) {
+  @GetMapping("/update?{id}")
+  public Result<String> update(@PathVariable("id") String id) {
     ContactInfo info = service.getById(id);
     info.setStatus("1");
     service.updateById(info);

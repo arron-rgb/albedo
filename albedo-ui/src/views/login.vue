@@ -154,7 +154,6 @@ export default {
       passwordType: 'password',
       registerForm: {
         userType: 'personal',
-        companyName: '',
         username: '',
         password: '',
         rePassword: '',

@@ -38,7 +38,7 @@ public class PlusService {
   @Data
   @EqualsAndHashCode
   @Builder
-  static class Element {
+  public static class Element {
     String title;
     List<Config> data;
   }

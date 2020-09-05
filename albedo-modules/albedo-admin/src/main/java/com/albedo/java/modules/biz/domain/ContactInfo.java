@@ -49,7 +49,6 @@ public class ContactInfo extends IdEntity<ContactInfo> {
   private String phone;
   /** status 处理状态 */
   @Size(max = 100)
-
   private String status;
 
 }

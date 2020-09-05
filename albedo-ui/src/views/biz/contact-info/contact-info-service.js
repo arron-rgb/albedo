@@ -4,7 +4,7 @@ import qs from 'qs'
 
 export function page(params) {
   return request({
-    url: '/biz/contact-info/?' + qs.stringify(params, { indices: false }),
+    url: '/biz/contact-info/?' + qs.stringify(params, {indices: false}),
     method: 'get'
   })
 }
@@ -33,4 +33,12 @@ export function get(id) {
   })
 }
 
-export default { page, del, save, get }
+export function update(id) {
+  return request({
+    url: '/biz/contact-info/update/?' + id,
+    method: 'get'
+  })
+}
+
+
+export default {page, del, save, get, update}

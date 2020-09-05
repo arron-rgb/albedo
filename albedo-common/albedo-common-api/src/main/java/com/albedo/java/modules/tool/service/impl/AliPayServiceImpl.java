@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
+import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.jackson.JavaTimeModule;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
@@ -80,7 +81,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   @Override
   public String toPayAsPc(TradePlus trade) throws Exception {
     AlipayConfig alipay = find();
-    trade.setOutTradeNo(aliPayUtils.getOrderCode());
     return toPayAsPc(alipay, trade);
   }
 
@@ -88,13 +88,19 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
+    trade.setProductCode("FAST_INSTANT_TRADE_PAY");
     AlipayClient alipayClient = buildAlipayClient();
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
     request.setBizContent(mapper.writeValueAsString(trade));
     // todo 添加sellerId到Record表
-    return alipayClient.pageExecute(request, "GET").getBody();
+    try {
+      return alipayClient.pageExecute(request, "GET").getBody();
+    } catch (AlipayApiException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("跳转支付页面发生错误");
+    }
   }
 
   @Override
