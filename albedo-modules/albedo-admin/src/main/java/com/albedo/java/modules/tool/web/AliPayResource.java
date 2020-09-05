@@ -35,8 +35,8 @@ import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
-import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -74,34 +74,22 @@ public class AliPayResource {
     return new Result<>(HttpStatus.OK);
   }
 
-  @LogOperate("支付宝PC网页支付")
-  @ApiOperation("PC网页支付")
-  @PostMapping(value = "/toPayAsPC")
-  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
-    AlipayConfig aliPay = alipayService.find();
-    trade.setOutTradeNo(alipayUtils.getOrderCode());
-    String payUrl = alipayService.toPayAsPc(aliPay, trade);
-    return Result.buildOkData(payUrl);
-  }
-
   @ApiIgnore
   @GetMapping("/return")
   @AnonymousAccess
-  @ApiOperation("支付之后跳转的链接")
+  @ApiOperation("回调接口")
   public Result<String> returnPage(HttpServletRequest request, HttpServletResponse response) {
     AlipayConfig alipay = alipayService.find();
     response.setContentType("text/html;charset=" + alipay.getCharset());
     // 内容验签，防止黑客篡改参数
     if (alipayUtils.rsaCheck(request, alipay)) {
-      // 商户订单号
-      String outTradeNo = getParam(request, "out_trade_no");
-      // 支付宝交易号
-      String tradeNo = getParam(request, "trade_no");
-      // 根据业务需要返回数据，这里统一返回OK
-      // return new Result<>("payment successful", HttpStatus.OK);
+      String update = update(request);
+      if (StringUtils.equals("success", update)) {
+        return Result.buildOk("支付成功");
+      }
     } else {
       // 根据业务需要返回数据
-      // return new Result<>(HttpStatus.BAD_REQUEST);
+      return Result.buildFail("支付异常");
     }
     return null;
   }
@@ -121,7 +109,7 @@ public class AliPayResource {
   @ApiIgnore
   @RequestMapping("/notify")
   @AnonymousAccess
-  @ApiOperation("")
+  @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
     String appId = getParam(request, "app_id");
@@ -130,30 +118,38 @@ public class AliPayResource {
     }
     if (alipayUtils.rsaCheck(request, alipay)) {
       // 交易状态
-      String tradeStatus = getParam(request, "trade_status");
-      if (!StringUtils.equals(tradeStatus, TRADE_SUCCESS)) {
-        return "";
-      }
-      // 商户订单号
-      String outTradeNo = getParam(request, "out_trade_no");
-      PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
-      if (record == null) {
-        return "";
-      }
-      // 付款金额
-      String totalAmount = getParam(request, "total_amount");
-      if (!StringUtils.equals(totalAmount, record.getTotalAmount())) {
-        return "";
-      }
-      // 验证通过后应该根据业务需要处理订单
-      if (record.getType().equals(PLAN_TYPE)) {
-        planService.callback(outTradeNo);
-      } else if (record.getType().equals(ORDER_TYPE)) {
-        orderService.callback(record.getOuterId());
+      String x = update(request);
+      if (x != null) {
+        return x;
       }
       return "success";
     }
     return "";
+  }
+
+  private String update(HttpServletRequest request) {
+    String tradeStatus = getParam(request, "trade_status");
+    if (!StringUtils.equals(tradeStatus, TRADE_SUCCESS)) {
+      return "";
+    }
+    // 商户订单号
+    String outTradeNo = getParam(request, "out_trade_no");
+    PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
+    if (record == null) {
+      return "";
+    }
+    // 付款金额
+    String totalAmount = getParam(request, "total_amount");
+    if (!MoneyUtil.compareTo(totalAmount, record.getTotalAmount())) {
+      return "";
+    }
+    // 验证通过后应该根据业务需要处理订单
+    if (record.getType().equals(PLAN_TYPE)) {
+      planService.callback(outTradeNo);
+    } else if (record.getType().equals(ORDER_TYPE)) {
+      orderService.callback(record.getOuterId());
+    }
+    return null;
   }
 
   @Resource

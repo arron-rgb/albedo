@@ -17,7 +17,6 @@
 package com.albedo.java.modules.tool.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,7 +31,6 @@ import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeQueryPlus;
-import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.repository.AliPayConfigRepository;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
@@ -41,7 +39,6 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -103,48 +100,10 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     }
   }
 
-  @Override
-  public String toPayAsPc(AlipayConfig alipay, TradeVo trade) throws Exception {
-    if (alipay.getId() == null) {
-      throw new BadRequestException("请先添加相应配置，再操作");
-    }
-    AlipayClient alipayClient = buildAlipayClient();
-    AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-    request.setReturnUrl(alipay.getReturnUrl());
-    request.setNotifyUrl(alipay.getNotifyUrl());
-    TradePlus plus = new TradePlus();
-    BeanUtils.copyProperties(trade, plus);
-    request.setBizContent(mapper.writeValueAsString(plus));
-    return alipayClient.pageExecute(request, "GET").getBody();
-  }
-
   private final ObjectMapper mapper =
     new ObjectMapper().registerModule(new JavaTimeModule()).registerModule(new Jdk8Module())
       .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
       .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-  @Override
-  public String toPayAsWeb(AlipayConfig alipay, TradeVo trade) throws Exception {
-    if (alipay.getId() == null) {
-      throw new BadRequestException("请先添加相应配置，再操作");
-    }
-    AlipayClient alipayClient = buildAlipayClient();
-    double money = Double.parseDouble(trade.getTotalAmount());
-    double maxMoney = 5000;
-    if (money <= 0 || money >= maxMoney) {
-      throw new BadRequestException("测试金额过大");
-    }
-    // 创建API对应的request(手机网页版)
-    AlipayTradeWapPayRequest request = new AlipayTradeWapPayRequest();
-    request.setReturnUrl(alipay.getReturnUrl());
-    // 收不到异步通知自查方案-支付宝接口常见错误系列 https://openclub.alipay.com/club/history/read/1677
-    request.setNotifyUrl(alipay.getNotifyUrl());
-    request.setBizContent("{" + "'out_trade_no':'" + trade.getOutTradeNo() + "',"
-      + "'product_code':'FAST_INSTANT_TRADE_PAY'," + "'total_amount':" + trade.getTotalAmount() + "," + "'subject':'"
-      + trade.getSubject() + "'," + "'body':'" + trade.getBody() + "'," + "'extend_params':{"
-      + "'sys_service_provider_id':'" + alipay.getSysServiceProviderId() + "'" + "}" + "  }");
-    return alipayClient.pageExecute(request, "GET").getBody();
-  }
 
   @Override
   public String queryOrderStatus(String outTradeNo) throws AlipayApiException {

@@ -37,6 +37,8 @@ public class PlusService {
 
   @Data
   @EqualsAndHashCode
+  @NoArgsConstructor
+  @AllArgsConstructor
   @Builder
   public static class Element {
     String title;

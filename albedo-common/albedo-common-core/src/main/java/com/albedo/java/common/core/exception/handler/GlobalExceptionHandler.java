@@ -99,7 +99,6 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler({RuntimeMsgException.class})
   public Result bodyRuntimeMsgExceptionHandler(RuntimeMsgException exception) {
-    log.error("runtime msg={}", exception.getMessage(), exception);
     return Result.buildFail(exception.getMessage());
   }
 
