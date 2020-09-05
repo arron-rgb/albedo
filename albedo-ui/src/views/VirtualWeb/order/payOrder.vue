@@ -5,9 +5,85 @@
       <div slot="header" class="clearfix">
         <span class="title">需求清单</span>
       </div>
-      <el-row class="list" v-for="o in this.list" :key="o">
-        <el-col class="label" span="6">{{o.title}}</el-col>
-        <el-col class="content" span="18">{{o.data}}</el-col>
+
+
+      <el-row class="box">
+        <el-col span="4">
+          已选需求：
+        </el-col>
+        <el-col span="20">
+          <el-tag class="tag" v-for="(o,index) in this.list" :key="o" :type="typeList[index % 5]" span="18">{{o.data}}</el-tag>
+        </el-col>
+      </el-row>
+
+      <el-row class="box">
+        <el-col span="4">
+          补充需求（选填）：
+        </el-col>
+        <el-col span="20">
+          <el-input type="textarea" :rows="3" v-model="description" placeholder="请输入文本"></el-input>
+        </el-col>
+      </el-row>
+
+      <el-row class="box">
+        <el-col span="4">
+          加速服务（30元/次）：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="6">
+              <el-radio-group v-model="type" text-color="#ff5000" fill="#ff5000">
+                <el-radio label="1" border>启用</el-radio>
+                <el-radio label="0" border>不启用</el-radio>
+              </el-radio-group>
+            </el-col>
+            <el-col span="18" style="font-size: 14px; color: #909399">tips：启用加速服务将提速80%，预计24小时内完成视频</el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+
+<!--      ￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元/次-->
+      <el-row  class="box">
+        <el-col span="4">
+          合计：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元</el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+
+      <el-row class="box">
+        <el-col span="4">
+          支付方式：
+        </el-col>
+        <el-col span="20">
+          <el-radio-group v-model="payType" text-color="#ff5000" fill="#ff5000">
+            <el-radio style="height: 80px; width: 200px" label="0" border>
+              <a style="height: 60px; line-height: 60px">
+                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
+              </a>
+            </el-radio>
+            <el-radio style="height: 80px; width: 200px"  label="1" border>
+              <a style=" line-height: 60px; padding-left: 10px">
+                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
+              </a>
+            </el-radio>
+            <el-radio style="height: 80px; width: 200px"  label="2" border>
+              <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
+                <i class="el-icon-s-custom"></i>
+              </a>
+              <a style=" line-height: 60px;font-size: 16px">
+                抵扣会员次数
+              </a>
+            </el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
+
+      <el-row style="margin: 50px 0">
+        <el-button style="width: 150px" type="primary" @click="toPay">前往支付</el-button>
       </el-row>
     </el-card>
   </div>
@@ -15,15 +91,23 @@
 </template>
 
 <script>
+import storeApi from "@/utils/store";
+
 export default {
   name: "payOrder",
   data(){
     return{
-      list : []
+      list : [],
+      typeList : ["", "success", "info", "warning", "danger"],
+      description : '',
+      type : "1",//加速服务，0 不加速， 1加速
+      payType : "0", //0 支付宝支付， 1微信支付
     }
   },
   created() {
-    var list = this.$route.query.data;
+    var list = storeApi.get({
+      name: 'videoConfig'
+    }) || null;
     console.log(list)
     if(list === null || list === undefined){
       this.$alert('请先选择视频基础需求', {
@@ -42,6 +126,9 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    toPay(){
+
+    }
   }
 }
 </script>
@@ -59,34 +146,55 @@ export default {
 .title{
   width: 100%;
   margin-left: 40px;
-  font-size: 26px;
-  line-height: 50px;
+  /*color: rgba(255, 80, 0, 0.7);*/
+  font-size: 24px;
+  /*line-height: 50px;*/
 }
 
-.label{
-  font-size: 14px;
-  text-align: left;
-  color: #303133;
-}
-.content{
-  text-align: left;
-  font-size: 14px;
-  color: #303133;
-}
 .box-card{
   height: 100%;
   padding: 0;
 }
 
-.list{
-  line-height: 50px;
-  padding-left: 60px;
-}
-.list:nth-child(odd){
-  background: rgba(255,80,0,0.1);
-}
-.el-card__body {
-  padding: 5px;
+
+.tag{
+  min-width: 100px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 14px;
+  min-height: 40px;
+  margin: 10px;
 }
 
+.box{
+  padding: 10px 60px;
+  text-align: left;
+  line-height: 50px;
+}
+
+/*.myRadio{*/
+/*  margin-left:10px;*/
+/*}*/
+/*.myRadio{*/
+/*  color: #ff5000;*/
+/*  background-color: #ff5000;*/
+/*}*/
+
+/*.radio-wrapper {*/
+/*  display: flex;*/
+/*  flex-direction: row;*/
+/*  align-items: center;*/
+/*.icon {*/
+/*  width: 30px;*/
+/*  height: 30px;*/
+/*  margin-left: 5px;*/
+/*  margin-right: 5px;*/
+/*}*/
+/*}*/
+/*.radio-border {*/
+/*  width: 180px;*/
+/*  height: 70px;*/
+/*  border-radius: 5px;*/
+/*  border: 1px solid #d7dae2;*/
+/*}*/
 </style>

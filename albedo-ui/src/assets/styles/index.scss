@@ -236,3 +236,18 @@ aside {
   border-color: #ff5000;
   box-shadow: none;
 }
+
+.el-radio.is-bordered.is-checked{
+  border-color: #ff5000 !important;
+}
+.el-radio__input.is-checked .el-radio__inner{
+  border-color: #ff5000 !important;
+  background-color: #ff5000 !important;
+}
+.el-radio__input.is-checked+.el-radio__label{
+  color: #ff5000;
+}
+.el-radio__inner:hover{
+  border-color: #ff5000 !important;
+  //background-color: #ff5000 !important;
+}

@@ -9,22 +9,42 @@
   <div class="descriBlock">
     <div class="blockTitle">详情配置</div>
     <div class="startBar">
-      <div class="setDuration">
-        <!-- <div class="tips">选择视频时长</div> -->
-        <el-form ref="durationForm" :model="durationForm" >
-          <el-form-item label="选择视频时长">
-            <el-select v-model="durationForm.duration" placeholder="请选择视频时长">
-              <el-option label="15分钟" value="15min"></el-option>
-              <el-option label="30分钟" value="30min"></el-option>
-              <el-option label="45分钟" value="45min"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </div>
+
+      <el-row  class="box">
+        <el-col span="4">
+          设置视频时长：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元</el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+<!--      <div class="setDuration">-->
+<!--        &lt;!&ndash; <div class="tips">选择视频时长</div> &ndash;&gt;-->
+<!--        <el-form ref="durationForm" :model="durationForm" >-->
+<!--          <el-form-item label="选择视频时长">-->
+<!--            <el-select v-model="durationForm.duration" placeholder="请选择视频时长">-->
+<!--              <el-option label="15分钟" value="15min"></el-option>-->
+<!--              <el-option label="30分钟" value="30min"></el-option>-->
+<!--              <el-option label="45分钟" value="45min"></el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--      </div>-->
+      <el-row  class="box">
+        <el-col span="4">
+          选择配音方式：
+        </el-col>
+        <el-col span="20">
+
+        </el-col>
+      </el-row>
+
       <div class="setDubway">
-          <el-row :gutter="12">
-            <el-col :span="5">
-              <div class="cardBox" @click='goTo("uploadDub")'>
+        <el-row :gutter="12">
+          <el-col :span="5">
+            <div class="cardBox" @click='goTo("uploadDub")'>
               <div class="cardBox" @click='goTo("newProduct")'>
                 <el-card shadow='hover'>
                   <div slot='header' class='clearfix'>
@@ -34,11 +54,11 @@
                   <!-- <div>24小时不断直播，持续增加品牌曝光度</div> -->
                 </el-card>
               </div>
-              </div>
-            </el-col>
-             <el-col :span="5">
-               <div class="cardBox" @click='goTo("selectAttri")'>
-               <div class="cardBox" @click='goTo("uploadDub")'>
+            </div>
+          </el-col>
+          <el-col :span="5">
+            <div class="cardBox" @click='goTo("selectAttri")'>
+              <div class="cardBox" @click='goTo("uploadDub")'>
                 <el-card shadow='hover' >
                   <div slot='header' class='clearfix'>
                     <i class='el-icon-magic-stick'></i>
@@ -46,21 +66,21 @@
                   <h3 class='cardTitle'>人工配音</h3>
                   <!-- <div>情绪表达饱满，主播形象更加生动</div> -->
                 </el-card>
-               </div>
-               </div>
-            </el-col>
-             <el-col :span="5">
-               <div class="cardBox" @click='goTo("newProduct")'>
-                  <el-card shadow='hover' >
-                    <div slot='header' class='clearfix'>
-                      <i class='el-icon-monitor'></i>
-                    </div>
-                    <h3 class='cardTitle' @click='goTo("newProduct")'>智能机器配音</h3>
-                    <!-- <div>机器自动配音，快捷高效</div> -->
-                  </el-card>
-               </div>
-            </el-col>
-          </el-row>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="5">
+            <div class="cardBox" @click='goTo("newProduct")'>
+              <el-card shadow='hover' >
+                <div slot='header' class='clearfix'>
+                  <i class='el-icon-monitor'></i>
+                </div>
+                <h3 class='cardTitle' @click='goTo("newProduct")'>智能机器配音</h3>
+                <!-- <div>机器自动配音，快捷高效</div> -->
+              </el-card>
+            </div>
+          </el-col>
+        </el-row>
       </div>
 
     </div>
@@ -183,6 +203,12 @@ export default {
 
 
   }
-
+  .box{
+    padding: 10px 60px;
+    text-align: left;
+    line-height: 50px;
+    width: 100%;
+  }
 }
+
 </style>

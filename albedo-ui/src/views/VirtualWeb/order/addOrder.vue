@@ -31,7 +31,7 @@
 <script>
 import crudConfig from '@/views/biz/config/config-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
-
+import storeApi from '@/utils/store'
 export default {
   name: "addOrder",
   data () {
@@ -88,7 +88,12 @@ export default {
         }
       }
       else{
-        this.goTo("/payOrder", this.backData);
+        storeApi.set({
+          name: 'videoConfig',
+          content: this.backData,
+          type: 'session'
+        })
+        this.goTo("/payOrder");
       }
     },
     goTo(url, data){
