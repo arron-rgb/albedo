@@ -18,7 +18,7 @@ public interface OrderService extends BaseService<Order> {
    * @param form
    *          表单json
    */
-  void place(OrderVo order);
+  String place(OrderVo order);
 
   /**
    * 用户付款 or 扣次数
