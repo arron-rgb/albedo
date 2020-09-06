@@ -13,28 +13,6 @@
       </div>
     </div>
 
-    <!--    <div class="container_background">-->
-    <!--      <el-container class="container">-->
-    <!--        <el-aside style="padding-top: 73px" width="252px">-->
-    <!--          <div class="container_title" style="text-align: left">-->
-    <!--            企业定制-->
-    <!--          </div>-->
-    <!--          <div class="container_title" style="text-align: right">-->
-    <!--            品牌专享-->
-    <!--          </div>-->
-    <!--          <div class="container_text">-->
-    <!--            虚拟直播直降XXX元-->
-    <!--          </div>-->
-    <!--          <div  class="container_text">-->
-    <!--            赠送改稿权限及配音服务，无忧打造智慧直播间-->
-    <!--          </div>-->
-    <!--        </el-aside>-->
-    <!--        <el-main style="margin-left: 145px;  padding: 0;">-->
-    <!--          <img src="@/assets/timg.jpg" class="container_img">-->
-    <!--        </el-main>-->
-    <!--      </el-container>-->
-    <!--    </div>-->
-
     <div class="exhibition_right">
 
     </div>
@@ -121,17 +99,17 @@
             <th style="line-height: 60px;">{{list.title}}</th>
             <th v-for="item in priceData" :key="item">
               <p style="line-height: 60px;" >{{item.title}}</p>
-              <el-button style="margin-bottom: 5px" round size="small">￥{{item.price}}&emsp;立即抢购</el-button>
+              <el-button style="margin-bottom: 5px" round >￥{{getPrice(item.title)}}&emsp;立即抢购</el-button>
             </th>
           </tr>
           <td class="col">
             <tr v-for="(i) in list.contain" :key="i">
-              <p style="width: 240px; line-height: 50px; font-size: 14px">{{i}}</p>
+              <p style="width: 239px; line-height: 50px; font-size: 14px">{{i}}</p>
             </tr>
           </td>
           <td class="data" v-for="(item) in priceData" :key="item">
             <tr v-for="(i) in item.contain" :key="i">
-              <p style="width: 240px; line-height: 50px; font-size: 14px">{{i}}</p>
+              <p style="width: 238px; line-height: 50px; font-size: 14px">{{i}}</p>
             </tr>
           </td>
         </table>
@@ -149,53 +127,30 @@ export default {
   data(){
     return{
       backgroundImg : require('@/assets/VirtualWeb/enterprise/create.jpg'),
-      list:        {title :"功能权限", contain : ["调用虚拟人物（标准版）", "调用虚拟场景（标准版）",
-          "调用虚拟人物（定制版）","调用虚拟场景（定制版）", "人物/场景修改次数", "上传商品数量",
+      list:        {title :"功能权限", contain : ["调用虚拟人物", "调用虚拟场景","标准版视频制作次数",
+          "定制版视频制作次数", "人物/场景修改次数", "上传商品数量",
           "调用话术模板","系统智能配音", "人工专属配音", "视频时长上限","专属商务服务", "子账号数量",
-          "在线制作协议", "在线发票服务","账号存储空间", "保留历史版本", "制作渲染效率",
+          "在线制作协议", "在线发票服务","账号存储空间", "制作渲染效率",
           "授权类型", "授权期限", "授权协议"]},
       priceData: [
-        {title : "标准版", price : "999", contain : ["3", "3", "/", "/", "/", "100", "无限",
+        {title : "标准版", price : "999", contain : ["有", "有", "3", "/", "0", "100", "无限",
             "无限", "/", "2h/条","有", "3","有", "有","1G",
-            "1条", "高","商用", "30天", "有"]},
-        {title : "升级版", price : "xxx", contain : ["6", "6", "/", "/", "/", "200", "无限",
+             "高","商用", "30天", "有"]},
+        {title : "升级版", price : "xxx", contain : ["有", "有", "6", "/", "0", "200", "无限",
             "无限", "/", "2h/条","有", "3","有", "有","3G",
-            "1-3条", "高","商用", "30天", "有"]},
-        {title : "旗舰版", price : "xxx", contain : ["12", "12", "1", "1", "1", "无限", "无限",
+             "高","商用", "30天", "有"]},
+        {title : "旗舰版", price : "xxx", contain : ["有", "有", "12", "1", "1", "无限", "无限",
             "无限", "30min", "4h/条","有", "5","有", "有","6G",
-            "3-6条", "极高","商用", "60天", "有"]},
-        {title : "大客户专属定制版", price : "xxx", contain : ["3", "3", "1", "1", "3", "无限", "无限",
+             "极高","商用", "60天", "有"]},
+        {title : "大客户专属定制版", price : "xxx", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
             "无限", "60min", "无限","有", "5","有", "有","无限",
-            "无限", "极高","商用", "无限", "有"]},
-        // {name : "功能权限", baseContain : ["调用虚拟人物（标准版）",
-        //     "调用虚拟场景（标准版）","上传商品数量","调用话术模板", "使用系统智能配音",
-        //     "视频时长上限"], enterpriseContain :["专属商务服务","子号数量",
-        //     "在线制作协议", "在线发票服务"], cloudPower:["账号存储空间", "保留历史版本",
-        //     "制作渲染效率"], copyright: ["授权类型", "授权期限", "授权协议"]},
-        // {name : "标准版", price : "xxx", baseContain : ["调用虚拟人物（标准版） *3",
-        //   "调用虚拟场景（标准版） *3","上传商品数量 *100","调用话术模板：无限", "使用系统智能配音：无限",
-        //   "视频时长上限 2h/条"], enterpriseContain :["专属商务服务","子号数量 *3",
-        //   "在线制作协议", "在线发票服务"], cloudPower:["账号存储空间 1G", "保留历史版本 1条",
-        //   "制作渲染效率 高"], copyright: ["授权类型：商用", "授权期限：30天", "含授权协议"]},
-        // {name : "升级版", price : "xxx", baseContain : ["调用虚拟人物（标准版） *6",
-        //     "调用虚拟场景（标准版） *6","上传商品数量 *200","调用话术模板：无限", "使用系统智能配音：无限",
-        //     "视频时长上限 2h/条"], enterpriseContain :["专属商务服务","子号数量 *3",
-        //     "在线制作协议", "在线发票服务"], cloudPower:["账号存储空间 3G", "保留历史版本 1-3条",
-        //     "制作渲染效率 高"], copyright: ["授权类型：商用", "授权期限：30天", "含授权协议"]},
-        // {name : "旗舰版", price : "xxx", baseContain : ["调用虚拟人物（标准版） *12",
-        //     "调用虚拟场景（标准版） *12","调用虚拟人物（定制版） *1",
-        //     "调用虚拟场景（定制版） *1","人物/场景修改次数 *1","上传商品数量：无限","调用话术模板：无限", "使用系统智能配音：无限",
-        //     "人工专属配音：30min","视频时长上限 4h/条"], enterpriseContain :["专属商务服务","子号数量 *5",
-        //     "在线制作协议", "在线发票服务"], cloudPower:["账号存储空间 6G", "保留历史版本 3-6条",
-        //     "制作渲染效率：极高"], copyright: ["授权类型：商用", "授权期限：60天", "含授权协议"]},
-        // {name : "旗舰版", price : "xxx", baseContain : ["调用虚拟人物（标准版）：无限",
-        //     "调用虚拟场景（标准版）：无限","调用虚拟人物（定制版） *1",
-        //     "调用虚拟场景（定制版） *1","人物/场景修改次数 *3","上传商品数量：无限","调用话术模板：无限", "使用系统智能配音：无限",
-        //     "人工专属配音：60min","视频时长上限：无限"], enterpriseContain :["专属商务服务","子号数量 *5",
-        //     "在线制作协议", "在线发票服务"], cloudPower:["账号存储空间：无限", "保留历史版本 3-6条",
-        //     "制作渲染效率：极高"], copyright: ["授权类型：商用", "授权期限：无限", "含授权协议"]}
-      ]
+             "极高","商用", "无限", "有"]},
+      ],
+      data: [],
     }
+  },
+  created() {
+    this.getData();
   },
   methods:{
     getData() {
@@ -204,7 +159,7 @@ export default {
         crudPlan.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
-            this.priceData = res.data.data
+            this.data = res.data
           }
         }).catch(error => {
           reject(error)
@@ -216,6 +171,24 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {func: data}});
     },
+    getPrice(title){
+      if(title === "标准版"){
+        var dataIndex = this.data.findIndex(o => o.name === "标准");
+        return this.data[dataIndex].price
+      }
+      else if(title === "旗舰版"){
+        var dataIndex = this.data.findIndex(o => o.name === "旗舰");
+        return this.data[dataIndex].price
+      }
+      else if(title === "升级版"){
+        var dataIndex = this.data.findIndex(o => o.name === "升级");
+        return this.data[dataIndex].price
+      }
+      else if(title === "大客户专属定制版"){
+        var dataIndex = this.data.findIndex(o => o.name === "定制");
+        return this.data[dataIndex].price
+      }
+    }
   }
 }
 </script>
@@ -358,7 +331,7 @@ export default {
   background-color:#FFF;
   border-radius: 4px;
   color: #303133;
-  height: 1700px;
+  height: 1617px;
   transition: .3s;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
