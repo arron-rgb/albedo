@@ -18,13 +18,16 @@ import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
+import com.albedo.java.modules.biz.domain.OrderVo;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -109,13 +112,8 @@ public class OrderResource extends BaseResource {
   @Token
   @PostMapping("/purchase")
   public Result<String> purchase(@RequestParam(value = "token", required = false) String token,
-    @RequestParam(value = "orderId") String orderId) {
-    return Result.buildOk(service.price(orderId));
-  }
-
-  static class PurchaseDto {
-    String orderId;
-    String token;
+    @RequestParam(value = "orderId") String orderId, String subject) {
+    return Result.buildOk(service.price(orderId, subject));
   }
 
   @ApiOperation(value = "员工查看待处理订单")
@@ -125,8 +123,8 @@ public class OrderResource extends BaseResource {
   }
 
   @ApiOperation(value = "员工接单")
-  @GetMapping("/consume?orderId={orderId}")
-  public Result<String> consume(@PathVariable("orderId") String orderId) {
+  @GetMapping("/consume")
+  public Result<String> consume(String orderId) {
     try {
       service.consume(orderId);
       return Result.buildOk("接单成功");
@@ -160,8 +158,21 @@ public class OrderResource extends BaseResource {
 
   @ApiOperation(value = "用户下单")
   @PostMapping(value = "/place")
-  public Result<String> place(Order order) {
-    service.place(order);
+  public Result<String> place(OrderVo content) {
+    service.place(content);
     return Result.buildOk("下单成功");
+  }
+
+  @ApiOperation(value = "用户上传二次订单")
+  @PostMapping(value = "/placeSecond")
+  public Result<String> placeSecond(String content) {
+    service.place(null);
+    return Result.buildOk("下单成功");
+  }
+
+  @ApiOperation(value = "用户拉取自己的订单状态")
+  @PostMapping(value = "/query")
+  public Result<List<Order>> query() {
+    return Result.buildOkData(service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId())));
   }
 }

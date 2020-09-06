@@ -401,9 +401,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
         throw new AccountException("该手机号已绑定其他账号");
       }
     }
-    // # 1. 传入用户id
-    // # 2. 定位购买的最高级的套餐
-    // # 3. 获取数量
 
     // 2. 用户角色-系统角色-部门对应
     switch (userData.getUserType()) {

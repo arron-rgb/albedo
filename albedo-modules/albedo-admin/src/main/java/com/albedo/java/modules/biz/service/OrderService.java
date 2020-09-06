@@ -5,6 +5,7 @@ import java.util.List;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
+import com.albedo.java.modules.biz.domain.OrderVo;
 
 /**
  * @author arronshentu
@@ -15,18 +16,20 @@ public interface OrderService extends BaseService<Order> {
    * 用户下单
    *
    * @param form
-   *          表单
+   *          表单json
    */
-  void place(Order form);
+  void place(OrderVo order);
 
   /**
    * 用户付款 or 扣次数
    *
    * @param orderId
    *          订单id
+   * @param subject
+   *          订单名
    * @return 付款链接
    */
-  String price(String orderId);
+  String price(String orderId, String subject);
 
   /**
    * 员工认领
