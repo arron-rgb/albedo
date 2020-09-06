@@ -141,7 +141,9 @@
 </template>
 
 <script>
-
+import crudPlan from '@/views/biz/plan/plan-service'
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+import crudConfig from "@/views/biz/config/config-service";
 export default {
   name: "exhibition",
   data(){
@@ -196,6 +198,19 @@ export default {
     }
   },
   methods:{
+    getData() {
+      //获得视频属性数据
+      return new Promise((resolve, reject) => {
+        crudPlan.list().then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            this.priceData = res.data.data
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     goTo(url, data){
       //带参数跳转
       // console.log(data)
