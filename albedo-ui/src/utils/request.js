@@ -68,6 +68,7 @@ service.interceptors.response.use(
     }
   },
   error => {
+    var _this = this
     let message
     let status = 0
     try {
@@ -96,6 +97,7 @@ service.interceptors.response.use(
           store.dispatch('LogOut').then(() => {
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
+          router.push({path: '/login'})
         })
       } else if (status === 403) {
         console.log('进入403分支')
