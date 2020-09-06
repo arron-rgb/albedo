@@ -246,8 +246,31 @@ aside {
 }
 .el-radio__input.is-checked+.el-radio__label{
   color: #ff5000;
+  .button-icon{
+    background-color: #ff5000;
+  }
+  .button-text{
+    color: #ff5000 !important;
+  }
 }
 .el-radio__inner:hover{
   border-color: #ff5000 !important;
   //background-color: #ff5000 !important;
 }
+
+//.el-input__inner:focus{
+//  border-color: #ff5000 !important;
+//}
+
+//.el-input__inner:hover{
+//  border-color: #ff5000 !important;
+//}
+//.el-input-number__increase:hover, .el-input-number__decrease:hover+.el-input__inner:hover{
+  //color: #ff5000 !important;
+  //border-color: #ff5000 !important;
+  //border-left-color: #DCDFE6 !important;
+  //border-right-color: #DCDFE6 !important;
+  //.el-input__inner{
+  //  border-color: #ff5000 !important;
+  //}
+//}

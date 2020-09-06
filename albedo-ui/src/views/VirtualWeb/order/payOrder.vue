@@ -49,7 +49,7 @@
         </el-col>
         <el-col span="20">
           <el-row>
-            <el-col span="6">￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元</el-col>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">999</span>元</el-col>
           </el-row>
         </el-col>
       </el-row>
