@@ -13,6 +13,19 @@ public interface BusinessConstants {
   Integer ADD = 1;
   Integer DEL = 0;
 
+  /**
+   * 订单类型 加速单
+   */
+  String ACCELERATE = "1";
+  /**
+   * 订单类型 普通单
+   */
+  String COMMON = "0";
+  /**
+   * 订单类型 配音单
+   */
+  String DUBBING = "2";
+
   String ORDER_TYPE = "1";
   String PLAN_TYPE = "0";
   String PERSONAL_TYPE = "1";
@@ -40,27 +53,31 @@ public interface BusinessConstants {
   /**
    * 创建未付款
    */
-  Integer ORDER_STATE_0 = 0;
+  Integer UNPAID_ORDER = 0;
   /**
    * 付款未制作
    */
-  Integer ORDER_STATE_1 = 1;
+  Integer NOT_STARTED = 1;
   /**
    * 员工接单，制作中
    */
-  Integer ORDER_STATE_2 = 2;
+  Integer IN_PRODUCTION = 2;
   /**
    * 视频已上传
    */
-  Integer ORDER_STATE_3 = 3;
+  Integer PRODUCTION_COMPLETED = 3;
   /**
    * 商品、logo、贴片
    */
-  Integer ORDER_STATE_4 = 4;
+  Integer NOT_UPDATED = 4;
   /**
    * 结单
    */
-  Integer ORDER_STATE_5 = 5;
+  Integer COMPLETED_SUCCESS = 5;
+  /**
+   * 支付超时关闭订单
+   */
+  Integer COMPLETED_BY_CLOSE = 6;
 
   /**
    * 个人用户

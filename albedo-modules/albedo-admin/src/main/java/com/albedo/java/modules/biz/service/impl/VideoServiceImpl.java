@@ -1,7 +1,8 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
-import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_STATE_3;
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,10 +11,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
@@ -23,22 +26,16 @@ import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.biz.service.task.VideoUploadTask;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
-import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
-import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFmpegExecutor;
-import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import net.bramp.ffmpeg.job.FFmpegJob;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 
 /**
  * @author arronshentu
@@ -60,10 +57,10 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   BalanceService balanceService;
 
   @Override
-  public boolean storageState(Double byteSize) {
+  public boolean storageState(Double byteSize, String userId) {
     // 以下语义类似 1为已使用空间 2为剩余量 3如何获取购买套餐记录使其与使用量/剩余量绑定
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", ""));
-    Assert.notNull(balance, "该账号下无任何存储空间");
+    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
+    Assert.notNull(balance, EMPTY_STORAGE);
     return byteSize.compareTo(balance.getStorage()) > 0;
   }
 
@@ -100,38 +97,33 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   @Override
+  @Async
   @Transactional(rollbackFor = Exception.class)
   public void uploadVideo(String orderId, MultipartFile file) throws IOException {
     // 更新订单状态
     Order order = orderService.getById(orderId);
-    Assert.notNull(order, "未查询到订单信息");
+    Assert.notNull(order, ORDER_NOT_FOUNT);
     String userId = order.getUserId();
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
-    Assert.notNull(balance, "该账号下无任何存储空间");
+    Assert.notNull(balance, EMPTY_STORAGE);
     double storage = balance.getStorage() - ((double)file.getSize() / 1073741824);
     // 存储空间不足
-    Assert.isTrue(storage > 0, "该账号下存储空间不足以容纳该视频");
+    Assert.isTrue(storage > 0, STORAGE_NOT_SATISFIED);
     balance.setStorage(storage);
-
     String bucketName = userId;
     // userId不符合bucket命名规范，则用uuid当bucketName
-    // 并且将其更新到qqopenid字段上
+    // 并且将其更新到qqOpenId字段上
     if (!OSSUtils.validateBucketName(bucketName)) {
       User user = userService.getById(userId);
-      // 因此 只要符合 userId不符合命名规范 并且 qqOpenId为空的用户 就是没有bucket
-      if (StringUtils.isEmpty(user.getQqOpenId())) {
-        bucketName = createBucket(userId);
-      } else {
-        bucketName = user.getQqOpenId();
-      }
+      // 因此 只要符合 userId不符合命名规范 并且 qqOpenId为空的用户 就是没有bucket 所以需要创建
+      bucketName = StringUtils.isEmpty(user.getQqOpenId()) ? createBucket(userId) : user.getQqOpenId();
     }
-
     InputStream inputStream = file.getInputStream();
     // 保存视频记录至数据库
     Video video = Video.builder().userId(userId).orderId(orderId).build();
     baseMapper.insert(video);
-    order.setState(ORDER_STATE_3);
+    order.setState(PRODUCTION_COMPLETED);
     order.setVideoId(video.getId());
     orderService.updateById(order);
     // 上传视频至oss todo video命名规则
@@ -155,55 +147,12 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   public void addAudio(String videoId) {
     // todo oss中的video获取与拉取到本地的video路径
     Video video = baseMapper.selectById(videoId);
-    String audioPath = video.getLogoUrl();
-    String videoPath = PATH + SEPARATOR + "jojo.mp4";
+    Assert.notNull(video, VIDEO_NOT_FOUND);
+    // String audioUrl = video.getAudioUrl();
+    // String videoPath = video.getOriginUrl();
     String outPut = PATH + SEPARATOR + "result.mp4";
+    SpringContextHolder.publishEvent(new VideoUploadTask(video));
     video.setOutputUrl(outPut);
-    String codec = "copy";
-    FFmpegBuilder builder = new FFmpegBuilder().addInput(videoPath).addInput(audioPath).addOutput(outPut)
-      .setVideoCodec(codec).setAudioCodec(codec).done();
-
-    FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-    // todo 加上线程池配置 不打印进度 job执行完毕添加callback方法设定路径并决定是否上传
-    FFmpegJob job = executor.createJob(builder);
-    job.run();
   }
 
-  /**
-   * // 1. 人工上传的配音
-   * // 2. tts合成的语音
-   * 把音频文件路径更新到数据库中
-   *
-   * @param audioPath
-   *          生成导出的音频路径
-   */
-  @Override
-  public void uploadAudio(String audioPath) {
-
-  }
-
-  @Resource
-  TtsSingleton ttsSingleton;
-
-  static FFprobe ffprobe;
-  static FFmpeg ffmpeg;
-
-  static {
-    try {
-      ffprobe = new FFprobe("/usr/local/bin/ffprobe");
-      ffmpeg = new FFmpeg("/usr/local/bin/ffmpeg");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public FFmpegProbeResult getVideoMetadata(String filePath) {
-    try {
-      return ffprobe.probe(filePath);
-    } catch (IOException e) {
-      // 打印ffmpeg返回的错误
-      log.info(e.getMessage());
-      return null;
-    }
-  }
 }

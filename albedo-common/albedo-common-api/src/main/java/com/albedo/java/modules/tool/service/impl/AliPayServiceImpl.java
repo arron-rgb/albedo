@@ -85,6 +85,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
+    trade.setOutTradeNo(aliPayUtils.getOrderCode());
     trade.setProductCode("FAST_INSTANT_TRADE_PAY");
     AlipayClient alipayClient = buildAlipayClient();
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();

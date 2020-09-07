@@ -27,7 +27,7 @@ public interface BalanceService extends BaseService<Balance> {
   int leftTimes();
 
   /**
-   * 减次数逻辑
+   * 减次数
    *
    * @throws TimesOverspendException
    *           次数不够扣
