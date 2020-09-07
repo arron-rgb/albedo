@@ -17,6 +17,5 @@ public class OrderVo {
   String content;
   String type;
   String totalAmount;
-  // todo 支付途径
   String method;
 }

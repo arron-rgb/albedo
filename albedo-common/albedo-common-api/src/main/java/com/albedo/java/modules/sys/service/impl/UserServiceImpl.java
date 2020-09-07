@@ -55,12 +55,14 @@ import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.repository.UserRepository;
 import com.albedo.java.modules.sys.service.*;
 import com.albedo.java.modules.sys.util.SysCacheUtil;
+import com.aliyun.oss.internal.OSSUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.IdUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -508,4 +510,17 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     return baseMapper.getDeptAdminIdByDeptId(deptId);
   }
 
+  @Override
+  public String getBucketName(String userId) {
+    User user = baseMapper.selectById(userId);
+    String bucketName = user.getQqOpenId();
+    if (!OSSUtils.validateBucketName(userId) && StringUtils.isNotEmpty(bucketName)) {
+      return bucketName;
+    } else {
+      bucketName = IdUtil.fastUUID();
+      user.setQqOpenId(bucketName);
+      baseMapper.updateById(user);
+      return bucketName;
+    }
+  }
 }

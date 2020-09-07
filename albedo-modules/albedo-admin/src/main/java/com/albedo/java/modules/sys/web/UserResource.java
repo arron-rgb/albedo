@@ -68,7 +68,7 @@ public class UserResource extends BaseResource {
   @GetMapping
   @LogOperate(value = "用户管理查看")
   @PreAuthorize("@pms.hasPermission('sys_user_view')")
-  public Result<IPage<UserVo>> findPage(PageModel<IPage<UserVo>> pm, UserQueryCriteria userQueryCriteria) {
+  public Result<IPage<UserVo>> findPage(PageModel<UserVo> pm, UserQueryCriteria userQueryCriteria) {
     return Result.buildOkData(userService.findPage(pm, userQueryCriteria, SecurityUtil.getDataScope()));
   }
 

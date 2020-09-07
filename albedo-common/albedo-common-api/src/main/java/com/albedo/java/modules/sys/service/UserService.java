@@ -210,4 +210,6 @@ public interface UserService extends DataService<User, UserDto, String> {
    * @return 管理员id
    */
   String getOutTradeNosByUserId(String deptId);
+
+  String getBucketName(String userId);
 }

@@ -1,5 +1,7 @@
 package com.albedo.java.modules.sys.web;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -40,25 +42,32 @@ public class FileResource {
    *          是否删除
    */
   @GetMapping("/download")
-  public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
+  public Result<String> fileDownload(String fileName, Boolean delete, HttpServletResponse response,
+    HttpServletRequest request) {
     try {
       if (!FileUtil.isValidFilename(fileName)) {
-        throw new Exception(String.format("文件名称({})非法，不允许下载。 ", fileName));
+        throw new Exception(String.format("文件名称(%s)非法，不允许下载。 ", fileName));
       }
       String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
-      String filePath = ApplicationConfig.getDownloadPath() + fileName;
+      String filePath = ApplicationConfig.getUploadPath() + File.separator + fileName;
 
       response.setCharacterEncoding("utf-8");
       response.setContentType("multipart/form-data");
       response.setHeader("Content-Disposition",
         "attachment;fileName=" + FileUtil.setFileDownloadHeader(request, realFileName));
-      FileUtil.writeBytes(filePath, response.getOutputStream());
+      try {
+        FileUtil.writeBytes(filePath, response.getOutputStream());
+      } catch (FileNotFoundException e) {
+        return Result.buildFail("未查询到该文件");
+      }
       if (delete) {
         FileUtil.deleteFile(filePath);
       }
+      return Result.buildOk("下载成功");
     } catch (Exception e) {
       log.error("下载文件失败", e);
     }
+    return Result.buildFail("下载文件失败");
   }
 
   /**

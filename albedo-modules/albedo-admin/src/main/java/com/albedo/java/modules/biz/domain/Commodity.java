@@ -8,22 +8,21 @@ import lombok.*;
 /**
  * @author arronshentu
  */
+
 @Data
 @Builder
+@TableName("t_commodity")
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("t_video")
 @EqualsAndHashCode(callSuper = true)
-public class Video extends IdEntity<Video> {
-  private String orderId;
-  private String userId;
+public class Commodity extends IdEntity<Commodity> {
+
   private String name;
-  private String originUrl;
-  private String logoUrl;
-  private String outputUrl;
-  private Integer duration;
-  private String adUrl;
-  private String audioUrl;
-  private String audioText;
+  // private MultipartFile file;
+  /**
+   * 图片路径，但只有一张图片
+   */
+  private String urls;
+  private String userId;
 
 }

@@ -23,7 +23,6 @@ import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
-import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.albedo.java.modules.tool.util.TtsSingleton;
@@ -31,7 +30,6 @@ import com.aliyun.oss.model.PutObjectResult;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.IdUtil;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
@@ -67,7 +65,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   /**
-   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
+   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名。如果id不符合规范 使用uuid并设置为qqOpenId
    * 只能包括小写字母、数字和短划线（-）。
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
@@ -80,20 +78,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
       userId = userService.getOutTradeNosByUserId(userId);
     }
-    // 没bucket的话 storage也不会被调用
+    // 没balance的话 storage也不会被调用
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
+    Assert.notNull(balance, "该账号下无任何存储空间");
     Double storageSize = balance.getStorage();
-    if (!ossSingleton.doesBucketExist(userId)) {
-      try {
-        ossSingleton.create(userId, storageSize.intValue());
-      } catch (IllegalArgumentException e) {
-        // buck命名失败时使用uuid 并更新uuid为qqOpenId
-        String bucketName = IdUtil.fastUUID();
-        ossSingleton.create(bucketName, storageSize.intValue());
-        User user = userService.getById(userId);
-        user.setQqOpenId(bucketName);
-        userService.updateById(user);
-      }
+    String bucketName = userService.getBucketName(userId);
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      ossSingleton.create(bucketName, storageSize.intValue());
     }
   }
 
@@ -111,12 +102,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 存储空间不足
     Assert.isTrue(storage > 0, "该账号下存储空间不足以容纳该视频");
     balance.setStorage(storage);
-    String bucketName = userId;
+    String bucketName = userService.getBucketName(userId);
     if (!ossSingleton.doesBucketExist(bucketName)) {
-      bucketName = userService.getById(userId).getQqOpenId();
-      if (!ossSingleton.doesBucketExist(bucketName)) {
-        createBucket(bucketName);
-      }
+      createBucket(bucketName);
     }
     InputStream inputStream = file.getInputStream();
     // 保存视频记录至数据库
@@ -182,4 +170,5 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       return null;
     }
   }
+
 }

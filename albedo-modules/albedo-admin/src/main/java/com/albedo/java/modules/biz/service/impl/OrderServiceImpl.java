@@ -32,6 +32,8 @@ import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.lang.Assert;
+
 /**
  * @author arronshentu
  */
@@ -162,8 +164,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void updateForm() {
-    // todo 上传贴片等素材
+  public void updateForm(SubOrderVo orderVo) {
+    // 自己上传录音 直接给一个文件路径即可
+    Video video = videoService.getOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
+    Assert.notNull(video, "未查询到该订单对应的视频记录");
+    video.setAdUrl(orderVo.getAdUrl());
+    video.setAudioText(orderVo.getContent());
+    video.setLogoUrl(orderVo.getLogoUrl());
+    videoService.updateById(video);
+    // 人工配音 配音字段的属性及pojo
+    TradePlus tradePlus = TradePlus.builder().build();
+    Order order = new Order();
+    // tts配音 1. 商品选择及商品crud 2. 串词中参数的注入？
   }
 
   @Override
@@ -179,7 +191,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     String videoId = order.getVideoId();
     Video video = videoService.getById(videoId);
-    // todo tts合成音频or上传音频
   }
 
   @Override
