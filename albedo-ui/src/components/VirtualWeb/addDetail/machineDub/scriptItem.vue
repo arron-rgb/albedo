@@ -23,7 +23,7 @@ export default {
     border:2px dashed #ccc;
     border-radius: 10px;
     width:100%;
-    height:30px;
+    min-height:30px;
     display:inline-block;
     .scriptContent{
         padding:10px;

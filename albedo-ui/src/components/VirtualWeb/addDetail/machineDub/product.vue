@@ -62,7 +62,7 @@ export default {
   data(){
       return{
         // 隐藏加号
-        fileList:this.item.profileList,
+        fileList:[],
         uploadDisabled:false,
         dialogVisible: false,
         addPicture:!this.dialogVisible,
@@ -125,6 +125,13 @@ export default {
        // 点击保存将本次创建的商品信息传到父组件中
       this.$emit('saveData',this.item)
     }
+  },
+  mounted(){
+    if(this.item.profileList)
+    {
+      this.fileList=this.item.profileList
+      this.uploadDisabled = true
+    }
   }
 }
 </script>
@@ -133,13 +140,16 @@ export default {
     width:100%;
     height:180px;
     display:flex;
-    padding:10px 0;
+    padding:10px;
     border-top: 2px dashed #ccc; 
     justify-content: space-evenly;
     align-items: center;
     box-sizing: border-box;
-   .avatar-uploader{
-     .el-upload {
+    .disabled ::v-deep.el-upload--picture-card{
+      display:none !important
+    }
+    .avatar-uploader{
+      .el-upload {
         border: 1px dashed #d9d9d9;
         border-radius: 6px;
         cursor: pointer;
@@ -164,6 +174,9 @@ export default {
         height: 178px;
         display: block;
       }
+    }
+    .el-upload-list--picture-card .el-upload-list__item{
+      padding:0 !important;
     }
     .el-form-item:nth-child(2){
         margin-bottom: 0;

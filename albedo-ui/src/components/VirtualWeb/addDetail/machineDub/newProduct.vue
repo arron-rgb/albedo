@@ -1,69 +1,99 @@
 <template>
 <div class="newProduct">
     <div class="directBar">
-        <el-button @click="add">点击创建商品</el-button>
         <el-button  @click="next">下一步</el-button>  
      </div>
     <div class="proBar">
-        <div class="proContainer">
-          <h3 class="barTitle">组件配置页面展示</h3>
-          <el-scrollbar>
-            <draggable
-              tag="el-collapse"
-              class="dragArea list-group"
-              :list="chooseList"
-              group="comp"
-              @change="log"
-            >
-              <el-collapse
-              class="list-group-item left"
-              v-for="(item,index) in chooseList"
-              :key="index"
-              v-model="activeNames"
-              @change="handleChange"
-              >
-                <el-collapse-item>
-                    <template slot="title">
-                      <span>{{item.name}}</span>
-                      <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id)"></i>
-                    </template>
-                    <div>{{item.content}}</div>
-                    <component :is="item.type" :item="item" @saveData='saveData' ></component>
-                </el-collapse-item>
-              </el-collapse>
-            </draggable>
-          </el-scrollbar>
-
+      <div class="proDeposit">
+        <div class="depositBox">
+          <h3 class="barTitle">商品库</h3>
+          <i class="el-icon-plus" @click="addProduct"></i>
         </div>
-
-    <div class="script">
-      <h3 class="barTitle">串词列表</h3>
-      <el-autocomplete
-      clearable
-      class="inline-input"
-      v-model="search"
-      :fetch-suggestions="querySearch"
-      placeholder="请输入内容"
-      @change="searchData"
-      @select="handleSelect"
-      >
-      </el-autocomplete>
         <el-scrollbar>
           <draggable
-            class="dragArea list-group"
-            :list="searchData"
-            :group="{ name: 'comp', pull: 'clone', put: false }"
-            :clone="clone"
-            @change="log"
-          >
-              <div  class="itemContainer" v-for="(item,index) in searchData" :key="index">
-                  <scriptItem class='scriptItem' :item="item"></scriptItem> 
-              </div>
+              tag="el-collapse"
+              class="dragArea list-group"
+              :list="proDeposit"
+              :group="{ name: 'comp', pull: 'clone', put: false }"
+              @change="log"
+            >
+            <el-collapse
+                class="list-group-item left"
+                v-for="(item,index) in proDeposit"
+                :key="index"
+                v-model="activeNames"
+                @change="log"
+                >
+                  <el-collapse-item>
+                      <template slot="title">
+                        <span>{{item.name}}</span>
+                        <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,0)"></i>
+                        <i class="el-icon-right" @click.stop="add(item.id)"></i>
+                      </template>
+                      <component :is="item.type" :item="item" @saveData='saveData' ></component>
+                  </el-collapse-item>
+              </el-collapse>
           </draggable>
-       </el-scrollbar>
+        </el-scrollbar>
+      </div>
 
-       
-    </div>
+      <div class="proContainer">
+        <h3 class="barTitle">组件配置页面展示</h3>
+        <el-scrollbar>
+          <draggable
+            tag="el-collapse"
+            class="dragArea list-group"
+            :list="chooseList"
+            group="comp"
+            @change="saveConfig"
+          >
+            <el-collapse
+            class="list-group-item left"
+            v-for="(item,index) in chooseList"
+            :key="index"
+            v-model="activeNames"
+            @change="handleChange"
+            >
+              <el-collapse-item>
+                  <template slot="title">
+                    <span>{{item.name}}</span>
+                    <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,1)"></i>
+                  </template>
+                  <component :is="item.type" :item="item" @saveData='saveData' ></component>
+              </el-collapse-item>
+            </el-collapse>
+          </draggable>
+        </el-scrollbar>
+
+      </div>
+      <div class="script">
+        <h3 class="barTitle">串词列表</h3>
+        <el-autocomplete
+        clearable
+        class="inline-input"
+        v-model="search"
+        :fetch-suggestions="querySearch"
+        placeholder="请输入内容"
+        @change="searchData"
+        @select="handleSelect"
+        >
+        </el-autocomplete>
+          <el-scrollbar>
+            <draggable
+              class="dragArea list-group"
+              :list="searchData"
+              :group="{ name: 'comp', pull: 'clone', put: false }"
+              :clone="clone"
+              @change="log"
+            >
+                <div  class="itemContainer" v-for="(item,index) in searchData" :key="index">
+                    <scriptItem class='scriptItem' :item="item"></scriptItem> 
+                </div>
+            </draggable>
+        </el-scrollbar>
+
+        
+      </div>
   </div>
   </div>
 <!-- </div> -->
@@ -155,12 +185,12 @@ export default {
           { value: "感谢词" },
           { value: "结束词" },
       ],
+      // 商品库
+      proDeposit:[],
       // 左边展示栏列表
       chooseList: [],
       activeNames: [],
       count: 0,
-      scriptName:'引导词'
-
     }
   },
   methods: {
@@ -169,21 +199,38 @@ export default {
         this.$store.commit('NEXT')
     },
     log: function(evt) {
-      window.console.log(evt);
+      window.console.log("evt:",evt);
     },
-    clone({content}) {
+    clone({content,type}) {
+      let tmp=content;
+      let kind=type;
       ++this.$store.state.dub.idGlobal
       return {
         id: ++this.$store.state.dub.scriptid,
-        name: this.scriptName,
-        content:content
+        name: `${this.$store.state.dub.scriptid}号串词-${this.scriptName}`,
+        content:tmp,
+        type:kind
       };
     },
-    add(){
-      let item =  { name: "商品", id:++this.$store.state.dub.productid ,type:'product',globalid:++this.$store.state.dub.idGlobal}
-      this.chooseList.push(item)
+    // 添加已有商品到配置项
+    add(id){
+      console.log("add call!")
+      this.$store.state.dub.productData.filter((item,index)=>{
+        if(item.id === id ){
+          this.chooseList.push(item)
+        }
+      })
+    },
+    addProduct(){
+      let item =  { id:++this.$store.state.dub.productid , name: `${this.$store.state.dub.productid}号商品`,type:'product',globalid:++this.$store.state.dub.idGlobal}
+      this.proDeposit.push(item)
       this.$store.commit('ADD_PRODUCT',item)
     },
+    // 保存中间配置数据
+    saveConfig(){
+      this.$store.commit('ADD_CONFIG_DATA',this.chooseList)
+    },
+    // 保存商品数据
     saveData(productData){
       this.$store.commit('ADD_PRODUCT',productData)
     },
@@ -211,14 +258,20 @@ export default {
       console.log('handleSelect:',item);
     },
     handleChange: function() {},
-    deleteItem: function(name,item_id) {
+    deleteItem: function(name,item_id,listnum) {
       --this.$store.state.dub.idGlobal
-      this.$store.commit('DELETE_DATA',{name,item_id})
+      if(listnum === 0){
+        this.$store.commit('DELETE_PRODUCT',{name,item_id})
+      }
+      else
+        this.$store.commit('DELETE_DATA',{name,item_id})
       this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
+      console.log("this.chooseList:",this.chooseList)
     },
   },
   mounted() {
     this.typeList = this.loadAll();
+    this.proDeposit = JSON.parse(localStorage.getItem('productData')||'[]')
     this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
   },
   computed: {
@@ -244,7 +297,7 @@ export default {
               {
                 list.push(item)
                 this.scriptName=this.typeList[index].value
-               return item
+                return item
               }
             })
            
@@ -253,7 +306,7 @@ export default {
         }
       }
       else {
-        // this.scriptName=this.typeList[0].value
+        this.scriptName=this.typeList[0].value
         return this.scriptList[0]
       }
      
@@ -266,7 +319,14 @@ export default {
             this.$store.commit('ADD_SCRIPT',this.chooseList)
          },
          deep: true
-     }
+     },
+    proDeposit :{
+      handler:function(){
+        this.proDeposit = this.$store.state.dub.productData
+      },
+      deep: true
+    }
+           
   }
 
 }
@@ -275,9 +335,6 @@ export default {
 .newProduct{
   width:100%;
   height:100%;
-    .barTitle{
-        padding:20px 0;
-    }
     .directBar{
         width:100%;
         padding:20px 40px;
@@ -291,142 +348,170 @@ export default {
         justify-content: center;
         align-items: flex-start;
         box-sizing: border-box;
-        .proContainer{
-            background-color:rgb(245,247,250);
-            padding:0 20px 20px 20px;
-            width:700px;
-            height:500px;
-            box-sizing:border-box;
-            margin-right:20px;
+        .proDeposit{
+          background-color:rgb(245,247,250);
+          padding:0 20px 20px 20px;
+          width:600px;
+          min-height:500px;
+          box-sizing:border-box;
+          margin-right:20px;
+          .depositBox{
+            display:flex;
+            justify-content: flex-end;
+            align-items: center;
             .barTitle{
+                margin-right:150px;
                 padding:10px 0;
             }
+            .el-icon-plus{
+              margin-right:20px;
+              // background-color:#ff5000;
+              // color:white;
+              &:hover{
+                cursor:pointer
+              }
+            }
+          }
+        }
+        .proContainer{
+          background-color:rgb(245,247,250);
+          padding:0 20px 20px 20px;
+          width:600px;
+          min-height:500px;
+          box-sizing:border-box;
+          margin-right:20px;
+          .barTitle{
+              padding:10px 0;
+          }
+          
+        }
+        .list-group {
+          max-height:400px;
+          display: flex;
+          flex-direction: column;
+          padding-left: 0;
+          border: 0;
+          .list-group-item:first-child {
+          border-top-left-radius: 0.25rem;
+          border-top-right-radius: 0.25rem;
+          }
+          .list-group-item {
+            position: relative;
+            display: block;
+            padding: 0;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            box-sizing: border-box;
+            ::v-deep.el-collapse-item__content{
+                padding-bottom:0px !important;
+            }
+            ::v-deep .el-collapse-item__header{
+                padding-left:10px !important;
+            }
+          }
+        }
+        .script{
+          box-sizing: border-box;
+          padding-bottom:30px;
+          width:400px;
+          min-height:500px;
+          background-color:rgb(245,247,250);
+          .barTitle{
+                  padding:10px 0;
+              }
+          .el-autocomplete{
+            margin-bottom:20px;
+          }
+          .el-scrollbar{
+            .list-group{
+              max-height:400px;     
+            }
+          }
+          .itemContainer{
+            margin:10px 0;
             .scriptItem{
-                height:40px;
+              display:inline-block;
+              width:100%;
+              height:100%;
             }
-            .list-group {
-                max-height:400px;
-                display: flex;
-                flex-direction: column;
-                padding-left: 0;
-                border: 0;
-                .list-group-item:first-child {
-                border-top-left-radius: 0.25rem;
-                border-top-right-radius: 0.25rem;
-                }
-                .list-group-item {
-                    position: relative;
-                    display: block;
-                    padding: 0;
-                    margin-bottom: -1px;
-                    background-color: #fff;
-                    border: 1px solid rgba(0, 0, 0, 0.125);
-                    box-sizing: border-box;
-                    ::v-deep.el-collapse-item__content{
-                        padding-bottom:0px !important;
-                    }
-                    ::v-deep .el-collapse-item__header{
-                        padding-left:10px !important;
-                    }
-                }
-              }
-              .saveBar{
-                width:100%;
-                display:flex;
-                justify-content: flex-end;
-                align-items: center;
-                el-button{
-                  margin:0 20px;
-                }
-              }
-          }
-      .script{
-        box-sizing: border-box;
-        padding-bottom:30px;
-        width:400px;
-        height:500px;
-        background-color:rgb(245,247,250);
-        .barTitle{
-                padding:10px 0;
-            }
-        .el-autocomplete{
-          margin-bottom:20px;
-        }
-        .el-scrollbar{
-         .list-group{
-           max-height:400px;     
-         }
-        }
-        .itemContainer{
-          margin:10px 0;
-          .scriptItem{
-            display:inline-block;
-            width:100%;
-            height:100%;
           }
         }
-      }
-   .el-collapse{
-      width:100%;
-      // height:100%;
-      border:0 !important;
-      .el-collapse-item__content{
-        padding-bottom: 10px !important;
-      }
-      .el-collapse-item__header {
-        border: 0 !important;
-        font-size:18px
-      }
-      .el-collapse-item__wrap {
-        border-bottom: 0;
-      }
-      .list-group-item {
-        margin:20px 0;
-        cursor: move;
-        .el-collapse-item:last-child{
-          margin-bottom:0px;
+        .el-collapse{
+          width:100%;
+          border:0 !important;
+          .el-collapse-item__content{
+            padding-bottom: 10px !important;
+          }
+          .el-collapse-item__header {
+            border: 0 !important;
+            font-size:18px
+          }
+          .el-collapse-item__wrap {
+            border-bottom: 0;
+          }
+          .list-group-item {
+            margin:20px 0;
+            cursor: move;
+            .el-collapse-item:last-child{
+              margin-bottom:0px;
+            }
+          }
+          h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+          }
+          .el-icon-circle-close {
+            color: #c9a2a2;
+            font-size: 20px;
+            position: absolute;
+            right: 50px;
+          }
+
+          .el-icon-circle-close:hover {
+            color: #f40;
+          }
+
+          .el-icon-right {
+            font-size: 13px;
+            color:rgba(0,116,232,0.6);
+            border: 1.5px solid rgba(0,116,232,0.6);
+            border-radius: 10px;
+            position: absolute;
+            right: 25px;
+            padding: 1px;
+            box-sizing: border-box;
+          }
+          .el-icon-right:hover {
+            color: rgb(0,116,232);
+            border: 1.5px solid rgb(0,116,232);
+          }
         }
-      }
-      h3 {
-        font-size: 28px;
-        margin-bottom: 20px;
-      }
-      .el-icon-circle-close {
-        color: #c9a2a2;
-        font-size: 20px;
-        position: absolute;
-        right: 50px;
-      }
+        .list-group {
+          display: flex;
+          flex-direction: column;
+          padding-left: 0;
+          margin-bottom: 0;
+          border: 0;
+          padding:0 10px;
+          .list-group-item:first-child {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+          }
+          .list-group-item {
+            margin:20px 0;
+            position: relative;
+            display: block;
+            padding: 0;
+            margin-bottom: -1px;
+            background-color: #fff;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border:2px dashed #CCC !important
+          }
+        }
 
-      .el-icon-circle-close:hover {
-        color: #f40;
-      }
     }
-    .list-group {
-      display: flex;
-      flex-direction: column;
-      padding-left: 0;
-      margin-bottom: 0;
-      border: 0;
-      padding:0 10px;
-      .list-group-item:first-child {
-        border-top-left-radius: 0.25rem;
-        border-top-right-radius: 0.25rem;
-      }
-      .list-group-item {
-        margin:20px 0;
-        position: relative;
-        display: block;
-        padding: 0;
-        margin-bottom: -1px;
-        background-color: #fff;
-        box-sizing: border-box;
-        border-radius: 5px;
-        border:2px dashed #CCC !important
-      }
-    }
-
-  }
 }
 
     
