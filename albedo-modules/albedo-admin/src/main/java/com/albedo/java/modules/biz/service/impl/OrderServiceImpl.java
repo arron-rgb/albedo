@@ -52,7 +52,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   int val = 30;
 
   @Override
-  public void place(OrderVo form) {
+  public String place(OrderVo form) {
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
     order.setState(ORDER_STATE_0);
@@ -67,7 +67,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     if (!compareOrderPrice(form, order)) {
       throw new RuntimeMsgException("订单价格异常");
     }
-    save(order);
+    return save(order) ? order.getId() : "";
   }
 
   private boolean verifyOrderType(OrderVo form) {

@@ -5,6 +5,7 @@
           <el-collapse accordion class="container-box">
             <el-collapse-item v-for="item in data" :key="item">
               <template slot="title">{{item.title}}</template>
+
               <el-radio-group v-model="selectData" @change="videoList(item.title, o.value)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
                   <img class="img" v-show="o.url !== null" :src="o.url">
@@ -37,7 +38,8 @@ export default {
   data () {
     return {
       backData : [],
-      data : []
+      data : [],
+      selectData : '',
     }
   },
   created() {
@@ -88,6 +90,7 @@ export default {
         }
       }
       else{
+        //保存已选的视频选项
         storeApi.set({
           name: 'videoConfig',
           content: this.backData,

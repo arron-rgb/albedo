@@ -16,7 +16,9 @@
         </el-col>
         <el-col span="20">
           <el-row>
-            <el-col span="6">￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元</el-col>
+<!--            <el-input :rules="durationRules" style="width: 150px;" size="medium" v-model="duration" placeholder="请输入时长"></el-input>-->
+            <el-input-number v-model="duration" size="medium"  :min="1" :max="120" label="设置视频时长"></el-input-number>
+             分钟 （允许范围：1-120分钟）
           </el-row>
         </el-col>
       </el-row>
@@ -37,51 +39,79 @@
           选择配音方式：
         </el-col>
         <el-col span="20">
-
+          <el-radio-group v-model="dubType" text-color="#ff5000" fill="#ff5000">
+            <el-radio style="height: 80px; width: 200px"  label="0" border>
+              <a style=" line-height: 60px;font-size: 24px">
+                <i class='el-icon-folder-opened button-icon' ></i>
+              </a>
+              <a class="button-text">
+                自行上传音频
+              </a>
+            </el-radio>
+            <el-radio style="height: 80px; width: 200px"  label="1" border>
+              <a style=" line-height: 60px;font-size: 24px">
+                <i class='el-icon-s-custom button-icon' ></i>
+              </a>
+              <a class="button-text">
+                人工声优配音
+              </a>
+            </el-radio>
+            <el-radio style="height: 80px; width: 200px"  label="2" border>
+              <a style=" line-height: 60px;font-size: 24px">
+                <i class='el-icon-microphone button-icon' ></i>
+              </a>
+              <a class="button-text">
+                智能机器配音
+              </a>
+            </el-radio>
+          </el-radio-group>
         </el-col>
       </el-row>
 
-      <div class="setDubway">
-        <el-row :gutter="12">
-          <el-col :span="5">
-            <div class="cardBox" @click='goTo("uploadDub")'>
-              <div class="cardBox" @click='goTo("newProduct")'>
-                <el-card shadow='hover'>
-                  <div slot='header' class='clearfix'>
-                    <i class='el-icon-video-camera'></i>
-                  </div>
-                  <h3 class='cardTitle'>自行上传配音</h3>
-                  <!-- <div>24小时不断直播，持续增加品牌曝光度</div> -->
-                </el-card>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="5">
-            <div class="cardBox" @click='goTo("selectAttri")'>
-              <div class="cardBox" @click='goTo("uploadDub")'>
-                <el-card shadow='hover' >
-                  <div slot='header' class='clearfix'>
-                    <i class='el-icon-magic-stick'></i>
-                  </div>
-                  <h3 class='cardTitle'>人工配音</h3>
-                  <!-- <div>情绪表达饱满，主播形象更加生动</div> -->
-                </el-card>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="5">
-            <div class="cardBox" @click='goTo("newProduct")'>
-              <el-card shadow='hover' >
-                <div slot='header' class='clearfix'>
-                  <i class='el-icon-monitor'></i>
-                </div>
-                <h3 class='cardTitle' @click='goTo("newProduct")'>智能机器配音</h3>
-                <!-- <div>机器自动配音，快捷高效</div> -->
-              </el-card>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
+      <el-row style="margin: 50px 0">
+        <el-button style="width: 150px" size="medium" type="primary" @click="toMore">下一步</el-button>
+      </el-row>
+<!--      <div class="setDubway">-->
+<!--        <el-row :gutter="12">-->
+<!--          <el-col :span="5">-->
+<!--            <div class="cardBox" @click='goTo("uploadDub")'>-->
+<!--              <div class="cardBox" @click='goTo("newProduct")'>-->
+<!--                <el-card shadow='hover'>-->
+<!--                  <div slot='header' class='clearfix'>-->
+<!--                    <i class='el-icon-video-camera'></i>-->
+<!--                  </div>-->
+<!--                  <h3 class='cardTitle'>自行上传配音</h3>-->
+<!--                  &lt;!&ndash; <div>24小时不断直播，持续增加品牌曝光度</div> &ndash;&gt;-->
+<!--                </el-card>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </el-col>-->
+<!--          <el-col :span="5">-->
+<!--            <div class="cardBox" @click='goTo("selectAttri")'>-->
+<!--              <div class="cardBox" @click='goTo("uploadDub")'>-->
+<!--                <el-card shadow='hover' >-->
+<!--                  <div slot='header' class='clearfix'>-->
+<!--                    <i class='el-icon-magic-stick'></i>-->
+<!--                  </div>-->
+<!--                  <h3 class='cardTitle'>人工配音</h3>-->
+<!--                  &lt;!&ndash; <div>情绪表达饱满，主播形象更加生动</div> &ndash;&gt;-->
+<!--                </el-card>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </el-col>-->
+<!--          <el-col :span="5">-->
+<!--            <div class="cardBox" @click='goTo("newProduct")'>-->
+<!--              <el-card shadow='hover' >-->
+<!--                <div slot='header' class='clearfix'>-->
+<!--                  <i class='el-icon-monitor'></i>-->
+<!--                </div>-->
+<!--                <h3 class='cardTitle' @click='goTo("newProduct")'>智能机器配音</h3>-->
+<!--                &lt;!&ndash; <div>机器自动配音，快捷高效</div> &ndash;&gt;-->
+<!--              </el-card>-->
+<!--            </div>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+<!--      </div>-->
 
     </div>
   </div>
@@ -92,6 +122,7 @@
 <script>
 import stepLine from "@/components/VirtualWeb/stepLine";
 import myVideo from "@/components/VirtualWeb/video";
+import storeApi from "@/utils/store";
 
 export default {
   name: "addDetail",
@@ -101,17 +132,45 @@ export default {
   },
   data() {
     return {
-      durationForm:{
-        duration:''
-      },
-      count: 0
-    };
+      duration: '',
+      dubType: '',
+    }
 
   },
   methods: {
-
-    goTo(path){
-      this.$router.replace(path)
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {data: data}});
+    },
+    toMore(){
+      if(this.duration === '' || this.duration === null){
+        this.$alert('请先设置视频时长', '提示', {
+          confirmButtonText: '确定',
+        });
+      }else if(this.dubType === '' || this.dubType === null)
+      {
+        this.$alert('请先选择配音方式', '提示', {
+          confirmButtonText: '确定',
+        });
+      }else{
+        //保存视频时长
+        storeApi.set({
+          name: 'dubType',
+          content: this.dubType,
+          type: 'session'
+        })
+        storeApi.set({
+          name: 'duration',
+          content: this.duration,
+          type: 'session'
+        })
+        switch (this.dubType){
+          case "0": this.goTo('/uploadDub');break;
+          case "1": this.goTo('/newProduct');break;
+          case "2": this.goTo('/newProduct');break;
+        }
+      }
     }
 
  }
@@ -128,6 +187,12 @@ export default {
   flex-direction: column;
   .my-video{
     width: 1200px;
+  }
+  .box{
+    padding: 10px 60px;
+    text-align: left;
+    line-height: 50px;
+    width: 100%;
   }
   .descriBlock{
     margin:50px 0;
@@ -203,12 +268,26 @@ export default {
 
 
   }
-  .box{
-    padding: 10px 60px;
-    text-align: left;
-    line-height: 50px;
-    width: 100%;
-  }
+
 }
 
+.button-icon{
+  position: relative;
+  top: 5px;
+  margin-right: 5px;
+  background-color: #909399;
+  color: white;
+  font-size: 28px;
+  border-radius: 20%;
+  padding: 5px;
+}
+.button-icon:focus{
+  background-color: #ff5000;
+}
+
+.button-text{
+  font-weight: 550;
+  font-size: 16px;
+  color: #909399
+}
 </style>

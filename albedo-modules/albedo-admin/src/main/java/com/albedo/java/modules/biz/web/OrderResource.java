@@ -159,9 +159,8 @@ public class OrderResource extends BaseResource {
 
   @ApiOperation(value = "用户下单")
   @PostMapping(value = "/place")
-  public Result<String> place(OrderVo content) {
-    service.place(content);
-    return Result.buildOk("下单成功");
+  public Result<String> place(@RequestBody OrderVo orderVo) {
+    return Result.buildOkData(service.place(orderVo), "下单成功");
   }
 
   @ApiOperation(value = "用户上传二次订单")
