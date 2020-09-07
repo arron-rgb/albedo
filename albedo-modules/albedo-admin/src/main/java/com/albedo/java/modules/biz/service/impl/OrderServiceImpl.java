@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -55,8 +56,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setUserId(SecurityUtil.getUser().getId());
     order.setState(ORDER_STATE_0);
     order.setType(form.getType());
-    order.setContent(form.getContent());
-    order.setTotalAmount(calculatePrice(form.getContent().trim()));
+    order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
+    order.setTotalAmount(calculatePrice(order.getContent().trim()));
     if (verifyOrderType(form)) {
       BigDecimal totalAmount = new BigDecimal(order.getTotalAmount());
       totalAmount = totalAmount.add(new BigDecimal(val));
