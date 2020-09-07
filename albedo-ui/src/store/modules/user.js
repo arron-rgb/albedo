@@ -12,12 +12,16 @@ const user = {
       name: 'loginSuccess'
     }) || false,
     // 第一次加载菜单时用到
-    loadMenus: false
+    loadMenus: false,
+    token : ''
   },
 
   mutations: {
     SET_USER: (state, user) => {
       state.user = user
+    },
+    SET_TOKEN: (state, data) => {
+      state.token = data
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -84,6 +88,9 @@ const user = {
           const data = res.data || {}
           setUserInfo(data, commit)
           resolve(data)
+          loginService.token().then((res) =>{
+            commit('SET_TOKEN', res)
+          })
         }).catch((err) => {
           reject(err)
         })

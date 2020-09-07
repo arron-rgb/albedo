@@ -6,7 +6,7 @@
             <el-collapse-item v-for="item in data" :key="item">
               <template slot="title">{{item.title}}</template>
 
-              <el-radio-group v-model="selectData" @change="videoList(item.title, o.value)" v-for="o in item.data" :key="o" size="small">
+              <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
                   <img class="img" v-show="o.url !== null" :src="o.url">
                   <div class="button-text">{{o.value}} {{o.url}}</div>
@@ -21,8 +21,8 @@
               <span>已选需求</span>
               <a class="text-button" @click="toPay()">前往支付></a>
             </div>
-            <el-tag v-for="item in backData" v-show="backData.length > 0" type="warning" :key="item" class="mytabs">
-              {{item.data}}
+            <el-tag v-for="(item, index) in backData" v-show="backData.length > 0" :type="typeList[index % 5]" :key="item" class="myTags">
+              {{item.data[0].value}}
             </el-tag>
           </el-card>
         </el-col>
@@ -40,6 +40,7 @@ export default {
       backData : [],
       data : [],
       selectData : '',
+      typeList : ["", "success", "info", "warning", "danger"],
     }
   },
   created() {
@@ -63,15 +64,13 @@ export default {
       var dataIndex = this.backData.findIndex(o => o.title === title);
       if (dataIndex === -1) {
         //列表中没有数据
-        this.backData.push(
-          {
-            title: title,
-            data: data
-          }
-        )
+        this.backData.push({
+          title : title,
+          data : [{name : data.name, value : data.value}]
+        })
       } else {
         //修改数据
-        this.backData[dataIndex].data = data;
+        this.backData[dataIndex].data = [{name : data.name, value : data.value}];
       }
     },
     toPay() {
@@ -139,7 +138,12 @@ export default {
 .box-card{
   height: 300px;
 }
-.mytabs{
+.myTags{
+  min-width: 80px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 14px;
+  min-height: 40px;
   margin: 10px;
 }
 .text-button{

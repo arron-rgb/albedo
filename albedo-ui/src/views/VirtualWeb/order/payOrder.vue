@@ -12,7 +12,7 @@
           已选需求：
         </el-col>
         <el-col span="20">
-          <el-tag class="tag" v-for="(o,index) in this.list" :key="o" :type="typeList[index % 5]" span="18">{{o.data}}</el-tag>
+          <el-tag class="tag" v-for="(o,index) in this.list" :key="o" :type="typeList[index % 5]" span="18">{{o.data[0].value}}</el-tag>
         </el-col>
       </el-row>
 
@@ -49,7 +49,7 @@
         </el-col>
         <el-col span="20">
           <el-row>
-            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">999</span>元</el-col>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">{{this.totalAmount}}</span>元</el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -83,7 +83,7 @@
       </el-row>
 
       <el-row style="margin: 50px 0">
-        <el-button style="width: 150px" type="primary" @click="toPay">前往支付</el-button>
+        <el-button :loading="loading" style="width: 150px" type="primary" @click="toPay">前往支付</el-button>
       </el-row>
     </el-card>
   </div>
@@ -92,7 +92,9 @@
 
 <script>
 import storeApi from "@/utils/store";
-
+import payOrder from '@/views/VirtualWeb/order/payOrder-server'
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+import store from "@/store";
 export default {
   name: "payOrder",
   data(){
@@ -100,15 +102,25 @@ export default {
       list : [],
       typeList : ["", "success", "info", "warning", "danger"],
       description : '',
-      type : "1",//加速服务，0 不加速， 1加速
-      payType : "0", //0 支付宝支付， 1微信支付
+      type : '1',//加速服务，0 不加速， 1加速
+      payType : '0', //0 支付宝支付， 1微信支付
+      totalAmount : 1029,
+      data : '',
+      loading : false,
+      priceList : [999, 1999, 0],
     }
+  },
+  watch: {
+    type : function (val){
+      this.type = val;
+      this.totalAmount = this.priceList[0] + val * 30;
+    }
+
   },
   created() {
     var list = storeApi.get({
       name: 'videoConfig'
     }) || null;
-    console.log(list)
     if(list === null || list === undefined){
       this.$alert('请先选择视频基础需求', {
         confirmButtonText: '确定',
@@ -127,7 +139,49 @@ export default {
       this.$router.push({path:url, query : {data: data}});
     },
     toPay(){
+      this.loading = true;
+      var content = {data : this.list}
+      var data = {
+        content : JSON.stringify(content),
+        methods : '',
+        totalAmount : this.totalAmount,
+        type : this.type
+      }
+      return new Promise((resolve, reject) => {
+        payOrder.save(data).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            console.log(res)
+            this.$message({
+              message: '订单提交成功，即将跳转支付页面',
+              type: 'success'
+            });
+            this.toPurchase(res.data);
+          }
+          this.loading = false;
+        }).catch(error => {
+          reject(error)
+          this.loading = false;
+        })
+      })
+    },
+    toPurchase(key){
+      var data = {
+        orderId : key,
+        subject : '单人主播视频订单',
+        token : store.getters.token,
+      }
+      payOrder.purchase(data).then(res => {
+        if (res.code === MSG_TYPE_SUCCESS) {
+          console.log(res)
+          this.$message({
+            message: '支付成功！',
+            type: 'success'
+          });
+        }
 
+      }).catch(error => {
+        reject(error)
+      })
     }
   }
 }

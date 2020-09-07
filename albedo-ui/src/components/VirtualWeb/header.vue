@@ -36,7 +36,7 @@
               <span @click='this.$router.replace("personal")'>我的</span>
             </template>
             <el-menu-item index="myData">个人资料</el-menu-item>
-            <el-menu-item index="memberCenter" v-show="this.$store.getters.user.roleNames !== '个人用户'">会员{{showMember}}中心</el-menu-item>
+            <el-menu-item index="memberCenter" v-show="this.$store.getters.user.roleNames !== '个人用户'">会员中心</el-menu-item>
             <el-menu-item index="myOrder">我的订单</el-menu-item>
             <el-menu-item index="myReceipt">我的发票</el-menu-item>
 <!--            <el-menu-item index="security">安全中心</el-menu-item>-->

@@ -9,13 +9,12 @@
           <div>
             <div style="text-align: center">
               <div class="el-upload">
-                <img :src="user.avatar ? baseApi + user.avatar : Avatar" title="点击上传头像" class="avatar"
-                     @click="toggleShow">
+                <img :src="user.avatar ? baseApi + user.avatar : Avatar" title="点击上传头像" class="avatar" @click="toggleShow">
                 <myUpload
                   v-model="show"
                   field="file"
                   :headers="headers"
-                  url="/a/file/upload"
+                  :url="fileUploadApi"
                   @crop-upload-success="cropUploadSuccess"
                 />
               </div>
@@ -23,8 +22,7 @@
             <ul class="user-info">
               <li>
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="login" class="icon"/>
+                  <el-col span="12"><svg-icon icon-class="login" class="icon" />
                     登录账号
                   </el-col>
                   <el-col span="12">{{ user.username }}</el-col>
@@ -32,8 +30,7 @@
               </li>
               <li>
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="user1" class="icon"/>
+                  <el-col span="12"><svg-icon icon-class="user1" class="icon"  />
                     用户昵称
                   </el-col>
                   <el-col span="12">{{ user.nickname }}</el-col>
@@ -41,8 +38,7 @@
               </li>
               <li v-show="showLog">
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="dept" class="icon"/>
+                  <el-col span="12"><svg-icon icon-class="dept" class="icon"/>
                     所属部门
                   </el-col>
                   <el-col span="12"> {{ user.deptName }}</el-col>
@@ -50,17 +46,15 @@
               </li>
               <li>
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="phone" class="icon"/>
-                    手机号码
+                  <el-col span="12"><svg-icon icon-class="phone" class="icon" />
+                  手机号码
                   </el-col>
                   <el-col span="12"> {{ user.phone }}</el-col>
                 </el-row>
               </li>
               <li>
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="email" class="icon"/>
+                  <el-col span="12"><svg-icon icon-class="email" class="icon" />
                     用户邮箱
                   </el-col>
                   <el-col span="12">{{ user.email }}</el-col>
@@ -68,8 +62,7 @@
               </li>
               <li>
                 <el-row>
-                  <el-col span="12">
-                    <svg-icon icon-class="anq" class="icon"/>
+                  <el-col span="12"><svg-icon icon-class="anq" class="icon" />
                     安全设置
                   </el-col>
                   <el-col span="12">
@@ -96,21 +89,18 @@
                 style="margin-top: 10px;text-align: left"
               >
                 <el-form-item label="昵称" prop="nickName">
-                  <el-input v-model="form.nickname" style="width: 35%;"/>
+                  <el-input v-model="form.nickname" style="width: 35%;" />
                   <span style="color: #C0C0C0;margin-left: 10px;">用户昵称不作为登录使用</span>
                 </el-form-item>
                 <el-form-item label="手机号" prop="phone">
-                  <el-input v-model="form.phone" style="width: 35%;"/>
+                  <el-input v-model="form.phone" style="width: 35%;" />
                   <span style="color: #C0C0C0;margin-left: 10px;">手机号码不能重复</span>
                 </el-form-item>
                 <el-form-item label="备注" prop="description">
-                  <el-input v-model="form.description" style="width: 35%;" type="textarea"/>
+                  <el-input v-model="form.description" style="width: 35%;" type="textarea" />
                 </el-form-item>
                 <el-form-item style="text-align: center">
-                  <el-button :loading="saveLoading" size="mini"
-                             style="width: 90px; border: 1px solid #ff5000;color: #fff;background-color: #ff5000;"
-                             @click="doSubmit">保存配置
-                  </el-button>
+                  <el-button :loading="saveLoading" size="mini" style="width: 90px; border: 1px solid #ff5000;color: #fff;background-color: #ff5000;" @click="doSubmit">保存配置</el-button>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -122,9 +112,9 @@
                     {{ scope.row.title }}
                   </template>
                 </el-table-column>
-                <el-table-column label="IP" prop="ipAddress"/>
-                <el-table-column :show-overflow-tooltip="true" label="IP来源" prop="ipLocation"/>
-                <el-table-column label="浏览器" prop="browser"/>
+                <el-table-column label="IP" prop="ipAddress" />
+                <el-table-column :show-overflow-tooltip="true" label="IP来源" prop="ipLocation" />
+                <el-table-column label="浏览器" prop="browser" />
                 <el-table-column align="center" label="请求耗时" prop="time">
                   <template slot-scope="scope">
                     <el-tag v-if="scope.row.time <= 300">{{ scope.row.time }}ms</el-tag>
@@ -160,17 +150,17 @@
         </el-card>
       </el-col>
     </el-row>
-    <updateEmail ref="email" :email="user.email"/>
-    <updatePass ref="pass"/>
+    <updateEmail ref="email" :email="user.email" />
+    <updatePass ref="pass" />
   </div>
 </template>
 
 <script>
 import myUpload from 'vue-image-crop-upload'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import updatePass from './center/updatePass'
 import updateEmail from './center/updateEmail'
-import {getXsrfToken} from '@/utils/auth'
+import { getXsrfToken } from '@/utils/auth'
 import store from '@/store'
 import validate from '@/utils/validate'
 import commonUtil from '@/utils/common'
@@ -182,7 +172,7 @@ import accountService from '@/api/account'
 const parseTime = commonUtil.parseTime
 export default {
   name: 'Center',
-  components: {updatePass, updateEmail, myUpload},
+  components: { updatePass, updateEmail, myUpload },
   mixins: [crud],
   data() {
     // 自定义验证
@@ -207,11 +197,11 @@ export default {
       form: {},
       rules: {
         nickname: [
-          {required: true, message: '请输入用户昵称', trigger: 'blur'},
-          {min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur'}
+          { required: true, message: '请输入用户昵称', trigger: 'blur' },
+          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
         ],
         phone: [
-          {required: true, trigger: 'blur', validator: validPhone}
+          { required: true, trigger: 'blur', validator: validPhone }
         ]
       }
     }
@@ -222,14 +212,9 @@ export default {
     ])
   },
   created() {
-    this.form = {
-      id: this.user.id,
-      nickname: this.user.nickname,
-      description: this.user.description,
-      phone: this.user.phone
-    }
+    this.form = { id: this.user.id, nickname: this.user.nickname, description: this.user.description, phone: this.user.phone }
     //是否显示日志
-    if (this.user.roleNames === "企业用户" || this.user.roleNames === "个人用户" || this.user.roleNames === "企业管理员") {
+    if(this.user.roleNames === "企业用户" || this.user.roleNames === "个人用户" ||this.user.roleNames === "企业管理员"){
       this.showLog = false;
     }
     store.dispatch('GetUser').then(() => {
@@ -279,43 +264,40 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.personal-container {
-  width: 900px;
-  margin: auto;
-}
-
-.avatar-uploader-icon {
-  font-size: 28px;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  display: block;
-  border-radius: 50%
-}
-
-.user-info {
-  padding-left: 0;
-  list-style: none;
-
-  li {
-    border-bottom: 1px solid #F0F3F4;
-    padding: 11px 0;
-    font-size: 13px;
-
-    a {
-      color: #317EF3;
-    }
+  .personal-container{
+    width: 900px;
+    margin: auto;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center
   }
 
-}
+  .avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+    border-radius: 50%
+  }
 
-.icon {
-  padding-right: 5px
-}
+  .user-info {
+    padding-left: 0;
+    list-style: none;
+
+    li {
+      border-bottom: 1px solid #F0F3F4;
+      padding: 11px 0;
+      font-size: 13px;
+      a {
+        color: #317EF3;
+      }
+    }
+
+  }
+  .icon{
+    padding-right: 5px
+  }
 </style>

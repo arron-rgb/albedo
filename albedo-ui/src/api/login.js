@@ -34,6 +34,12 @@ const loginService = {
       method: 'post',
       data: user
     })
+  },
+  token(){
+    return request({
+      url : '/token',
+      method: 'get'
+    })
   }
 }
 
