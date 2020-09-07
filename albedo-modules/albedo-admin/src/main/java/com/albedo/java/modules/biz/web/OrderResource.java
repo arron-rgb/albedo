@@ -22,6 +22,7 @@ import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderVo;
+import com.albedo.java.modules.biz.domain.SubOrderVo;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
@@ -164,8 +165,12 @@ public class OrderResource extends BaseResource {
 
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
-  public Result<String> placeSecond(String content) {
-    service.place(null);
+  public Result<String> placeSecond(SubOrderVo orderVo) {
+    service.updateForm(orderVo);
+    // 二次订单
+    // 1. 自己上传配音
+    // 2. 人工录音，新下订单
+    // 3. 语音合成
     return Result.buildOk("下单成功");
   }
 

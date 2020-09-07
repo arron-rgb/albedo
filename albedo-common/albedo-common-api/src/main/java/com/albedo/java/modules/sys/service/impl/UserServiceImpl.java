@@ -55,12 +55,14 @@ import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.repository.UserRepository;
 import com.albedo.java.modules.sys.service.*;
 import com.albedo.java.modules.sys.util.SysCacheUtil;
+import com.aliyun.oss.internal.OSSUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.IdUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -365,7 +367,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   @Override
   public void updateEmail(String username, UserEmailDto userEmailDto) {
     User user = repository.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, username));
-    Assert.isTrue(user != null, "无法获取用户信息" + username);
+    Assert.notNull(user, "无法获取用户信息" + username);
     Assert.isTrue(passwordEncoder.matches(userEmailDto.getPassword(), user.getPassword()), "输入密码有误");
     user.setEmail(userEmailDto.getEmail());
     SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
@@ -385,21 +387,15 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   public void register(RegisterUserData userData) {
     if (!SpringContextHolder.isDevelopment()) {
       Object code = RedisUtil.getCacheString("register" + userData.getPhone());
-      if (code == null) {
-        throw new AccountException("验证码无效，请重新申请");
-      }
+      Assert.notNull(code, "验证码无效，请重新申请");
     }
 
     List<User> list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_USERNAME, userData.getUsername()));
-    if (CollectionUtils.isNotEmpty(list)) {
-      throw new AccountException("用户名已存在");
-    }
+    Assert.isTrue(CollectionUtils.isEmpty(list), "用户名已存在");
 
     if (StringUtils.isNotBlank(userData.getPhone())) {
       list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_SQL_PHONE, userData.getPhone()));
-      if (CollectionUtils.isNotEmpty(list)) {
-        throw new AccountException("该手机号已绑定其他账号");
-      }
+      Assert.isTrue(CollectionUtils.isEmpty(list), "该手机号已绑定其他账号");
     }
 
     // 2. 用户角色-系统角色-部门对应
@@ -430,9 +426,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       // 已有企业的流程：1. 找到该企业名对应的dept 2. 找到deptId对应的普通roleId 3. 将roleId与userId绑定
       String ownedCompanyName = userData.getOwnedCompanyName();
       dept = deptService.getOne(Wrappers.<Dept>query().eq(Dept.F_SQL_NAME, ownedCompanyName));
-      if (dept == null) {
-        throw new RuntimeMsgException("未查询到该企业，请检查后重试");
-      }
+      Assert.notNull(dept, "未查询到该企业，请检查后重试");
       String adminId = baseMapper.getDeptAdminIdByDeptId(dept.getId());
       // 验证 对应 企业账号数量限制
       String left = baseMapper.getOutTradeNosByUserId(adminId);
@@ -516,4 +510,17 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     return baseMapper.getDeptAdminIdByDeptId(deptId);
   }
 
+  @Override
+  public String getBucketName(String userId) {
+    User user = baseMapper.selectById(userId);
+    String bucketName = user.getQqOpenId();
+    if (!OSSUtils.validateBucketName(userId) && StringUtils.isNotEmpty(bucketName)) {
+      return bucketName;
+    } else {
+      bucketName = IdUtil.fastUUID();
+      user.setQqOpenId(bucketName);
+      baseMapper.updateById(user);
+      return bucketName;
+    }
+  }
 }

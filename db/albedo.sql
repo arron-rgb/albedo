@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 05/09/2020 01:29:59
+ Date: 07/09/2020 23:29:45
 */
 
 SET NAMES utf8mb4;
@@ -48,12 +48,15 @@ CREATE TABLE `gen_scheme` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `gen_scheme` VALUES ('145be4d808589aabed3d28fd6ce38f5c', '表单', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, '表单', 'OrderForm', 'admin', 'ce24de2f484575934f17dc1efe204b15', 0, NULL, '1', '2020-08-18 10:19:40.036', '1', '2020-08-18 10:19:40.036', '0');
+INSERT INTO `gen_scheme` VALUES ('15bb4ec6e9ee10522fe01528a44c1703', '套词', 'curd_front', NULL, 'com.albedo.java.modules', 'biz', NULL, '管理', '套词', 'admin', 'af02a5faf128db5978e70f71ef395560', 1, NULL, '1', '2020-09-07 23:15:01.317', '1', '2020-09-07 23:16:22.529', '0');
 INSERT INTO `gen_scheme` VALUES ('3a00af7846a8ab0ab657b8e244ef3bfb', '抬头', 'curd_front', NULL, 'com.albedo.java.modules', 'biz', NULL, '发票抬头管理', '发票抬头', 'arronshentu', '61253a55e25426b602fc9ad8ec1a0fe2', 1, NULL, '1', '2020-08-16 16:19:02.777', '1', '2020-08-16 16:33:12.437', '0');
 INSERT INTO `gen_scheme` VALUES ('3ae90927ab74409c29c001fc35a969eb', '联系单', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, '联系单', '联系单', 'arronshentu', '78fb5944ba909cadb39f40a777906027', 0, NULL, '1', '2020-09-02 13:51:29.402', '1', '2020-09-02 13:51:29.402', '0');
 INSERT INTO `gen_scheme` VALUES ('4503bf9f5cdf64baaf74a6fc218f42ea', 'testBook', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, 'test', 'test', 'admin', '3758a93f20975e49d4e7b70c94a3b48a', 2, NULL, '1', '2020-08-08 20:14:07.383', '1', '2020-08-08 21:20:40.484', '0');
 INSERT INTO `gen_scheme` VALUES ('adcc9cb627053d421bb71ab736a37243', '套餐', 'curd_back', NULL, 'com.albedo.java.modules', 'biz', NULL, '套餐', '套餐', 'admin', 'ffb3c3a9e232ba193239368e8dde0bbc', 3, NULL, '1', '2020-08-29 20:49:54.281', '1', '2020-09-05 00:45:00.295', '0');
+INSERT INTO `gen_scheme` VALUES ('be08bed365bb2a1921fdf2d1a68df4ca', '配音表单', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, '配音表单配置', '配音表单配置', 'admin', 'b540e303eaa029e5eb9d8df8289eaea5', 0, NULL, '1', '2020-09-07 18:24:16.487', '1', '2020-09-07 18:24:16.487', '0');
 INSERT INTO `gen_scheme` VALUES ('c3c9294d84f0195c1f2c146fddd6e5fb', '配置项', 'curd_front', NULL, 'com.albedo.java.modules', 'biz', NULL, '配置项', '配置项', 'admin', 'feab203bec1c4a18ba5637fae1892fc7', 0, NULL, '1', '2020-09-04 20:36:12.007', '1', '2020-09-04 20:36:12.007', '0');
 INSERT INTO `gen_scheme` VALUES ('e9f2a4c9fe574726ff029a1c2d4bd202', '购买记录', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, '购买记录', 'PurchaseRecord', 'admin', '1eec05bedee2b1e0afea533a49692321', 0, NULL, '1', '2020-08-29 23:58:01.997', '1', '2020-08-29 23:58:01.997', '0');
+INSERT INTO `gen_scheme` VALUES ('f63b37a5f972db578c31cc46de907a24', '商品', 'curd', NULL, 'com.albedo.java.modules', 'biz', NULL, '商品管理', '商品管理', 'arronshentu', '88fa8acfa1e7667f4b1801c1cac9fa30', 0, NULL, '1', '2020-09-07 14:58:36.196', '1', '2020-09-07 14:58:36.196', '0');
 COMMIT;
 
 -- ----------------------------
@@ -89,6 +92,9 @@ INSERT INTO `gen_table` VALUES ('1eec05bedee2b1e0afea533a49692321', 't_purchase_
 INSERT INTO `gen_table` VALUES ('3758a93f20975e49d4e7b70c94a3b48a', 'test_book', '测试书籍', NULL, NULL, 'TestBook', NULL, NULL, 0, NULL, '1', '2020-08-08 20:13:49.014', '1', '2020-08-08 20:13:49.014', '0');
 INSERT INTO `gen_table` VALUES ('61253a55e25426b602fc9ad8ec1a0fe2', 't_invoice', 't_invoice', NULL, NULL, 'Invoice', NULL, NULL, 1, NULL, '1', '2020-08-16 16:33:00.329', '1', '2020-08-16 16:33:00.327', '0');
 INSERT INTO `gen_table` VALUES ('78fb5944ba909cadb39f40a777906027', 't_contact_info', '联系单', NULL, NULL, 'ContactInfo', NULL, NULL, 0, NULL, '1', '2020-09-02 13:51:05.262', '1', '2020-09-02 13:51:05.262', '0');
+INSERT INTO `gen_table` VALUES ('88fa8acfa1e7667f4b1801c1cac9fa30', 't_commodity', '商品', NULL, NULL, 'Commodity', NULL, NULL, 0, NULL, '1', '2020-09-07 00:39:12.067', '1', '2020-09-07 00:39:12.067', '0');
+INSERT INTO `gen_table` VALUES ('af02a5faf128db5978e70f71ef395560', 't_script', 't_script', NULL, NULL, 'Script', NULL, NULL, 0, NULL, '1', '2020-09-07 23:13:30.645', '1', '2020-09-07 23:13:30.645', '0');
+INSERT INTO `gen_table` VALUES ('b540e303eaa029e5eb9d8df8289eaea5', 't_dub', '配音配置', NULL, NULL, 'Dub', NULL, NULL, 0, NULL, '1', '2020-09-07 18:23:48.557', '1', '2020-09-07 18:23:48.557', '0');
 INSERT INTO `gen_table` VALUES ('ce24de2f484575934f17dc1efe204b15', 't_order_form', '表单temp', NULL, NULL, 'OrderForm', NULL, NULL, 0, NULL, '1', '2020-08-18 10:19:05.066', '1', '2020-08-18 10:19:05.066', '0');
 INSERT INTO `gen_table` VALUES ('feab203bec1c4a18ba5637fae1892fc7', 't_config', '配置项', NULL, NULL, 'Config', NULL, NULL, 1, NULL, '1', '2020-09-04 20:35:42.546', '1', '2020-09-04 20:35:42.544', '0');
 INSERT INTO `gen_table` VALUES ('ffb3c3a9e232ba193239368e8dde0bbc', 't_plan', '套餐表', NULL, NULL, 'Plan', NULL, NULL, 1, NULL, '1', '2020-09-05 00:35:41.113', '1', '2020-09-05 00:35:41.111', '0');
@@ -148,7 +154,9 @@ INSERT INTO `gen_table_column` VALUES ('08ed1a8c6c0cf7547b0b2a5731512ec1', '6125
 INSERT INTO `gen_table_column` VALUES ('0a82b80486eedf6d49273b4c1c76574f', '61253a55e25426b602fc9ad8ec1a0fe2', 'name', '企业名称/个人名称', NULL, 'varchar(255)', 'String', 'name', b'0', b'0', b'0', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 40, 1, NULL, '1', '2020-08-16 16:33:00.413', '1', '2020-08-16 16:33:00.361', '0');
 INSERT INTO `gen_table_column` VALUES ('0bd980a7ab9852c594c94145c0825502', 'ffb3c3a9e232ba193239368e8dde0bbc', 'version', '默认0，必填，离线乐观锁', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 140, 1, NULL, '1', '2020-09-05 00:35:41.224', '1', '2020-09-05 00:35:41.190', '0');
 INSERT INTO `gen_table_column` VALUES ('0c9ad7d7c64ee30ae9a4619078e61222', '3758a93f20975e49d4e7b70c94a3b48a', 'id', 'id', NULL, 'varchar(32)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 0, NULL, '1', '2020-08-08 20:13:49.054', '1', '2020-08-08 20:13:49.054', '0');
+INSERT INTO `gen_table_column` VALUES ('0d2baf01555d0c7f1237e7ca0640a7d6', 'b540e303eaa029e5eb9d8df8289eaea5', 'id', '编号', NULL, 'varchar(64)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 0, NULL, '1', '2020-09-07 18:23:48.570', '1', '2020-09-07 18:23:48.570', '0');
 INSERT INTO `gen_table_column` VALUES ('0d4a8f4a2ba36d4c328f6d8ad4891e98', '1eec05bedee2b1e0afea533a49692321', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 100, 0, NULL, '1', '2020-08-29 23:57:31.155', '1', '2020-08-29 23:57:31.155', '0');
+INSERT INTO `gen_table_column` VALUES ('0f4b3472fff74e66e8cb4ae7a64c611c', '88fa8acfa1e7667f4b1801c1cac9fa30', 'id', '编号', NULL, 'varchar(64)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 0, NULL, '1', '2020-09-07 00:39:12.084', '1', '2020-09-07 00:39:12.084', '0');
 INSERT INTO `gen_table_column` VALUES ('13c481d2b9c16a718c16f415f1383b36', 'ce24de2f484575934f17dc1efe204b15', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 100, 0, NULL, '1', '2020-08-18 10:19:05.100', '1', '2020-08-18 10:19:05.100', '0');
 INSERT INTO `gen_table_column` VALUES ('18b27ecc8926e5aa8ee73a621701ce25', '3758a93f20975e49d4e7b70c94a3b48a', 'last_modified_date', 'last_modified_date', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 150, 0, NULL, '1', '2020-08-08 20:13:49.077', '1', '2020-08-08 20:13:49.077', '0');
 INSERT INTO `gen_table_column` VALUES ('1de1b7ccdfbb97b99813427b0a492066', 'ce24de2f484575934f17dc1efe204b15', 'created_by', 'created_by', NULL, 'varchar(50)', 'String', 'createdBy', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 90, 0, NULL, '1', '2020-08-18 10:19:05.099', '1', '2020-08-18 10:19:05.099', '0');
@@ -160,10 +168,14 @@ INSERT INTO `gen_table_column` VALUES ('21a70e4b6087b4df2ebcd73bbd4a1c83', 'ffb3
 INSERT INTO `gen_table_column` VALUES ('23fb16dd9fd2931b4d60cf0ab7376c83', 'ffb3c3a9e232ba193239368e8dde0bbc', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 170, 1, NULL, '1', '2020-09-05 00:35:41.224', '1', '2020-09-05 00:35:41.203', '0');
 INSERT INTO `gen_table_column` VALUES ('29c41a76d93f244fbd8f6d136ac09695', '3758a93f20975e49d4e7b70c94a3b48a', 'author', '作者', NULL, 'varchar(50)', 'String', 'author', b'0', b'0', b'0', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 30, 0, NULL, '1', '2020-08-08 20:13:49.059', '1', '2020-08-08 20:13:49.059', '0');
 INSERT INTO `gen_table_column` VALUES ('2a8341fe235de52f6c94e4634e402c68', 'ffb3c3a9e232ba193239368e8dde0bbc', 'anchor_amount_plus', '存储空间，单位GB', NULL, 'int(1)', 'Integer', 'anchorAmountPlus', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 110, 1, NULL, '1', '2020-09-05 00:35:41.223', '1', '2020-09-05 00:35:41.178', '0');
+INSERT INTO `gen_table_column` VALUES ('2ad64fca6a320d27062a950907ee5e5e', 'b540e303eaa029e5eb9d8df8289eaea5', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 70, 0, NULL, '1', '2020-09-07 18:23:48.580', '1', '2020-09-07 18:23:48.580', '0');
+INSERT INTO `gen_table_column` VALUES ('2d347a4f905b346335180e6119ae5508', 'b540e303eaa029e5eb9d8df8289eaea5', 'label', '属性名', NULL, 'varchar(255)', 'String', 'label', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 20, 0, NULL, '1', '2020-09-07 18:23:48.574', '1', '2020-09-07 18:23:48.574', '0');
 INSERT INTO `gen_table_column` VALUES ('2d53a53a34030094d595d755add52255', '78fb5944ba909cadb39f40a777906027', 'status', '处理状态', NULL, 'varchar(100)', 'String', 'status', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-09-02 13:51:05.285', '1', '2020-09-02 13:51:05.285', '0');
+INSERT INTO `gen_table_column` VALUES ('2fbd06b5ef67d8b375f9dae39e95981a', 'b540e303eaa029e5eb9d8df8289eaea5', 'created_by', 'created_by', NULL, 'varchar(50)', 'String', 'createdBy', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 60, 0, NULL, '1', '2020-09-07 18:23:48.579', '1', '2020-09-07 18:23:48.579', '0');
 INSERT INTO `gen_table_column` VALUES ('306041eb49e7456520b82fba6ba876fe', '78fb5944ba909cadb39f40a777906027', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 120, 0, NULL, '1', '2020-09-02 13:51:05.294', '1', '2020-09-02 13:51:05.294', '0');
 INSERT INTO `gen_table_column` VALUES ('329367db994feb84d17cf7d4e3388ba2', '1eec05bedee2b1e0afea533a49692321', 'created_by', 'created_by', NULL, 'varchar(50)', 'String', 'createdBy', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 90, 0, NULL, '1', '2020-08-29 23:57:31.154', '1', '2020-08-29 23:57:31.154', '0');
 INSERT INTO `gen_table_column` VALUES ('32c22c8318261bc5460a24bf69cc0ce4', 'ce24de2f484575934f17dc1efe204b15', 'anchor_type', '直播间风格', NULL, 'varchar(50)', 'String', 'anchorType', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 60, 0, NULL, '1', '2020-08-18 10:19:05.095', '1', '2020-08-18 10:19:05.095', '0');
+INSERT INTO `gen_table_column` VALUES ('339e6e475fcbd9d22533b45ed8ea39cb', '88fa8acfa1e7667f4b1801c1cac9fa30', 'last_modified_date', 'last_modified_date', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 100, 0, NULL, '1', '2020-09-07 00:39:12.099', '1', '2020-09-07 00:39:12.099', '0');
 INSERT INTO `gen_table_column` VALUES ('379f20d2ec99755342599cf98479af35', '3758a93f20975e49d4e7b70c94a3b48a', 'amount', 'amount', NULL, 'double(11,2)', 'Double', 'amount', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 100, 0, NULL, '1', '2020-08-08 20:13:49.072', '1', '2020-08-08 20:13:49.072', '0');
 INSERT INTO `gen_table_column` VALUES ('3a15e9fd79de242906a91e6c9050cc63', '3758a93f20975e49d4e7b70c94a3b48a', 'activated', 'activated', NULL, 'bit(1)', 'Integer', 'activated', b'0', b'0', b'0', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 70, 0, NULL, '1', '2020-08-08 20:13:49.067', '1', '2020-08-08 20:13:49.067', '0');
 INSERT INTO `gen_table_column` VALUES ('3baf8759104fa9bdab170caa448732bf', '3758a93f20975e49d4e7b70c94a3b48a', 'email', '邮箱', NULL, 'varchar(100)', 'String', 'email', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-08-08 20:13:49.063', '1', '2020-08-08 20:13:49.063', '0');
@@ -171,7 +183,9 @@ INSERT INTO `gen_table_column` VALUES ('41dc4a080d2b2f14c325d2ac3a679280', '3758
 INSERT INTO `gen_table_column` VALUES ('43cb9c0e2c54aedd7fd925418bdc24a2', '1eec05bedee2b1e0afea533a49692321', 'total_amount', '支付金额', NULL, 'varchar(30)', 'String', 'totalAmount', b'0', b'0', b'1', b'1', b'0', b'1', b'0', 'eq', 'input', '', NULL, 60, 0, NULL, '1', '2020-08-29 23:57:31.149', '1', '2020-08-29 23:57:31.149', '0');
 INSERT INTO `gen_table_column` VALUES ('4569ad5837d694bf59673fdb9e792265', '78fb5944ba909cadb39f40a777906027', 'company_name', '企业名称', NULL, 'varchar(32)', 'String', 'companyName', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 20, 0, NULL, '1', '2020-09-02 13:51:05.281', '1', '2020-09-02 13:51:05.281', '0');
 INSERT INTO `gen_table_column` VALUES ('48beef41b17356f85294f258b3276dac', 'ffb3c3a9e232ba193239368e8dde0bbc', 'anchor_amount', '虚拟人物', NULL, 'int(1)', 'Integer', 'anchorAmount', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 90, 1, NULL, '1', '2020-09-05 00:35:41.223', '1', '2020-09-05 00:35:41.168', '0');
+INSERT INTO `gen_table_column` VALUES ('48d42ee3c51e30244377bad1f6bdab47', '88fa8acfa1e7667f4b1801c1cac9fa30', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 80, 0, NULL, '1', '2020-09-07 00:39:12.096', '1', '2020-09-07 00:39:12.096', '0');
 INSERT INTO `gen_table_column` VALUES ('4a8e62ed38a78f8d4131a8b6e0477a6c', '1eec05bedee2b1e0afea533a49692321', 'version', '默认0，必填，离线乐观锁', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 70, 0, NULL, '1', '2020-08-29 23:57:31.150', '1', '2020-08-29 23:57:31.150', '0');
+INSERT INTO `gen_table_column` VALUES ('4c80f524aea4b514bdb3cf3d7bb8d36e', 'b540e303eaa029e5eb9d8df8289eaea5', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 80, 0, NULL, '1', '2020-09-07 18:23:48.581', '1', '2020-09-07 18:23:48.581', '0');
 INSERT INTO `gen_table_column` VALUES ('4f7841b2c1fcd8ae740fc63a785b5f2b', 'ffb3c3a9e232ba193239368e8dde0bbc', 'name', '套餐名', NULL, 'varchar(32)', 'String', 'name', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 210, 1, NULL, '1', '2020-09-05 00:35:41.225', '1', '2020-09-05 00:35:41.220', '0');
 INSERT INTO `gen_table_column` VALUES ('4f9c599b6a7f16939783ee9dad262c9d', '61253a55e25426b602fc9ad8ec1a0fe2', 'created_date', '创建时间', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 110, 1, NULL, '1', '2020-08-16 16:33:00.415', '1', '2020-08-16 16:33:00.392', '0');
 INSERT INTO `gen_table_column` VALUES ('50ac1d82b51a07e0a60d101eca38e635', '61253a55e25426b602fc9ad8ec1a0fe2', 'version', 'version', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 150, 1, NULL, '1', '2020-08-16 16:33:00.416', '1', '2020-08-16 16:33:00.408', '0');
@@ -180,26 +194,35 @@ INSERT INTO `gen_table_column` VALUES ('5347baea6984d90d09d93a6e8e8d9e66', '3758
 INSERT INTO `gen_table_column` VALUES ('542ddbae304942e0dfd2aff50879fe15', '78fb5944ba909cadb39f40a777906027', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 70, 0, NULL, '1', '2020-09-02 13:51:05.288', '1', '2020-09-02 13:51:05.288', '0');
 INSERT INTO `gen_table_column` VALUES ('58cf4c26609810773bd6748e223d7c87', '1eec05bedee2b1e0afea533a49692321', 'last_modified_date', 'last_modified_date', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 120, 0, NULL, '1', '2020-08-29 23:57:31.158', '1', '2020-08-29 23:57:31.158', '0');
 INSERT INTO `gen_table_column` VALUES ('58ee7ccededdc0aa4f94c06c56f00a1d', '1eec05bedee2b1e0afea533a49692321', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 110, 0, NULL, '1', '2020-08-29 23:57:31.157', '1', '2020-08-29 23:57:31.157', '0');
+INSERT INTO `gen_table_column` VALUES ('5d56c73466dee41c435b23acdb4d7d45', 'af02a5faf128db5978e70f71ef395560', 'id', 'id', NULL, 'varchar(32)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 0, NULL, '1', '2020-09-07 23:13:30.657', '1', '2020-09-07 23:13:30.657', '0');
 INSERT INTO `gen_table_column` VALUES ('5dfd70106a436573b850457f5b138101', '3758a93f20975e49d4e7b70c94a3b48a', 'created_date', 'created_date', NULL, 'timestamp(3)', 'java.util.Date', 'createdDate', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 130, 0, NULL, '1', '2020-08-08 20:13:49.075', '1', '2020-08-08 20:13:49.075', '0');
 INSERT INTO `gen_table_column` VALUES ('5f9b38b4aefc0dd1783144bdc5438b58', '61253a55e25426b602fc9ad8ec1a0fe2', 'last_modified_date', '修改时间', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 130, 1, NULL, '1', '2020-08-16 16:33:00.415', '1', '2020-08-16 16:33:00.400', '0');
 INSERT INTO `gen_table_column` VALUES ('606f063821a67a1d5ea9c1787088ab9f', '3758a93f20975e49d4e7b70c94a3b48a', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'0', b'0', 'eq', 'input', '', NULL, 160, 0, NULL, '1', '2020-08-08 20:13:49.078', '1', '2020-08-08 20:13:49.078', '0');
+INSERT INTO `gen_table_column` VALUES ('613500a5bdb3342a9413346b50e410b4', '88fa8acfa1e7667f4b1801c1cac9fa30', 'created_by', 'created_by', NULL, 'varchar(50)', 'String', 'createdBy', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 70, 0, NULL, '1', '2020-09-07 00:39:12.095', '1', '2020-09-07 00:39:12.095', '0');
 INSERT INTO `gen_table_column` VALUES ('626d7f54f40e8babcf4dc04eefbce794', '78fb5944ba909cadb39f40a777906027', 'phone', '手机号', NULL, 'varchar(20)', 'String', 'phone', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 40, 0, NULL, '1', '2020-09-02 13:51:05.284', '1', '2020-09-02 13:51:05.284', '0');
 INSERT INTO `gen_table_column` VALUES ('6480ee5226c0fdd4a190e165ff049bcc', '78fb5944ba909cadb39f40a777906027', 'id', '编号', NULL, 'varchar(32)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 0, NULL, '1', '2020-09-02 13:51:05.277', '1', '2020-09-02 13:51:05.277', '0');
 INSERT INTO `gen_table_column` VALUES ('64e0b1b982baf11b0dc7ec1a61931765', '3758a93f20975e49d4e7b70c94a3b48a', 'number', 'key', NULL, 'int(11)', 'Long', 'number', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 80, 0, NULL, '1', '2020-08-08 20:13:49.068', '1', '2020-08-08 20:13:49.068', '0');
 INSERT INTO `gen_table_column` VALUES ('65e51a8ae8149ba24eb5db948bcce430', '1eec05bedee2b1e0afea533a49692321', 'outer_id', '购买id', NULL, 'varchar(500)', 'String', 'outerId', b'0', b'0', b'1', b'1', b'0', b'1', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-08-29 23:57:31.147', '1', '2020-08-29 23:57:31.147', '0');
+INSERT INTO `gen_table_column` VALUES ('6a10304850807a2a202566ef2e73cfc2', '88fa8acfa1e7667f4b1801c1cac9fa30', 'name', '名称', NULL, 'varchar(200)', 'String', 'name', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 20, 0, NULL, '1', '2020-09-07 00:39:12.088', '1', '2020-09-07 00:39:12.088', '0');
 INSERT INTO `gen_table_column` VALUES ('6c14d4a5f77d9122052128f52a96c70d', '61253a55e25426b602fc9ad8ec1a0fe2', 'id', 'id', NULL, 'varchar(32)', 'String', 'id', b'1', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 10, 1, NULL, '1', '2020-08-16 16:33:00.412', '1', '2020-08-16 16:33:00.346', '0');
+INSERT INTO `gen_table_column` VALUES ('7441fd23142a5b99129e0b7a811082bb', 'b540e303eaa029e5eb9d8df8289eaea5', 'version', '默认0，必填，离线乐观锁', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 40, 0, NULL, '1', '2020-09-07 18:23:48.577', '1', '2020-09-07 18:23:48.577', '0');
 INSERT INTO `gen_table_column` VALUES ('74a931121de3dfad68816564a7c8f22f', '3758a93f20975e49d4e7b70c94a3b48a', 'version', 'version', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 170, 0, NULL, '1', '2020-08-08 20:13:49.079', '1', '2020-08-08 20:13:49.079', '0');
 INSERT INTO `gen_table_column` VALUES ('755d8e950e0bfd400ef6d870cf91d019', '3758a93f20975e49d4e7b70c94a3b48a', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 180, 0, NULL, '1', '2020-08-08 20:13:49.081', '1', '2020-08-08 20:13:49.081', '0');
+INSERT INTO `gen_table_column` VALUES ('7814764400ec6fc9cd9655e176b9c753', 'b540e303eaa029e5eb9d8df8289eaea5', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 100, 0, NULL, '1', '2020-09-07 18:23:48.584', '1', '2020-09-07 18:23:48.584', '0');
 INSERT INTO `gen_table_column` VALUES ('7a49d65551038de97ee4b4940d1d8f32', '61253a55e25426b602fc9ad8ec1a0fe2', 'company_phone', '公司电话', NULL, 'varchar(255)', 'String', 'companyPhone', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 70, 1, NULL, '1', '2020-08-16 16:33:00.414', '1', '2020-08-16 16:33:00.374', '0');
 INSERT INTO `gen_table_column` VALUES ('7a730202e2e2876bd481706c99af8b01', 'ffb3c3a9e232ba193239368e8dde0bbc', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'0', b'0', 'eq', 'input', '', NULL, 150, 1, NULL, '1', '2020-09-05 00:35:41.224', '1', '2020-09-05 00:35:41.195', '0');
+INSERT INTO `gen_table_column` VALUES ('7ac89fe803a3dca548d6d8c88aab2d36', 'af02a5faf128db5978e70f71ef395560', 'title', 'title', NULL, 'text', 'String', 'title', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 30, 0, NULL, '1', '2020-09-07 23:13:30.663', '1', '2020-09-07 23:13:30.663', '0');
 INSERT INTO `gen_table_column` VALUES ('7e1ab0101c8b87603b7c7d4c6b8a5aa0', 'ce24de2f484575934f17dc1efe204b15', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 130, 0, NULL, '1', '2020-08-18 10:19:05.102', '1', '2020-08-18 10:19:05.102', '0');
 INSERT INTO `gen_table_column` VALUES ('7f116f8ab2b70f98ac4920c6eb97a01c', 'ffb3c3a9e232ba193239368e8dde0bbc', 'child_account', '子账户数量', NULL, 'int(1)', 'Integer', 'childAccount', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 1, NULL, '1', '2020-09-05 00:35:41.222', '1', '2020-09-05 00:35:41.148', '0');
+INSERT INTO `gen_table_column` VALUES ('83abd096218051237c5b99ab4a22c8d6', '88fa8acfa1e7667f4b1801c1cac9fa30', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 90, 0, NULL, '1', '2020-09-07 00:39:12.098', '1', '2020-09-07 00:39:12.098', '0');
 INSERT INTO `gen_table_column` VALUES ('8b87bdb55205bceed4997f60c2ed0555', 'ffb3c3a9e232ba193239368e8dde0bbc', 'storage', '存储空间，单位GB', NULL, 'int(1)', 'Integer', 'storage', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 70, 1, NULL, '1', '2020-09-05 00:35:41.222', '1', '2020-09-05 00:35:41.159', '0');
 INSERT INTO `gen_table_column` VALUES ('8cedda980f0a34bc1bac826f9fc0d771', 'ce24de2f484575934f17dc1efe204b15', 'user_id', 'user_id', NULL, 'varchar(200)', 'String', 'userId', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 30, 0, NULL, '1', '2020-08-18 10:19:05.090', '1', '2020-08-18 10:19:05.090', '0');
 INSERT INTO `gen_table_column` VALUES ('9017654f1397bf88fb65ca7ae07a4dbb', '61253a55e25426b602fc9ad8ec1a0fe2', 'account_number', '开户账号', NULL, 'varchar(32)', 'String', 'accountNumber', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 90, 1, NULL, '1', '2020-08-16 16:33:00.415', '1', '2020-08-16 16:33:00.384', '0');
 INSERT INTO `gen_table_column` VALUES ('934093626299155157819045499afb9f', 'ffb3c3a9e232ba193239368e8dde0bbc', 'price', '套餐价格', NULL, 'decimal(18,2)', 'Double', 'price', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 20, 1, NULL, '1', '2020-09-05 00:35:41.221', '1', '2020-09-05 00:35:41.135', '0');
 INSERT INTO `gen_table_column` VALUES ('936b7d7176eca6626aa8ca27570a0669', '61253a55e25426b602fc9ad8ec1a0fe2', 'created_by', 'created_by', NULL, 'varchar(50)', 'String', 'createdBy', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 100, 1, NULL, '1', '2020-08-16 16:33:00.415', '1', '2020-08-16 16:33:00.388', '0');
+INSERT INTO `gen_table_column` VALUES ('96b78293b3bb8177767f751715739885', '88fa8acfa1e7667f4b1801c1cac9fa30', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 110, 0, NULL, '1', '2020-09-07 00:39:12.099', '1', '2020-09-07 00:39:12.099', '0');
 INSERT INTO `gen_table_column` VALUES ('97f71addc03895e06857fc6fa543e017', 'ffb3c3a9e232ba193239368e8dde0bbc', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 200, 1, NULL, '1', '2020-09-05 00:35:41.225', '1', '2020-09-05 00:35:41.216', '0');
+INSERT INTO `gen_table_column` VALUES ('98934e97c4ce8bccacd3975ebed0b4db', '88fa8acfa1e7667f4b1801c1cac9fa30', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 60, 0, NULL, '1', '2020-09-07 00:39:12.093', '1', '2020-09-07 00:39:12.093', '0');
 INSERT INTO `gen_table_column` VALUES ('a0148bf818e1752d63610c6513f46266', 'feab203bec1c4a18ba5637fae1892fc7', 'name', '类型', NULL, 'varchar(20)', 'String', 'name', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 30, 1, NULL, '1', '2020-09-04 20:35:42.603', '1', '2020-09-04 20:35:42.581', '0');
 INSERT INTO `gen_table_column` VALUES ('a17c7e8011ab26c825621133d05f64de', 'ffb3c3a9e232ba193239368e8dde0bbc', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 180, 1, NULL, '1', '2020-09-05 00:35:41.224', '1', '2020-09-05 00:35:41.208', '0');
 INSERT INTO `gen_table_column` VALUES ('a1d6f9e1c84f9534e774f754a2116893', 'feab203bec1c4a18ba5637fae1892fc7', 'type', '增值服务类型', NULL, 'varchar(20)', 'String', 'type', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 40, 1, NULL, '1', '2020-09-04 20:35:42.603', '1', '2020-09-04 20:35:42.589', '0');
@@ -209,18 +232,25 @@ INSERT INTO `gen_table_column` VALUES ('a8cff26533d60f9cdcc7bcb90940711a', '78fb
 INSERT INTO `gen_table_column` VALUES ('abf0cf86656265a71deb0d1020dca62c', 'ce24de2f484575934f17dc1efe204b15', 'last_modified_date', 'last_modified_date', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 120, 0, NULL, '1', '2020-08-18 10:19:05.101', '1', '2020-08-18 10:19:05.101', '0');
 INSERT INTO `gen_table_column` VALUES ('ada9670b061c793ae860ee2452f127c4', 'ffb3c3a9e232ba193239368e8dde0bbc', 'env_amount', '虚拟场景个数', NULL, 'int(1)', 'Integer', 'envAmount', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 100, 1, NULL, '1', '2020-09-05 00:35:41.223', '1', '2020-09-05 00:35:41.173', '0');
 INSERT INTO `gen_table_column` VALUES ('af237e589793dfc3e56b9365060e8eb3', '1eec05bedee2b1e0afea533a49692321', 'out_trade_no', '对接支付宝id', NULL, 'varchar(64)', 'String', 'outTradeNo', b'0', b'0', b'1', b'1', b'0', b'1', b'0', 'eq', 'input', '', NULL, 30, 0, NULL, '1', '2020-08-29 23:57:31.144', '1', '2020-08-29 23:57:31.144', '0');
+INSERT INTO `gen_table_column` VALUES ('b26977b2010ba860941c42af480dc7a1', '88fa8acfa1e7667f4b1801c1cac9fa30', 'version', '默认0，必填，离线乐观锁', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-09-07 00:39:12.091', '1', '2020-09-07 00:39:12.091', '0');
+INSERT INTO `gen_table_column` VALUES ('b26e1d3d4455d85ae5186d80b16dfab4', '88fa8acfa1e7667f4b1801c1cac9fa30', 'user_id', '用户id', NULL, 'varchar(32)', 'String', 'userId', b'0', b'0', b'1', b'1', b'1', b'0', b'0', 'eq', 'input', '', NULL, 40, 0, NULL, '1', '2020-09-07 00:39:12.090', '1', '2020-09-07 00:39:12.090', '0');
 INSERT INTO `gen_table_column` VALUES ('b8209cdc4a79e4de1eccef337d16bab8', '78fb5944ba909cadb39f40a777906027', 'version', '默认0，必填，离线乐观锁', NULL, 'int(11)', 'Long', 'version', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 60, 0, NULL, '1', '2020-09-02 13:51:05.287', '1', '2020-09-02 13:51:05.287', '0');
 INSERT INTO `gen_table_column` VALUES ('b8a19ab6f74553a6aade179752939610', 'feab203bec1c4a18ba5637fae1892fc7', 'title', '表单名称', NULL, 'varchar(30)', 'String', 'title', b'0', b'0', b'1', b'1', b'1', b'1', b'1', 'like', 'input', '', NULL, 60, 1, NULL, '1', '2020-09-04 20:35:42.604', '1', '2020-09-04 20:35:42.601', '0');
 INSERT INTO `gen_table_column` VALUES ('bb0cf806cf9a83746256943a8cf2a0fd', '61253a55e25426b602fc9ad8ec1a0fe2', 'account_bank', '开户公司', NULL, 'varchar(255)', 'String', 'accountBank', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 80, 1, NULL, '1', '2020-08-16 16:33:00.414', '1', '2020-08-16 16:33:00.379', '0');
 INSERT INTO `gen_table_column` VALUES ('be17f99651806ea08e2c82da1000907c', 'feab203bec1c4a18ba5637fae1892fc7', 'value', '具体名称', NULL, 'varchar(20)', 'String', 'value', b'0', b'0', b'0', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 20, 1, NULL, '1', '2020-09-04 20:35:42.602', '1', '2020-09-04 20:35:42.574', '0');
 INSERT INTO `gen_table_column` VALUES ('c10aba3b3bc71c3efad1719ca4892f1c', 'feab203bec1c4a18ba5637fae1892fc7', 'url', '图片链接', NULL, 'varchar(20)', 'String', 'url', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 1, NULL, '1', '2020-09-04 20:35:42.604', '1', '2020-09-04 20:35:42.596', '0');
+INSERT INTO `gen_table_column` VALUES ('c1ffcc5b59e54d6a4133b490d44d2700', 'b540e303eaa029e5eb9d8df8289eaea5', 'last_modified_date', 'last_modified_date', NULL, 'timestamp(3)', 'java.util.Date', 'lastModifiedDate', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'dateselect', '', NULL, 90, 0, NULL, '1', '2020-09-07 18:23:48.583', '1', '2020-09-07 18:23:48.583', '0');
 INSERT INTO `gen_table_column` VALUES ('c2de95e47a5d4be14826f9b1127aceaf', 'ffb3c3a9e232ba193239368e8dde0bbc', 'history', '历史版本数', NULL, 'int(1)', 'Integer', 'history', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 80, 1, NULL, '1', '2020-09-05 00:35:41.223', '1', '2020-09-05 00:35:41.163', '0');
 INSERT INTO `gen_table_column` VALUES ('cc6add0b00a87e0ec7f6b716a347774a', '61253a55e25426b602fc9ad8ec1a0fe2', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'0', b'0', 'eq', 'input', '', NULL, 140, 1, NULL, '1', '2020-08-16 16:33:00.416', '1', '2020-08-16 16:33:00.404', '0');
 INSERT INTO `gen_table_column` VALUES ('cee9a218e6a82853dd3ea563fbb82984', '61253a55e25426b602fc9ad8ec1a0fe2', 'del_flag', '0-正常，1-删除', NULL, 'char(1)', 'String', 'delFlag', b'0', b'0', b'0', b'1', b'0', b'0', b'0', 'eq', 'radio', 'sys_flag', NULL, 160, 1, NULL, '1', '2020-08-16 16:33:00.416', '1', '2020-08-16 16:33:00.412', '0');
+INSERT INTO `gen_table_column` VALUES ('d5011c0d0d62e3cb75ec8596b6e0a31e', 'af02a5faf128db5978e70f71ef395560', 'value', 'value', NULL, 'text', 'String', 'value', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 20, 0, NULL, '1', '2020-09-07 23:13:30.661', '1', '2020-09-07 23:13:30.661', '0');
 INSERT INTO `gen_table_column` VALUES ('d6c4cd3a59395c1de959d0c367fcc3d7', '1eec05bedee2b1e0afea533a49692321', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 80, 0, NULL, '1', '2020-08-29 23:57:31.152', '1', '2020-08-29 23:57:31.152', '0');
 INSERT INTO `gen_table_column` VALUES ('db711bb3cf0ecc3482ba7a08ff5578a5', '61253a55e25426b602fc9ad8ec1a0fe2', 'tax_num', '公司税号', NULL, 'varchar(0)', 'String', 'taxNum', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 1, NULL, '1', '2020-08-16 16:33:00.414', '1', '2020-08-16 16:33:00.365', '0');
+INSERT INTO `gen_table_column` VALUES ('e1731b5ebe5a971da651f98e84a1bfe9', '88fa8acfa1e7667f4b1801c1cac9fa30', 'urls', '商品图片', NULL, 'text', 'String', 'urls', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 30, 0, NULL, '1', '2020-09-07 00:39:12.089', '1', '2020-09-07 00:39:12.089', '0');
+INSERT INTO `gen_table_column` VALUES ('e1f7519c816dab395cb518fe12032161', 'b540e303eaa029e5eb9d8df8289eaea5', 'description', '备注', NULL, 'varchar(255)', 'String', 'description', b'0', b'0', b'1', b'1', b'1', b'0', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-09-07 18:23:48.578', '1', '2020-09-07 18:23:48.578', '0');
 INSERT INTO `gen_table_column` VALUES ('e34b427c506ec16c3d1e7598facbbc20', 'ce24de2f484575934f17dc1efe204b15', 'labels', '标签文本', NULL, 'text', 'String', 'labels', b'0', b'0', b'0', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 20, 0, NULL, '1', '2020-08-18 10:19:05.089', '1', '2020-08-18 10:19:05.089', '0');
 INSERT INTO `gen_table_column` VALUES ('e4974f6bccba16349313b9614602ce1f', '3758a93f20975e49d4e7b70c94a3b48a', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 140, 0, NULL, '1', '2020-08-08 20:13:49.076', '1', '2020-08-08 20:13:49.076', '0');
+INSERT INTO `gen_table_column` VALUES ('e4fcb3b46335c75b1fba63fb522f9bbf', 'b540e303eaa029e5eb9d8df8289eaea5', 'value', '属性值', NULL, 'varchar(255)', 'String', 'value', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 30, 0, NULL, '1', '2020-09-07 18:23:48.576', '1', '2020-09-07 18:23:48.576', '0');
 INSERT INTO `gen_table_column` VALUES ('eeb04a569c8034330c11878efc1e6fad', 'ce24de2f484575934f17dc1efe204b15', 'last_modified_by', 'last_modified_by', NULL, 'varchar(50)', 'String', 'lastModifiedBy', b'0', b'0', b'1', b'1', b'0', b'0', b'0', 'eq', 'input', '', NULL, 110, 0, NULL, '1', '2020-08-18 10:19:05.100', '1', '2020-08-18 10:19:05.100', '0');
 INSERT INTO `gen_table_column` VALUES ('ef0a7646ab33bf706ade6b43da32714e', 'ce24de2f484575934f17dc1efe204b15', 'seat', '活力青春', NULL, 'varchar(20)', 'String', 'seat', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 50, 0, NULL, '1', '2020-08-18 10:19:05.092', '1', '2020-08-18 10:19:05.092', '0');
 INSERT INTO `gen_table_column` VALUES ('f1b6733ef6ff05dc24537b7e756cd14a', 'ffb3c3a9e232ba193239368e8dde0bbc', 'env_amount_plus', '存储空间，单位GB', NULL, 'int(1)', 'Integer', 'envAmountPlus', b'0', b'0', b'1', b'1', b'1', b'1', b'0', 'eq', 'input', '', NULL, 120, 1, NULL, '1', '2020-09-05 00:35:41.223', '1', '2020-09-05 00:35:41.182', '0');
@@ -560,7 +590,7 @@ INSERT INTO `sys_dict` VALUES ('1', '数据字典', '', 'base', '-1', NULL, 1, b
 INSERT INTO `sys_dict` VALUES ('13276f100593667c3bd40ab8fea734b4', '立即执行', '1', 'quartz_misfire_policy_1', 'cb3d07975904460c94e9e2b30755c04b', '1,cfd5f62f601817a3b0f38f5ccb1f5128,cb3d07975904460c94e9e2b30755c04b,', 10, b'1', b'1', '1', '2019-08-15 10:24:19.706', '1', '2020-05-16 11:22:07.230', 5, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('181dd29afa852bd47a5ae8dd2e02a623', '正常', '1', 'sys_status_1', '952c07b027bf0be298a9243af701b8c5', '1,cfd5f62f601817a3b0f38f5ccb1f5128,952c07b027bf0be298a9243af701b8c5,', 30, b'1', b'1', '1', '2019-08-14 11:28:01.693', '1', '2020-05-15 20:54:54.622', 2, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('2', '是否标识', '', 'sys_flag', 'cfd5f62f601817a3b0f38f5ccb1f5128', '1,cfd5f62f601817a3b0f38f5ccb1f5128,', 10, b'1', b'0', '1', '2019-06-02 17:17:44.000', '1', '2020-05-15 20:54:54.622', 19, NULL, '0');
-INSERT INTO `sys_dict` VALUES ('269ebbfff898cf1db0d243e3f7774d2c', '业务数据', 'biz', 'biz', '1', '1,', 30, b'1', b'1', '1', '2019-07-14 04:01:51.000', '1', '2020-05-25 11:30:54.952', 5, NULL, '0');
+INSERT INTO `sys_dict` VALUES ('269ebbfff898cf1db0d243e3f7774d2c', '业务数据', 'biz', 'biz', '1', '1,', 30, b'1', b'0', '1', '2019-07-14 04:01:51.000', '1', '2020-09-07 18:13:27.953', 7, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('2ec9dffe7cb0dea12c8e4e2a90279711', '强退', 'FORCE_LOGOUT', 'sys_business_type_force_logout', 'e0696db908c87ad57a85c6b326348dbd', '1,cfd5f62f601817a3b0f38f5ccb1f5128,e0696db908c87ad57a85c6b326348dbd,', 70, b'1', b'1', '1', '2019-08-07 16:52:15.681', '1', '2020-05-17 13:50:42.409', 5, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('3', '是', '1', 'sys_flag_yes', '2', '1,cfd5f62f601817a3b0f38f5ccb1f5128,2,', 10, b'1', b'1', '1', '2018-07-09 06:15:40.000', '1', '2020-05-15 20:54:54.622', 7, '', '0');
 INSERT INTO `sys_dict` VALUES ('3190c222f999f9493e5773deec2d84f1', '登录', 'LOGIN', 'sys_business_type_login', 'e0696db908c87ad57a85c6b326348dbd', '1,cfd5f62f601817a3b0f38f5ccb1f5128,e0696db908c87ad57a85c6b326348dbd,', 100, b'0', b'1', '1', '2020-05-27 11:41:37.787', '1', '2020-05-29 22:29:29.992', 1, NULL, '0');
@@ -599,6 +629,7 @@ INSERT INTO `sys_dict` VALUES ('f3592a047c466e348279983336ebaf28', '在线状态
 INSERT INTO `sys_dict` VALUES ('f35adf75d9ab0ca5cec43815b7db5274', '执行一次', '2', 'quartz_misfire_policy_2', 'cb3d07975904460c94e9e2b30755c04b', '1,cfd5f62f601817a3b0f38f5ccb1f5128,cb3d07975904460c94e9e2b30755c04b,', 20, b'1', b'1', '1', '2019-08-15 10:24:39.273', '1', '2020-05-16 11:22:16.986', 5, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('f83a718756762758707c67db3d271c9d', '手机端用户', 'MOBILE', 'sys_operate_type_moblie', '6b8211aef2fec451b0398b19857443a7', '1,cfd5f62f601817a3b0f38f5ccb1f5128,6b8211aef2fec451b0398b19857443a7,', 30, b'1', b'1', '1', '2019-08-07 16:49:00.766', '1', '2020-05-20 12:09:36.025', 6, NULL, '0');
 INSERT INTO `sys_dict` VALUES ('fafe8843b2f4091f8096dc0df09c300c', '失败', '0', 'sys_status_0', '952c07b027bf0be298a9243af701b8c5', '1,cfd5f62f601817a3b0f38f5ccb1f5128,952c07b027bf0be298a9243af701b8c5,', 30, b'1', b'1', '1', '2019-08-14 11:28:11.000', '1', '2020-05-15 20:54:54.622', 3, NULL, '0');
+INSERT INTO `sys_dict` VALUES ('ff835f6ab7d5070056f588beaeeea3d2', '单人主播', '999', '单人主播', '269ebbfff898cf1db0d243e3f7774d2c', '1,269ebbfff898cf1db0d243e3f7774d2c,', 30, b'1', b'1', '1', '2020-09-07 18:08:03.230', '1', '2020-09-07 18:13:27.968', 1, NULL, '0');
 COMMIT;
 
 -- ----------------------------
@@ -686,7 +717,7 @@ CREATE TABLE `sys_log_operate` (
   KEY `sys_log_create_by` (`created_by`) USING BTREE,
   KEY `sys_log_request_uri` (`request_uri`) USING BTREE,
   KEY `sys_log_create_date` (`created_date`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志表';
 
 -- ----------------------------
 -- Records of sys_log_operate
@@ -713,6 +744,31 @@ INSERT INTO `sys_log_operate` VALUES (18, '用户登录', 'INFO', 'abcAccount2',
 INSERT INTO `sys_log_operate` VALUES (19, '用户登录', 'INFO', 'abcAccount2', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=123456&randomStr=43751599236238447&code=1&rememberMe=false&username=abcAccount2', NULL, 'MANAGE', '0', NULL, '9bc1afb81c83a33337a359ff41328cff', '2020-09-05 00:17:24.597', NULL, '0');
 INSERT INTO `sys_log_operate` VALUES (20, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=71691599236252962&code=1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 00:17:36.172', NULL, '0');
 INSERT INTO `sys_log_operate` VALUES (21, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=38861599238903209&code=1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 01:01:45.485', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (22, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=14131599242024345&code=7xe2&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 01:53:48.180', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (23, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=35091599311576055&code=m2b7&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 21:13:01.251', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (24, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=76511599317916190&code=5n52&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 22:58:40.645', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (25, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=54261599320627932&code=m5an&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-05 23:43:50.834', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (26, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=20941599323691940&code=be3n&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 00:34:54.795', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (27, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=56971599324367264&code=wab4&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 00:46:10.385', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (28, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=29471599356254820&code=2dbg&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 09:37:38.706', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (29, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=89491599356792531&code=35md&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 09:46:35.482', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (30, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=67921599358993173&code=1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 10:23:14.930', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (31, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=31211599360095711&code=gf1&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 10:41:39.133', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (32, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=56281599404919354&code=xgce&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-06 23:08:45.081', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (33, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=27291599409920272&code=48pf&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 00:32:05.236', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (34, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=62371599461873152&code=wwy5&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 14:57:56.295', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (35, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=46591599462107748&code=6cn2&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 15:01:51.107', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (36, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=46311599462845746&code=bfdf&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 15:14:08.680', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (37, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=12051599465558778&code=57n6&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 15:59:21.651', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (38, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=83251599468286490&code=3dnw&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 16:44:48.911', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (39, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=32251599468536551&code=dgca&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 16:49:00.589', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (40, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=61991599469479815&code=78w5&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 17:04:44.639', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (41, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=29621599471972950&code=83dx&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 17:46:15.336', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (42, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=44091599481350949&code=6ny3&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 20:22:34.712', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (43, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=96881599491580161&code=ayge&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 23:13:06.212', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (44, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=22861599491737436&code=gpd5&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 23:15:41.067', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (45, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=43721599491882423&code=gf7f&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 23:18:06.631', NULL, '0');
+INSERT INTO `sys_log_operate` VALUES (46, '用户登录', 'INFO', 'admin', NULL, '127.0.0.1', '内网IP', 'Chrome', 'OSX', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', '/a/authenticate', NULL, 'password=adminm&randomStr=23821599492499690&code=yxap&rememberMe=false&username=admin', NULL, 'MANAGE', '0', NULL, '1', '2020-09-07 23:28:22.308', NULL, '0');
 COMMIT;
 
 -- ----------------------------
@@ -752,6 +808,7 @@ INSERT INTO `sys_menu` VALUES ('04c21fed93d35764a3feebf9e30f50e5', '抬头查看
 INSERT INTO `sys_menu` VALUES ('065e7fc71db385c778b4965d34bf731e', 'testBook查看', '2', 'biz_testBook_view', NULL, '8a4be91b99e5798043eafac6a3ba102c', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-08 20:19:50.212', '1', '2020-08-08 20:22:50.150', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('06874adacf1f272be7928badd4fe8ed1', '配置日志', '1', NULL, 'log', 'ef2382c0cc2d99ee73444e684237a88a', 'ef2382c0cc2d99ee73444e684237a88a,', 'dev', 'admin/log/index', b'0', b'0', b'0', b'1', 30, '1', '2019-08-05 16:16:06.000', '1', '2020-05-17 17:54:34.755', NULL, 1, '1');
 INSERT INTO `sys_menu` VALUES ('0747d9d8f651f19e49748ba68f18c6f5', '任务调度方案编辑', '2', 'quartz_job_edit', NULL, 'c77855e4171d00ae3f97563a8391f70a', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2019-08-14 10:36:03.602', '1', '2020-05-15 21:06:35.180', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('08da98300ae838c35369d7fd80900b55', '套词', '1', NULL, 'script', '1000', NULL, 'icon-right-square', '套词/script/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-07 23:15:12.026', '1', '2020-09-07 23:17:38.954', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('096d58aaf7e893e7ee655bae823bd3fe', '联系单编辑', '2', 'biz_contactInfo_edit', NULL, '6d066d50173c42d31d5b46a9fea82fb7', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-04 20:44:42.039', '1', '2020-09-04 20:44:42.039', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('0a160cff2d071eeec3db97f0cb0b30d6', '测试树编辑', '2', 'test_testTreeBook_edit', NULL, '3956b4690e4f49cfb1e065384c1dc0b9', NULL, NULL, NULL, b'0', NULL, b'0', b'0', 40, '1', '2020-05-25 09:35:47.308', '1', '2020-05-25 10:12:00.658', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('0b934688321b1db735c3bf6ec3e7cdc7', 'test', '2', 'test', 'test', '-1', NULL, 'date', NULL, b'0', b'0', b'0', b'1', 999, '1', '2020-05-14 17:47:36.261', '1', '2020-05-15 21:06:35.180', NULL, 1, '1');
@@ -796,6 +853,8 @@ INSERT INTO `sys_menu` VALUES ('2200', '字典管理', '1', 'sys_dict_view', 'di
 INSERT INTO `sys_menu` VALUES ('2201', '字典删除', '2', 'sys_dict_del', NULL, '2200', '1000,2200,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '', '2017-11-29 11:30:11.000', '1', '2020-05-16 17:55:19.918', NULL, 2, '0');
 INSERT INTO `sys_menu` VALUES ('2202', '字典编辑', '2', 'sys_dict_edit', NULL, '2200', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 30, '', '2018-05-11 22:34:55.000', '1', '2020-05-16 13:24:22.800', NULL, 3, '0');
 INSERT INTO `sys_menu` VALUES ('2245134851ecd3537c454ba8a3ef915c', '测试书籍查看', '2', 'test_testBook_view', NULL, '8ce9f148e5720ace1b7cf24e0985c47e', NULL, NULL, NULL, b'0', NULL, b'0', b'0', 20, '1', '2020-05-25 10:12:05.954', '1', '2020-05-25 10:15:07.779', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('226a7b79ff2099426bee82d450f27678', '套词编辑', '2', 'biz_script_edit', NULL, '66922f89f7c6624710a221ac64890614', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-07 23:17:49.563', '1', '2020-09-07 23:17:49.563', NULL, 0, '0');
+INSERT INTO `sys_menu` VALUES ('22a81abd099d0fbb2e315da9393c1592', '配音表单查看', '2', 'biz_dub_view', NULL, '94ab10587dbf95c856f52b3b2ba793a8', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-07 18:24:43.191', '1', '2020-09-07 18:24:43.191', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('23430df88fb72179c2a85c39eaf4d50b', '任务调度日志清空', '2', 'quartz_jobLog_clean', NULL, '74f2b2a8871a298e0acc4d7129d10e9c', '74f2b2a8871a298e0acc4d7129d10e9c,', NULL, NULL, b'0', b'0', b'0', b'1', 80, '1', '2019-08-15 16:12:26.285', '1', '2020-05-16 15:40:21.370', NULL, 2, '1');
 INSERT INTO `sys_menu` VALUES ('247071d42ff40267c8d8c44eac92da67', '生成方案', '1', NULL, 'scheme', '413892fe8d52c1163d6659f51299dc96', '413892fe8d52c1163d6659f51299dc96,', 'dev', 'gen/scheme/index', b'0', b'0', b'0', b'0', 30, '1', '2019-07-21 13:27:35.000', '1', '2020-05-18 11:39:42.026', NULL, 21, '0');
 INSERT INTO `sys_menu` VALUES ('2500', '接口文档', '1', NULL, 'swagger2', 'ef2382c0cc2d99ee73444e684237a88a', 'ef2382c0cc2d99ee73444e684237a88a,', 'swagger', 'tool/swagger/index', b'0', b'0', b'0', b'1', 20, '', '2018-06-26 10:50:32.000', '1', '2020-05-19 02:17:26.914', NULL, 8, '0');
@@ -824,6 +883,7 @@ INSERT INTO `sys_menu` VALUES ('3956b4690e4f49cfb1e065384c1dc0b9', '测试树', 
 INSERT INTO `sys_menu` VALUES ('3c1c5a48888650b9a7ba5a1763f2e205', '任务日志查看', '2', 'quartz_jobLog_view', NULL, 'c93f8fca7ca6f8631d383b08ab67009a', '2000,c93f8fca7ca6f8631d383b08ab67009a,', NULL, NULL, b'0', b'0', b'0', b'1', 20, '1', '2019-08-14 10:36:42.000', '1', '2020-05-16 13:43:17.732', NULL, 4, '1');
 INSERT INTO `sys_menu` VALUES ('40e872ab9b5511f81a7efc7a259d7f42', '联系单查看', '2', 'biz_contactInfo_view', NULL, 'aa1a0149d0a8b7ca223aafd06785192f', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-02 13:51:53.260', '1', '2020-09-04 20:44:42.025', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('413892fe8d52c1163d6659f51299dc96', '代码生成', '0', NULL, '/gen', 'ef2382c0cc2d99ee73444e684237a88a', 'ef2382c0cc2d99ee73444e684237a88a,', 'codeConsole', 'gen/index', b'0', b'0', b'0', b'0', 10, '1', '2019-07-20 12:00:48.000', '1', '2020-05-18 11:39:41.987', NULL, 47, '0');
+INSERT INTO `sys_menu` VALUES ('479ea7fa09edc0e5a3652c9023f54202', '商品', '1', NULL, 'commodity', '1000', NULL, 'icon-right-square', 'biz/commodity/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-07 14:58:45.890', '1', '2020-09-07 14:58:45.890', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('47b30f257d46475bfa7b595c2eb93602', 'testBook查看', '2', 'biz_testBook_view', NULL, 'c03431f69cdbd3fcb3a018f98cd3403e', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-08 20:22:50.162', '1', '2020-08-08 21:04:31.425', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('48ffd1c39241ab2b4c206155bb2ae8b4', '测试书籍查看', '2', 'test_testBook_view', NULL, '4f5c94e30f3a64e8e1f1bf10e7247e7e', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-05-25 10:15:07.785', '1', '2020-05-29 16:36:26.964', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('4be6c4bdd4e81a3e55bd3fbcdb44fb3a', 'testBook编辑', '2', 'biz_testBook_edit', NULL, '27db071d74ab5e18988ab29990e94955', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-08-08 21:20:47.667', '1', '2020-08-16 16:20:36.579', NULL, 0, '1');
@@ -842,11 +902,15 @@ INSERT INTO `sys_menu` VALUES ('618ee4b9660265a85a8b61277de2a579', '富文本', 
 INSERT INTO `sys_menu` VALUES ('621e50e1c7d66a1febeb699bebb2fe35', '任务调度执行', '2', 'quartz_job_run', NULL, '74f2b2a8871a298e0acc4d7129d10e9c', '74f2b2a8871a298e0acc4d7129d10e9c,', NULL, NULL, b'0', b'0', b'0', b'1', 20, '1', '2019-08-15 16:10:59.000', '1', '2020-05-16 12:11:01.548', NULL, 2, '0');
 INSERT INTO `sys_menu` VALUES ('64b61b8966e1c74d9b309069b2f622d1', '图标库', '1', NULL, 'icons', 'd9d87cf8ed7c29ed2eda06d5dec4dcda', 'd9d87cf8ed7c29ed2eda06d5dec4dcda,', 'icon', 'components/icons/index', b'0', b'0', b'0', b'1', 10, '1', '2020-05-15 21:14:28.945', '1', '2020-05-15 21:15:00.712', NULL, 2, '0');
 INSERT INTO `sys_menu` VALUES ('667c1200525f846a97cfb535e7ae80b1', 'testBook编辑', '2', 'biz_testBook_edit', NULL, 'c03431f69cdbd3fcb3a018f98cd3403e', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-08-08 20:22:50.167', '1', '2020-08-08 21:04:31.449', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('66922f89f7c6624710a221ac64890614', '套词', '1', NULL, 'script', '1000', NULL, 'icon-right-square', 'biz/script/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-07 23:17:49.555', '1', '2020-09-07 23:17:49.555', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('6763703d160181a09cbe9a047146b2cf', 'testBook删除', '2', 'biz_testBook_del', NULL, 'ed690ac2933fc89fe7f4d01688e38ea4', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-08-16 16:20:36.599', '1', '2020-08-16 16:21:32.306', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('6d066d50173c42d31d5b46a9fea82fb7', '联系单', '1', NULL, 'contact-info', '1000', NULL, 'icon-right-square', 'biz/contact-info/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-04 20:44:42.032', '1', '2020-09-04 20:44:42.032', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('6d101761341b2ca58db9a953a1fde5e0', '套餐编辑', '2', 'biz_plan_edit', NULL, 'ad2ea4cf4a36770597f8e473bbf5b64b', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-05 00:36:55.093', '1', '2020-09-05 00:36:55.093', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('6d1104631464317431ab6fb827b1e599', '联系单编辑', '2', 'biz_contactInfo_edit', NULL, 'aa1a0149d0a8b7ca223aafd06785192f', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-02 13:51:53.263', '1', '2020-09-04 20:44:42.025', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('6e3f89cda84ac2c6e715e7812c102ae8', '在线用户', '1', '', 'user-online', '2000', '2000,', 'Steve-Jobs', 'monitor/user-online/index', b'0', b'0', b'0', b'0', 30, '1', '2019-08-07 09:03:52.000', '1', '2020-05-16 17:55:59.718', NULL, 10, '0');
+INSERT INTO `sys_menu` VALUES ('6e5b7dc2fe38c37c610f470c95a56f91', '配音表单编辑', '2', 'biz_dub_edit', NULL, '94ab10587dbf95c856f52b3b2ba793a8', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-07 18:24:43.195', '1', '2020-09-07 18:24:43.195', NULL, 0, '0');
+INSERT INTO `sys_menu` VALUES ('74639593f0bf451cc1c0327f7bf5091a', '商品查看', '2', 'biz_commodity_view', NULL, '479ea7fa09edc0e5a3652c9023f54202', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-07 14:58:45.894', '1', '2020-09-07 14:58:45.894', NULL, 0, '0');
+INSERT INTO `sys_menu` VALUES ('74ab64d6d305db042124b7501c951622', '套词查看', '2', 'biz_script_view', NULL, '66922f89f7c6624710a221ac64890614', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-07 23:17:49.559', '1', '2020-09-07 23:17:49.559', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('74f2b2a8871a298e0acc4d7129d10e9c', '任务调度', '1', NULL, 'job', '1000', '1000,', 'timing', 'quartz/job/index', b'0', b'0', b'0', b'0', 60, '1', '2019-08-14 10:36:47.081', '1', '2020-05-16 17:56:34.966', NULL, 22, '0');
 INSERT INTO `sys_menu` VALUES ('76d6087052dc26b32f3efa71b9cc119b', '任务调度日志', '2', 'quartz_jobLog_view', NULL, '74f2b2a8871a298e0acc4d7129d10e9c', '74f2b2a8871a298e0acc4d7129d10e9c,', NULL, NULL, b'0', b'0', b'0', b'1', 50, '1', '2019-08-15 16:11:30.986', '1', '2020-05-16 13:43:44.992', NULL, 3, '0');
 INSERT INTO `sys_menu` VALUES ('7754b1457826c48290bc189bb1289740', '支付宝工具', '1', NULL, 'alipay', 'ef2382c0cc2d99ee73444e684237a88a', 'ef2382c0cc2d99ee73444e684237a88a,', 'alipay', 'tool/alipay/index', b'0', b'0', b'0', b'1', 40, '1', '2020-05-17 17:58:06.876', '1', '2020-05-19 02:17:53.063', NULL, 2, '0');
@@ -859,28 +923,34 @@ INSERT INTO `sys_menu` VALUES ('8a4be91b99e5798043eafac6a3ba102c', 'testBook', '
 INSERT INTO `sys_menu` VALUES ('8a8db0c2405754fd3ac1dd33f0d6fac5', 'testBook查看', '2', 'biz_testBook_view', NULL, '27db071d74ab5e18988ab29990e94955', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-08 21:20:47.662', '1', '2020-08-16 16:20:36.579', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('8ce9f148e5720ace1b7cf24e0985c47e', '测试书籍', '1', NULL, 'test-book', 'eb17cee437ea6b630dad59fff2a059ca', NULL, 'icon-right-square', 'test/test-book/index', b'0', NULL, b'0', b'0', 90, '1', '2020-05-25 10:12:05.950', '1', '2020-05-25 10:15:07.779', NULL, 1, '1');
 INSERT INTO `sys_menu` VALUES ('8d3517427e527df11d51da528261c915', '测试树管理', '1', NULL, 'test-tree-book', '413892fe8d52c1163d6659f51299dc96', NULL, 'dev', 'test/test-tree-book/index', b'0', b'0', b'0', b'0', 30, '1', '2019-08-11 14:32:06.849', '1', '2020-05-15 21:07:50.836', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('8ddadf960503a5213d879d6eaee4ad3c', '商品编辑', '2', 'biz_commodity_edit', NULL, '479ea7fa09edc0e5a3652c9023f54202', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-07 14:58:45.897', '1', '2020-09-07 14:58:45.897', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('9203b35328f4c86e9ab552b1420ae8b3', '套餐查看', '2', 'biz_tPlan_view', NULL, '258794048b5ed7337eb54d06ecc8d188', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-05 00:34:55.599', '1', '2020-09-05 00:36:43.027', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('92f78825551a22fa130c03066f398448', '在线用户删除', '2', 'sys_userOnline_del', NULL, '6e3f89cda84ac2c6e715e7812c102ae8', '2000,6e3f89cda84ac2c6e715e7812c102ae8,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '1', '2019-08-07 09:06:33.448', '1', '2020-05-16 17:55:59.728', NULL, 5, '0');
 INSERT INTO `sys_menu` VALUES ('9456f594320dac67c8ee407c8375a245', '表单查看', '2', 'biz_orderForm_view', NULL, 'bdd0f9b7a638527b6ecab7de453ddc00', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-18 10:25:50.877', '1', '2020-09-02 13:52:21.499', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('94ab10587dbf95c856f52b3b2ba793a8', '配音表单', '1', NULL, 'dub', '1000', NULL, 'icon-right-square', 'biz/dub/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-07 18:24:43.188', '1', '2020-09-07 18:24:43.188', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('94b57a562063d103423e2c6125cb30ad', '菜单查看', '2', 'sys_menu_view', NULL, '1200', '1200,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '1', '2019-08-07 17:27:59.697', '1', '2020-05-15 21:06:35.180', NULL, 1, '1');
 INSERT INTO `sys_menu` VALUES ('95781768e18770fc26c99c11c6528920', 'testBook查看', '2', 'biz_testBook_view', NULL, 'ed690ac2933fc89fe7f4d01688e38ea4', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-16 16:20:36.591', '1', '2020-08-16 16:21:32.306', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('9763343d9cce11ce9eb4f21c8e49122b', '任务调度编辑', '2', 'quartz_job_edit', NULL, '74f2b2a8871a298e0acc4d7129d10e9c', '74f2b2a8871a298e0acc4d7129d10e9c,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '1', '2019-08-14 10:36:47.088', '1', '2020-05-16 12:11:35.820', NULL, 1, '0');
 INSERT INTO `sys_menu` VALUES ('97722c6d56c8b9990cc3c1a6eea3d6bb', '业务表编辑', '1', 'gen_table_edit', 'edit', '413892fe8d52c1163d6659f51299dc96', 'ef2382c0cc2d99ee73444e684237a88a,413892fe8d52c1163d6659f51299dc96,', NULL, 'gen/table/edit', b'1', b'0', b'0', b'1', 20, '1', '2019-07-21 13:24:02.000', '1', '2020-05-18 11:39:42.048', NULL, 10, '0');
 INSERT INTO `sys_menu` VALUES ('9894fcdc0d77e5df85487b84abe62aee', 'testBook编辑', '2', 'biz_testBook_edit', NULL, 'd3d0dcfc154f40fc77e3711e5e964996', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-08-08 21:04:54.701', '1', '2020-08-08 21:20:47.646', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('9f02e346b5350366968f217daef3f1b7', '图表库', '1', NULL, 'Echarts', 'd9d87cf8ed7c29ed2eda06d5dec4dcda', 'd9d87cf8ed7c29ed2eda06d5dec4dcda,', 'chart', 'components/Echarts', b'0', b'0', b'0', b'1', 20, '1', '2020-05-15 21:12:39.827', '1', '2020-05-15 21:15:09.128', NULL, 2, '0');
+INSERT INTO `sys_menu` VALUES ('9f686f504fa074bb566a7b45c40f8695', '套词编辑', '2', '套词_script_edit', NULL, '08da98300ae838c35369d7fd80900b55', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-07 23:15:12.033', '1', '2020-09-07 23:17:34.714', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('a18b33e15bde209a3c9115517c56d9ec', '业务表', '1', '', 'table', '413892fe8d52c1163d6659f51299dc96', 'ef2382c0cc2d99ee73444e684237a88a,413892fe8d52c1163d6659f51299dc96,', 'database', 'gen/table/index', b'0', b'0', b'0', b'0', 10, '1', '2019-07-20 12:02:02.000', '1', '2020-05-18 11:39:42.059', NULL, 23, '0');
 INSERT INTO `sys_menu` VALUES ('a1dab416efe0a8e26d74018fb686bb35', 'testBook删除', '2', 'biz_testBook_del', NULL, '1901860c4e2bf0cee03af42bd7f9d846', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-08-16 16:21:32.339', '1', '2020-09-02 13:52:21.536', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('a24028c51b32b0e672c289b5deaed16b', 'testBook编辑', '2', 'biz_testBook_edit', NULL, 'ed690ac2933fc89fe7f4d01688e38ea4', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-08-16 16:20:36.595', '1', '2020-08-16 16:21:32.306', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('a402264b7868953cbcbedd6052d34eec', '套餐编辑', '2', 'biz_tPlan_edit', NULL, '258794048b5ed7337eb54d06ecc8d188', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-09-05 00:34:55.604', '1', '2020-09-05 00:36:42.999', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('a41d4ac1a6cc179696e0dbf284e3efc4', '登录日志', '1', NULL, 'log-login', '2000', '2000,', 'log', 'monitor//log-login/index', b'0', b'0', b'0', b'0', 50, '1', '2019-08-15 09:26:02.345', '1', '2020-05-17 14:55:36.150', NULL, 8, '1');
 INSERT INTO `sys_menu` VALUES ('a59098c7feb21d9177773dc21c08c3c6', '联系单删除', '2', 'biz_contactInfo_del', NULL, 'aa1a0149d0a8b7ca223aafd06785192f', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-02 13:51:53.267', '1', '2020-09-04 20:44:42.025', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('a6305211a6aa74b0991a94f138dfb081', '配音表单删除', '2', 'biz_dub_del', NULL, '94ab10587dbf95c856f52b3b2ba793a8', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-07 18:24:43.198', '1', '2020-09-07 18:24:43.198', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('aa1a0149d0a8b7ca223aafd06785192f', '联系单', '1', NULL, 'contact-info', '1000', NULL, 'icon-right-square', 'biz/contact-info/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-02 13:51:53.256', '1', '2020-09-04 20:44:42.025', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('ad2ea4cf4a36770597f8e473bbf5b64b', '套餐', '1', NULL, 'plan', '1000', NULL, 'icon-right-square', 'biz/plan/index', b'0', b'0', b'0', b'0', 30, '1', '2020-09-05 00:36:55.082', '1', '2020-09-05 00:36:55.082', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('b113dd83b57e3b53e5814de94374f843', 'testBook查看', '2', 'biz_testBook_view', NULL, '1901860c4e2bf0cee03af42bd7f9d846', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-08-16 16:21:32.330', '1', '2020-09-02 13:52:21.483', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('b1a7134f07a41e5f91df9f6c3b0238d4', '联系单查看', '2', 'biz_contactInfo_view', NULL, '6d066d50173c42d31d5b46a9fea82fb7', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-04 20:44:42.035', '1', '2020-09-04 20:44:42.035', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('b4f9ed81ae1390b4d1a2ae8373c4b2bc', 'testBook删除', '2', 'biz_testBook_del', NULL, 'd3d0dcfc154f40fc77e3711e5e964996', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-08-08 21:04:54.705', '1', '2020-08-08 21:20:47.646', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('b6bcb9fa8a3726bfbffb955dc9f56b91', '测试书籍编辑', '2', 'test_testBook_edit', NULL, '8ce9f148e5720ace1b7cf24e0985c47e', NULL, NULL, NULL, b'0', NULL, b'0', b'0', 40, '1', '2020-05-25 10:12:05.958', '1', '2020-05-25 10:15:07.779', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('b8b9c384ab48ac46fb5dfa95bba075c5', '套词删除', '2', 'biz_script_del', NULL, '66922f89f7c6624710a221ac64890614', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-07 23:17:49.566', '1', '2020-09-07 23:17:49.566', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('b8eafb6c3a8bf0919230f0bfa59d86b6', '二级菜单2', '1', NULL, 'menu2', 'eb17cee437ea6b630dad59fff2a059ca', 'eb17cee437ea6b630dad59fff2a059ca,', 'dev', 'nested/menu2/index', b'0', b'0', b'0', b'1', 30, '1', '2020-05-18 11:14:32.907', '1', '2020-05-18 11:15:14.535', NULL, 2, '0');
+INSERT INTO `sys_menu` VALUES ('b9070d44e1b961cbbe1430d3792a31c0', '套词删除', '2', '套词_script_del', NULL, '08da98300ae838c35369d7fd80900b55', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-07 23:15:12.037', '1', '2020-09-07 23:17:34.773', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('b961670cbf3454f5927c4bd2a327e915', '生成方案删除', '2', 'gen_scheme_del', NULL, '247071d42ff40267c8d8c44eac92da67', '413892fe8d52c1163d6659f51299dc96,247071d42ff40267c8d8c44eac92da67,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '1', '2019-07-21 13:30:18.000', '1', '2020-05-18 11:39:42.072', NULL, 8, '0');
 INSERT INTO `sys_menu` VALUES ('b963a451117f430703817b3b6c87402a', '任务调度日志导出', '2', 'quartz_jobLog_export', NULL, '74f2b2a8871a298e0acc4d7129d10e9c', '74f2b2a8871a298e0acc4d7129d10e9c,', NULL, NULL, b'0', b'0', b'0', b'1', 60, '1', '2019-08-15 16:13:16.742', '1', '2020-05-16 13:43:54.409', NULL, 2, '0');
 INSERT INTO `sys_menu` VALUES ('ba860cfe687fd01fd492c683907936aa', '测试树编辑', '2', 'test_testTreeBook_edit', NULL, 'dab11e5104d690be6991002ae4da0cbd', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-05-25 10:15:02.874', '1', '2020-05-29 16:36:27.013', NULL, 0, '1');
@@ -899,10 +969,12 @@ INSERT INTO `sys_menu` VALUES ('caaec41413c5713c6f290efe08c11415', '生成方案
 INSERT INTO `sys_menu` VALUES ('cb13db6c1daea6afdba933ef6ad9d2a7', '套餐删除', '2', 'biz_plan_del', NULL, 'ad2ea4cf4a36770597f8e473bbf5b64b', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-05 00:36:55.097', '1', '2020-09-05 00:36:55.097', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('cb493ffb145ee7d7d5c31119180f0f96', '抬头编辑', '2', 'biz_invoice_edit', NULL, '5e7e7140a49eb205075fb31205ddccbf', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 40, '1', '2020-08-16 16:21:38.483', '1', '2020-08-16 16:21:38.483', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('d3d0dcfc154f40fc77e3711e5e964996', 'testBook', '1', NULL, 'test-book', '1000', NULL, 'icon-right-square', 'biz/test-book/index', b'0', b'0', b'0', b'0', 30, '1', '2020-08-08 21:04:54.693', '1', '2020-08-08 21:20:47.646', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('d3d34620a82916acd6083e88e7d8688e', '商品删除', '2', 'biz_commodity_del', NULL, '479ea7fa09edc0e5a3652c9023f54202', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 80, '1', '2020-09-07 14:58:45.900', '1', '2020-09-07 14:58:45.900', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('d4c16faad8f883650a3a8eab829ebad9', '操作日志查看', '2', 'sys_logOperate_view', NULL, '2100', '2000,2100,', NULL, NULL, b'0', b'0', b'0', b'1', 30, '1', '2019-08-07 17:51:38.454', '1', '2020-05-17 10:23:57.546', NULL, 2, '0');
 INSERT INTO `sys_menu` VALUES ('d5159fe06c7ac2003426fa1b3c8d43b8', '套餐查看', '2', 'biz_plan_view', NULL, 'ad2ea4cf4a36770597f8e473bbf5b64b', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-05 00:36:55.089', '1', '2020-09-05 00:36:55.089', NULL, 0, '0');
 INSERT INTO `sys_menu` VALUES ('d5642a62bb1dc261baaf7dc883bba7e1', '测试书籍删除', '2', 'test_testBook_del', NULL, '8ce9f148e5720ace1b7cf24e0985c47e', NULL, NULL, NULL, b'0', NULL, b'0', b'0', 80, '1', '2020-05-25 10:12:05.961', '1', '2020-05-25 10:15:07.779', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('d5897b78312e09024546530fd8b2e8fc', '任务调度方案查看', '2', 'quartz_job_view', NULL, 'c77855e4171d00ae3f97563a8391f70a', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2019-08-14 10:36:03.598', '1', '2020-05-15 21:06:35.180', NULL, 0, '1');
+INSERT INTO `sys_menu` VALUES ('d6c71ca52f7e992dd102b4ae38830830', '套词查看', '2', '套词_script_view', NULL, '08da98300ae838c35369d7fd80900b55', NULL, NULL, NULL, b'0', b'0', b'0', b'0', 20, '1', '2020-09-07 23:15:12.029', '1', '2020-09-07 23:17:34.742', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('d9d87cf8ed7c29ed2eda06d5dec4dcda', '组件管理', '0', NULL, '/components', '-1', NULL, 'zujian', 'Layout', b'0', b'0', b'0', b'0', 80, '1', '2020-05-15 20:57:28.521', '1', '2020-05-16 13:38:57.307', NULL, 26, '0');
 INSERT INTO `sys_menu` VALUES ('da5709484a056154e0e89891eea6d6ac', '测试书籍查看', '2', 'test_testBook_view', NULL, '2c0688c2ad9259b9a7e7088a2f6ade4e', NULL, NULL, NULL, b'0', NULL, b'0', b'0', 20, '1', '2020-05-25 09:36:39.124', '1', '2020-05-25 10:12:05.946', NULL, 0, '1');
 INSERT INTO `sys_menu` VALUES ('dab11e5104d690be6991002ae4da0cbd', '测试树', '1', NULL, 'test-tree-book', 'eb17cee437ea6b630dad59fff2a059ca', NULL, 'icon-right-square', 'test/test-tree-book/index', b'0', b'0', b'0', b'0', 30, '1', '2020-05-25 10:15:02.868', '1', '2020-05-29 16:36:34.931', NULL, 0, '1');
@@ -1057,6 +1129,8 @@ INSERT INTO `sys_role_menu` VALUES ('1', '2101');
 INSERT INTO `sys_role_menu` VALUES ('1', '2200');
 INSERT INTO `sys_role_menu` VALUES ('1', '2201');
 INSERT INTO `sys_role_menu` VALUES ('1', '2202');
+INSERT INTO `sys_role_menu` VALUES ('1', '226a7b79ff2099426bee82d450f27678');
+INSERT INTO `sys_role_menu` VALUES ('1', '22a81abd099d0fbb2e315da9393c1592');
 INSERT INTO `sys_role_menu` VALUES ('1', '247071d42ff40267c8d8c44eac92da67');
 INSERT INTO `sys_role_menu` VALUES ('1', '2500');
 INSERT INTO `sys_role_menu` VALUES ('1', '2600');
@@ -1064,6 +1138,7 @@ INSERT INTO `sys_role_menu` VALUES ('1', '2601');
 INSERT INTO `sys_role_menu` VALUES ('1', '29de79df95e70d8e8fbdc7945acf214a');
 INSERT INTO `sys_role_menu` VALUES ('1', '31265d5c7cf40ee21e3963476cabe26f');
 INSERT INTO `sys_role_menu` VALUES ('1', '413892fe8d52c1163d6659f51299dc96');
+INSERT INTO `sys_role_menu` VALUES ('1', '479ea7fa09edc0e5a3652c9023f54202');
 INSERT INTO `sys_role_menu` VALUES ('1', '52715698214e88cb09fa4dd1ea5ad348');
 INSERT INTO `sys_role_menu` VALUES ('1', '5404c3df9f771dbc0237578814bbe44b');
 INSERT INTO `sys_role_menu` VALUES ('1', '5b39ca5a25c772105c71f8c51d1f19d4');
@@ -1071,21 +1146,29 @@ INSERT INTO `sys_role_menu` VALUES ('1', '5e7e7140a49eb205075fb31205ddccbf');
 INSERT INTO `sys_role_menu` VALUES ('1', '618ee4b9660265a85a8b61277de2a579');
 INSERT INTO `sys_role_menu` VALUES ('1', '621e50e1c7d66a1febeb699bebb2fe35');
 INSERT INTO `sys_role_menu` VALUES ('1', '64b61b8966e1c74d9b309069b2f622d1');
+INSERT INTO `sys_role_menu` VALUES ('1', '66922f89f7c6624710a221ac64890614');
 INSERT INTO `sys_role_menu` VALUES ('1', '6d066d50173c42d31d5b46a9fea82fb7');
 INSERT INTO `sys_role_menu` VALUES ('1', '6d101761341b2ca58db9a953a1fde5e0');
 INSERT INTO `sys_role_menu` VALUES ('1', '6e3f89cda84ac2c6e715e7812c102ae8');
+INSERT INTO `sys_role_menu` VALUES ('1', '6e5b7dc2fe38c37c610f470c95a56f91');
+INSERT INTO `sys_role_menu` VALUES ('1', '74639593f0bf451cc1c0327f7bf5091a');
+INSERT INTO `sys_role_menu` VALUES ('1', '74ab64d6d305db042124b7501c951622');
 INSERT INTO `sys_role_menu` VALUES ('1', '74f2b2a8871a298e0acc4d7129d10e9c');
 INSERT INTO `sys_role_menu` VALUES ('1', '76d6087052dc26b32f3efa71b9cc119b');
 INSERT INTO `sys_role_menu` VALUES ('1', '7754b1457826c48290bc189bb1289740');
 INSERT INTO `sys_role_menu` VALUES ('1', '795b4d5cf0eb3ed80e24cbab39727b9d');
 INSERT INTO `sys_role_menu` VALUES ('1', '7b14af9e9fbff286856338a194422b07');
+INSERT INTO `sys_role_menu` VALUES ('1', '8ddadf960503a5213d879d6eaee4ad3c');
 INSERT INTO `sys_role_menu` VALUES ('1', '92f78825551a22fa130c03066f398448');
+INSERT INTO `sys_role_menu` VALUES ('1', '94ab10587dbf95c856f52b3b2ba793a8');
 INSERT INTO `sys_role_menu` VALUES ('1', '9763343d9cce11ce9eb4f21c8e49122b');
 INSERT INTO `sys_role_menu` VALUES ('1', '97722c6d56c8b9990cc3c1a6eea3d6bb');
 INSERT INTO `sys_role_menu` VALUES ('1', '9f02e346b5350366968f217daef3f1b7');
 INSERT INTO `sys_role_menu` VALUES ('1', 'a18b33e15bde209a3c9115517c56d9ec');
+INSERT INTO `sys_role_menu` VALUES ('1', 'a6305211a6aa74b0991a94f138dfb081');
 INSERT INTO `sys_role_menu` VALUES ('1', 'ad2ea4cf4a36770597f8e473bbf5b64b');
 INSERT INTO `sys_role_menu` VALUES ('1', 'b1a7134f07a41e5f91df9f6c3b0238d4');
+INSERT INTO `sys_role_menu` VALUES ('1', 'b8b9c384ab48ac46fb5dfa95bba075c5');
 INSERT INTO `sys_role_menu` VALUES ('1', 'b8eafb6c3a8bf0919230f0bfa59d86b6');
 INSERT INTO `sys_role_menu` VALUES ('1', 'b961670cbf3454f5927c4bd2a327e915');
 INSERT INTO `sys_role_menu` VALUES ('1', 'b963a451117f430703817b3b6c87402a');
@@ -1095,6 +1178,7 @@ INSERT INTO `sys_role_menu` VALUES ('1', 'c0ba37c10abaecd89a738c5cf2a2fd24');
 INSERT INTO `sys_role_menu` VALUES ('1', 'caaec41413c5713c6f290efe08c11415');
 INSERT INTO `sys_role_menu` VALUES ('1', 'cb13db6c1daea6afdba933ef6ad9d2a7');
 INSERT INTO `sys_role_menu` VALUES ('1', 'cb493ffb145ee7d7d5c31119180f0f96');
+INSERT INTO `sys_role_menu` VALUES ('1', 'd3d34620a82916acd6083e88e7d8688e');
 INSERT INTO `sys_role_menu` VALUES ('1', 'd4c16faad8f883650a3a8eab829ebad9');
 INSERT INTO `sys_role_menu` VALUES ('1', 'd5159fe06c7ac2003426fa1b3c8d43b8');
 INSERT INTO `sys_role_menu` VALUES ('1', 'd9d87cf8ed7c29ed2eda06d5dec4dcda');
@@ -1200,7 +1284,7 @@ CREATE TABLE `sys_user` (
   `email` varchar(64) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '邮箱',
   `avatar` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '头像',
   `dept_id` varchar(32) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '部门ID',
-  `qq_open_id` varchar(32) COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'QQ openid',
+  `qq_open_id` text COLLATE utf8mb4_bin COMMENT 'QQ openid',
   `wx_open_id` varchar(32) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '微信openid',
   `available` char(1) COLLATE utf8mb4_bin DEFAULT '1' COMMENT '1-正常，0-锁定',
   `created_by` varchar(50) CHARACTER SET utf8 NOT NULL,
@@ -1212,7 +1296,6 @@ CREATE TABLE `sys_user` (
   `del_flag` char(1) COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `user_wx_openid` (`wx_open_id`) USING BTREE,
-  KEY `user_qq_openid` (`qq_open_id`) USING BTREE,
   KEY `user_idx1_username` (`username`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
@@ -1220,7 +1303,7 @@ CREATE TABLE `sys_user` (
 -- Records of sys_user
 -- ----------------------------
 BEGIN;
-INSERT INTO `sys_user` VALUES ('1', 'admin', '$2a$10$xPFxiboHiwEyURoblSWrv.i.7tGP6Vop.77IqIMLo6CzOw/ygvSw6', 'albedo', '17034642999', '22@ss.com', NULL, '1', NULL, 'o_0FT0uyg_H1vVy2H0JpSwlVGhWQ', '1', '', '2018-04-20 07:15:18.000', '1', '2020-09-02 12:35:58.255', '11', 47, '0');
+INSERT INTO `sys_user` VALUES ('1', 'admin', '$2a$10$xPFxiboHiwEyURoblSWrv.i.7tGP6Vop.77IqIMLo6CzOw/ygvSw6', 'albedo', '17034642999', '22@ss.com', NULL, '1', '9169280e-3159-4218-be7a-bf0dc298785c', 'o_0FT0uyg_H1vVy2H0JpSwlVGhWQ', '1', '', '2018-04-20 07:15:18.000', '1', '2020-09-06 10:51:05.513', '11', 49, '0');
 INSERT INTO `sys_user` VALUES ('24b4bf2b0bcb7887f0e557d23d5c19a0', 'backend', '$2a$10$eltQ6ESPEevLUtbBmo0.Cug/LmovMbZR.d6oY3AsTownK0acxVYv6', NULL, '13346182371', '13346182371@163.com', NULL, 'c095173c3aebcd7ff9c6177fbf7a8b69', NULL, NULL, '1', '1', '2020-09-04 23:29:03.561', '1', '2020-09-04 23:29:03.561', NULL, 0, '0');
 INSERT INTO `sys_user` VALUES ('5e82e2785a023c6e3c73b60371775efc', 'abcAccount', '$2a$10$DgdOVTVSn5WN9rarGz9vG.3p95rj/2cDY4dIJKUhIEl4eV5lBeZ8e', NULL, '', NULL, NULL, '4ec5d159e0c8196f2b4e0c8dc117639e', NULL, NULL, '1', 'system', '2020-09-05 00:01:47.161', 'system', '2020-09-05 00:01:47.161', NULL, 0, '0');
 INSERT INTO `sys_user` VALUES ('9bc1afb81c83a33337a359ff41328cff', 'abcAccount2', '$2a$10$HG2qszymsPwm0ziYp8eSIOhE7twKvjeFNkYBiGbdu7uAsgOWcQ2yK', NULL, '', NULL, NULL, '5d675ff6a074c891fd1cd3e713198d34', NULL, NULL, '1', 'system', '2020-09-05 00:06:17.332', 'system', '2020-09-05 00:06:17.332', NULL, 0, '0');
@@ -1265,30 +1348,44 @@ INSERT INTO `sys_user_online` VALUES ('4EG9hu0bnxv3uPgHzNKF22Bdhg6phhsh2pIkiiXV'
 INSERT INTO `sys_user_online` VALUES ('4tWrQLXzBPfGizp-QTFdSfQoWzfLf44OS2YVaT8P', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:19:22', '2020-08-08 20:19:22', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('4W1gPMWE_hGFQuTLHKAEiGai49_x0tSjuXAYHf6Y', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:17:36', '2020-09-05 00:28:52', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('53YI9YvopLxtMr20onrQgefAmIDgTUOqm9WW8QQL', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-07 20:14:41', '2020-08-07 20:23:08', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('5UsX7SijkuR8dDxG6A41UDVqvH1kKKWrF__hYIxT', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 00:46:10', '2020-09-06 00:47:44', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('6mkz52avphd2Qud13tJoBXxC1iFFjeQF-zSj5BkC', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 23:28:22', '2020-09-07 23:28:22', 1800, '0');
 INSERT INTO `sys_user_online` VALUES ('6SN2iHyIt5gcyDnQsjYbbTAij5IwWLpV9_7wlvgU', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 21:03:48', '2020-08-08 21:09:38', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('7DqkYf0Cd5-LjlVRPbClgBHJ20Pb9MIUZ5xihXx_', 'c1c21f56f6fdca9bde3a2e1da5886dc0', 'test3', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:37:20', '2020-09-02 12:37:20', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('8iEdc7X4VNaPiLO-luL-sRC-xhTywsNHG541ngS4', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:37:49', '2020-08-29 21:37:49', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('8U5_n2P8aTHE4NDRLJzkAvbG-4nqYAkrFjQzT8NI', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 23:15:41', '2020-09-07 23:17:56', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('9q9al6pkVg9foATJQmcY2hAzdrkVGSQ6ycaOVnou', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 19:23:04', '2020-09-04 19:23:04', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('9s8eB6O8Av1UAz4Z5pengck_sW7eBo75o4QZtPGP', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 20:22:35', '2020-09-07 21:17:18', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('AfaFQmX572T1oY_Mz4m4qKmmk0t2MtV_zI8eu4tc', '099ba5bc557a68c539e13f1df73586ac', 'personal2', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 23:35:06', '2020-09-04 23:35:06', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('AHKsiwmpxJiloXCxOo82rLjdbJOMVTh5K1Sllc-E', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:30:54', '2020-08-08 20:36:08', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('AmGGQX3ngZOj-yBHn8BqjzkY0A52dFktupcILse0', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 17:46:15', '2020-09-07 18:25:00', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('aqa48ANkiS97O4ah34IpI2VuuV-ZXdZpcU5f-r6O', '9d1c246296a00c3e54783f2cf0303ddb', 'personal3', '4d20ae207d9c836a732480429af58273', '个人用户', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 16:03:43', '2020-08-16 16:03:43', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Av2aWjYMNO4PjsiA_3dAOZJSKGxqRsso11NZE1yf', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 19:23:49', '2020-09-04 19:23:49', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('aVtucOJw3I_uyzO4epH12y3ozMLF6zZMQqcaNKvu', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 00:34:55', '2020-09-06 00:34:55', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('B9PfMnCggLM9ULLTgLakyvVxNVTb-Kc1rdCxc9bR', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 01:19:35', '2020-08-29 01:26:28', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('BALP5Jz3Kfs1AFW5oIT_VnSvpABqBxr5WkQrgdxL', '24b4bf2b0bcb7887f0e557d23d5c19a0', 'backend', 'c095173c3aebcd7ff9c6177fbf7a8b69', '平台', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 23:29:25', '2020-09-04 23:29:25', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('blsEW4lLk-zLGGywPs2opFJ8Jkw3bcrgP5GgiDh5', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 15:14:09', '2020-09-07 15:18:18', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('c0OvpJnwxJrSBQF_uBqhTlrrj31QUZBg1yYCB404', 'd20e7f392fd61954d432c6bc73cf043e', 'admin2', 'c095173c3aebcd7ff9c6177fbf7a8b69', '平台', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-30 14:42:48', '2020-08-30 14:42:48', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('d3SEr0KX2v5KVrnqjwk5SswNkL1ZzZt4xyOD4cq3', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 23:43:51', '2020-09-05 23:43:51', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('dbgW_4FdzsolbPAeUlT_h1utzhseDWWIlOKOoX2t', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:40:10', '2020-08-08 20:42:18', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('dCnUhxEUEQZ5susuf5UvM65VkH56LGZN3gqMLmYl', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 01:30:49', '2020-08-29 01:35:19', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('DKVCgidl70bNUP4DEIPXN_uxFh9sYWjcUmGC8R6K', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 23:18:07', '2020-09-07 23:20:39', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('dUn6jC_9fxB_TsB76rl76kNbRB6b6oUrDiv5yBWz', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 16:44:49', '2020-09-07 16:44:49', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('EE03nWBJOO-GAlItFkO-8pgJS3nOOm5H6543N7N-', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 01:38:09', '2020-08-29 01:39:22', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('eg1paaOcIs-P1Wc3c9rU--Ejn2zOwPyi3nCjSA1b', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:16:42', '2020-09-02 12:16:42', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('FCdsNGqVHUBTuMBEXZ048CXSrhIDSA-jxpG3l4Sc', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:13:31', '2020-08-08 20:13:31', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('FKsjFC8_nm2iw0BBxnLieZS363TGhmVmx_WfrYwm', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 16:49:01', '2020-09-07 17:04:40', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('FQan129PP1hMWa0gZxqjbRPlkFZzfl5ujvOT6EwN', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 20:51:31', '2020-09-04 20:53:37', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('fYGl0-RhBOkGUxBDZVkwHXxC0r0RP6MnSlSproSW', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-03 15:20:04', '2020-09-03 15:20:04', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('FY_a8vHGktQL3scHnB930kMdAJouyuUeSpCt1ft0', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 22:58:41', '2020-09-05 23:06:23', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('Fz-mqO_K44isdQKWxw0WBGTLPam11xv8p-kn9Gnw', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 23:08:45', '2020-09-06 23:36:51', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('GoRn67n2L0KImEBCWZLPwQt0N8xp5OZjg-TSqh0e', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-31 18:12:05', '2020-08-31 18:13:24', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('gyWU3xVwJgzzUTh1WtbIPSj0jUM4KkYi3-OxbrBm', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 17:14:28', '2020-08-29 17:16:05', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('H52SJ8aOnSCA79Y0ZAC_UawWClUm_o5UQ8xSOipP', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:24:28', '2020-08-08 20:28:16', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('H6SKDIsAg9F-1cA_JvXJd6dqS18y91r6dX7JzD48', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-18 10:25:17', '2020-08-18 10:25:17', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('h6zKmb8peKKt1yKBgzuKMAHUGn7gUwEMEWYrBL_g', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 01:10:43', '2020-08-29 01:11:53', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Hfrq0oYZIrleRPbKNgxjmLQG7tzf0A57gm6HHf8z', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:55:16', '2020-08-29 21:55:16', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('HG6YegquCHlCpWC9u0loP0_qsjXzt8kpYUQYsEIe', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 21:13:01', '2020-09-05 21:16:40', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('hPtJAuQk60t4_ql-qbgY-UTBdw10dKUSyG_HVbUg', '18c4e11409918c5fe76ca18578807af2', 'personal', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 23:30:33', '2020-09-04 23:30:33', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Hy3GveZcp1h7srb8T82AZO7K16vvv6UQNB9IArkG', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-11 20:38:48', '2020-08-11 20:38:48', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('IG80kxodGa-et8Ej895iPjXLIqCv4tmyhLTInVEF', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-18 09:26:59', '2020-08-18 09:28:11', 1800, '1');
@@ -1301,9 +1398,11 @@ INSERT INTO `sys_user_online` VALUES ('KKQcC928C7Zul61feRrK5Zb6OuopuqiEmqNnyz-b'
 INSERT INTO `sys_user_online` VALUES ('l7eRiAdbIF-ZfX3FYmvI8h_KnW7BE4TqyyCRHQkX', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 17:43:11', '2020-08-29 20:58:23', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('LTU82B7Kyks2OPf25putr6NOak6qRJC1ca2_gXX3', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-01 04:13:01', '2020-09-01 04:13:01', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('mZZcU7en_oZuFjo1fO7cCVjbHO9Pp9NyEvpzLtfa', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 19:58:21', '2020-08-08 20:04:02', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('NgiR-8Gf0fWcGSQNZQi93-8Y_cxmAkUVg-UAmR6f', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 14:57:56', '2020-09-07 14:59:06', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('nI6aHOZeJj8UFRu1O_1mNdPQUbMQ_i_SLYf7B1JL', '127713cfa8706e73721ae07748637508', 'account', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 17:29:25', '2020-09-02 17:29:25', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('nLkFARp-jLEU_4vqTEnp86g5VYtnEv8kenS4pb7t', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:36:06', '2020-09-02 12:36:06', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('nlXfXtoi1Mm9iB8OTQUGAc5sYdPGg-isH-blem7T', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 01:01:45', '2020-09-05 01:04:18', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('O0tJc1-VUevWsvFUwUxvUaYo2mZq9DLVTMTybV9R', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 15:01:51', '2020-09-07 15:01:51', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Oip3hVDwx38V9ob9Ntjl9wVcGjSEgw_e5dGt8Otd', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-03 13:55:25', '2020-09-03 13:55:25', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('omwcBE_RYztW9LnXwHYc3DIdXlgS5_SEwJmGNU-N', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:24:43', '2020-08-29 21:24:43', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('PEc6lodKVH7jJGbF-aZ0R2Pb0wlxP6MrqtMP5_im', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:45:22', '2020-08-29 21:48:43', 1800, '1');
@@ -1313,12 +1412,18 @@ INSERT INTO `sys_user_online` VALUES ('qxjBuJ3dzsmZyg8R61WGCGSICkDFjCDkrvcefQF-'
 INSERT INTO `sys_user_online` VALUES ('Rvu5DAp9BUaCyokbwyQl60jNPZ2e1WO_WFQezH1V', '9bc1afb81c83a33337a359ff41328cff', 'abcAccount2', '5d675ff6a074c891fd1cd3e713198d34', 'ABC商城', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:10:43', '2020-09-05 00:10:43', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('ryxy1mCt0rDrsmd-06XoBR6FOL5VFJolsCdl0OXr', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:23:23', '2020-09-02 12:23:23', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('S5qm1EYxRWn6UAlcJFTz6yVuYPGbHKIky44FwzrH', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-02 12:25:54', '2020-09-02 12:32:35', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('SbE6QyQ0bsayzRbdWHmxHWusSdpzPauH8nC_bpMf', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 15:59:22', '2020-09-07 16:02:44', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('sHrnCQkgRMsIVCKCniQ7wKeVWHpW8MfgsUEcdGVb', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 09:37:39', '2020-09-06 09:43:59', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('sHWRPMRD5YSc5ssGPlVqW1zJSo_h9_fyKcUh3khc', '9bc1afb81c83a33337a359ff41328cff', 'abcAccount2', '5d675ff6a074c891fd1cd3e713198d34', 'ABC商城', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:06:25', '2020-09-05 00:06:25', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('sI7fUypDFScD0nshjOtPxyZfnVJjrh-dDF-65lTw', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 20:48:00', '2020-08-08 20:48:00', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('sIcccO4Q5k2OUatcC7Uzr76uAssLDzL0xFBuWe56', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-11 13:51:07', '2020-08-11 14:01:09', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('szVcOFyUYuRJO8uqmZUDSNwEjWA1jFwTsL37cIIA', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 09:46:35', '2020-09-06 09:52:40', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('TKJXgxX4m8ktBFrPZdPJMSiBjJF6EA9dnwGjJjWB', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-11 13:51:07', '2020-08-11 13:51:07', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('TnNMoDba4aO8JVPy4TGGEXNH7tCYV6LFbnJanw5t', '18c4e11409918c5fe76ca18578807af2', 'personal', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-04 23:29:48', '2020-09-04 23:29:48', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('TQ-KD0SRbPY2NcDbnxe84b-2QtAP2aJESYWSYXtC', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 23:13:06', '2020-09-07 23:15:32', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('udhUADZFGU5_CFkQq65SMtxkNx-NcBXICGkb366z', '9bc1afb81c83a33337a359ff41328cff', 'abcAccount2', '5d675ff6a074c891fd1cd3e713198d34', 'ABC商城', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:17:25', '2020-09-05 00:17:25', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('Udzvf1dOeWEjXlq8Ppm-rl8yxJ3miVYLmYuPOtA8', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 10:23:15', '2020-09-06 10:24:30', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('UmZiGtwv1vxA4PrbOKofIVuJFY1UJMci3jRAFloE', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 16:49:01', '2020-09-07 17:04:40', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('uNSDqdPfFOm-JVYa6xu7Sr8l9bALXoY_3W3EH4sW', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 19:16:21', '2020-08-16 19:16:21', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('vYOs-30cOrl1ggDHT0jPkSP4I_aVAXcLSjP6756B', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-08 21:17:40', '2020-08-08 21:17:40', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('w6D-dlTPUeiS_AP9gS9j2PKMSz0qq86nE-ZJ_G-s', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:00:30', '2020-09-05 00:00:30', 1800, '1');
@@ -1326,15 +1431,18 @@ INSERT INTO `sys_user_online` VALUES ('w8pFVDkCd50MWos9rfYsicbFk5UG2jeJISOSo9Xb'
 INSERT INTO `sys_user_online` VALUES ('wj3E6yVfDnNJ2m9SX4Jm68-OnWRt6FN5sS5vKDbv', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-30 14:23:35', '2020-08-30 14:25:19', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('WKgpoFwAWb70JAXloeXPwUuLS2AXjWaoUTbcKFGA', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:08:04', '2020-09-05 00:08:04', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('X829yJaaqtW4ElfsimtP10de5XNVeVxUj0hP0uzA', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 14:30:06', '2020-08-16 14:48:25', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('XJQr1WqBphq29W1uurZSzZZjz7S8U9jsbGGbtNfQ', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-06 10:41:39', '2020-09-06 10:41:39', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('xRbMNOgAtFvFqUeQZYV2C2oQ6jdYeqsdGS3siutY', 'ed3c0d82f9c9f26c3212eb6093262ef1', 'abcAccount3', '4d20ae207d9c836a732480429af58273', '公共部门', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 00:00:15', '2020-09-05 00:00:15', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('Y4hbr_QtAHMLcKvt5XYSIhOZDg38K7CieFeis5Vo', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-13 17:19:18', '2020-08-13 17:19:18', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('y7I2__QDHAbrM1knMTIG1rr1lrJKwkc8b3CKg_gp', '1', 'admin', '1', '总部', '192.168.0.100', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-17 20:16:56', '2020-08-17 20:19:42', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('YgJFfw4v-sy8UFhsmQhyRnXe5SMEEtsZMJ6s7-T0', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 17:43:11', '2020-08-29 20:48:47', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('yoCP9PGTDc7DRuAteQJCYbHrbEHIwfgefrfQwnII', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-18 10:14:31', '2020-08-18 10:19:47', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('YOSJYjpD6tYyYlqcVdjy72DyqzJD_35j3MWhJu5N', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 23:56:22', '2020-08-30 00:13:56', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('YTUMXKITCpKhPy5QJVBxs8UOEDvttbmw5iEX-K3s', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-07 00:32:05', '2020-09-07 00:39:13', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('ZHd4xIiUMI7HPNudMyKoEvkfDMQ7F_ueOLF0c8u1', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-19 02:05:52', '2020-08-19 02:05:52', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('ZPCO6nA2nniC02CofLVN6THD-EaaYXtsDWfW_F93', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-16 15:38:52', '2020-08-16 15:38:52', 1800, '1');
 INSERT INTO `sys_user_online` VALUES ('_cMZ5K_TtajW-79DqwbkvybJa5ZfU4QyJxEHP0zF', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-08-29 21:45:22', '2020-08-29 21:48:43', 1800, '1');
+INSERT INTO `sys_user_online` VALUES ('_USuFoGtZJuYVywDZQi15Uk5gxTLfBbySwQ8LcRt', '1', 'admin', '1', '总部', '127.0.0.1', '内网IP', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', 'Chrome', 'OSX', 'on_line', '2020-09-05 01:53:48', '2020-09-05 01:53:48', 1800, '1');
 COMMIT;
 
 -- ----------------------------
@@ -1354,6 +1462,7 @@ BEGIN;
 INSERT INTO `sys_user_role` VALUES ('05342c371c18c7519dabeb38da454bf5', '');
 INSERT INTO `sys_user_role` VALUES ('099ba5bc557a68c539e13f1df73586ac', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('1', '1');
+INSERT INTO `sys_user_role` VALUES ('1', '3570f348af7214a976e5d6bfbdd97df1');
 INSERT INTO `sys_user_role` VALUES ('127713cfa8706e73721ae07748637508', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('18320c6ecc92e1509836778b6b6634b5', '904a870be22c6b84845dbd1699655b4a');
 INSERT INTO `sys_user_role` VALUES ('18c4e11409918c5fe76ca18578807af2', '904a870be22c6b84845dbd1699655b4a');
@@ -1392,8 +1501,17 @@ CREATE TABLE `t_balance` (
   `times` int(50) NOT NULL DEFAULT '0' COMMENT '剩余次数',
   `version` int(11) DEFAULT NULL,
   `account_available` int(11) DEFAULT NULL COMMENT '剩余可创建账号',
-  `storage` decimal(5,2) DEFAULT NULL COMMENT '已使用存储空间'
+  `storage` decimal(5,2) DEFAULT NULL COMMENT '已使用存储空间',
+  `id` varchar(32) DEFAULT NULL,
+  UNIQUE KEY `t_balance_user_id_uindex` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='次数表';
+
+-- ----------------------------
+-- Records of t_balance
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_balance` VALUES ('1', 1, NULL, 3, 3.00, NULL);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for t_balance_record
@@ -1416,6 +1534,40 @@ CREATE TABLE `t_balance_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='次数变更记录';
 
 -- ----------------------------
+-- Records of t_balance_record
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_balance_record` VALUES ('0eff9211b9a890374f6be17dd62bfbaf', '1', 1, 0, 0, '1', '2020-09-06 00:40:00.882', '1', '2020-09-06 00:40:00.882', NULL, 0, '0');
+INSERT INTO `t_balance_record` VALUES ('75ea684a7d1a0472e354b3034ff0ee1d', '1', 1, 0, 0, '1', '2020-09-06 00:36:46.678', '1', '2020-09-06 00:36:46.678', NULL, 0, '0');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for t_commodity
+-- ----------------------------
+DROP TABLE IF EXISTS `t_commodity`;
+CREATE TABLE `t_commodity` (
+  `id` varchar(64) NOT NULL COMMENT '编号',
+  `name` varchar(200) DEFAULT NULL COMMENT '名称',
+  `urls` text COMMENT '商品图片链接',
+  `user_id` varchar(32) DEFAULT NULL COMMENT '用户id',
+  `version` int(11) DEFAULT '0' COMMENT '默认0，必填，离线乐观锁',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  `created_by` varchar(50) NOT NULL,
+  `created_date` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  `last_modified_by` varchar(50) DEFAULT NULL,
+  `last_modified_date` timestamp(3) NULL DEFAULT NULL,
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='商品';
+
+-- ----------------------------
+-- Records of t_commodity
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_commodity` VALUES ('866591d22fc847a9f656ae0f4a785833', '测试', '2b89ae507c0582222073407f17bdac5f.png', '1', 0, NULL, '1', '2020-09-07 15:36:31.839', '1', '2020-09-07 15:36:31.839', '0');
+COMMIT;
+
+-- ----------------------------
 -- Table structure for t_config
 -- ----------------------------
 DROP TABLE IF EXISTS `t_config`;
@@ -1426,6 +1578,7 @@ CREATE TABLE `t_config` (
   `type` varchar(20) DEFAULT NULL,
   `url` varchar(20) DEFAULT NULL,
   `title` varchar(30) DEFAULT NULL,
+  `scope` int(11) DEFAULT NULL COMMENT '可见权限与plan对应0123',
   PRIMARY KEY (`id`),
   UNIQUE KEY `t_config_id_uindex` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COMMENT='配置项';
@@ -1434,25 +1587,25 @@ CREATE TABLE `t_config` (
 -- Records of t_config
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_config` VALUES (4, '美妆护肤', 'label', 'label', NULL, 'label');
-INSERT INTO `t_config` VALUES (5, '时尚配饰', 'label', 'label', NULL, 'label');
-INSERT INTO `t_config` VALUES (6, '单人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum');
-INSERT INTO `t_config` VALUES (7, '双人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum');
-INSERT INTO `t_config` VALUES (8, '站姿', 'seat', 'seat', NULL, 'seat');
-INSERT INTO `t_config` VALUES (9, '坐姿', 'seat', 'seat', NULL, 'seat');
-INSERT INTO `t_config` VALUES (10, '活力青春型', 'anchorType', 'anchorType', NULL, 'anchorType');
-INSERT INTO `t_config` VALUES (11, '成熟稳重型', 'anchorType', 'anchorType', NULL, 'anchorType');
-INSERT INTO `t_config` VALUES (12, '浪漫古风型', 'anchorType', 'anchorType', NULL, 'anchorType');
-INSERT INTO `t_config` VALUES (13, '度假', 'style', 'style', 'http://www.baidu.com', 'style');
-INSERT INTO `t_config` VALUES (14, '海边', 'style', 'style', 'http://www.baidu.com', 'style');
-INSERT INTO `t_config` VALUES (17, '气球', 'component', 'plusService', 'http://www.baidu.com', 'component');
-INSERT INTO `t_config` VALUES (18, '狗', 'component', 'plusService', 'http://www.baidu.com', 'component');
-INSERT INTO `t_config` VALUES (19, '发型1', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle');
-INSERT INTO `t_config` VALUES (20, '发型2', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle');
-INSERT INTO `t_config` VALUES (21, '衣服1', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes');
-INSERT INTO `t_config` VALUES (22, '衣服2', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes');
-INSERT INTO `t_config` VALUES (23, 'red', 'color', 'plusService', 'http://www.baidu.com', 'color');
-INSERT INTO `t_config` VALUES (24, '#000', 'color', 'plusService', 'http://www.baidu.com', 'color');
+INSERT INTO `t_config` VALUES (4, '美妆护肤', 'label', 'label', NULL, 'label', NULL);
+INSERT INTO `t_config` VALUES (5, '时尚配饰', 'label', 'label', NULL, 'label', NULL);
+INSERT INTO `t_config` VALUES (6, '单人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum', NULL);
+INSERT INTO `t_config` VALUES (7, '双人主播', 'anchorNum', 'anchorNum', NULL, 'anchorNum', NULL);
+INSERT INTO `t_config` VALUES (8, '站姿', 'seat', 'seat', NULL, 'seat', NULL);
+INSERT INTO `t_config` VALUES (9, '坐姿', 'seat', 'seat', NULL, 'seat', NULL);
+INSERT INTO `t_config` VALUES (10, '活力青春型', 'anchorType', 'anchorType', NULL, 'anchorType', NULL);
+INSERT INTO `t_config` VALUES (11, '成熟稳重型', 'anchorType', 'anchorType', NULL, 'anchorType', NULL);
+INSERT INTO `t_config` VALUES (12, '浪漫古风型', 'anchorType', 'anchorType', NULL, 'anchorType', NULL);
+INSERT INTO `t_config` VALUES (13, '度假', 'style', 'style', 'http://www.baidu.com', 'style', NULL);
+INSERT INTO `t_config` VALUES (14, '海边', 'style', 'style', 'http://www.baidu.com', 'style', NULL);
+INSERT INTO `t_config` VALUES (17, '气球', 'component', 'plusService', 'http://www.baidu.com', 'component', NULL);
+INSERT INTO `t_config` VALUES (18, '狗', 'component', 'plusService', 'http://www.baidu.com', 'component', NULL);
+INSERT INTO `t_config` VALUES (19, '发型1', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle', NULL);
+INSERT INTO `t_config` VALUES (20, '发型2', 'hairstyle', 'plusService', 'http://www.baidu.com', 'hairstyle', NULL);
+INSERT INTO `t_config` VALUES (21, '衣服1', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes', NULL);
+INSERT INTO `t_config` VALUES (22, '衣服2', 'clothes', 'plusService', 'http://www.baidu.com', 'clothes', NULL);
+INSERT INTO `t_config` VALUES (23, 'red', 'color', 'plusService', 'http://www.baidu.com', 'color', NULL);
+INSERT INTO `t_config` VALUES (24, '#000', 'color', 'plusService', 'http://www.baidu.com', 'color', NULL);
 COMMIT;
 
 -- ----------------------------
@@ -1480,6 +1633,46 @@ CREATE TABLE `t_contact_info` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `t_contact_info` VALUES ('ecaada548ebec7e959186c65fd84687b', 'ABC商城', '张三', '123', '0', 1, NULL, '1', '2020-09-05 00:17:56.115', '1', '2020-09-05 00:18:36.562', '0');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for t_dub
+-- ----------------------------
+DROP TABLE IF EXISTS `t_dub`;
+CREATE TABLE `t_dub` (
+  `id` varchar(64) NOT NULL COMMENT '编号',
+  `title` varchar(255) DEFAULT NULL COMMENT '属性名',
+  `value` varchar(255) DEFAULT NULL COMMENT '属性值',
+  `version` int(11) DEFAULT '0' COMMENT '默认0，必填，离线乐观锁',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  `created_by` varchar(50) NOT NULL,
+  `created_date` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  `last_modified_by` varchar(50) DEFAULT NULL,
+  `last_modified_date` timestamp(3) NULL DEFAULT NULL,
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='配音配置';
+
+-- ----------------------------
+-- Records of t_dub
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_dub` VALUES ('19621c329d19f3a21dffdbb9da55e315', '性别', '男', 0, NULL, 'system', '2020-09-07 19:43:42.158', 'system', '2020-09-07 19:43:42.158', '0');
+INSERT INTO `t_dub` VALUES ('218b09b39cc39f4b86d3411051ae4d62', '声音', '中年', 0, NULL, 'system', '2020-09-07 19:50:32.994', 'system', '2020-09-07 19:50:32.994', '0');
+INSERT INTO `t_dub` VALUES ('25a623be4a10f04e1b30fc8d8880d49b', '声音', '儿童', 0, NULL, 'system', '2020-09-07 19:50:32.981', 'system', '2020-09-07 19:50:32.981', '0');
+INSERT INTO `t_dub` VALUES ('30beffeb30831799f34df025f878b75e', '类型', '新闻播报', 0, NULL, 'system', '2020-09-07 19:50:33.007', 'system', '2020-09-07 19:50:33.007', '0');
+INSERT INTO `t_dub` VALUES ('3faf5d54897b2d1f8d15a0c630534444', '标签', '活力', 0, NULL, 'system', '2020-09-07 19:50:33.015', 'system', '2020-09-07 19:50:33.015', '0');
+INSERT INTO `t_dub` VALUES ('4bd24b7a9d9be15b566d487837128f71', '声音', '青年', 0, NULL, 'system', '2020-09-07 19:50:32.990', 'system', '2020-09-07 19:50:32.990', '0');
+INSERT INTO `t_dub` VALUES ('663abfa4dafc61a4b3cd6f3387e06701', '性别', '男', 0, NULL, 'system', '2020-09-07 19:50:32.971', 'system', '2020-09-07 19:50:32.971', '0');
+INSERT INTO `t_dub` VALUES ('6c649befb1cb1ceeed1e9fe5aa0ef0d5', '类型', '综艺播报', 0, NULL, 'system', '2020-09-07 19:50:33.003', 'system', '2020-09-07 19:50:33.003', '0');
+INSERT INTO `t_dub` VALUES ('72d9bf2a44a9252004ee54e58d723595', '标签', '大气', 0, NULL, 'system', '2020-09-07 19:50:33.011', 'system', '2020-09-07 19:50:33.011', '0');
+INSERT INTO `t_dub` VALUES ('7ac1f148a69678650391883962d5bc3f', '声音', '少年', 0, NULL, 'system', '2020-09-07 19:50:32.985', 'system', '2020-09-07 19:50:32.985', '0');
+INSERT INTO `t_dub` VALUES ('8a6dce84e36a5f6bcdf27cb4244c616d', '标签', '激情', 0, NULL, 'system', '2020-09-07 19:50:33.022', 'system', '2020-09-07 19:50:33.022', '0');
+INSERT INTO `t_dub` VALUES ('d08a5f182bd208a19e4e9c32bb877a4f', '类型', '讲述播报', 0, NULL, 'system', '2020-09-07 19:50:32.998', 'system', '2020-09-07 19:50:32.998', '0');
+INSERT INTO `t_dub` VALUES ('e65c955b91971d47647f7bb8d0e3ad5e', '声音', '婴儿', 0, NULL, 'system', '2020-09-07 19:50:32.975', 'system', '2020-09-07 19:50:32.975', '0');
+INSERT INTO `t_dub` VALUES ('eb8fe3a7567a2146afbceb504f0376fe', '标签', '甜美', 0, NULL, 'system', '2020-09-07 19:50:33.026', 'system', '2020-09-07 19:50:33.026', '0');
+INSERT INTO `t_dub` VALUES ('ecfaf307025f27c24c5f2e9ac17dbe7e', '标签', '浑厚', 0, NULL, 'system', '2020-09-07 19:50:33.019', 'system', '2020-09-07 19:50:33.019', '0');
+INSERT INTO `t_dub` VALUES ('f073ebf765af2a55c046b8d50fc0d510', '性别', '女', 0, NULL, 'system', '2020-09-07 19:50:32.962', 'system', '2020-09-07 19:50:32.962', '0');
 COMMIT;
 
 -- ----------------------------
@@ -1524,7 +1717,7 @@ CREATE TABLE `t_order` (
   `type` varchar(255) DEFAULT NULL COMMENT '订单类型（加速卡，单次，多次）',
   `staff_id` varchar(32) DEFAULT NULL,
   `video_id` varchar(32) DEFAULT NULL COMMENT '视频id，等视频上传后更新',
-  `content` varchar(50) DEFAULT NULL COMMENT '表单json',
+  `content` text COMMENT '表单json',
   `created_by` varchar(50) CHARACTER SET utf8 NOT NULL,
   `created_date` timestamp(3) NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   `last_modified_by` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
@@ -1532,16 +1725,20 @@ CREATE TABLE `t_order` (
   `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '描述',
   `version` int(11) NOT NULL,
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
-  `accelerate` int(11) DEFAULT NULL COMMENT '是否加速 0不加速 1加速',
   `total_amount` decimal(9,2) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单状态';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单表';
 
 -- ----------------------------
 -- Records of t_order
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_order` VALUES ('123', '1', 1, '1', NULL, NULL, '{}', '1', '2020-09-05 01:26:32.755', '1', '2020-09-05 01:26:23.000', NULL, 0, '0', NULL, NULL);
+INSERT INTO `t_order` VALUES ('0e234567a0cbd9e891555b9baa4054d4', '1', 0, '0', NULL, NULL, '{\"data\":[{\"data\":[{\"name\":\"label\",\"value\":\"美妆护肤\"}],\"title\":\"请选择label\"},{\"data\":[{\"id\":6,\"name\":\"anchorNum\",\"value\":\"单人主播\"}],\"title\":\"anchorNum\"},{\"data\":[{\"id\":8,\"name\":\"seat\",\"value\":\"站姿\"},{\"id\":9,\"name\":\"seat\",\"value\":\"坐姿\"}],\"title\":\"请选择seat\"},{\"data\":[{\"id\":10,\"name\":\"anchorType\",\"value\":\"活力青春型\"},{\"id\":11,\"name\":\"anchorType\",\"value\":\"成熟稳重型\"}],\"title\":\"请选择anchorType\"},{\"data\":[{\"id\":13,\"name\":\"style\",\"url\":\"http://www.baidu.com\",\"value\":\"度假\"}],\"title\":\"请选择style\"}]}', '1', '2020-09-07 16:49:17.084', '1', '2020-09-07 16:49:17.084', NULL, 0, '0', 999.00);
+INSERT INTO `t_order` VALUES ('123', '1', 1, '1', NULL, NULL, '{}', '1', '2020-09-05 01:26:32.755', '1', '2020-09-06 00:39:26.840', NULL, 0, '0', NULL);
+INSERT INTO `t_order` VALUES ('493f50d0ab45a079602c1c01615fe2dc', '1', 0, '0', NULL, NULL, '{\"data\":[{\"data\":[{\"name\":\"label\",\"value\":\"美妆护肤\"}],\"title\":\"请选择label\"},{\"data\":[{\"id\":6,\"name\":\"anchorNum\",\"value\":\"单人主播\"}],\"title\":\"anchorNum\"},{\"data\":[{\"id\":8,\"name\":\"seat\",\"value\":\"站姿\"},{\"id\":9,\"name\":\"seat\",\"value\":\"坐姿\"}],\"title\":\"请选择seat\"},{\"data\":[{\"id\":10,\"name\":\"anchorType\",\"value\":\"活力青春型\"},{\"id\":11,\"name\":\"anchorType\",\"value\":\"成熟稳重型\"}],\"title\":\"请选择anchorType\"},{\"data\":[{\"id\":13,\"name\":\"style\",\"url\":\"http://www.baidu.com\",\"value\":\"度假\"}],\"title\":\"请选择style\"}]}', '1', '2020-09-06 09:56:31.383', '1', '2020-09-06 09:56:31.383', NULL, 0, '0', 999.00);
+INSERT INTO `t_order` VALUES ('baea154db5051b9f9e78bb53bd2d250e', '1', 0, '0', NULL, NULL, '{\'data\':[{\'data\':[{\'name\':\'label\',\'value\':\'美妆护肤\'}],\'title\':\'请选择label\'},{\'data\':[{\'id\':6,\'name\':\'anchorNum\',\'value\':\'单人主播\'}],\'title\':\'anchorNum\'},{\'data\':[{\'id\':8,\'name\':\'seat\',\'value\':\'站姿\'},{\'id\':9,\'name\':\'seat\',\'value\':\'坐姿\'}],\'title\':\'请选择seat\'},{\'data\':[{\'id\':10,\'name\':\'anchorType\',\'value\':\'活力青春型\'},{\'id\':11,\'name\':\'anchorType\',\'value\':\'成熟稳重型\'}],\'title\':\'请选择anchorType\'},{\'data\':[{\'id\':13,\'name\':\'style\',\'url\':\'http://www.baidu.com\',\'value\':\'度假\'}],\'title\':\'请选择style\'}]}', '1', '2020-09-06 09:43:58.640', '1', '2020-09-06 09:43:58.640', NULL, 0, '0', 999.00);
+INSERT INTO `t_order` VALUES ('c2da8cc828e14323011acee1e0b205a4', '1', 0, '0', NULL, NULL, '{\"data\":[{\"data\":[{\"name\":\"label\",\"value\":\"美妆护肤\"}],\"title\":\"请选择label\"},{\"data\":[{\"id\":6,\"name\":\"anchorNum\",\"value\":\"单人主播\"}],\"title\":\"anchorNum\"},{\"data\":[{\"id\":8,\"name\":\"seat\",\"value\":\"站姿\"},{\"id\":9,\"name\":\"seat\",\"value\":\"坐姿\"}],\"title\":\"请选择seat\"},{\"data\":[{\"id\":10,\"name\":\"anchorType\",\"value\":\"活力青春型\"},{\"id\":11,\"name\":\"anchorType\",\"value\":\"成熟稳重型\"}],\"title\":\"请选择anchorType\"},{\"data\":[{\"id\":13,\"name\":\"style\",\"url\":\"http://www.baidu.com\",\"value\":\"度假\"}],\"title\":\"请选择style\"}]}', '1', '2020-09-07 16:08:38.414', '1', '2020-09-07 16:08:38.414', NULL, 0, '0', 999.00);
+INSERT INTO `t_order` VALUES ('dd405d8c09438200573a33c88a5add70', '1', 3, NULL, '1', 'fd28f0c6846caf7bcdf1fc6a05f3a61a', '{\'data\':[{\'data\':[{\'name\':\'label\',\'value\':\'美妆护肤\'}],\'title\':\'请选择label\'},{\'data\':[{\'id\':6,\'name\':\'anchorNum\',\'value\':\'单人主播\'}],\'title\':\'anchorNum\'},{\'data\':[{\'id\':8,\'name\':\'seat\',\'value\':\'站姿\'},{\'id\':9,\'name\':\'seat\',\'value\':\'坐姿\'}],\'title\':\'请选择seat\'},{\'data\':[{\'id\':10,\'name\':\'anchorType\',\'value\':\'活力青春型\'},{\'id\':11,\'name\':\'anchorType\',\'value\':\'成熟稳重型\'}],\'title\':\'请选择anchorType\'},{\'data\':[{\'id\':13,\'name\':\'style\',\'url\':\'http://www.baidu.com\',\'value\':\'度假\'}],\'title\':\'请选择style\'}]}', '1', '2020-09-05 22:37:34.356', '1', '2020-09-06 10:55:28.200', NULL, 3, '0', 1029.00);
 COMMIT;
 
 -- ----------------------------
@@ -1608,10 +1805,73 @@ CREATE TABLE `t_purchase_record` (
 -- Records of t_purchase_record
 -- ----------------------------
 BEGIN;
+INSERT INTO `t_purchase_record` VALUES ('080440f20ddfbfac066e375829b18173', '1', '202009052305263512', '0', '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 23:05:26.286', '1', '2020-09-05 23:05:26.286', '0');
 INSERT INTO `t_purchase_record` VALUES ('37a49b552896e70ff381092ead398432', '1', '202009050118521645', NULL, '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 01:18:52.013', '1', '2020-09-05 01:18:52.013', '0');
+INSERT INTO `t_purchase_record` VALUES ('5672f8c7459e435d6683aaa3f68cc7f6', '1', '202009052254073506', '0', '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 22:54:07.241', '1', '2020-09-05 22:54:07.241', '0');
+INSERT INTO `t_purchase_record` VALUES ('7c50ed30981f491fdaf93b7a3cb4382a', '1', '202009052250365257', '0', '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 22:50:36.467', '1', '2020-09-05 22:50:36.467', '0');
+INSERT INTO `t_purchase_record` VALUES ('8bb61c9235fb75fe0cbf09848648f8cb', '1', '202009052306231470', '0', '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 23:06:23.076', '1', '2020-09-05 23:06:23.076', '0');
 INSERT INTO `t_purchase_record` VALUES ('9b789ca9be5c55bac5a9648a71e36c21', '1', '202009050114387364', NULL, '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 01:14:38.052', '1', '2020-09-05 01:14:38.052', '0');
 INSERT INTO `t_purchase_record` VALUES ('a0f58ac1032100a0e21eb3b1860713bf', '1', '202009050120115171', NULL, '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 01:20:11.434', '1', '2020-09-05 01:20:11.434', '0');
+INSERT INTO `t_purchase_record` VALUES ('abf7c57022ab78364a76babbf4caa45f', '1', '202009052247372636', '0', '3c734f2104ab77ecdaba2bb96baa929c', '100.00', 0, NULL, '1', '2020-09-05 22:47:37.060', '1', '2020-09-05 22:47:37.060', '0');
 INSERT INTO `t_purchase_record` VALUES ('d28a74a12c9b2ca0547850aa13caa7ec', '1', '202009050112536959', NULL, '3c734f2104ab77ecdaba2bb96baa929c', '0.00', 0, NULL, '1', '2020-09-05 01:12:53.188', '1', '2020-09-05 01:12:53.188', '0');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for t_script
+-- ----------------------------
+DROP TABLE IF EXISTS `t_script`;
+CREATE TABLE `t_script` (
+  `id` varchar(32) NOT NULL,
+  `value` text,
+  `title` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `t_script_id_uindex` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of t_script
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_script` VALUES ('07c5e9f86a2c6d72f3940f7a45cf94cd', '直播间的宝宝们注意喽！我们开始倒计时啦，5！4！3！2！1！让我们看看是哪位幸运的包包可以获得我们的直播间大奖呢！', '欢迎词');
+INSERT INTO `t_script` VALUES ('1214fc29968fb2b65fa2dde6646b1e2b', '明天${startTime}点准时开播，欢迎大家再来哦，大家拜拜~', '结束词');
+INSERT INTO `t_script` VALUES ('16cd3c09c0494217cce63b8c1e623f6f', '购买抢福利的名额限量前20位，先到先得！目前还剩5个名额！快点击屏幕链接抢先购买哦！卖完就真的再也没有了！', '追单词');
+INSERT INTO `t_script` VALUES ('18fa5c339078460a5f7698fb176bd039', '今天的直播接近尾声了，我们要下播喽，希望大家睡个好觉做个好梦，明天新的一天好好工作。', '结束词');
+INSERT INTO `t_script` VALUES ('1c698446cfd8453087a23c7b330fd91c', '哦！没有抽中的宝宝也不要走开，之后最后我们会抽一位幸运儿送出我们的免单大奖哦！', '欢迎词');
+INSERT INTO `t_script` VALUES ('1e1914abc4dd9f0dfa1199b5c3eadb46', '活动已经告一段落，感谢大家的参与。喜欢我们可以关注直播间，以后有类似活动会第一时间通知大家。', '追单词');
+INSERT INTO `t_script` VALUES ('2363cf752e73874c23503158d4b02097', '这次货品折扣仅限本次活动进行时间，错过了我们就无法再给您这个价格了，敬请谅解，看中的宝宝抓紧时间拍下哦！', '追单词');
+INSERT INTO `t_script` VALUES ('2a94fc17ee580599157a3bb85d7296b1', '数量有限，看中的要及时下单了，机会难得，我们的货品已经即将售窑，之后短时间内可能都没有这样的优惠了哦。', '追单词');
+INSERT INTO `t_script` VALUES ('2cec16d1326495190379ace4acc3947b', '先付先得、最后${restTime}分钟！最后${restTime}分钟！', '追单词');
+INSERT INTO `t_script` VALUES ('2d7dbb5b0a3d0c1544e7bba6841c3059', '各位宝宝注意了！今天直播抽奖的奖品真的超级丰厚哦！机不可失失不再来，一定要参与啊！', '欢迎词');
+INSERT INTO `t_script` VALUES ('32bd44066610964aa6ae45e9d37e84de', '恭喜${name}宝宝中奖啦！太幸运了吧！我都有些羡慕了！赶紧点击左下角链接私信客服，联系客服小姐姐领取奖品', '欢迎词');
+INSERT INTO `t_script` VALUES ('33951fd271d139b1f9dcd56b106002d7', '各位奔走相告吧，明天休息一天，大家放假了，后天正常开播。', '结束词');
+INSERT INTO `t_script` VALUES ('3d25945e927b87213c7d244b44249e85', '小仙女，喜欢的话可以直接下单哦，宝贝数量有限，喜欢要趁早，越早下单宝贝就能越早到亲手上哦', '追单词');
+INSERT INTO `t_script` VALUES ('48dbd29e6bd74b23a7f95158fb96066c', '再过5分钟就要开始抽奖啦！大家千万不要走开，快拉你的老公一起来刷屏，中奖概率double！', '欢迎词');
+INSERT INTO `t_script` VALUES ('5e29216c66463a26a0793255911a216c', '欢迎宝宝们来到直播间，关注主播不迷路，优惠活动早知道!', '欢迎词');
+INSERT INTO `t_script` VALUES ('648713505c665281c721558042c63a0c', '哈喽，宝宝们，大家好，欢迎来到${anchorName}的直播间，我是本场的主播${anchorName}', '开场白');
+INSERT INTO `t_script` VALUES ('6f5f4334e0cae75e7b9e81a3b3eb7e86', '有钱的捧个钱场，没钱的捧个人场，空闲的捧个留场，喜欢的捧个情场，最重要的，给你们一个笑场！', '欢迎词');
+INSERT INTO `t_script` VALUES ('7217e94bb9a1391b853dfffe0dab08fc', '小仙女今天不买它，你今晚回去睡不下，心里总会想着它！早买早享受', '追单词');
+INSERT INTO `t_script` VALUES ('785c554c5c3366779583007808e86790', '欢迎来到${anchorName}直播间，主播带你了解更多优惠福利，喜欢主播的记得关注哦，爱你们！', '欢迎词');
+INSERT INTO `t_script` VALUES ('7adf5ed3e248e4b542eacb7521d547ec', '欢迎宝宝们来到我的直播间，希望宝宝们能多多支持，多多捧场哦。', '欢迎词');
+INSERT INTO `t_script` VALUES ('7e6bc25a4367c9145abf5d57b32da66e', '感谢${name}的关注，是我们的产品让忍不住你出手了吧，肯定是不接受任何反驳。', '感谢词');
+INSERT INTO `t_script` VALUES ('7f851d3e179e2b7151718dfaa1d58fcc', '同样时间开播，明天会提早一点不？', '结束词');
+INSERT INTO `t_script` VALUES ('84b7bb98067bf879b088c66274667d83', '这次活动的力度真的很大，之前这款产品的价格是${price}，很划算，错过真的很可惜。', '追单词');
+INSERT INTO `t_script` VALUES ('9933e853fe25b41a4935d801f872dadb', '首先感谢今天所有进入我直播间的观众们，谢谢你们的关注。虽然有一部分人没有陪到我下播的时候。但百忙之中抽时间过来，实属难得。感谢所有进直播间的各位。另外很多人从我一开播就来了，一直陪着我下播。比如某某，某某。陪伴是最长情的告白，你们的爱意我收到了，咱们下次再见。', '感谢词');
+INSERT INTO `t_script` VALUES ('9d86587b1c80f7838d47bbf10fccec58', '今天的直播接近尾声了，明天晚上几点到几点？', '结束词');
+INSERT INTO `t_script` VALUES ('a3c4be2ad1d331aa19714ffceb2b00b3', '感谢${name}来我的直播间，你们有什么问题都可以问我哦，主播都会认真为大家解答的。', '感谢词');
+INSERT INTO `t_script` VALUES ('a429e3ea4ceb76e9584095aad5e99c0d', '欢迎${touristName}来到我的直播间，喜欢主播的点个关注哦！', '欢迎词');
+INSERT INTO `t_script` VALUES ('a761c986b04af157761c1800b1588f21', 'hello大家好，欢迎各位帅哥美女们来到我的直播间，进来直播间的是美女还是帅哥呢？刷刷弹幕让我看到你哦~', '开场白');
+INSERT INTO `t_script` VALUES ('b83ecf0a9098dd6384ecaa9d3a47a785', '欢迎新来的朋友不要着急马上走，人间自有真情在，点点红心都是爱，天若有情6天亦老，来波关注好不好。', '欢迎词');
+INSERT INTO `t_script` VALUES ('bfd9d3b1a344aa557ec09379cfd04126', '欢迎各位小伙伴们来到我的直播间，主播人美歌甜性格好，关注就像捡到宝，小伙伴们走过路过不要错过，喜欢的宝宝在哪里？', '开场白');
+INSERT INTO `t_script` VALUES ('cba8ac86b472b8032d676c6500f6dd4e', '这个价格只有在我们直播间才能拿到，我们还有${restTime}分钟就下播了，没拍的宝宝可以去拍哦！', '追单词');
+INSERT INTO `t_script` VALUES ('cfb94eb73abcc75add7fc8bb0f6f4e56', '抢到就是赚到、秒杀单品数量有限！', '追单词');
+INSERT INTO `t_script` VALUES ('d41376b96e4336e21144253860869a3f', '感谢刚进来的小伙伴哦，每天晚上8点，主播为你分享化妆小技巧，不要错过哦！', '开场白');
+INSERT INTO `t_script` VALUES ('d86cdd4ba5a68df4d078a9135def8197', '非常感谢关注了我们的宝宝们，谢谢大家对我们直播间的支持和喜欢！明天直播间还会抽出一名幸运免单用户，一定要记得关注主播哦，我们不定时会有惊喜福利！', '感谢词');
+INSERT INTO `t_script` VALUES ('d877390169a2b5296ab3ada1396b239c', '感谢${name}的关注，还没关注的宝宝们抓紧关注哦，我们每场直播都会给大家带来不同的惊喜福利呢！', '欢迎词');
+INSERT INTO `t_script` VALUES ('dd4674fbd5b31aa5eb0757919069f1f4', '非常感谢关注了的宝宝们，谢谢大家对我们的支持和喜欢！我们一定为帮大家争取更多的福利哦！', '欢迎词');
+INSERT INTO `t_script` VALUES ('de848a57ea3b9e2e50df0b1018e50967', '月亮不睡你不睡，都是我的小宝贝！千山万水总是情，点个关注行不行！', '欢迎词');
+INSERT INTO `t_script` VALUES ('e376f7a8aa642059c0b6cc539ffc45ee', '话不多说，咱们先来一波抽奖，点赞关注主播，弹幕扣666，截图最上面的宝宝，稍后会有客服私信你哦~', '欢迎词');
+INSERT INTO `t_script` VALUES ('f5b05492522c30be4403a4982bcaed3b', '各位宝宝，线上抢购的人数多，我们的活动到${deadline}号就结束了，请大家看中了抓紧时间下单哈！没抢到的宝宝请谅解哦。', '追单词');
+INSERT INTO `t_script` VALUES ('f688fa8e5a0bbcb44def00c1b8780774', '刚错过的小可爱们，现在下单还来得及啊！特地为你们开了一辆末班车，下手要快，错过真没了', '追单词');
 COMMIT;
 
 -- ----------------------------
@@ -1633,8 +1893,20 @@ CREATE TABLE `t_video` (
   `description` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '描述',
   `version` int(11) NOT NULL,
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0' COMMENT '0-正常，1-删除',
+  `order_id` varchar(32) DEFAULT NULL,
+  `audio_text` text COMMENT '语音文本素材',
+  `audio_url` text COMMENT '本地音频路径',
+  `ad_url` text COMMENT '贴片路径',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频存储';
+
+-- ----------------------------
+-- Records of t_video
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_video` VALUES ('763e49929ba9992d9dbbc1070cbb1a3a', '1', NULL, NULL, NULL, NULL, NULL, '1', '2020-09-06 10:51:05.521', '1', '2020-09-06 10:51:05.521', NULL, 0, '0', 'dd405d8c09438200573a33c88a5add70', NULL, NULL, NULL);
+INSERT INTO `t_video` VALUES ('fd28f0c6846caf7bcdf1fc6a05f3a61a', '1', NULL, NULL, NULL, NULL, NULL, '1', '2020-09-06 10:55:28.195', '1', '2020-09-06 10:55:28.195', NULL, 0, '0', 'dd405d8c09438200573a33c88a5add70', NULL, NULL, NULL);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for tool_alipay_config

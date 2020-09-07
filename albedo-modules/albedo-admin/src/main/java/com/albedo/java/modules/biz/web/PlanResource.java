@@ -42,7 +42,6 @@ public class PlanResource extends BaseResource {
 
   @ApiOperation(value = "获取套餐")
   @GetMapping("/list")
-  @PreAuthorize("@pms.hasPermission('biz_plan_view')")
   public Result<List<Plan>> list() {
     return Result.buildOkData(service.list());
   }
@@ -59,7 +58,6 @@ public class PlanResource extends BaseResource {
   @Token
   @PostMapping("/purchase")
   public Result<String> purchase(String planId, String token) {
-
     return Result.buildOk(service.purchase(planId));
   }
 

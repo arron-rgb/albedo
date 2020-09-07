@@ -27,11 +27,15 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.MoneyUtil;
+import com.albedo.java.modules.sys.domain.Dict;
+import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+import cn.hutool.core.lang.Assert;
 
 /**
  * @author arronshentu
@@ -80,6 +84,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public String price(String orderId, String subject) {
     Order order = baseMapper.selectById(orderId);
+    Assert.notNull(order, "未查询到订单信息");
     // 1. 有次数就消耗次数
     try {
       // 扣了次数后，如果不需要额外支付，则将订单设为已支付
@@ -109,30 +114,27 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return "success";
   }
 
+  @Resource
+  DictService dictService;
+
   private String calculatePrice(String content) {
     PlusService plusService = JSON.parseObject(content, PlusService.class);
-    if (plusService == null) {
-      throw new RuntimeMsgException("订单价格计算失败");
-    }
+    Assert.notNull(plusService, "订单价格计算失败");
 
     List<PlusService.Element> elements = plusService.getData().stream()
       .filter((element -> "anchorNum".equals(element.getTitle()))).collect(Collectors.toList());
 
-    if (elements.size() != 1) {
-      throw new RuntimeMsgException("参数异常");
-    }
+    Assert.isTrue(elements.size() == 1, "主播数量异常");
 
     int result = elements.stream().mapToInt(ele -> {
       List<Config> data = ele.getData();
       if (CollectionUtils.isEmpty(data)) {
         return 0;
       }
-      if (data.size() != 1) {
-        throw new RuntimeException("参数异常");
-      }
+      Assert.isTrue(elements.size() == 1, "主播数量异常");
       Config config = data.get(0);
-      // todo 999 从配置项中读取
-      return "单人主播".equals(config.getValue()) ? 999 : 1999;
+      Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", config.getValue()));
+      return Integer.parseInt(price.getVal());
     }).sum();
 
     return String.valueOf(result);
@@ -163,12 +165,25 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void updateForm() {
-    // todo 上传贴片等素材
+  public void updateForm(SubOrderVo orderVo) {
+    // 自己上传录音 直接给一个文件路径即可
+    Video video = videoService.getOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
+    Assert.notNull(video, "未查询到该订单对应的视频记录");
+    video.setAdUrl(orderVo.getAdUrl());
+    video.setAudioText(orderVo.getContent());
+    video.setLogoUrl(orderVo.getLogoUrl());
+    videoService.updateById(video);
+    // 人工配音 配音字段的属性及pojo
+    TradePlus tradePlus = TradePlus.builder().build();
+    Order order = new Order();
+    // tts配音 1. 商品选择及商品crud 2. 串词中参数的注入？
   }
 
   @Override
   public List<Order> belongs() {
+    List<String> roles = SecurityUtil.getRoles();
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), "非后台员工无法查看订单内容");
+
     return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
   }
 
@@ -180,7 +195,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     String videoId = order.getVideoId();
     Video video = videoService.getById(videoId);
-    // todo tts合成音频or上传音频
   }
 
   @Override

@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.SecurityConstants;
+import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.security.util.LoginUtil;
 import com.albedo.java.modules.sys.domain.vo.account.LoginVo;
 
@@ -37,17 +38,17 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
     throws ServletException, IOException {
     if (StringUtils.equals(applicationProperties.getAdminPath(SecurityConstants.AUTHENTICATE_URL),
       request.getRequestURI()) && StringUtils.equalsIgnoreCase(request.getMethod(), "post")) {
-      // if (!SpringContextHolder.isDevelopment()) {
-      LoginVo loginVo = new LoginVo();
-      loginVo.setCode(request.getParameter("code"));
-      loginVo.setRandomStr(request.getParameter("randomStr"));
-      try {
-        LoginUtil.checkCode(loginVo);
-      } catch (AuthenticationException e) {
-        authenticationFailureHandler.onAuthenticationFailure(request, response, e);
-        return;
+      if (!SpringContextHolder.isDevelopment()) {
+        LoginVo loginVo = new LoginVo();
+        loginVo.setCode(request.getParameter("code"));
+        loginVo.setRandomStr(request.getParameter("randomStr"));
+        try {
+          LoginUtil.checkCode(loginVo);
+        } catch (AuthenticationException e) {
+          authenticationFailureHandler.onAuthenticationFailure(request, response, e);
+          return;
+        }
       }
-      // }
     }
     filterChain.doFilter(request, response);
   }

@@ -100,15 +100,11 @@ public class ApplicationConfig {
    * 获取文件上传路径
    */
   public static String getStaticFileDirectory() {
-    String os = System.getProperty("os.name").toLowerCase();
-    boolean win = os.startsWith("win");
-    boolean mac = os.startsWith("mac");
-    if (win) {
-      return get("application.static-file-directory.win");
-    } else if (mac) {
-      return get("application.static-file-directory.mac");
-    }
-    return get("application.static-file-directory.linux");
+    // static-file-directory:
+    // mac: ~/albedo-file
+    // linux: /home/albedo/file/
+    // win: C:\albedo\file\
+    return System.getenv("PWD");
   }
 
   /**

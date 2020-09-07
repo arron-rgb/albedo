@@ -59,7 +59,7 @@ public interface UserService extends DataService<User, UserDto, String> {
    * @author somewhere
    * @updateTime 2020/5/31 17:35
    */
-  IPage<UserVo> findPage(PageModel pm, UserQueryCriteria userQueryCriteria, DataScope dataScope);
+  IPage<UserVo> findPage(PageModel<UserVo> pm, UserQueryCriteria userQueryCriteria, DataScope dataScope);
 
   /**
    * findPage
@@ -210,4 +210,6 @@ public interface UserService extends DataService<User, UserDto, String> {
    * @return 管理员id
    */
   String getOutTradeNosByUserId(String deptId);
+
+  String getBucketName(String userId);
 }

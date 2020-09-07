@@ -19,8 +19,6 @@ import com.aliyun.oss.model.*;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Resource;
-
 /**
  * @author arronshentu
  */
@@ -69,7 +67,6 @@ public class OssSingleton {
     try {
       return client.listBuckets();
     } catch (ClientException e) {
-      log.info("出错");
       log.error("{}", e.getMessage());
       return new ArrayList<>();
     }
@@ -117,4 +114,20 @@ public class OssSingleton {
     client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
     client.createBucket(createBucketRequest);
   }
+
+  public File downloadFile(String bucketName, String objectName, String filePath) {
+    File file = new File(filePath);
+    client.getObject(new GetObjectRequest(bucketName, objectName), file);
+    return file;
+  }
+
+  public void removeFile(String bucketName, String objectName) {
+    // 删除文件。如需删除文件夹，请将ObjectName设置为对应的文件夹名称。如果文件夹非空，则需要将文件夹下的所有object删除后才能删除该文件夹。
+    client.deleteObject(bucketName, objectName);
+  }
+
+  public boolean doesObjectExist(String bucketName, String objectName) {
+    return client.doesObjectExist(bucketName, objectName);
+  }
+
 }

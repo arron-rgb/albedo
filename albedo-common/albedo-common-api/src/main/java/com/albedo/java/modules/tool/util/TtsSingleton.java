@@ -10,6 +10,9 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
+import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.common.core.util.FileUploadUtil;
+import com.albedo.java.modules.tool.domain.TtsParams;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.common.profile.ClientProfile;
@@ -19,6 +22,7 @@ import com.tencentcloudapi.tts.v20190823.models.TextToVoiceRequest;
 import com.tencentcloudapi.tts.v20190823.models.TextToVoiceResponse;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -60,9 +64,25 @@ public class TtsSingleton {
   public File generateRadio(String params, String filePath) throws TencentCloudSDKException {
     TextToVoiceRequest req = TextToVoiceRequest.fromJsonString(params, TextToVoiceRequest.class);
     TextToVoiceResponse resp = client.TextToVoice(req);
-    System.out.println(TextToVoiceResponse.toJsonString(resp));
     File outFile = new File(filePath);
     return decoderBase64File(resp.getAudio(), outFile);
   }
 
+  public File generateRadio(TtsParams params) throws TencentCloudSDKException {
+    try {
+      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + "." + params.getCodec());
+      return generateRadio(params.toString(), file.getAbsolutePath());
+    } catch (IOException e) {
+      throw new RuntimeMsgException("生成音频时出现错误");
+    }
+  }
+
+  public File generateRadio(String content) throws TencentCloudSDKException {
+    try {
+      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + ".mp3");
+      return generateRadio(content, file.getAbsolutePath());
+    } catch (IOException e) {
+      throw new RuntimeMsgException("生成音频时出现错误");
+    }
+  }
 }

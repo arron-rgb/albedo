@@ -6,6 +6,7 @@ import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.OrderVo;
+import com.albedo.java.modules.biz.domain.SubOrderVo;
 
 /**
  * @author arronshentu
@@ -15,8 +16,8 @@ public interface OrderService extends BaseService<Order> {
   /**
    * 用户下单
    *
-   * @param form
-   *          表单json
+   * @param order
+   *          表单
    */
   String place(OrderVo order);
 
@@ -36,6 +37,8 @@ public interface OrderService extends BaseService<Order> {
    *
    * @param orderId
    *          订单id
+   * @exception OrderException
+   *              订单信息异常
    */
   void consume(String orderId) throws OrderException;
 
@@ -48,9 +51,11 @@ public interface OrderService extends BaseService<Order> {
   List<Order> availableOrder();
 
   /**
-   * 更新表单
+   * 二次下单
+   *
+   * @param orderVo
    */
-  void updateForm();
+  void updateForm(SubOrderVo orderVo);
 
   /**
    * 返回员工名下的订单
