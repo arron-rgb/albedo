@@ -35,4 +35,6 @@ public class SubOrderVo {
    * 配音方式 下单 上传 合成
    */
   private Long type;
+  // 上传 合成 都需要提供商品及串词列表
+
 }

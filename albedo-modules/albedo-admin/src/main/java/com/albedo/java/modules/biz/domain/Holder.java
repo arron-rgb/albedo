@@ -13,28 +13,21 @@ import lombok.*;
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class DubHolder {
+@AllArgsConstructor
+public class Holder<T> {
+  private List<Element<T>> data;
 
-  private List<Element> data = new ArrayList<>();
-
-  public void addList(List<Dub> data, String title) {
+  public void addList(List<T> data, String title) {
     if (CollectionUtils.isNotEmpty(data)) {
       if (this.data == null) {
         this.data = new ArrayList<>();
       }
-      this.data.add(Element.builder().title(title).data(data).build());
+      Element<T> element = new Element<T>();
+      element.setData(data);
+      element.setTitle(title);
+      this.data.add(element);
     }
   }
 
-  @Data
-  @EqualsAndHashCode
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Builder
-  public static class Element {
-    String title;
-    List<Dub> data;
-  }
 }

@@ -19,8 +19,7 @@ import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Dub;
-import com.albedo.java.modules.biz.domain.DubHolder;
-import com.albedo.java.modules.biz.domain.dto.DubDto;
+import com.albedo.java.modules.biz.domain.Holder;
 import com.albedo.java.modules.biz.domain.dto.DubQueryCriteria;
 import com.albedo.java.modules.biz.service.DubService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -49,9 +48,9 @@ public class DubResource extends BaseResource {
   @ApiOperation(value = "获取单个配音表单配置")
   @GetMapping(CommonConstants.URL_ID_REGEX)
   @PreAuthorize("@pms.hasPermission('biz_dub_view')")
-  public Result<DubDto> get(@PathVariable String id) {
+  public Result<Dub> get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
-    return Result.buildOkData(service.getOneDto(id));
+    return Result.buildOkData(service.getById(id));
   }
 
   /**
@@ -74,16 +73,15 @@ public class DubResource extends BaseResource {
   /**
    * POST / : Save a dubDto.
    *
-   * @param dubDto
+   * @param dub
    *          the HTTP dub
    */
   @PreAuthorize("@pms.hasPermission('biz_dub_edit')")
   @LogOperate(value = "配音表单配置编辑")
   @ApiOperation(value = "编辑配音表单配置")
   @PostMapping
-  public Result<String> save(@Valid @RequestBody DubDto dubDto) {
-    log.debug("REST request to save DubDto : {}", dubDto);
-    service.saveOrUpdate(dubDto);
+  public Result<String> save(@Valid @RequestBody Dub dub) {
+    service.saveOrUpdate(dub);
     return Result.buildOk("保存配音表单配置成功");
   }
 
@@ -106,11 +104,11 @@ public class DubResource extends BaseResource {
   @LogOperate(value = "获取配音表单配置")
   @ApiOperation(value = "获取配音表单配置")
   @GetMapping("/list")
-  public Result<DubHolder> list() {
+  public Result<Holder<Dub>> list() {
     List<Dub> list = service.list(Wrappers.emptyWrapper());
-    DubHolder build = DubHolder.builder().build();
-    list.stream().collect(Collectors.groupingBy(Dub::getTitle)).forEach((title, data) -> build.addList(data, title));
-    return Result.buildOkData(build, "获取成功");
+    Holder<Dub> holder = new Holder<>();
+    list.stream().collect(Collectors.groupingBy(Dub::getTitle)).forEach((title, data) -> holder.addList(data, title));
+    return Result.buildOkData(holder, "获取成功");
   }
 
   @LogOperate(value = "获取配音表单配置")
@@ -118,7 +116,6 @@ public class DubResource extends BaseResource {
   @GetMapping("/title/list")
   public Result<List<String>> listTitle() {
     List<Dub> list = service.list(Wrappers.emptyWrapper());
-    DubHolder build = DubHolder.builder().build();
     return Result.buildOkData(list.stream().map(Dub::getTitle).collect(Collectors.toList()), "获取成功");
   }
 }

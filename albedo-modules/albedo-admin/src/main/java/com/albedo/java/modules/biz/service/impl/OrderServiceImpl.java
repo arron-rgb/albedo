@@ -133,10 +133,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       }
       Assert.isTrue(elements.size() == 1, "主播数量异常");
       Config config = data.get(0);
-      Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", config.getValue()));
-      if (price == null) {
-        return "单人主播".equals(config.getValue()) ? 999 : 1999;
-      }
+      Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", config.getValue()));
       return Integer.parseInt(price.getVal());
     }).sum();
 
