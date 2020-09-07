@@ -2,8 +2,8 @@ module.exports = {
   /**
    * @description 网站标题
    */
-  title: 'Albedo',
-  key: 'Albedo',
+  title: '虚拟工坊',
+  key: 'vlivest',
   api: '/a',
   /**
    * @description 是否显示 tagsView

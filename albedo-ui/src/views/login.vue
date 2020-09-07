@@ -9,7 +9,6 @@
       label-width="0px"
     >
       <h3 class="title">
-        Albedo 快速开发框架
         欢迎来到虚拟工坊
       </h3>
 
