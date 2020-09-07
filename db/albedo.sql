@@ -20,13 +20,19 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for gen_scheme
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_scheme`;
-CREATE TABLE `t_commodity`
+create table t_dub
+(
+    id int auto_increment
+        primary key
+);
+
+
+DROP TABLE IF EXISTS `t_dub`;
+CREATE TABLE `t_dub`
 (
     `id`                 varchar(64)  NOT NULL COMMENT '编号',
-    `name`               varchar(200)                                      DEFAULT NULL COMMENT '名称',
-    `urls`               text COMMENT '商品图片链接',
-    `user_id`            varchar(32) COMMENT '用户id',
+    `label`              varchar(255) null comment '属性名',
+    `value`              varchar(255) null comment '属性值',
     `version`            int(11)                                           DEFAULT '0' COMMENT '默认0，必填，离线乐观锁',
     `description`        varchar(255)                                      DEFAULT NULL COMMENT '描述',
     `created_by`         varchar(50)  NOT NULL,
@@ -37,7 +43,7 @@ CREATE TABLE `t_commodity`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  ROW_FORMAT = DYNAMIC COMMENT ='商品';
+  ROW_FORMAT = DYNAMIC COMMENT ='配音配置';
 
 -- ----------------------------
 -- Records of gen_scheme

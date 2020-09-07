@@ -8,20 +8,16 @@ import lombok.*;
 /**
  * @author arronshentu
  */
-
 @Data
-@Builder
-@TableName("t_commodity")
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Commodity extends IdEntity<Commodity> {
+@Builder
+@ToString
+@TableName("t_dub")
+public class Dub extends IdEntity<Dub> {
 
-  private String name;
-  /**
-   * 图片路径，但只有一张图片
-   */
-  private String urls;
-  private String userId;
+  private String title;
+  private String value;
 
 }

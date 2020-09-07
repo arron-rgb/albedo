@@ -16,10 +16,23 @@ import lombok.NoArgsConstructor;
 public class SubOrderVo {
   private String content;
   private String description;
+  /**
+   * 水印
+   */
   private String logoUrl;
   /**
    * 贴片
    */
   private String adUrl;
+
+  /**
+   * 订单id
+   */
   private String orderId;
+
+  private Long time;
+  /**
+   * 配音方式 下单 上传 合成
+   */
+  private Long type;
 }

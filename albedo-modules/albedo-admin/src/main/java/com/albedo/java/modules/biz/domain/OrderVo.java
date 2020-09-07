@@ -18,4 +18,5 @@ public class OrderVo {
   String type;
   String totalAmount;
   String method;
+  String description;
 }

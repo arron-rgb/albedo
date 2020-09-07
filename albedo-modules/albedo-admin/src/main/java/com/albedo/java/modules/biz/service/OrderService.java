@@ -16,8 +16,8 @@ public interface OrderService extends BaseService<Order> {
   /**
    * 用户下单
    *
-   * @param form
-   *          表单json
+   * @param order
+   *          表单
    */
   String place(OrderVo order);
 
@@ -37,6 +37,8 @@ public interface OrderService extends BaseService<Order> {
    *
    * @param orderId
    *          订单id
+   * @exception OrderException
+   *              订单信息异常
    */
   void consume(String orderId) throws OrderException;
 

@@ -4,10 +4,15 @@ logging:
     com.albedo.java: INFO
 server:
   port: 9090
+  servlet:
+    session:
+      timeout: 30m
 
 spring:
   profiles:
     active: prod
+    include:
+      - swagger
   redis:
     password:
     host: localhost
@@ -27,6 +32,7 @@ spring:
 # ===================================================================
 
 application:
+  adminPath: /a
   security:
     remember-me:
       key: albedo-admin

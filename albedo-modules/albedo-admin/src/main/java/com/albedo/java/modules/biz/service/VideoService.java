@@ -20,14 +20,6 @@ public interface VideoService extends BaseService<Video> {
   boolean storageState(Double byteSize);
 
   /**
-   * 创bucket
-   *
-   * @param userId
-   *          用户
-   */
-  void createBucket(String userId);
-
-  /**
    * 工作人员上传视频
    *
    * @param orderId

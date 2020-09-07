@@ -27,6 +27,8 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.MoneyUtil;
+import com.albedo.java.modules.sys.domain.Dict;
+import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
@@ -82,6 +84,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public String price(String orderId, String subject) {
     Order order = baseMapper.selectById(orderId);
+    Assert.notNull(order, "未查询到订单信息");
     // 1. 有次数就消耗次数
     try {
       // 扣了次数后，如果不需要额外支付，则将订单设为已支付
@@ -111,30 +114,30 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return "success";
   }
 
+  @Resource
+  DictService dictService;
+
   private String calculatePrice(String content) {
     PlusService plusService = JSON.parseObject(content, PlusService.class);
-    if (plusService == null) {
-      throw new RuntimeMsgException("订单价格计算失败");
-    }
+    Assert.notNull(plusService, "订单价格计算失败");
 
     List<PlusService.Element> elements = plusService.getData().stream()
       .filter((element -> "anchorNum".equals(element.getTitle()))).collect(Collectors.toList());
 
-    if (elements.size() != 1) {
-      throw new RuntimeMsgException("参数异常");
-    }
+    Assert.isTrue(elements.size() == 1, "主播数量异常");
 
     int result = elements.stream().mapToInt(ele -> {
       List<Config> data = ele.getData();
       if (CollectionUtils.isEmpty(data)) {
         return 0;
       }
-      if (data.size() != 1) {
-        throw new RuntimeException("参数异常");
-      }
+      Assert.isTrue(elements.size() == 1, "主播数量异常");
       Config config = data.get(0);
-      // todo 999 从配置项中读取
-      return "单人主播".equals(config.getValue()) ? 999 : 1999;
+      Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", config.getValue()));
+      if (price == null) {
+        return "单人主播".equals(config.getValue()) ? 999 : 1999;
+      }
+      return Integer.parseInt(price.getVal());
     }).sum();
 
     return String.valueOf(result);
@@ -181,6 +184,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public List<Order> belongs() {
+    List<String> roles = SecurityUtil.getRoles();
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), "非后台员工无法查看订单内容");
+
     return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
   }
 
