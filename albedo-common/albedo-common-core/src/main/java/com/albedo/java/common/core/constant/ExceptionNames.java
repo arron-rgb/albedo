@@ -28,7 +28,7 @@ public interface ExceptionNames {
 
   String BALANCE_NOT_FOUND = "当前用户或企业未购买任何套餐";
 
-  String TIMES_OVERSPEND = "次数已耗尽";
+  String TIMES_OVERSPEND = "当前用户未购买任何套餐或次数已耗尽";
 
   // String BALANCE_NOT_FOUND = "未查询到任何套餐信息";
   String ENTERPRISE_ADMIN_NOT_FOUND = "未查询到当前用户企业的管理员";

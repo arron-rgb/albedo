@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
   /**
    * 处理 badException
    */
-  @ExceptionHandler(value = {BadRequestException.class, EntityExistException.class, IllegalArgumentException.class})
+  @ExceptionHandler(value = {BadRequestException.class, EntityExistException.class})
   public ResponseEntity<Result> badException(Exception e) {
     // 打印堆栈信息
     log.error(ExceptionUtil.stacktraceToString(e));
