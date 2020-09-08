@@ -18,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
-import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
@@ -95,28 +94,29 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(order.getState().equals(UNPAID_ORDER), ORDER_ERROR);
-    // 1. 有次数就消耗次数
-    try {
-      // 扣了次数后，如果不需要额外支付，则将订单设为已支付
-      // 减了次数，没支付成功；订单仍然处在未支付的状态
-      balanceService.consumeTimes();
-      // 加速订单 返回加速服务付款链接
-      if (ACCELERATE.equals(order.getType())) {
-        Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
-        if (map == null) {
-          map = new Dict();
-          map.setVal("99");
-        }
-        TradePlus plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
-        return getPurchaseUrl(plus);
-      }
-      order.setState(NOT_STARTED);
-      baseMapper.updateById(order);
-    } catch (TimesOverspendException ignored) {
-      // 次数不够扣，返回付款链接
+
+    Integer times = balanceService.leftTimes();
+    if (times == null) {
+      // 1. 先检验次数 没次数的话返回支付整个订单的链接
       TradePlus plus = TradePlus.builder().subject(subject).totalAmount(order.getTotalAmount()).build();
       return getPurchaseUrl(plus);
     }
+    // 2. 有次数，就消耗次数
+    // 扣了次数后，如果不需要额外支付，则将订单设为已支付
+    // 减了次数，没支付成功；订单仍然处在未支付的状态
+    balanceService.consumeTimes();
+    // 加速订单 返回加速服务付款链接
+    if (ACCELERATE.equals(order.getType())) {
+      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+      if (map == null) {
+        map = new Dict();
+        map.setVal("99");
+      }
+      TradePlus plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
+      return getPurchaseUrl(plus);
+    }
+    order.setState(NOT_STARTED);
+    baseMapper.updateById(order);
     return "success";
   }
 
