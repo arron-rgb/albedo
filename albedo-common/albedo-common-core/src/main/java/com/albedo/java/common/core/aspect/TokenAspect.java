@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import com.albedo.java.common.core.exception.TokenException;
 import com.albedo.java.common.core.util.RequestHolder;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,6 +25,7 @@ public class TokenAspect {
   @Resource
   RedisTemplate<String, String> redisTemplate;
 
+  @SneakyThrows
   @Around("@annotation(tokenOperate)")
   public Object around(ProceedingJoinPoint point, com.albedo.java.common.core.annotation.Token tokenOperate)
     throws TokenException {
@@ -42,12 +44,7 @@ public class TokenAspect {
     if (delete == null || !delete) {
       throw new TokenException("删除失败");
     }
-    try {
-      return point.proceed();
-    } catch (Throwable throwable) {
-      throwable.printStackTrace();
-      throw new RuntimeException("未知错误");
-    }
+    return point.proceed();
   }
 
   private Boolean verify(String key) {
