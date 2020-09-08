@@ -152,7 +152,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", config.getValue()));
       if (price == null) {
         price = new Dict();
-        price.setVal("999");
+        String val = "单人主播".equals(config.getValue()) ? "999" : "1999";
+        price.setVal(val);
       }
       Assert.notNull(price, PRICE_NOT_FOUND);
       return Integer.parseInt(price.getVal());
