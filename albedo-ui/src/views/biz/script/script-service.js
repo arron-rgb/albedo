@@ -33,4 +33,11 @@ export function get(id) {
   })
 }
 
-export default { page, del, save, get }
+export function list() {
+  return request({
+    url: '/biz/script/list',
+    method: 'get'
+  })
+}
+
+export default { page, del, save, get, list }
