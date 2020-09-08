@@ -36,6 +36,7 @@ import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -67,6 +68,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     if (verifyOrderType(form)) {
       // 给订单价格加上加速服务
       Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+      if (map == null) {
+        map = new Dict();
+        map.setVal("99");
+      }
       String updateAmount = MoneyUtil.moneyAdd(order.getTotalAmount(), map.getVal());
       order.setTotalAmount(updateAmount);
     }
@@ -98,6 +103,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       // 加速订单 返回加速服务付款链接
       if (ACCELERATE.equals(order.getType())) {
         Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+        if (map == null) {
+          map = new Dict();
+          map.setVal("99");
+        }
         TradePlus plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
         return getPurchaseUrl(plus);
       }
@@ -123,7 +132,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   DictService dictService;
 
   private String calculatePrice(String content) {
-    PlusService plusService = JSON.parseObject(content, PlusService.class);
+
+    PlusService<Config> plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {});
 
     Assert.notNull(plusService, ORDER_PARSE_ERROR);
 
@@ -140,6 +150,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       Assert.isTrue(elements.size() == 1, ANCHOR_NUM_ERROR);
       Config config = data.get(0);
       Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", config.getValue()));
+      if (price == null) {
+        price = new Dict();
+        price.setVal("999");
+      }
       Assert.notNull(price, PRICE_NOT_FOUND);
       return Integer.parseInt(price.getVal());
     }).sum();

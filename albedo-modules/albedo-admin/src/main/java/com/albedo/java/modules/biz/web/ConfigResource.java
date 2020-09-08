@@ -48,17 +48,18 @@ public class ConfigResource {
   ConfigRepository repository;
 
   @GetMapping("/list")
-  public Result<PlusService> get() {
-    PlusService build = PlusService.builder().build();
+  public Result<PlusService<Config>> get() {
+    PlusService<Config> build = new PlusService<>();
 
     List<Config> configs = repository.selectList(Wrappers.<Config>query().eq("type", COMMON));
     configs.stream().collect(Collectors.groupingBy(Config::getTitle))
-      .forEach((title, data) -> build.addList(data, "请选择" + title));
+      .forEach((title, data) -> build.addList(data, title));
 
-    build.setPlusService(PlusService.builder().build());
+    PlusService<Config> innerService = new PlusService<>();
+    build.setPlusService(innerService);
     List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", PLUS_SERVICE));
     plusService.stream().collect(Collectors.groupingBy(Config::getTitle))
-      .forEach((key, value) -> build.getPlusService().addList(value, "请选择" + key));
+      .forEach((key, value) -> build.getPlusService().addList(value, key));
     return Result.buildOkData(build);
   }
 
