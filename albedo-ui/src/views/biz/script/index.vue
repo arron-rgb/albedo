@@ -70,33 +70,31 @@ const defaultForm = {
 }
 export default {
   name: 'Script',
-  components: { crudOperation, rrOperation, udOperation, pagination },
+  components: {crudOperation, rrOperation, udOperation, pagination},
   cruds() {
-    return CRUD({ title: '套词', crudMethod: { ...crudScript }})
+    return CRUD({title: '套词', crudMethod: {...crudScript}})
   },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   // 数据字典
   data() {
     return {
-	  validateNumber: (rule, value, callback) => {
-	    validate.isNumber(rule, value, callback)
-	  },
-	  validateDigits: (rule, value, callback) => {
-	    validate.isDigits(rule, value, callback)
-	  },
+      validateNumber: (rule, value, callback) => {
+        validate.isNumber(rule, value, callback)
+      },
+      validateDigits: (rule, value, callback) => {
+        validate.isDigits(rule, value, callback)
+      },
       permission: {
         edit: 'biz_script_edit',
         del: 'biz_script_del'
       }
-     }
+    }
   },
   computed: {
-    ...mapGetters(["permissions","dicts"])
+    ...mapGetters(["permissions", "dicts"])
   },
   created() {
   },
-  methods: {
-
-  }
+  methods: {}
 };
 </script>
