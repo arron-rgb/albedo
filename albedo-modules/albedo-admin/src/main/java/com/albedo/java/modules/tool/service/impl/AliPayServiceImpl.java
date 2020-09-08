@@ -1,22 +1,13 @@
-/*
- * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- * <p>
- * Licensed under the GNU Lesser General Public License 3.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * https://www.gnu.org/licenses/lgpl.html
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.albedo.java.modules.tool.service.impl;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCT_CODE;
+import static com.albedo.java.common.core.constant.BusinessConstants.WAIT_BUYER_PAY;
+import static com.albedo.java.common.core.constant.ExceptionNames.ALIPAY_ERROR;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +19,8 @@ import com.albedo.java.common.core.exception.BadRequestException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.jackson.JavaTimeModule;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
+import com.albedo.java.modules.biz.domain.PurchaseRecord;
+import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeQueryPlus;
@@ -39,7 +32,9 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.aliyun.oss.HttpMethod;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,26 +80,38 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
+    // 两个必带参数下沉至此
     trade.setOutTradeNo(aliPayUtils.getOrderCode());
-    trade.setProductCode("FAST_INSTANT_TRADE_PAY");
+
+    trade.setProductCode(PRODUCT_CODE);
+    // 构造请求
     AlipayClient alipayClient = buildAlipayClient();
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
     request.setBizContent(mapper.writeValueAsString(trade));
-    // todo 添加sellerId到Record表
     try {
-      return alipayClient.pageExecute(request, "GET").getBody();
+      AlipayTradePagePayResponse response = alipayClient.pageExecute(request, HttpMethod.GET.name());
+      // 购买记录下沉至此
+      PurchaseRecord record = new PurchaseRecord();
+      BeanUtils.copyProperties(response, record);
+      record.setStatus(WAIT_BUYER_PAY);
+      // response.getMerchantOrderNo();
+      // response.getTradeNo()
+      recordService.save(record);
+      return response.getBody();
     } catch (AlipayApiException e) {
       e.printStackTrace();
-      throw new RuntimeMsgException("跳转支付页面发生错误");
+      throw new RuntimeMsgException(ALIPAY_ERROR);
     }
   }
 
-  private final ObjectMapper mapper =
-    new ObjectMapper().registerModule(new JavaTimeModule()).registerModule(new Jdk8Module())
-      .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES)
-      .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  @Resource
+  PurchaseRecordService recordService;
+
+  private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule())
+    .registerModule(new Jdk8Module()).setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
   @Override
   public String queryOrderStatus(String outTradeNo) throws AlipayApiException {
