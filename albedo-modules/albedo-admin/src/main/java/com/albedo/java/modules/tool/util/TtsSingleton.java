@@ -50,6 +50,19 @@ public class TtsSingleton {
     client = new TtsClient(cred, region, clientProfile);
   }
 
+  public TtsSingleton() {
+    String secretId = "AKIDwe7SXMd2UfZ0ADwZsvFJwINJ9i0DRpDK";
+    String secretKey = "pSotkLfiUDgurkbCYxxwc2AHPHsCRglc";
+    Credential cred = new Credential(secretId, secretKey);
+    HttpProfile httpProfile = new HttpProfile();
+    String endpoint = "tts.tencentcloudapi.com";
+    httpProfile.setEndpoint(endpoint);
+    ClientProfile clientProfile = new ClientProfile();
+    clientProfile.setHttpProfile(httpProfile);
+    String region = "ap-shanghai";
+    client = new TtsClient(cred, region, clientProfile);
+  }
+
   private File decoderBase64File(String base64Str, File tempFile) {
     try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
       byte[] audioByte = Base64.decode(base64Str);
@@ -68,11 +81,14 @@ public class TtsSingleton {
     return decoderBase64File(resp.getAudio(), outFile);
   }
 
-  public File generateRadio(TtsParams params) throws TencentCloudSDKException {
+  public File generateRadio(TtsParams params) {
     try {
+      params.setSessionId(IdUtil.fastUUID());
+      params.setModelType("1");
       File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + "." + params.getCodec());
       return generateRadio(params.toString(), file.getAbsolutePath());
-    } catch (IOException e) {
+    } catch (IOException | TencentCloudSDKException e) {
+      e.printStackTrace();
       throw new RuntimeMsgException("生成音频时出现错误");
     }
   }

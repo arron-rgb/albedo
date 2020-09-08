@@ -23,7 +23,7 @@ public class Holder<T> {
       if (this.data == null) {
         this.data = new ArrayList<>();
       }
-      Element<T> element = new Element<T>();
+      Element<T> element = new Element<>();
       element.setData(data);
       element.setTitle(title);
       this.data.add(element);

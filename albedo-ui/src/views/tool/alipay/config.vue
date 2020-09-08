@@ -1,23 +1,23 @@
 <template>
   <el-form ref="form" :model="form" :rules="rules" style="margin-top: 6px;" size="small" label-width="100px">
     <el-form-item label="appID" prop="appId">
-      <el-input v-model="form.appId" style="width: 40%" />
+      <el-input v-model="form.appId" style="width: 40%"/>
       <span style="color: #C0C0C0;margin-left: 10px;">应用APPID,收款账号既是APPID对应支付宝账号</span>
     </el-form-item>
     <el-form-item label="商户私钥" prop="privateKey">
-      <el-input v-model="form.privateKey" type="password" style="width: 40%;" />
+      <el-input v-model="form.privateKey" type="password" style="width: 40%;"/>
       <span style="color: #C0C0C0;margin-left: 10px;">商户私钥，你的PKCS8格式RSA2私钥</span>
     </el-form-item>
     <el-form-item label="支付宝公钥" prop="publicKey">
-      <el-input v-model="form.publicKey" type="password" style="width: 40%;" />
+      <el-input v-model="form.publicKey" type="password" style="width: 40%;"/>
       <span style="color: #C0C0C0;margin-left: 10px;">支付宝公钥</span>
     </el-form-item>
     <el-form-item label="回调地址" prop="returnUrl">
-      <el-input v-model="form.returnUrl" style="width: 40%;" />
+      <el-input v-model="form.returnUrl" style="width: 40%;"/>
       <span style="color: #C0C0C0;margin-left: 10px;">订单完成后返回的地址</span>
     </el-form-item>
     <el-form-item label="异步通知" prop="notifyUrl">
-      <el-input v-model="form.notifyUrl" style="width: 40%;" />
+      <el-input v-model="form.notifyUrl" style="width: 40%;"/>
       <span style="color: #C0C0C0;margin-left: 10px;">支付结果异步通知地址</span>
     </el-form-item>
     <el-form-item label="">
@@ -27,28 +27,29 @@
 </template>
 
 <script>
-import { get, update } from '@/views/tool/alipay/alipay-service'
+import {update} from '@/views/tool/alipay/alipay-service'
+
 export default {
   name: 'Config',
   data() {
     return {
       loading: false,
-      form: { appId: '',  privateKey: '', publicKey: '', returnUrl: '', notifyUrl: '' },
+      form: {appId: '', privateKey: '', publicKey: '', returnUrl: '', notifyUrl: ''},
       rules: {
         appId: [
-          { required: true, message: '请输入appID', trigger: 'blur' }
+          {required: true, message: '请输入appID', trigger: 'blur'}
         ],
         privateKey: [
-          { required: true, message: '商户私钥不能为空', trigger: 'blur' }
+          {required: true, message: '商户私钥不能为空', trigger: 'blur'}
         ],
         publicKey: [
-          { required: true, message: '支付宝公钥不能为空', trigger: 'blur' }
+          {required: true, message: '支付宝公钥不能为空', trigger: 'blur'}
         ],
         returnUrl: [
-          { required: true, message: '回调地址不能为空', trigger: 'blur' }
+          {required: true, message: '回调地址不能为空', trigger: 'blur'}
         ],
         notifyUrl: [
-          { required: true, message: '回调地址不能为空', trigger: 'blur' }
+          {required: true, message: '回调地址不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -58,9 +59,6 @@ export default {
   },
   methods: {
     init() {
-      get().then(res => {
-        this.form = res
-      })
     },
     doSubmit() {
       this.$refs['form'].validate((valid) => {

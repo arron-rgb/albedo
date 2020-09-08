@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.albedo.java.common.core.constant.ExceptionNames;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
@@ -20,11 +21,10 @@ import com.albedo.java.modules.biz.repository.BalanceRecordRepository;
 import com.albedo.java.modules.biz.repository.BalanceRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.sys.domain.User;
-import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
-import io.micrometer.core.instrument.util.StringUtils;
+import cn.hutool.core.lang.Assert;
 
 /**
  * @author arronshentu
@@ -32,16 +32,19 @@ import io.micrometer.core.instrument.util.StringUtils;
 @Service
 public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balance> implements BalanceService {
 
+  @Resource
+  UserService userService;
+  @Resource
+  BalanceRecordRepository recordRepository;
+
   @Override
   public void addTimes(int times, String userId) {
-    Balance one = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
+    Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 不存在的话直接返回
-    if (one == null) {
-      return;
-    }
-    int update = one.getTimes() + times;
-    one.setTimes(update);
-    baseMapper.updateById(one);
+    Assert.notNull(balance, ExceptionNames.BALANCE_NOT_FOUND);
+    int update = balance.getTimes() + times;
+    balance.setTimes(update);
+    baseMapper.updateById(balance);
     BalanceRecord record =
       BalanceRecord.builder().type(ADD).amount(times).dimension(ORDER_TIMES).userId(userId).build();
     recordRepository.insert(record);
@@ -79,9 +82,8 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     // 2. 企业用户默认扣公司 公司不够再扣个人
     if (roles.contains(BUSINESS_ADMIN_ROLE_ID) || roles.contains(BUSINESS_COMMON_ROLE_ID)) {
       String adminId = userService.getOutTradeNosByUserId(deptId);
-      if (StringUtils.isBlank(adminId)) {
-        return;
-      }
+      Assert.notEmpty(adminId, ExceptionNames.ENTERPRISE_ADMIN_NOT_FOUND);
+
       try {
         if (!consumeTimes(adminId)) {
           throw new RuntimeMsgException("扣费失败");
@@ -100,20 +102,16 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   }
 
-  @Resource
-  BalanceRecordRepository recordRepository;
+  private void consumeStaffTimes() throws TimesOverspendException {
+    consumeTimes(SecurityUtil.getUser().getId());
+  }
 
   private boolean consumeTimes(String userId) throws TimesOverspendException {
     // 消耗传入的userId的次数
     Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
-    if (balance == null) {
-      throw new RuntimeMsgException("当前用户或企业未购买任何套餐");
-    }
-    if (balance.getTimes() > 1) {
-      balance.setTimes(balance.getTimes() - 1);
-    } else {
-      throw new TimesOverspendException("次数已耗尽");
-    }
+    Assert.notNull(balance, ExceptionNames.BALANCE_NOT_FOUND);
+    Assert.isTrue(balance.getTimes() > 1, ExceptionNames.TIMES_OVERSPEND);
+    balance.setTimes(balance.getTimes() - 1);
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {
       // 记录使用者的id
@@ -124,12 +122,4 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     return flag;
   }
 
-  private void consumeStaffTimes() throws TimesOverspendException {
-    consumeTimes(SecurityUtil.getUser().getId());
-  }
-
-  @Resource
-  UserService userService;
-  @Resource
-  UserRoleService userRoleService;
 }

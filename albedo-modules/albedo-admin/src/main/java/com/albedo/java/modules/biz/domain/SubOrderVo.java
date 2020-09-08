@@ -30,11 +30,15 @@ public class SubOrderVo {
    */
   private String orderId;
 
+  /**
+   * 视频时长
+   */
   private Long time;
   /**
    * 配音方式 下单 上传 合成
    */
-  private Long type;
+  private int type;
   // 上传 合成 都需要提供商品及串词列表
 
+  private String audioUrl;
 }

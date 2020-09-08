@@ -15,9 +15,13 @@ public interface VideoService extends BaseService<Video> {
   /**
    * 验证用户oss存储空间是否已满
    *
+   * @param byteSize
+   *          存储空间
+   * @param userId
+   *          用户
    * @return 满 true
    */
-  boolean storageState(Double byteSize);
+  boolean storageState(Double byteSize, String userId);
 
   /**
    * 工作人员上传视频
@@ -39,11 +43,4 @@ public interface VideoService extends BaseService<Video> {
    */
   void addAudio(String videoId);
 
-  /**
-   * 给某条video记录添加语音
-   *
-   * @param radioPath
-   *          本地音频路径
-   */
-  void uploadAudio(String radioPath);
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.OrderVo;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.dto.OrderVo;
 
 /**
  * @author arronshentu

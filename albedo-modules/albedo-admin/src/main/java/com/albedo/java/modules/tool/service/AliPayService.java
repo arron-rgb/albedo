@@ -43,6 +43,13 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    */
   AlipayConfig config(AlipayConfig alipayConfig);
 
+  /**
+   * @param trade
+   *          订单信息
+   * @return 支付链接
+   * @throws Exception
+   *           json序列化错误
+   */
   String toPayAsPc(TradePlus trade) throws Exception;
 
   /**

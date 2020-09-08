@@ -1,5 +1,8 @@
 package com.albedo.java.modules.biz.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.COMMON;
+import static com.albedo.java.common.core.constant.BusinessConstants.PLUS_SERVICE;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,18 +48,18 @@ public class ConfigResource {
   ConfigRepository repository;
 
   @GetMapping("/list")
-  public Result<PlusService> get() {
-    PlusService build = PlusService.builder().build();
-    for (String elementName : PlusService.ELEMENT_NAMES) {
-      List<Config> left = repository.selectList(Wrappers.<Config>query().eq("type", elementName));
-      String title = left.get(0).getTitle();
-      build.addList(left, "请选择" + title);
-    }
-    build.setPlusService(PlusService.builder().build());
-    List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", "plusService"));
-    plusService.stream().collect(Collectors.groupingBy(Config::getName)).forEach((key, value) -> {
-      build.getPlusService().addList(value, "请选择" + key);
-    });
+  public Result<PlusService<Config>> get() {
+    PlusService<Config> build = new PlusService<>();
+
+    List<Config> configs = repository.selectList(Wrappers.<Config>query().eq("type", COMMON));
+    configs.stream().collect(Collectors.groupingBy(Config::getTitle))
+      .forEach((title, data) -> build.addList(data, title));
+
+    PlusService<Config> innerService = new PlusService<>();
+    build.setPlusService(innerService);
+    List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", PLUS_SERVICE));
+    plusService.stream().collect(Collectors.groupingBy(Config::getTitle))
+      .forEach((key, value) -> build.getPlusService().addList(value, key));
     return Result.buildOkData(build);
   }
 

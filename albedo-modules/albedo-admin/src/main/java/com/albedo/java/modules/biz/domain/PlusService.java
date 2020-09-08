@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,31 +16,21 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class PlusService {
-  public static final List<String> PLUS_NAMES =
-    new ArrayList<>(Arrays.asList("component, colorStyle", "hairstyle", "clothes", "clothesColor", "plusService"));
+public class PlusService<T> {
 
-  public static final String[] ELEMENT_NAMES = new String[] {"label", "anchorNum", "seat", "anchorType", "style"};
+  private List<Element<T>> data = new ArrayList<>();
+  private PlusService<T> plusService;
 
-  private List<Element> data = new ArrayList<>();
-  private PlusService plusService;
-
-  public void addList(List<Config> data, String title) {
+  public void addList(List<T> data, String title) {
     if (CollectionUtils.isNotEmpty(data)) {
       if (this.data == null) {
         this.data = new ArrayList<>();
       }
-      this.data.add(Element.builder().title(title).data(data).build());
+      Element<T> element = new Element<>();
+      element.setTitle(title);
+      element.setData(data);
+      this.data.add(element);
     }
   }
 
-  @Data
-  @EqualsAndHashCode
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Builder
-  public static class Element {
-    String title;
-    List<Config> data;
-  }
 }

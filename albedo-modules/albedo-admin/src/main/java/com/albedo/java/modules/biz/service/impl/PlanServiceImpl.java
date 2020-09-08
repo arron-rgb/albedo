@@ -1,8 +1,6 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
-import static com.albedo.java.common.persistence.domain.GeneralEntity.F_SQL_CREATED_DATE;
-import static com.albedo.java.modules.biz.domain.PurchaseRecord.F_OUT_TRADE_NO;
 
 import javax.annotation.Resource;
 
@@ -44,8 +42,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   @Override
   public String purchase(String planId) {
     Plan plan = baseMapper.selectById(planId);
-    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
-      .subject(plan.getName()).build();
+    TradePlus trade = TradePlus.builder().totalAmount(plan.getPrice().toString()).subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(PLAN_TYPE)
       .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
@@ -59,22 +56,23 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   }
 
   @Override
-  public String callback(String outTradeNo) {
+  public boolean callback(String outTradeNo) {
     String status = "";
     try {
       status = aliPayService.queryOrderStatus(outTradeNo);
     } catch (AlipayApiException ignored) {
     }
     if (StringUtils.equals(TRADE_FINISHED, status) || StringUtils.equals(TRADE_SUCCESS, status)) {
-      PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("type", PLAN_TYPE)
-        .eq(F_OUT_TRADE_NO, outTradeNo).orderByAsc(F_SQL_CREATED_DATE));
+      PurchaseRecord record =
+        recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, PLAN_TYPE)
+          .eq(PurchaseRecord::getOutTradeNo, outTradeNo).orderByAsc(PurchaseRecord::getCreatedDate));
       if (record == null) {
         throw new RuntimeMsgException("未查询到购买记录");
       }
       String outerId = record.getOuterId();
       Plan plan = baseMapper.selectById(outerId);
       if (plan == null) {
-        return "";
+        return false;
       }
       Balance balance =
         Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
@@ -84,8 +82,9 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
       // todo PUBLIC_DEPT_ID是否会影响 目测不会
       userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
         .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
+      return true;
     }
-    return "";
+    return false;
   }
 
   @Resource

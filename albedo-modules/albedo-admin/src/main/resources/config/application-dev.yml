@@ -45,5 +45,6 @@ application:
     authorize-permit-all:
       - ${application.adminPath}/code/**
       - ${application.adminPath}/sys/user/register
+      - ${application.adminPath}/biz/plan/list
       - /cdn/*
       - /fonts/*

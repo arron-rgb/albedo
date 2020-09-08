@@ -64,11 +64,14 @@
       @selection-change="crud.selectionChangeHandler"
     >
       <el-table-column type="selection" width="55"/>
-      <el-table-column align="center" label="具体名称" :show-overflow-tooltip="true" prop="value"/>
-      <el-table-column align="center" label="类型" :show-overflow-tooltip="true" prop="name"/>
-      <el-table-column align="center" label="增值服务类型" :show-overflow-tooltip="true" prop="type"/>
-      <el-table-column align="center" label="图片链接" :show-overflow-tooltip="true" prop="url"/>
-      <el-table-column align="center" label="表单名称" :show-overflow-tooltip="true" prop="title"/>
+      <el-table-column align="center" label="属性名" :show-overflow-tooltip="true" prop="title"/>
+      <el-table-column align="center" label="属性值" :show-overflow-tooltip="true" prop="value"/>
+      <el-table-column align="center" label="是否为增值服务" :show-overflow-tooltip="true" prop="type">
+        <template slot-scope="scope">
+          <span>{{ scope.row.type === '0' ? '否' : '是' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="图片" :show-overflow-tooltip="true" prop="url"/>
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
         <template slot-scope="scope">
           <udOperation :data="scope.row" :permission="permission"/>

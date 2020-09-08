@@ -3,6 +3,7 @@ package com.albedo.java.modules.tool.domain;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @Builder
+@AllArgsConstructor
 @EqualsAndHashCode
 public class TtsParams {
   @JSONField(name = "Text")
@@ -19,7 +21,7 @@ public class TtsParams {
   @JSONField(name = "SessionId")
   String sessionId;
   @JSONField(name = "ModelType")
-  String modelType;
+  String modelType = "1";
   /**
    * 0-云小宁，亲和女声(默认)
    * 1-云小奇，亲和男声
@@ -53,10 +55,19 @@ public class TtsParams {
   String speed;
   @JSONField(name = "Codec")
   String codec;
+  // String version;
+  // String region;
 
   @Override
   public String toString() {
     return JSON.toJSONString(this);
   }
 
+  public TtsParams() {
+    codec = "wav";
+    // modelType = "1";
+    // Action 是 String 公共参数，本接口取值：TextToVoice。
+    // version = "2019-08-23";
+    // region = "ap-shanghai";
+  }
 }

@@ -1,12 +1,5 @@
 import request from '@/utils/request'
 
-export function get() {
-  return request({
-    url: '/tool/aliPay',
-    method: 'get'
-  })
-}
-
 export function update(data) {
   return request({
     url: '/tool/aliPay',

@@ -28,6 +28,6 @@ public interface PlanService extends BaseService<Plan> {
    *
    * @return
    */
-  String callback(String outTradeNo);
+  boolean callback(String outTradeNo);
 
 }
