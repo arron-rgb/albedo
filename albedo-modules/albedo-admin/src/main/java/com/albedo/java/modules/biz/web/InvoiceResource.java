@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2020 <a href="https://github.com/somowhere/albedo">albedo</a> All rights reserved.
- */
 package com.albedo.java.modules.biz.web;
 
 import java.util.Set;

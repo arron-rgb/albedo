@@ -1,4 +1,4 @@
-package com.albedo.java.modules.biz.domain;
+package com.albedo.java.modules.biz.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

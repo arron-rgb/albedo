@@ -1,12 +1,8 @@
-/**
- * Copyright &copy; 2020 <a href="https://github.com/somowhere/albedo">albedo</a> All rights reserved.
- */
 package com.albedo.java.modules.biz.domain;
 
 import javax.validation.constraints.Size;
 
 import com.albedo.java.common.persistence.domain.IdEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.*;
@@ -27,37 +23,44 @@ import lombok.*;
 public class PurchaseRecord extends IdEntity<PurchaseRecord> {
 
   private static final long serialVersionUID = 1L;
-  /** F_USERID user_id : 购买的用户id */
-  public static final String F_USERID = "userId";
-  /** F_OUTTRADENO out_trade_no : 对接支付宝id */
-  public static final String F_OUT_TRADE_NO = "outTradeNo";
-  /** F_TYPE type : 购买类型 */
-  public static final String F_TYPE = "type";
-  /** F_OUTERID outer_id : 购买id */
-  public static final String F_OUTERID = "outerId";
-  /** F_TOTALAMOUNT total_amount : 支付金额 */
-  public static final String F_TOTALAMOUNT = "totalAmount";
+  public static final String F_OUT_TRADE_NO = "out_trade_no";
 
-  /** userId 购买的用户id */
+  /**
+   * userId 购买的用户id
+   */
   @Size(max = 64)
-  @TableField("user_id")
   private String userId;
-  /** outTradeNo 对接支付宝id */
+  /**
+   * outTradeNo 对接支付宝id
+   */
   @Size(max = 64)
-  @TableField("out_trade_no")
   private String outTradeNo;
-  /** type 购买类型 0 套餐 1 订单 */
+  /**
+   * type 购买类型 0 套餐 1 订单
+   */
   @Size(max = 2)
   private String type;
-  /** outerId 购买id */
+  /**
+   * outerId 购买的套餐/订单id
+   */
   @Size(max = 500)
-  @TableField("outer_id")
   private String outerId;
-  /** totalAmount 支付金额 */
+  /**
+   * totalAmount 支付金额
+   */
   @Size(max = 30)
-  @TableField("total_amount")
   private String totalAmount;
+  /**
+   * 商户号
+   */
+  private String sellerId;
+  /**
+   * 消费状态 对齐支付宝字段
+   */
+  private String status;
 
-  private transient String productCode = "FAST_INSTANT_TRADE_PAY";
-
+  // @ApiField("merchant_order_no")
+  // private String merchantOrderNo;
+  // @ApiField("trade_no")
+  // private String tradeNo;
 }

@@ -102,7 +102,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   public void uploadVideo(String orderId, MultipartFile file) throws IOException {
     // 更新订单状态
     Order order = orderService.getById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUNT);
+    Assert.notNull(order, ORDER_NOT_FOUND);
     String userId = order.getUserId();
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准

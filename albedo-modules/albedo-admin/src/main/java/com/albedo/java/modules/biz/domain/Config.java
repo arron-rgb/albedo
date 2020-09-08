@@ -19,11 +19,22 @@ import lombok.*;
 public class Config {
   @TableId(type = IdType.AUTO)
   private Integer id;
+  /**
+   * 标签名
+   */
   @JSONField(serialize = false)
   private String title;
+  /**
+   * 标签值
+   */
   private String value;
-  private String name;
+  /**
+   * 图片链接
+   */
   private String url;
+  /**
+   * 0为普通 1为增值服务
+   */
   @JSONField(serialize = false)
   private String type;
 }

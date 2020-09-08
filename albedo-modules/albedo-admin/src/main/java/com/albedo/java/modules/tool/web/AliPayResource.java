@@ -16,6 +16,7 @@
 package com.albedo.java.modules.tool.web;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.alipay.api.msg.MsgConstants.SUCCESS;
 
 import java.nio.charset.StandardCharsets;
 
@@ -41,6 +42,7 @@ import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -61,11 +63,6 @@ public class AliPayResource {
   private final AliPayUtils alipayUtils;
   private final AliPayService alipayService;
 
-  @GetMapping
-  public Result<AlipayConfig> get() {
-    return Result.buildOkData(alipayService.find());
-  }
-
   @LogOperate("配置支付宝")
   @ApiOperation("配置支付宝")
   @PutMapping
@@ -84,7 +81,7 @@ public class AliPayResource {
     // 内容验签，防止黑客篡改参数
     if (alipayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
-      if (StringUtils.equals("success", update)) {
+      if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
         return Result.buildOk("支付成功");
       }
     } else {
@@ -113,43 +110,46 @@ public class AliPayResource {
   public String notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
     String appId = getParam(request, "app_id");
-    if (!StringUtils.equals(appId, alipay.getAppId())) {
-      return "";
-    }
+    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "");
     if (alipayUtils.rsaCheck(request, alipay)) {
       // 交易状态
       String x = update(request);
-      if (x != null) {
+      if (StringUtils.isNotEmpty(x)) {
         return x;
       }
-      return "success";
     }
     return "";
   }
 
   private String update(HttpServletRequest request) {
+    // 订单状态
     String tradeStatus = getParam(request, "trade_status");
-    if (!StringUtils.equals(tradeStatus, TRADE_SUCCESS)) {
-      return "";
-    }
+    Assert.isTrue(StringUtils.equals(tradeStatus, TRADE_SUCCESS), "");
     // 商户订单号
     String outTradeNo = getParam(request, "out_trade_no");
+    // 商户号
+    String sellerId = getParam(request, "seller_id");
     PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
-    if (record == null) {
-      return "";
-    }
+    Assert.notNull(record, "");
+    Assert.isTrue(sellerId.equals(record.getSellerId()), "");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
-    if (!MoneyUtil.compareTo(totalAmount, record.getTotalAmount())) {
-      return "";
-    }
-    // 验证通过后应该根据业务需要处理订单
+    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount()), "");
+
+    boolean callback = false;
+    // 消费记录上浮至接口处
+    record.setStatus(TRADE_FINISHED);
+    recordService.updateById(record);
     if (record.getType().equals(PLAN_TYPE)) {
-      planService.callback(outTradeNo);
+      callback = planService.callback(outTradeNo);
     } else if (record.getType().equals(ORDER_TYPE)) {
-      orderService.callback(record.getOuterId());
+      callback = orderService.callback(record.getOuterId());
     }
-    return null;
+    if (callback) {
+      return "success";
+    } else {
+      return null;
+    }
   }
 
   @Resource

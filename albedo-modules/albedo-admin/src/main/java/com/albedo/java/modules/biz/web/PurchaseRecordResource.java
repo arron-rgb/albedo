@@ -15,6 +15,7 @@ import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.domain.dto.PurchaseRecordQueryCriteria;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -43,9 +44,9 @@ public class PurchaseRecordResource extends BaseResource {
    */
   @GetMapping(CommonConstants.URL_ID_REGEX)
   @PreAuthorize("@pms.hasPermission('biz_purchaseRecord_view')")
-  public Result get(@PathVariable String id) {
+  public Result<PurchaseRecord> get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
-    return Result.buildOkData(service.getOneDto(id));
+    return Result.buildOkData(service.getById(id));
   }
 
   /**
@@ -60,8 +61,9 @@ public class PurchaseRecordResource extends BaseResource {
   @GetMapping
   @LogOperate(value = "购买记录查看")
   @ApiOperation(value = "购买记录查看")
-  public Result getPage(PageModel pm, PurchaseRecordQueryCriteria purchaseRecordQueryCriteria) {
-    QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, purchaseRecordQueryCriteria);
+  public Result<PageModel<PurchaseRecord>> getPage(PageModel<PurchaseRecord> pm,
+    PurchaseRecordQueryCriteria purchaseRecordQueryCriteria) {
+    QueryWrapper<PurchaseRecord> wrapper = QueryWrapperUtil.getWrapper(pm, purchaseRecordQueryCriteria);
     return Result.buildOkData(service.page(pm, wrapper));
   }
 
