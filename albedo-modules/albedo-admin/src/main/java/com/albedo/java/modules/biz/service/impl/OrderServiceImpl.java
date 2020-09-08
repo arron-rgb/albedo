@@ -122,7 +122,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(plusService, "订单价格计算失败");
 
     List<PlusService.Element> elements = plusService.getData().stream()
-      .filter((element -> "anchorNum".equals(element.getTitle()))).collect(Collectors.toList());
+      .filter((element -> "请选择anchorNum".equals(element.getTitle()))).collect(Collectors.toList());
 
     Assert.isTrue(elements.size() == 1, "主播数量异常");
 

@@ -14,11 +14,12 @@ export function save(data) {
 export function purchase(data) {
   axios.post(
     Config.api + '/biz/order/purchase',
-    qs.stringify(data),
+    {},
     {
-      headers : {
-        'Content-Type' : 'application/x-www-form-urlencoded',
-      }
+      headers: {
+        'Content-type':'application/json;charset=utf-8'
+      },
+      params :data
     }
   ).then(res => {
     return res
