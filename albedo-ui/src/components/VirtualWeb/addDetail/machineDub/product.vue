@@ -142,7 +142,6 @@ export default {
 
     },
     uploadImg(file){
-      // console.log(file);
       return new Promise((resolve, reject) => {
         dubOperate.uploadFile(file).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
@@ -178,12 +177,23 @@ export default {
         this.$message.error('商品描述不能为空！');
         return ;
       }
+      //上传图片
+      this.$refs.upload.submit();
 
-      // this.$refs.upload.submit();
-
-      //关闭对话框
-      this.productData.dialogVisible = false;
-    }
+      console.log(this.data)
+      //保存商品
+      return new Promise((resolve, reject) => {
+        dubOperate.saveProduct(this.data).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            //关闭对话框
+            this.productData.dialogVisible = false
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     // handleChange(file,fileList){
     //   this.fileList.push(file)
     //   if(fileList.length >= 1){

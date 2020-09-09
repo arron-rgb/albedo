@@ -5,7 +5,7 @@
         <el-button  @click="next">下一步</el-button>
      </div>
 
-  <el-button @click="productData.dialogVisible = !productData.dialogVisible">打开dialog</el-button>
+<!--  <el-button @click="productData.dialogVisible = !productData.dialogVisible">打开dialog</el-button>-->
   <el-dialog
     title="新增商品"
     :visible.sync="productData.dialogVisible"
@@ -18,7 +18,7 @@
       <div class="proDeposit">
         <div class="depositBox">
           <h3 class="barTitle">商品库</h3>
-          <i class="el-icon-plus" @click="addProduct"></i>
+          <i class="el-icon-plus" @click="productData.dialogVisible = !productData.dialogVisible"></i>
         </div>
         <el-scrollbar>
 <!--          <draggable-->
