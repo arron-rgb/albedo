@@ -189,6 +189,7 @@ aside {
 }
 .el-button--primary:focus{
   background-color: #ff5000 !important;
+  color: white !important;
   border-color: #ff5000 !important;
 }
 .el-button--primary:hover{
@@ -215,7 +216,7 @@ aside {
 }
 .el-button:focus{
   background-color: rgba(255, 80, 0, 0.1);
-  //color: #ff5000;
+  color: #ff5000;
   border-color: rgba(255, 80, 0, 0.1);
 }
 
