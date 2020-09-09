@@ -3,6 +3,7 @@ package com.albedo.java.common.core.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -192,6 +193,7 @@ public class FileUploadUtil {
   public static String getExtension(@NonNull MultipartFile file) {
     String extension = FileUtil.extName(file.getOriginalFilename());
     if (StringUtil.isEmpty(extension)) {
+      Assert.notNull(Objects.requireNonNull(file.getContentType()), "未知文件类型");
       extension = MimeTypeUtil.getExtension(file.getContentType());
     }
     return extension;

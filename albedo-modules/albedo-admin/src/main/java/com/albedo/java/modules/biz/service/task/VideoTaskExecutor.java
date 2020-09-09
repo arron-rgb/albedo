@@ -1,22 +1,20 @@
 package com.albedo.java.modules.biz.service.task;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 
+import com.albedo.java.modules.biz.util.FfmpegUtil;
+import com.albedo.java.modules.tool.util.OssSingleton;
+
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFmpegExecutor;
-import net.bramp.ffmpeg.FFmpegUtils;
 import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import net.bramp.ffmpeg.job.FFmpegJob;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
-import net.bramp.ffmpeg.progress.Progress;
-import net.bramp.ffmpeg.progress.ProgressListener;
 
 /**
  * @author arronshentu
@@ -36,40 +34,39 @@ public class VideoTaskExecutor {
     }
   }
 
+  /**
+   * @param event
+   *          含有video的信息
+   */
   @Async
   @Order
   @EventListener(VideoUploadTask.class)
   public void uploadVideoToOss(VideoUploadTask event) {
-    String videoPath = event.getVideoPath();
-    // 方法更新至videoService
+    String videoPath = event.video.getOriginUrl();
+    File file = new File(videoPath);
+    if (!file.exists() || file.isDirectory()) {
+      return;
+    }
+    ossSingleton.uploadFile(file, event.getBucketName());
   }
 
+  /**
+   * 将音频与视频合成
+   *
+   * @param event
+   *          含有video的信息
+   * @throws IOException
+   */
   @Async
   @Order
-  @EventListener(VideoUploadTask.class)
-  public void updateVideo(VideoEncodeTask event) throws IOException {
-    String videoPath = event.getVideoPath();
-    String audioPath = event.getAudioPath();
-    String outputPath = event.getOutputPath();
-    String codec = "copy";
-
-    FFmpegBuilder builder = new FFmpegBuilder().addInput(videoPath).addInput(audioPath).addOutput(outputPath)
-      .setVideoCodec(codec).setAudioCodec(codec).done();
-
-    FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-    FFmpegProbeResult in = ffprobe.probe(videoPath);
-    // todo 加上线程池配置 不打印进度 job执行完毕添加callback方法设定路径并决定是否上传
-    FFmpegJob job = executor.createJob(builder, new ProgressListener() {
-      final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
-
-      @Override
-      public void progress(Progress progress) {
-        double percentage = progress.out_time_ns / duration_ns;
-        System.out.printf("[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx%n", percentage * 100,
-          progress.status, progress.frame, FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
-          progress.fps.doubleValue(), progress.speed);
-      }
-    });
-    job.run();
+  @EventListener(VideoEncodeTask.class)
+  public void concatAudio(VideoEncodeTask event) throws IOException {
+    ffmpegUtil.concatAudio(event.video);
+    event.setStatus("end");
   }
+
+  @Resource
+  OssSingleton ossSingleton;
+  @Resource
+  FfmpegUtil ffmpegUtil;
 }

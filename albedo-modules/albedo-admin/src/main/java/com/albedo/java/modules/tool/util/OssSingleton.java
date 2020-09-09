@@ -8,12 +8,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.event.ProgressListener;
 import com.aliyun.oss.internal.OSSHeaders;
 import com.aliyun.oss.model.*;
 
@@ -59,6 +61,7 @@ public class OssSingleton {
     client.shutdown();
   }
 
+  @Async
   public PutObjectResult uploadFileStream(InputStream inputStream, String bucketName, String key) {
     return client.putObject(bucketName, key, inputStream);
   }
@@ -115,12 +118,6 @@ public class OssSingleton {
     client.createBucket(createBucketRequest);
   }
 
-  public File downloadFile(String bucketName, String objectName, String filePath) {
-    File file = new File(filePath);
-    client.getObject(new GetObjectRequest(bucketName, objectName), file);
-    return file;
-  }
-
   public void removeFile(String bucketName, String objectName) {
     // 删除文件。如需删除文件夹，请将ObjectName设置为对应的文件夹名称。如果文件夹非空，则需要将文件夹下的所有object删除后才能删除该文件夹。
     client.deleteObject(bucketName, objectName);
@@ -128,6 +125,16 @@ public class OssSingleton {
 
   public boolean doesObjectExist(String bucketName, String objectName) {
     return client.doesObjectExist(bucketName, objectName);
+  }
+
+  public File downloadFile(String bucketName, String objectName, String filePath) {
+    return downloadFile(bucketName, objectName, filePath, null);
+  }
+
+  public File downloadFile(String bucketName, String objectName, String filePath, ProgressListener listener) {
+    File file = new File(filePath);
+    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    return file;
   }
 
 }

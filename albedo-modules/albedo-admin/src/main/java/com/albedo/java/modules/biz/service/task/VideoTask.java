@@ -8,27 +8,23 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * todo 是否需要
- *
  * @author arronshentu
  */
-public class VideoDownloadTask extends ApplicationEvent {
+public class VideoTask extends ApplicationEvent {
 
   @Getter
   @Setter
-  private String videoPath;
-  @Getter
-  @Setter
-  private String audioPath;
-  @Getter
-  @Setter
-  private String outputPath;
-  @Getter
-  @Setter
-  private String orderId;
+  String status;
 
-  public VideoDownloadTask(Video video) {
+  @Getter
+  @Setter
+  String orderId;
+  Video video;
+
+  public VideoTask(Video video) {
     super(video);
+    this.video = video;
+    this.status = "start";
   }
 
 }

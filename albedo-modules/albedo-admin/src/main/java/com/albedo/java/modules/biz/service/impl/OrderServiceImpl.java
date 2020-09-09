@@ -242,6 +242,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   /**
    * 1. 商品选择及商品crud
+   * 2. 台词啥的
+   * 3.
    */
   public String generateAudio(String text, String commodityIds, String orderId) {
     TtsParams build = new TtsParams();
