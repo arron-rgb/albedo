@@ -31,7 +31,7 @@
   </el-row>
   <el-row>
     <el-col offset="10">
-      <el-button type="primary" @click="saveProduct">保存</el-button>
+      <el-button type="primary" @click="upload">保存</el-button>
     </el-col>
   </el-row>
 <!--    <el-upload-->
@@ -98,8 +98,8 @@ export default {
         // disabled: false,
         // dialogImageUrl:'',
         // productData:{
-        proTitle:'',
-        proDescription:'',
+        // proTitle:'',
+        // proDescription:'',
         data:{
           urls : '',
           name : '',
@@ -142,16 +142,17 @@ export default {
 
     },
     uploadImg(file){
+      var _this = this
       return new Promise((resolve, reject) => {
         dubOperate.uploadFile(file).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            // console.log(res)
-            this.data.urls = res.data.url
+            _this.data.urls = res.data.url
+            this.saveProduct()
           }
         }).catch(error => {
           reject(error)
         })
-      })
+      });
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
@@ -168,7 +169,7 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    saveProduct(){
+    upload(){
       if(this.data.name === ''){
         this.$message.error('商品名称不能为空！');
         return ;
@@ -178,9 +179,9 @@ export default {
         return ;
       }
       //上传图片
-      this.$refs.upload.submit();
-
-      console.log(this.data)
+      this.$refs.upload.submit()
+    },
+    saveProduct(){
       //保存商品
       return new Promise((resolve, reject) => {
         dubOperate.saveProduct(this.data).then(res => {
@@ -193,7 +194,7 @@ export default {
           reject(error)
         })
       })
-    },
+    }
     // handleChange(file,fileList){
     //   this.fileList.push(file)
     //   if(fileList.length >= 1){
