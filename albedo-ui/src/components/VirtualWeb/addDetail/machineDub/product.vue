@@ -3,11 +3,14 @@
   <el-row>
     <el-col span="8">
       <el-upload
+        ref="upload"
         class="avatar-uploader"
-        action=""
+        action="#"
+        :http-request="uploadImg"
         accept="image/jpeg,image/png"
         :show-file-list="false"
         :auto-upload="false"
+        :multiple="false"
         :on-change="onUploadChange"
       >
         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -18,15 +21,19 @@
 <!--      {{this.imageUrl}}-->
       <el-form label-width="80px">
         <el-form-item label="商品名称">
-          <el-input type="text" v-model="proTitle"></el-input>
+          <el-input type="text" v-model="data.name"></el-input>
         </el-form-item>
         <el-form-item label="商品描述">
-          <el-input type="textarea" v-model="proDescription"></el-input>
+          <el-input type="textarea" :rows="5"  v-model="data.description"></el-input>
         </el-form-item>
       </el-form>
     </el-col>
   </el-row>
-
+  <el-row>
+    <el-col offset="10">
+      <el-button type="primary" @click="saveProduct">保存</el-button>
+    </el-col>
+  </el-row>
 <!--    <el-upload-->
 <!--    :class="{disabled:uploadDisabled}"-->
 <!--    :on-success="handleAvatarSuccess"-->
@@ -75,11 +82,14 @@
 
 </template>
 <script>
+import dubOperate from "./dub-service"
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 export default {
-  // props:['item'],
+  props:['productData'],
   data(){
       return{
         imageUrl: '',
+        uploadUrl: '',
         // 隐藏加号
         // fileList:[],
         // uploadDisabled:false,
@@ -88,18 +98,24 @@ export default {
         // disabled: false,
         // dialogImageUrl:'',
         // productData:{
-          proTitle:'',
-          proDescription:'',
+        proTitle:'',
+        proDescription:'',
+        data:{
+          urls : '',
+          name : '',
+          description : '',
+        }
         //   profileList:''
           // proTitle:this.item.proTitle,
           // proDescription:this.item.proDescription,
           // profileList:this.item.profileList
         // }
+
       }
   },
   methods:{
     onUploadChange(file){
-      console.log(file);
+      // console.log(file);
       const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
       const  isLt1M = file.size / 1024 / 1024 < 1;
 
@@ -115,14 +131,28 @@ export default {
       var _this = this;
 
       var reader = new FileReader();
-      reader.readAsDataURL(file.raw);
+      reader.readAsDataURL(file.raw)
 
       reader.onload = function (e){
         //this.result为图片的base64
-        console.log(this.result)
+        // console.log(this.result)
         //将图片路径赋值给url
         _this.imageUrl = e.target.result;
       }
+
+    },
+    uploadImg(file){
+      // console.log(file);
+      return new Promise((resolve, reject) => {
+        dubOperate.uploadFile(file).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            this.data.urls = res.data.url
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
@@ -138,6 +168,21 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!');
       }
       return isJPG && isLt2M;
+    },
+    saveProduct(){
+      if(this.data.name === ''){
+        this.$message.error('商品名称不能为空！');
+        return ;
+      }
+      if(this.data.description === ''){
+        this.$message.error('商品描述不能为空！');
+        return ;
+      }
+
+      // this.$refs.upload.submit();
+
+      //关闭对话框
+      this.productData.dialogVisible = false;
     }
     // handleChange(file,fileList){
     //   this.fileList.push(file)
