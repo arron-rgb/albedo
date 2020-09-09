@@ -24,7 +24,7 @@ public interface BalanceService extends BaseService<Balance> {
    * @return
    *         企业剩余次数、个人剩余次数
    */
-  int leftTimes();
+  Integer leftTimes();
 
   /**
    * 减次数

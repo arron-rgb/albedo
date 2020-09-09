@@ -52,7 +52,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   }
 
   @Override
-  public int leftTimes() {
+  public Integer leftTimes() {
     String userId = SecurityUtil.getUser().getId();
     String deptId = SecurityUtil.getUser().getDeptId();
     // 1. 个人用户直接返回
@@ -60,8 +60,11 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
       Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
       if (balance != null) {
         return balance.getTimes();
+      } else {
+        return null;
       }
     }
+    // todo 企业用户返回自己的 or 返回企业下员工总和
     List<String> userIds = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getId)
       .collect(Collectors.toList());
     List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().in("user_id", userIds));
