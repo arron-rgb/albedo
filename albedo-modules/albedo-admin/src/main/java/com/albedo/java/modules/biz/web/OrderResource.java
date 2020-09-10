@@ -1,6 +1,5 @@
 package com.albedo.java.modules.biz.web;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -12,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.albedo.java.common.core.annotation.Token;
+import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.exception.OrderException;
+import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
@@ -142,10 +143,12 @@ public class OrderResource extends BaseResource {
 
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
-  public Result<String> uploadVideo(@RequestParam("file") MultipartFile file, String orderId) {
+  public Result<String> uploadVideo(MultipartFile file, String orderId) {
     try {
-      videoService.uploadVideo(orderId, file);
-    } catch (IOException e) {
+      String tempPath = FileUploadUtil.upload(ApplicationConfig.getUploadPath(), file);
+      videoService.uploadVideo(orderId, tempPath);
+    } catch (Exception e) {
+      e.printStackTrace();
       return Result.buildFail("保存失败");
     }
     return Result.buildOk("上传成功");

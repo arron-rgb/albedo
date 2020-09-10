@@ -34,12 +34,18 @@ public class OssSingleton {
     this.applicationProperties = applicationProperties;
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-
     String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
-  private final OSS client;
+  private OSS client;
+
+  public void restart() {
+    String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
+    String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
+    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+  }
 
   public void uploadFile(File file, String objectName) {
     ObjectMetadata metadata = new ObjectMetadata();
@@ -51,14 +57,12 @@ public class OssSingleton {
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     client.putObject(putObjectRequest);
-    client.shutdown();
   }
 
   public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     putObjectRequest.setMetadata(metadata);
     client.putObject(putObjectRequest);
-    client.shutdown();
   }
 
   @Async

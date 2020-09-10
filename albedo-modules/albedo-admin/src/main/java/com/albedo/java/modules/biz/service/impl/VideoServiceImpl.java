@@ -5,19 +5,17 @@ import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.annotation.Resource;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
@@ -32,9 +30,7 @@ import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
-import com.aliyun.oss.event.ProgressEvent;
 import com.aliyun.oss.event.ProgressEventType;
-import com.aliyun.oss.event.ProgressListener;
 import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -70,41 +66,18 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   /**
-   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
-   * 只能包括小写字母、数字和短划线（-）。
-   * 必须以小写字母或者数字开头和结尾。
-   * 长度必须在3~63字节之间。
+   * todo 订单与video的唯一对应关系
+   * todo 二次上传时video记录的获取
+   *
+   * @param orderId
+   *          订单id
+   * @param tempPath
+   * @throws IOException
    */
-  private String createBucket(String userId) {
-    // userId应该是通过订单获取，视频由工作人员上传的
-    List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
-    // 如果为付费用户，则找管理员；管理员为其余两种情况均无需变动userId
-    if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
-      userId = userService.getOutTradeNosByUserId(userId);
-    }
-    // 没bucket的话 storage也不会被调用
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    Double storageSize = balance.getStorage();
-
-    String bucketName = userId;
-    if (!OSSUtils.validateBucketName(bucketName)) {
-      bucketName = IdUtil.fastUUID();
-    }
-
-    if (!ossSingleton.doesBucketExist(bucketName)) {
-      // buck命名失败时使用uuid 并更新uuid为qqOpenId
-      ossSingleton.create(bucketName, storageSize.intValue());
-      User user = userService.getById(userId);
-      user.setQqOpenId(bucketName);
-      userService.updateById(user);
-    }
-    return bucketName;
-  }
-
   @Override
   @Async
   @Transactional(rollbackFor = Exception.class)
-  public void uploadVideo(String orderId, MultipartFile file) throws IOException {
+  public void uploadVideo(String orderId, String tempPath) throws IOException {
     // 更新订单状态
     Order order = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
@@ -112,7 +85,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
     Assert.notNull(balance, EMPTY_STORAGE);
-    double storage = balance.getStorage() - ((double)file.getSize() / 1073741824);
+
+    File tempFile = new File(tempPath);
+    double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     // 存储空间不足
     Assert.isTrue(storage > 0, STORAGE_NOT_SATISFIED);
     balance.setStorage(storage);
@@ -124,12 +99,11 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       // 因此 只要符合 userId不符合命名规范 并且 qqOpenId为空的用户 就是没有bucket 所以需要创建
       bucketName = StringUtils.isEmpty(user.getQqOpenId()) ? createBucket(userId) : user.getQqOpenId();
     }
-    InputStream inputStream = file.getInputStream();
+    InputStream inputStream = new FileInputStream(tempFile);
+    // InputStream inputStream = file.getInputStream();
     // 保存视频记录至数据库
-    String extension = FileUploadUtil.getExtension(file);
     Video video = Video.builder().userId(userId).orderId(orderId).build();
-    baseMapper.insert(video);
-    video.setName(video.getId() + "." + extension);
+    video.setName(tempFile.getName());
     order.setState(PRODUCTION_COMPLETED);
     order.setVideoId(video.getId());
     orderService.updateById(order);
@@ -138,9 +112,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
     ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
-    baseMapper.updateById(video);
+    baseMapper.insert(video);
     balanceService.updateById(balance);
-
   }
 
   private static final String PATH = System.getenv("PWD");
@@ -189,76 +162,58 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     File file = new File(getLocalPath(video));
     if (!file.exists()) {
       // 下载完成后再执行addAudio的逻辑
-      ossSingleton.downloadFile(bucketName, video.getName(), getLocalPath(video),
-        new GetObjectProgressListener(video).setFunction(() -> {
-          VideoEncodeTask event = new VideoEncodeTask(video);
-          SpringContextHolder.publishEvent(event);
-          return event.getStatus();
-        }));
+      ossSingleton.downloadFile(bucketName, video.getName(), getLocalPath(video), (progressEvent) -> {
+        ProgressEventType eventType = progressEvent.getEventType();
+        switch (eventType) {
+          case TRANSFER_STARTED_EVENT:
+            log.info("开始下载");
+            break;
+          case TRANSFER_COMPLETED_EVENT:
+            VideoEncodeTask event = new VideoEncodeTask(video);
+            SpringContextHolder.publishEvent(event);
+            break;
+          case TRANSFER_FAILED_EVENT:
+            // todo 失败通知？重试？
+            log.info("失败");
+            break;
+          default:
+            break;
+        }
+      });
     } else {
       SpringContextHolder.publishEvent(new VideoEncodeTask(video));
     }
   }
 
-  static class GetObjectProgressListener implements ProgressListener {
+  /**
+   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
+   * 只能包括小写字母、数字和短划线（-）。
+   * 必须以小写字母或者数字开头和结尾。
+   * 长度必须在3~63字节之间。
+   */
+  private String createBucket(String userId) {
+    // userId应该是通过订单获取，视频由工作人员上传的
+    List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
+    // 如果为付费用户，则找管理员；管理员为其余两种情况均无需变动userId
+    if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
+      userId = userService.getOutTradeNosByUserId(userId);
+    }
+    // 没bucket的话 storage也不会被调用
+    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
+    Double storageSize = balance.getStorage();
 
-    private long bytesRead = 0;
-    private long totalBytes = -1;
-    private boolean succeed = false;
-
-    private final Video video;
-
-    private Supplier<String> function;
-
-    public GetObjectProgressListener(Video video) {
-      this.video = video;
+    String bucketName = userId;
+    if (!OSSUtils.validateBucketName(bucketName)) {
+      bucketName = IdUtil.fastUUID();
     }
 
-    public GetObjectProgressListener setFunction(Supplier<String> function) {
-      this.function = function;
-      return this;
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      // buck命名失败时使用uuid 并更新uuid为qqOpenId
+      ossSingleton.create(bucketName, storageSize.intValue());
+      User user = userService.getById(userId);
+      user.setQqOpenId(bucketName);
+      userService.updateById(user);
     }
-
-    @Override
-    public void progressChanged(ProgressEvent progressEvent) {
-      long bytes = progressEvent.getBytes();
-      ProgressEventType eventType = progressEvent.getEventType();
-      switch (eventType) {
-        case TRANSFER_STARTED_EVENT:
-          System.out.println("Start to download......");
-          break;
-
-        case RESPONSE_CONTENT_LENGTH_EVENT:
-          this.totalBytes = bytes;
-          System.out.println(this.totalBytes + " bytes in total will be downloaded to a local file");
-          break;
-
-        case RESPONSE_BYTE_TRANSFER_EVENT:
-          this.bytesRead += bytes;
-          if (this.totalBytes != -1) {
-            int percent = (int)(this.bytesRead * 100.0 / this.totalBytes);
-            System.out.println(bytes + " bytes have been read at this time, download progress: " + percent + "%("
-              + this.bytesRead + "/" + this.totalBytes + ")");
-          } else {
-            System.out.println(
-              bytes + " bytes have been read at this time, download ratio: unknown" + "(" + this.bytesRead + "/...)");
-          }
-          break;
-
-        case TRANSFER_COMPLETED_EVENT:
-          this.succeed = true;
-          this.function.get();
-          break;
-        case TRANSFER_FAILED_EVENT:
-          // todo 失败通知？重试？
-          break;
-        default:
-          break;
-      }
-    }
-
-    public boolean isSucceed() {
-      return succeed;
-    }
+    return bucketName;
   }
 }
