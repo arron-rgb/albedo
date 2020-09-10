@@ -26,9 +26,9 @@ export function del(ids) {
 }
 
 
-export function get(id) {
+export function get() {
   return request({
-    url: '/biz/commodity/' + id,
+    url: '/biz/commodity/',
     method: 'get'
   })
 }
