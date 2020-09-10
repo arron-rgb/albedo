@@ -83,11 +83,20 @@ public class TtsSingleton {
 
   public File generateRadio(TtsParams params) {
     try {
+      File file = FileUploadUtil.getAbsoluteFile("audio/" + IdUtil.fastUUID() + "." + params.getCodec());
+      return generateRadio(params, file.getAbsolutePath());
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("生成音频时出现错误");
+    }
+  }
+
+  public File generateRadio(TtsParams params, String filePath) {
+    try {
       params.setSessionId(IdUtil.fastUUID());
       params.setModelType("1");
-      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + "." + params.getCodec());
-      return generateRadio(params.toString(), file.getAbsolutePath());
-    } catch (IOException | TencentCloudSDKException e) {
+      return generateRadio(params.toString(), filePath);
+    } catch (TencentCloudSDKException e) {
       e.printStackTrace();
       throw new RuntimeMsgException("生成音频时出现错误");
     }

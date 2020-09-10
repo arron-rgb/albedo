@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.domain;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,19 +19,10 @@ public class SubOrderVo {
   private String content;
   private String description;
   /**
-   * 水印
-   */
-  private String logoUrl;
-  /**
-   * 贴片
-   */
-  private String adUrl;
-
-  /**
    * 订单id
    */
+  @NotNull(message = "请提交订单编号")
   private String orderId;
-
   /**
    * 视频时长
    */
@@ -38,7 +31,16 @@ public class SubOrderVo {
    * 配音方式 下单 上传 合成
    */
   private int type;
-  // 上传 合成 都需要提供商品及串词列表
-
+  /**
+   * 音频链接
+   */
   private String audioUrl;
+  /**
+   * 水印
+   */
+  private String logoUrl;
+  /**
+   * 贴片
+   */
+  private String adUrl;
 }

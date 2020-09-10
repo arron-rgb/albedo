@@ -23,6 +23,7 @@ import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.service.OrderService;
@@ -169,12 +170,24 @@ public class OrderResource extends BaseResource {
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
   public Result<String> placeSecond(SubOrderVo orderVo) {
-    service.updateForm(orderVo);
-    // 二次订单
-    // 1. 自己上传配音
-    // 2. 人工录音，新下订单
-    // 3. 语音合成
-    return Result.buildOk("下单成功");
+    // 通用流程
+    Video video = service.updateForm(orderVo);
+    switch (orderVo.getType()) {
+      case 0:
+        // 自行上传配音
+        service.dubbingBySelf(orderVo, video);
+        break;
+      case 1:
+        // 人工配音 配音字段的属性及pojo
+        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，等待工作人员接单");
+      case 2:
+        // tts配音
+        service.machineDubbing(orderVo, video);
+        break;
+      default:
+        return Result.buildFail("配音类型异常");
+    }
+    return Result.buildOk("上传成功");
   }
 
   @ApiOperation(value = "用户拉取自己的订单状态")
