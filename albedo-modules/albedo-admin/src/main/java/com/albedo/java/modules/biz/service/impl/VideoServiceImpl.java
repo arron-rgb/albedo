@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.annotation.Resource;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
@@ -26,10 +28,13 @@ import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
-import com.albedo.java.modules.biz.service.task.VideoUploadTask;
+import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
+import com.aliyun.oss.event.ProgressEvent;
+import com.aliyun.oss.event.ProgressEventType;
+import com.aliyun.oss.event.ProgressListener;
 import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -121,13 +126,19 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     InputStream inputStream = file.getInputStream();
     // 保存视频记录至数据库
+    String extension = FileUploadUtil.getExtension(file);
     Video video = Video.builder().userId(userId).orderId(orderId).build();
     baseMapper.insert(video);
+    video.setName(video.getId() + "." + extension);
     order.setState(PRODUCTION_COMPLETED);
     order.setVideoId(video.getId());
     orderService.updateById(order);
-    // 上传视频至oss todo video命名规则
+    // 上传视频至oss video命名规则: 数据库中的id+.格式
+    // video存储规则:
+    // 本地：./upload/bucketName/文件名
+    // oss: ./bucketName/文件名
     ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
+    baseMapper.updateById(video);
     balanceService.updateById(balance);
   }
 
@@ -135,9 +146,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   private static final String SEPARATOR = File.separator;
 
   /**
-   * 1. 检查本地是否存在该video对应的视频（todo 需要与oss上的存储规范一下）
+   * 1. 检查本地是否存在该video对应的视频
    * 2. 如果存在直接渲染，不存在则通过oss拉取视频
-   * 3. 渲染时需要保证radio和audio都存在 （todo 所以需要做拉取的回调接口
+   * 3. 渲染时需要保证radio和audio都存在
    * 4. orderId中type为1的启用gpu加速
    *
    * @param videoId
@@ -145,14 +156,101 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    */
   @Override
   public void addAudio(String videoId) {
-    // todo oss中的video获取与拉取到本地的video路径
     Video video = baseMapper.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
-    // String audioUrl = video.getAudioUrl();
-    // String videoPath = video.getOriginUrl();
     String outPut = PATH + SEPARATOR + "result.mp4";
-    SpringContextHolder.publishEvent(new VideoUploadTask(video));
+    video.setOutputUrl("");
+    checkIfFileExist(video);
     video.setOutputUrl(outPut);
   }
 
+  private String getLocalPath(Video video) {
+    String bucketName = video.getUserId();
+    bucketName = userService.getBucketName(bucketName);
+    // todo 再加一个母层级统一管理文件
+    return bucketName + File.separator + video.getName();
+  }
+
+  private void checkIfFileExist(Video video) {
+    String bucketName = userService.getBucketName(video.getUserId());
+    File file = new File(getLocalPath(video));
+    if (!file.exists()) {
+      // 下载完成后再执行addAudio的逻辑
+      ossSingleton.downloadFile(bucketName, video.getName(), getLocalPath(video),
+        new GetObjectProgressListener(video).setFunction(() -> {
+          VideoEncodeTask event = new VideoEncodeTask(video);
+          SpringContextHolder.publishEvent(event);
+          // 在download中发起下载的请求，
+          // listener中监听结束的信号
+          // 发起合成的请求
+          // 合成中监听结束的信号
+          // 发起上传的请求
+          return event.getStatus();
+        }));
+    } else {
+      SpringContextHolder.publishEvent(new VideoEncodeTask(video));
+    }
+  }
+
+  static class GetObjectProgressListener implements ProgressListener {
+
+    private long bytesRead = 0;
+    private long totalBytes = -1;
+    private boolean succeed = false;
+
+    private final Video video;
+
+    private Supplier<String> function;
+
+    public GetObjectProgressListener(Video video) {
+      this.video = video;
+    }
+
+    public GetObjectProgressListener setFunction(Supplier<String> function) {
+      this.function = function;
+      return this;
+    }
+
+    @Override
+    public void progressChanged(ProgressEvent progressEvent) {
+      long bytes = progressEvent.getBytes();
+      ProgressEventType eventType = progressEvent.getEventType();
+      switch (eventType) {
+        case TRANSFER_STARTED_EVENT:
+          System.out.println("Start to download......");
+          break;
+
+        case RESPONSE_CONTENT_LENGTH_EVENT:
+          this.totalBytes = bytes;
+          System.out.println(this.totalBytes + " bytes in total will be downloaded to a local file");
+          break;
+
+        case RESPONSE_BYTE_TRANSFER_EVENT:
+          this.bytesRead += bytes;
+          if (this.totalBytes != -1) {
+            int percent = (int)(this.bytesRead * 100.0 / this.totalBytes);
+            System.out.println(bytes + " bytes have been read at this time, download progress: " + percent + "%("
+              + this.bytesRead + "/" + this.totalBytes + ")");
+          } else {
+            System.out.println(
+              bytes + " bytes have been read at this time, download ratio: unknown" + "(" + this.bytesRead + "/...)");
+          }
+          break;
+
+        case TRANSFER_COMPLETED_EVENT:
+          this.succeed = true;
+          this.function.get();
+          break;
+        case TRANSFER_FAILED_EVENT:
+          // todo 失败通知？重试？
+          break;
+        default:
+          break;
+      }
+    }
+
+    public boolean isSucceed() {
+      return succeed;
+    }
+  }
 }
