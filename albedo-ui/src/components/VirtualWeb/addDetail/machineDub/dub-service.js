@@ -14,4 +14,11 @@ export function uploadFile(file) {
   })
 }
 
-export default { uploadFile }
+export function saveProduct(data) {
+  return request({
+    url: '/biz/commodity/batch',
+    method: 'post',
+    data : [data]
+  })
+}
+export default { uploadFile, saveProduct }
