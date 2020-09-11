@@ -248,7 +248,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   public String generateAudio(String text, String orderId) {
     TtsParams build = new TtsParams();
     build.setText(text);
-    File file = ttsSingleton.generateRadio(build);
+    build.setCodec("mp3");
+    File file = ttsSingleton.generateAudio(build);
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     String videoId = order.getVideoId();

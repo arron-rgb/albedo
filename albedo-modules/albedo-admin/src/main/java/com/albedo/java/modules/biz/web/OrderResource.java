@@ -1,5 +1,8 @@
 package com.albedo.java.modules.biz.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
+
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +35,7 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -172,6 +176,10 @@ public class OrderResource extends BaseResource {
   public Result<String> placeSecond(SubOrderVo orderVo) {
     // 通用流程
     Video video = service.updateForm(orderVo);
+    String orderId = orderVo.getOrderId();
+    Order order = service.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
     switch (orderVo.getType()) {
       case 0:
         // 自行上传配音

@@ -74,38 +74,38 @@ public class TtsSingleton {
     return tempFile;
   }
 
-  public File generateRadio(String params, String filePath) throws TencentCloudSDKException {
+  public File generateAudio(String params, String filePath) throws TencentCloudSDKException {
     TextToVoiceRequest req = TextToVoiceRequest.fromJsonString(params, TextToVoiceRequest.class);
     TextToVoiceResponse resp = client.TextToVoice(req);
     File outFile = new File(filePath);
     return decoderBase64File(resp.getAudio(), outFile);
   }
 
-  public File generateRadio(TtsParams params) {
+  public File generateAudio(TtsParams params) {
     try {
       File file = FileUploadUtil.getAbsoluteFile("audio/" + IdUtil.fastUUID() + "." + params.getCodec());
-      return generateRadio(params, file.getAbsolutePath());
+      return generateAudio(params, file.getAbsolutePath());
     } catch (IOException e) {
       e.printStackTrace();
       throw new RuntimeMsgException("生成音频时出现错误");
     }
   }
 
-  public File generateRadio(TtsParams params, String filePath) {
+  public File generateAudio(TtsParams params, String filePath) {
     try {
       params.setSessionId(IdUtil.fastUUID());
       params.setModelType("1");
-      return generateRadio(params.toString(), filePath);
+      return generateAudio(params.toString(), filePath);
     } catch (TencentCloudSDKException e) {
       e.printStackTrace();
       throw new RuntimeMsgException("生成音频时出现错误");
     }
   }
 
-  public File generateRadio(String content) throws TencentCloudSDKException {
+  public File generateAudio(String content) throws TencentCloudSDKException {
     try {
       File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + ".mp3");
-      return generateRadio(content, file.getAbsolutePath());
+      return generateAudio(content, file.getAbsolutePath());
     } catch (IOException e) {
       throw new RuntimeMsgException("生成音频时出现错误");
     }

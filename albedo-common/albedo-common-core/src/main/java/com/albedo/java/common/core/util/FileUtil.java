@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -588,6 +589,31 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
       resultSize = size + "B   ";
     }
     return resultSize;
+  }
+
+  public static final String PATH = System.getenv("PWD");
+  public static final String SEPARATOR = File.separator;
+
+  public static String concatFilePath(String... paths) {
+    StringBuilder result = new StringBuilder(PATH);
+    for (String path : paths) {
+      result.append(SEPARATOR).append(path);
+    }
+    return result.toString();
+  }
+
+  /**
+   * 生成文件名
+   *
+   * @param extName
+   * @return
+   */
+  public static String generateFilePath(String extName) {
+    String filePath = concatFilePath(IdUtil.fastUUID() + "." + extName);
+    if (createFile(filePath)) {
+      return filePath;
+    }
+    return "";
   }
 
 }

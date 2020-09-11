@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.service.impl;
 import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
+import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +36,7 @@ import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 
@@ -66,6 +68,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   /**
+   * 上传
    * todo 订单与video的唯一对应关系
    * todo 二次上传时video记录的获取
    *
@@ -101,9 +104,14 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     InputStream inputStream = new FileInputStream(tempFile);
     // InputStream inputStream = file.getInputStream();
+    Video video = baseMapper.selectOne(Wrappers.<Video>query().eq("order_id", orderId));
     // 保存视频记录至数据库
-    Video video = Video.builder().userId(userId).orderId(orderId).build();
+    if (video == null) {
+      video = Video.builder().userId(userId).orderId(orderId).build();
+      baseMapper.insert(video);
+    }
     video.setName(tempFile.getName());
+    baseMapper.updateById(video);
     order.setState(PRODUCTION_COMPLETED);
     order.setVideoId(video.getId());
     orderService.updateById(order);
@@ -112,12 +120,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
     ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
-    baseMapper.insert(video);
+
     balanceService.updateById(balance);
   }
-
-  private static final String PATH = System.getenv("PWD");
-  private static final String SEPARATOR = File.separator;
 
   /**
    * 1. 检查本地是否存在该video对应的视频
@@ -135,17 +140,15 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   public void addAudio(String videoId) {
     Video video = baseMapper.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
-    String outPut = PATH + SEPARATOR + "result.mp4";
-    video.setOutputUrl("");
+    Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
+    // todo originUrl与name的区别
+    Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
+    String extName = FileUtil.extName(video.getName());
     checkIfFileExist(video);
-    video.setOutputUrl(outPut);
-  }
-
-  private String getLocalPath(Video video) {
-    String bucketName = video.getUserId();
-    bucketName = userService.getBucketName(bucketName);
-    // todo 再加一个母层级统一管理文件
-    return bucketName + File.separator + video.getName();
+    // String outPut = generateFilePath(extName);
+    // ossSingleton.uploadFile();
+    // video.setOutputUrl(outPut);
+    // baseMapper.updateById(video);
   }
 
   /**
@@ -159,10 +162,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    */
   private void checkIfFileExist(Video video) {
     String bucketName = userService.getBucketName(video.getUserId());
-    File file = new File(getLocalPath(video));
-    if (!file.exists()) {
+    String name = video.getName();
+    File file = new File(concatFilePath("upload", name));
+    if (file.exists()) {
+      SpringContextHolder.publishEvent(new VideoEncodeTask(video));
+    } else {
       // 下载完成后再执行addAudio的逻辑
-      ossSingleton.downloadFile(bucketName, video.getName(), getLocalPath(video), (progressEvent) -> {
+      ossSingleton.downloadFile(bucketName, name, getLocalPath(video), (progressEvent) -> {
         ProgressEventType eventType = progressEvent.getEventType();
         switch (eventType) {
           case TRANSFER_STARTED_EVENT:
@@ -180,9 +186,19 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
             break;
         }
       });
-    } else {
-      SpringContextHolder.publishEvent(new VideoEncodeTask(video));
     }
+  }
+
+  /**
+   * 用作临时存储需要渲染的视频的路径
+   *
+   * @param video
+   * @return
+   */
+  private String getLocalPath(Video video) {
+    String bucketName = video.getUserId();
+    bucketName = userService.getBucketName(bucketName);
+    return concatFilePath("download", bucketName, video.getName());
   }
 
   /**

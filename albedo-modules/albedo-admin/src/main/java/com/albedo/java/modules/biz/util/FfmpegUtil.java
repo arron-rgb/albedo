@@ -1,5 +1,8 @@
 package com.albedo.java.modules.biz.util;
 
+import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
+import static com.albedo.java.common.core.util.FileUtil.generateFilePath;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.albedo.java.modules.biz.domain.Video;
 
+import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -60,14 +64,14 @@ public class FfmpegUtil {
    */
   public void concatAudio(Video video) {
     String audioPath = video.getAudioUrl();
-    String videoPath = video.getOriginUrl();
-    String outPut = "";
-    concatAudioWithGpu(audioPath, videoPath, outPut, false);
+    String videoPath = concatFilePath("upload", video.getOriginUrl());
+    String extName = FileUtil.extName(videoPath);
+    concatAudioWithGpu(audioPath, videoPath, generateFilePath(extName), false);
   }
 
-  public void concatAudioWithGpu(String audioPath, String videoPath, String outPut, boolean gpuFlag) {
-
-    String audioTempOutput = "";
+  public void concatAudioWithGpu(String audioPath, String videoPath, String outputPath, boolean gpuFlag) {
+    String extName = FileUtil.extName(audioPath);
+    String audioTempOutput = generateFilePath(extName);
     String codec = "copy";
 
     // 计算需要多少段配音
@@ -84,6 +88,7 @@ public class FfmpegUtil {
     builder.addInput(concatMp3(list));
     builder.addOutput(audioTempOutput).setAudioCodec(codec).done();
     run(builder);
+    log.info("合成总mp3");
 
     // 拼接结果放进mp4
     builder = new FFmpegBuilder().addInput(videoPath);
@@ -91,10 +96,12 @@ public class FfmpegUtil {
     if (gpuFlag) {
       builder.addExtraArgs(gpuParam);
     }
-    builder.addOutput(outPut).setVideoCodec(codec).setAudioCodec(codec).done();
+    builder.addOutput(outputPath).setVideoCodec(codec).setAudioCodec(codec).done();
     run(builder);
+    log.info("注入音频");
 
     deleteFile(audioTempOutput);
+    log.info("结束");
     // todo 执行完毕后更新订单情况及视频信息
   }
 

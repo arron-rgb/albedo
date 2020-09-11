@@ -62,3 +62,5 @@ gen_code
 
 /node_modules/*
 /audio
+*.mp3
+*.flv

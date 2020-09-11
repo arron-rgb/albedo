@@ -1,6 +1,9 @@
 package com.albedo.java.common.config;
 
-import com.albedo.java.common.async.ExceptionHandlingAsyncTaskExecutor;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.PriorityBlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -13,7 +16,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.Executor;
+import com.albedo.java.common.async.ExceptionHandlingAsyncTaskExecutor;
 
 /**
  * @author somewhere
@@ -25,28 +28,33 @@ import java.util.concurrent.Executor;
 @EnableScheduling
 public class AsyncConfiguration implements AsyncConfigurer {
 
-	private final Logger log = LoggerFactory.getLogger(AsyncConfiguration.class);
+  private final Logger log = LoggerFactory.getLogger(AsyncConfiguration.class);
 
-	private final TaskExecutionProperties taskExecutionProperties;
+  private final TaskExecutionProperties taskExecutionProperties;
 
-	public AsyncConfiguration(TaskExecutionProperties taskExecutionProperties) {
-		this.taskExecutionProperties = taskExecutionProperties;
-	}
+  public AsyncConfiguration(TaskExecutionProperties taskExecutionProperties) {
+    this.taskExecutionProperties = taskExecutionProperties;
+  }
 
-	@Override
-	@Bean(name = "taskExecutor")
-	public Executor getAsyncExecutor() {
-		log.debug("Creating Async Task Executor");
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(taskExecutionProperties.getPool().getCoreSize());
-		executor.setMaxPoolSize(taskExecutionProperties.getPool().getMaxSize());
-		executor.setQueueCapacity(taskExecutionProperties.getPool().getQueueCapacity());
-		executor.setThreadNamePrefix(taskExecutionProperties.getThreadNamePrefix());
-		return new ExceptionHandlingAsyncTaskExecutor(executor);
-	}
+  @Override
+  @Bean(name = "taskExecutor")
+  public Executor getAsyncExecutor() {
+    log.debug("Creating Async Task Executor");
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor() {
+      @Override
+      protected BlockingQueue<Runnable> createQueue(int queueCapacity) {
+        return new PriorityBlockingQueue<>(queueCapacity);
+      }
+    };
+    executor.setCorePoolSize(taskExecutionProperties.getPool().getCoreSize());
+    executor.setMaxPoolSize(taskExecutionProperties.getPool().getMaxSize());
+    executor.setQueueCapacity(taskExecutionProperties.getPool().getQueueCapacity());
+    executor.setThreadNamePrefix(taskExecutionProperties.getThreadNamePrefix());
+    return new ExceptionHandlingAsyncTaskExecutor(executor);
+  }
 
-	@Override
-	public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-		return new SimpleAsyncUncaughtExceptionHandler();
-	}
+  @Override
+  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+    return new SimpleAsyncUncaughtExceptionHandler();
+  }
 }

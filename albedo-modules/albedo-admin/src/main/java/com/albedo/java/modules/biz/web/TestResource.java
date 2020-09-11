@@ -1,6 +1,6 @@
 package com.albedo.java.modules.biz.web;
 
-import java.time.Duration;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -9,9 +9,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.util.Result;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.util.OssSingleton;
+import com.aliyun.oss.model.Bucket;
 
-import cn.hutool.core.util.IdUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
 /**
@@ -20,6 +26,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/test")
 @AllArgsConstructor
+@Api("测试")
 public class TestResource extends BaseResource {
 
   @Resource
@@ -27,20 +34,34 @@ public class TestResource extends BaseResource {
 
   @PostMapping
   @Token
+  @ApiOperation("token过滤")
   public Result<String> test(@RequestParam(value = "orderId") String orderId) {
     return Result.buildOk("orderId: " + orderId + "\ntoken: ");
   }
 
   @GetMapping
-  public String get() {
-    String token = IdUtil.fastSimpleUUID();
-    redisTemplate.opsForValue().set(token, token);
-    String memory = redisTemplate.opsForValue().get(token);
-    if (!token.equals(memory)) {
-      throw new RuntimeException("token获取错误");
-    }
-    Boolean expire = redisTemplate.expire(token, Duration.ofMinutes(5L));
-    return token;
+  @ApiOperation("更新")
+  public String update(String videoId) {
+    videoService.addAudio(videoId);
+    return "任务发布成功";
   }
+
+  @GetMapping("/bucket")
+  public Result<String> getUserBucket() {
+    return Result.buildOk(userService.getBucketName(SecurityUtil.getUser().getId()));
+  }
+
+  @GetMapping("/bucket/list")
+  public Result<List<Bucket>> listBuckets() {
+    List<Bucket> buckets = ossSingleton.listBuckets();
+    return Result.buildOkData(buckets);
+  }
+
+  @Resource
+  OssSingleton ossSingleton;
+  @Resource
+  UserService userService;
+  @Resource
+  VideoService videoService;
 
 }
