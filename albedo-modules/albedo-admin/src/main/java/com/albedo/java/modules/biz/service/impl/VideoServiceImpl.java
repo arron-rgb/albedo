@@ -140,6 +140,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
     baseMapper.updateById(video);
     balanceService.updateById(balance);
+
   }
 
   private static final String PATH = System.getenv("PWD");
@@ -151,9 +152,12 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 3. 渲染时需要保证radio和audio都存在
    * 4. orderId中type为1的启用gpu加速
    *
+   * 在checkIfFileExist中通知执行渲染任务
+   *
    * @param videoId
    *          需要合成的videoId
    */
+  @Async
   @Override
   public void addAudio(String videoId) {
     Video video = baseMapper.selectById(videoId);
@@ -171,6 +175,15 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     return bucketName + File.separator + video.getName();
   }
 
+  /**
+   * 在download中发起下载的请求，
+   * listener中监听结束的信号
+   * 发起合成的请求
+   * 合成中监听结束的信号
+   * 发起上传的请求
+   *
+   * @param video
+   */
   private void checkIfFileExist(Video video) {
     String bucketName = userService.getBucketName(video.getUserId());
     File file = new File(getLocalPath(video));
@@ -180,11 +193,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
         new GetObjectProgressListener(video).setFunction(() -> {
           VideoEncodeTask event = new VideoEncodeTask(video);
           SpringContextHolder.publishEvent(event);
-          // 在download中发起下载的请求，
-          // listener中监听结束的信号
-          // 发起合成的请求
-          // 合成中监听结束的信号
-          // 发起上传的请求
           return event.getStatus();
         }));
     } else {

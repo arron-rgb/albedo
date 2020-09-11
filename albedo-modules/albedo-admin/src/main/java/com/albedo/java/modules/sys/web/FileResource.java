@@ -1,10 +1,12 @@
 package com.albedo.java.modules.sys.web;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +21,7 @@ import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.FileUtil;
 import com.albedo.java.common.core.util.Result;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.google.common.collect.Maps;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,18 +81,19 @@ public class FileResource {
   public Result<Map<Object, Object>> uploadFile(MultipartFile file, HttpServletRequest request) throws IOException {
     // 上传文件路径
     String filePath = ApplicationConfig.getUploadPath();
-    // 上传并返回新文件名称
-    String fileName = FileUploadUtil.upload(filePath, file);
-    String url = getDomain(request) + fileName;
+    // 上传并返回新文件绝对路径
+    String tempPath = FileUploadUtil.upload(filePath, file);
+    File file1 = new File(tempPath);
+    ossSingleton.uploadFileStream(new FileInputStream(file1), "vlivest", file1.getName());
+    boolean delete = file1.delete();
     Map<Object, Object> data = Maps.newHashMap();
-    data.put("fileName", fileName);
+    String url = "www.vlivest.com/" + file1.getName();
+    data.put("fileName", tempPath);
     data.put("url", url);
     return Result.buildOkData(data);
   }
 
-  private String getDomain(HttpServletRequest request) {
-    StringBuffer url = request.getRequestURL();
-    String contextPath = request.getServletContext().getContextPath();
-    return url.delete(url.length() - request.getRequestURI().length(), url.length()).append(contextPath).toString();
-  }
+  @Resource
+  OssSingleton ossSingleton;
+
 }

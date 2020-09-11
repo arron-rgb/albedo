@@ -52,7 +52,6 @@ public class FfmpegUtil {
   }
 
   String output = "";
-  String audioTempOutput = "";
 
   /**
    * 给视频添加音频 时间填充
@@ -67,6 +66,8 @@ public class FfmpegUtil {
   }
 
   public void concatAudioWithGpu(String audioPath, String videoPath, String outPut, boolean gpuFlag) {
+
+    String audioTempOutput = "";
     String codec = "copy";
 
     // 计算需要多少段配音
@@ -94,6 +95,7 @@ public class FfmpegUtil {
     run(builder);
 
     deleteFile(audioTempOutput);
+    // todo 执行完毕后更新订单情况及视频信息
   }
 
   /**

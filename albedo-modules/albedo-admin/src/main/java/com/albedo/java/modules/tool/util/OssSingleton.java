@@ -44,7 +44,7 @@ public class OssSingleton {
   public void uploadFile(File file, String objectName) {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-    metadata.setObjectAcl(CannedAccessControlList.Private);
+    metadata.setObjectAcl(CannedAccessControlList.PublicRead);
     uploadFile(file, objectName, metadata, "vlivest");
   }
 

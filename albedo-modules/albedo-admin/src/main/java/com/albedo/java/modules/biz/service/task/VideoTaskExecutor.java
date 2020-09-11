@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.service.task;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.annotation.Resource;
 
@@ -13,26 +12,12 @@ import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.tool.util.OssSingleton;
 
 import lombok.extern.slf4j.Slf4j;
-import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.FFprobe;
 
 /**
  * @author arronshentu
  */
 @Slf4j
 public class VideoTaskExecutor {
-
-  static FFprobe ffprobe;
-  static FFmpeg ffmpeg;
-
-  static {
-    try {
-      ffprobe = new FFprobe("/usr/local/bin/ffprobe");
-      ffmpeg = new FFmpeg("/usr/local/bin/ffmpeg");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
   /**
    * @param event
@@ -52,15 +37,15 @@ public class VideoTaskExecutor {
 
   /**
    * 将音频与视频合成
+   * 合成完毕后 1. 将视频上传至oss 2. 更新video表字段 3. 更新订单表字段
    *
    * @param event
    *          含有video的信息
-   * @throws IOException
    */
   @Async
   @Order
   @EventListener(VideoEncodeTask.class)
-  public void concatAudio(VideoEncodeTask event) throws IOException {
+  public void concatAudio(VideoEncodeTask event) {
     ffmpegUtil.concatAudio(event.video);
     event.setStatus("end");
   }
