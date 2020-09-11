@@ -21,7 +21,7 @@ export function del(ids) {
   return request({
     url: '/biz/commodity',
     method: 'delete',
-    data: ids
+    data: [ids]
   })
 }
 

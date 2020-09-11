@@ -4,6 +4,7 @@
         <el-button  @click="next">下一步</el-button>
      </div>
 
+  {{this.chooseList}}
   <el-dialog
     title="新增商品"
     :visible.sync="productData.dialogVisible"
@@ -19,23 +20,15 @@
           <i class="el-icon-plus" @click="productData.dialogVisible = !productData.dialogVisible"></i>
         </div>
         <el-scrollbar>
-<!--          <draggable-->
-<!--              tag="el-collapse"-->
-<!--              class="dragArea list-group"-->
-<!--              :list="proDeposit"-->
-<!--              :group="{ name: 'comp', pull: 'clone', put: false }"-->
-<!--              @change="log"-->
-<!--            >-->
             <el-card
               class="list-group-item"
               v-for="(item,index) in this.productList[pager - 1]"
               :key="index"
             >
-<!--              <div slot="header" class="clearfix">-->
               <el-row>
                 <el-col span="6">
-<!--                  <img :src="item.urls" class="avatar">-->
-                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">
+                  <img class="commodityImg" :src="item.urls">
+<!--                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">-->
                 </el-col>
                 <el-col style="padding-left: 5px" span="18">
                   <el-row>
@@ -43,10 +36,10 @@
                       <span style="font-size: 18px; line-height: 30px">{{item.name}}</span>
                     </el-col>
                     <el-col span="3">
-                    <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,0)"></i>
+                    <i class="el-icon-circle-close" @click.stop="deleteItem(item.id)"></i>
                     </el-col>
                     <el-col span="2">
-                      <i class="el-icon-right" @click.stop="add(item.id)"></i>
+                      <i class="el-icon-right" @click.stop="add(item, 'product')"></i>
                     </el-col>
                   </el-row>
                   <el-row>
@@ -54,37 +47,15 @@
                   </el-row>
                 </el-col>
               </el-row>
-<!--              </div>-->
-<!--              <template slot="title">-->
-
-
-<!--              <component :is="item.type" :item="item" @saveData='saveData' ></component>-->
-<!--              </template>-->
             </el-card>
-<!--            <el-collapse-->
-<!--                class="list-group-item left"-->
-<!--                v-for="(item,index) in productData.proDeposit"-->
-<!--                :key="index"-->
-<!--                v-model="activeNames"-->
-<!--                @change="log"-->
-<!--                >-->
-<!--                  <el-collapse-item>-->
-<!--                      <template slot="title">-->
-<!--                        <span>{{item.name}}</span>-->
-<!--                        <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,0)"></i>-->
-<!--                        <i class="el-icon-right" @click.stop="add(item.id)"></i>-->
-<!--                      </template>-->
-<!--                      <component :is="item.type" :item="item" @saveData='saveData' ></component>-->
-<!--                  </el-collapse-item>-->
-<!--              </el-collapse>-->
-<!--          </draggable>-->
         </el-scrollbar>
         <el-pagination
           layout="prev, pager, next"
           @current-change="currentChange"
-          :total="productData.proDeposit.records.length">
+          :total="productData.proDeposit.length">
         </el-pagination>
       </div>
+
 
       <div class="proContainer">
         <h3 class="barTitle">组件配置页面展示</h3>
@@ -96,21 +67,47 @@
             group="comp"
             @change="saveConfig"
           >
-            <el-collapse
-            class="list-group-item left"
-            v-for="(item,index) in chooseList"
-            :key="index"
-            v-model="activeNames"
-            @change="handleChange"
-            >
-              <el-collapse-item>
-                  <template slot="title">
-                    <span>{{item.name}}</span>
-                    <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,1)"></i>
-                  </template>
-                  <component :is="item.type" :item="item" @saveData='saveData' ></component>
-              </el-collapse-item>
-            </el-collapse>
+<!--            <el-collapse-->
+<!--            class="list-group-item left"-->
+<!--            v-for="(item,index) in chooseList"-->
+<!--            :key="index"-->
+<!--            v-model="activeNames"-->
+<!--            @change="handleChange"-->
+<!--            >-->
+<!--              <el-collapse-item>-->
+
+                <el-card
+                  class="list-group-item"
+                  v-for="(item,index) in chooseList"
+                  :key="index"
+                >
+                  <el-row v-if="item.type === 'product'">
+                    <el-col span="6">
+                      <img class="commodityImg" :src="item.data.urls">
+                      <!--                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">-->
+                    </el-col>
+                    <el-col style="padding-left: 5px" span="18">
+                      <el-row>
+                        <el-col span="22">
+                          <span style="font-size: 18px; line-height: 30px">{{item.data.name}}</span>
+                        </el-col>
+                        <el-col span="2">
+                          <i class="el-icon-circle-close" @click.stop="removeItem(index)"></i>
+                        </el-col>
+                      </el-row>
+                      <el-row>
+                        <p style="text-align: left; margin: 0; line-height: 30px;font-size: 14px">{{item.data.description}}</p>
+                      </el-row>
+                    </el-col>
+                  </el-row>
+                </el-card>
+<!--                  <template slot="title">-->
+<!--                    <span>{{item.name}}</span>-->
+<!--                    <i class="el-icon-circle-close" @click.stop="deleteItem(item.name,item.id,1)"></i>-->
+<!--                  </template>-->
+<!--                  <component :is="item.type" :item="item" @saveData='saveData' ></component>-->
+<!--              </el-collapse-item>-->
+<!--            </el-collapse>-->
           </draggable>
         </el-scrollbar>
 
@@ -276,11 +273,12 @@ export default {
       return new Promise((resolve, reject) => {
         crudCommodity.get().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
             this.productData.proDeposit = res.data
             var i = 0;
-            for(i; i < this.productData.proDeposit.records.length / 10 ; i++)
-              this.productList[i] = this.productData.proDeposit.records.slice(i * 10, i * 10 + 10);
-            this.productList[i] = this.productData.proDeposit.records.slice(i * 10);
+            for(i; i < this.productData.proDeposit.length / 10 ; i++)
+              this.productList[i] = this.productData.proDeposit.slice(i * 10, i * 10 + 10);
+            this.productList[i] = this.productData.proDeposit.slice(i * 10);
           }
         }).catch(error => {
           reject(error)
@@ -292,6 +290,30 @@ export default {
     currentChange(page){
       this.pager = page;
     },
+    //删除商品
+    deleteItem: function(id) {
+      return new Promise((resolve, reject) => {
+        crudCommodity.del(id).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            //重新获取商品列表
+            this.getCommodityList()
+            resolve();
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 添加已有商品到配置项
+    add(item, type){
+      if(type === 'product')
+            this.chooseList.push({type : type, data : item})
+    },
+    removeItem(index){
+      this.chooseList.splice(index,1);
+    },
+
 
 
 
@@ -315,23 +337,10 @@ export default {
     },
 
 
-    // 添加已有商品到配置项
-    add(id){
-      console.log("add call!")
-      this.$store.state.dub.productData.filter((item,index)=>{
-        if(item.id === id ){
-          this.chooseList.push(item)
-        }
-      })
-    },
-    addProduct(){
-      let item =  { id:++this.$store.state.dub.productid , name: `${this.$store.state.dub.productid}号商品`,type:'product',globalid:++this.$store.state.dub.idGlobal}
-      this.proDeposit.push(item)
-      this.$store.commit('ADD_PRODUCT',item)
-    },
+
     // 保存中间配置数据
     saveConfig(){
-      this.$store.commit('ADD_CONFIG_DATA',this.chooseList)
+      // this.$store.commit('ADD_CONFIG_DATA',this.chooseList)
     },
     // 保存商品数据
     saveData(productData){
@@ -361,16 +370,7 @@ export default {
       console.log('handleSelect:',item);
     },
     handleChange: function() {},
-    deleteItem: function(name,item_id,listnum) {
-      --this.$store.state.dub.idGlobal
-      if(listnum === 0){
-        this.$store.commit('DELETE_PRODUCT',{name,item_id})
-      }
-      else
-        this.$store.commit('DELETE_DATA',{name,item_id})
-      this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
-      console.log("this.chooseList:",this.chooseList)
-    },
+
 
 
     handleAvatarSuccess(res, file) {
@@ -391,8 +391,7 @@ export default {
   },
   mounted() {
     this.typeList = this.loadAll();
-    this.proDeposit = JSON.parse(localStorage.getItem('productData')||'[]')
-    this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
+    // this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
   },
   computed: {
     searchData: function() {
@@ -436,16 +435,16 @@ export default {
   watch: {
      chooseList: {
          handler: function() {
-            this.$store.commit('ADD_SCRIPT',this.chooseList)
+            // this.$store.commit('ADD_SCRIPT',this.chooseList)
          },
          deep: true
      },
-    proDeposit :{
-      handler:function(){
-        this.proDeposit = this.$store.state.dub.productData
-      },
-      deep: true
-    }
+    // proDeposit :{
+    //   handler:function(){
+    //     this.proDeposit = this.$store.state.dub.productData
+    //   },
+    //   deep: true
+    // }
 
   }
 
@@ -519,10 +518,10 @@ export default {
           flex-direction: column;
           padding-left: 0;
           border: 0;
-          .list-group-item:first-child {
-          border-top-left-radius: 0.25rem;
-          border-top-right-radius: 0.25rem;
-          }
+          //.list-group-item:first-child {
+          //border-top-left-radius: 0.25rem;
+          //border-top-right-radius: 0.25rem;
+          //}
           .list-group-item {
             position: relative;
             display: block;
@@ -598,13 +597,6 @@ export default {
           .el-collapse-item__wrap {
             border-bottom: 0;
           }
-          .list-group-item {
-            margin:20px 0;
-            cursor: move;
-            .el-collapse-item:last-child{
-              margin-bottom:0px;
-            }
-          }
           h3 {
             font-size: 28px;
             margin-bottom: 20px;
@@ -616,10 +608,10 @@ export default {
           margin-bottom: 0;
           border: 0;
           padding:0 10px;
-          .list-group-item:first-child {
-            border-top-left-radius: 0.25rem;
-            border-top-right-radius: 0.25rem;
-          }
+          //.list-group-item:first-child {
+          //  border-top-left-radius: 0.25rem;
+          //  border-top-right-radius: 0.25rem;
+          //}
         }
 
     }
@@ -630,8 +622,8 @@ export default {
     background-color: #fff;
     box-shadow: unset;
     box-sizing: border-box;
-    border-radius: 4px !important;
-    border:1px solid #ebeef5 !important
+    border-radius: 10px !important;
+    border:1px solid #ebeef5 !important;
   }
   .list-group-item:hover{
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1)

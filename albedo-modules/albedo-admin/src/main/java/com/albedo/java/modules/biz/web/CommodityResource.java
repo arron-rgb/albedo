@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.albedo.java.common.security.util.SecurityUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,9 +64,10 @@ public class CommodityResource extends BaseResource {
   @GetMapping
   @ApiOperation(value = "查询商品管理")
   @LogOperate(value = "商品管理查看")
-  public Result<PageModel<Commodity>> getPage(PageModel<Commodity> pm, CommodityQueryCriteria commodityQueryCriteria) {
-    QueryWrapper<Commodity> wrapper = QueryWrapperUtil.getWrapper(pm, commodityQueryCriteria);
-    return Result.buildOkData(service.page(pm, wrapper));
+  public Result<List<Commodity>> getPage() {
+	  List<Commodity> commodities =
+		  service.list(Wrappers.<Commodity>query().eq("created_by", SecurityUtil.getUser().getId()));
+	  return Result.buildOkData(commodities);
   }
 
   /**
