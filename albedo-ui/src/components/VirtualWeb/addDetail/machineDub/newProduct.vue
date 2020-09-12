@@ -1,10 +1,10 @@
 <template>
 <div class="newProduct">
-    <div class="directBar">
-        <el-button  @click="next">下一步</el-button>
-     </div>
+<!--    <div class="directBar">-->
+<!--        <el-button  @click="next">下一步</el-button>-->
+<!--     </div>-->
 
-  {{this.chooseList}}
+<!--  {{this.chooseList}}-->
   <el-dialog
     title="新增商品"
     :visible.sync="productData.dialogVisible"
@@ -30,7 +30,7 @@
                   <img class="commodityImg" :src="item.urls">
 <!--                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">-->
                 </el-col>
-                <el-col style="padding-left: 5px" span="18">
+                <el-col style="padding-left: 10px" span="18">
                   <el-row>
                     <el-col span="19">
                       <span style="font-size: 18px; line-height: 30px">{{item.name}}</span>
@@ -58,7 +58,7 @@
 
 
       <div class="proContainer">
-        <h3 class="barTitle">组件配置页面展示</h3>
+        <h3 class="barTitle">已选台词组件</h3>
         <el-scrollbar>
           <draggable
             tag="el-collapse"
@@ -86,7 +86,7 @@
                       <img class="commodityImg" :src="item.data.urls">
                       <!--                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">-->
                     </el-col>
-                    <el-col style="padding-left: 5px" span="18">
+                    <el-col style="padding-left: 10px" span="18">
                       <el-row>
                         <el-col span="22">
                           <span style="font-size: 18px; line-height: 30px">{{item.data.name}}</span>
@@ -114,29 +114,46 @@
       </div>
       <div class="script">
         <h3 class="barTitle">串词列表</h3>
-        <el-autocomplete
-        clearable
-        class="inline-input"
-        v-model="search"
-        :fetch-suggestions="querySearch"
-        placeholder="请输入内容"
-        @change="searchData"
-        @select="handleSelect"
-        >
-        </el-autocomplete>
-          <el-scrollbar>
-            <draggable
-              class="dragArea list-group"
-              :list="searchData"
-              :group="{ name: 'comp', pull: 'clone', put: false }"
-              :clone="clone"
-              @change="log"
+        <div class="inline-input">
+          <el-autocomplete
+          clearable
+          style="width: 80%"
+          v-model="search"
+          :fetch-suggestions="querySearch"
+          placeholder="请输入内容"
+          @change="searchData"
+          @select="handleSelect"
+          >
+          </el-autocomplete>
+        </div>
+        <el-collapse v-model="this.scriptData" accordion>
+          <el-collapse-item :title="item.title" v-for="item in this.scriptData">
+
+            <el-card
+              class="list-group-item"
+              v-for="(item,index) in item.data"
+              :key="index"
             >
-                <div  class="itemContainer" v-for="(item,index) in searchData" :key="index">
-                    <scriptItem class='scriptItem' :item="item"></scriptItem>
-                </div>
-            </draggable>
-        </el-scrollbar>
+<!--              <div>-->
+                  <i class="el-icon-right" @click.stop="add(item, 'product')"></i>
+<!--              </div>-->
+              {{item.value}}
+            </el-card>
+          </el-collapse-item>
+        </el-collapse>
+<!--          <el-scrollbar>-->
+<!--            <draggable-->
+<!--              class="dragArea list-group"-->
+<!--              :list="searchData"-->
+<!--              :group="{ name: 'comp', pull: 'clone', put: false }"-->
+<!--              :clone="clone"-->
+<!--              @change="log"-->
+<!--            >-->
+<!--                <div  class="itemContainer" v-for="(item,index) in searchData" :key="index">-->
+<!--                    <scriptItem class='scriptItem' :item="item"></scriptItem>-->
+<!--                </div>-->
+<!--            </draggable>-->
+<!--        </el-scrollbar>-->
 
 
       </div>
@@ -470,45 +487,67 @@ export default {
         align-items: center;
     }
     .proBar{
-        width:100%;
         display:flex;
         justify-content: center;
         align-items: flex-start;
         box-sizing: border-box;
+        border-radius: 5px;
         .proDeposit{
-          background-color:rgb(245,247,250);
-          padding:0 20px 20px 20px;
-          width:600px;
+          overflow-y: scroll;
+          height: 700px;
+          //background-color:rgb(245,247,250);
+          border:1px solid #ebeef5;
+          border-radius: 5px;
+          padding:0 15px 15px 15px;
+          width:390px;
+          margin-right: 15px;
+          //width:600px;
           min-height:500px;
           box-sizing:border-box;
-          margin-right:20px;
+          //margin-right:20px;
           .depositBox{
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 9;
             display:flex;
             justify-content: flex-end;
             align-items: center;
             .barTitle{
-                margin-right:150px;
-                padding:10px 0;
+              margin-right:120px;
+              padding:10px 0;
             }
             .el-icon-plus{
+              z-index: 9;
               margin-right:20px;
               // background-color:#ff5000;
               // color:white;
               &:hover{
-                cursor:pointer
+                cursor: pointer;
+                color: #ff5000;
               }
             }
           }
         }
         .proContainer{
-          background-color:rgb(245,247,250);
-          padding:0 20px 20px 20px;
-          width:600px;
+          //background-color:rgb(245,247,250);
+          //padding:0 15px 15px 15px;
+          border:1px solid #ebeef5;
+          overflow-y: scroll;
+          height: 700px;
+          border-radius: 5px;
+          padding: 0 15px;
+          width:390px;
           min-height:500px;
           box-sizing:border-box;
-          margin-right:20px;
+          margin-right:15px;
           .barTitle{
-              padding:10px 0;
+            margin: 0;
+            padding:30px 0;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 9;
           }
 
         }
@@ -528,10 +567,9 @@ export default {
             //padding: 0;
             //margin-bottom: -1px;
             background-color: #fff;
-            border: 1px solid #ebeef5;
             box-sizing: border-box;
             ::v-deep.el-collapse-item__content{
-                padding-bottom:0px !important;
+                padding-bottom:0 !important;
             }
             ::v-deep .el-collapse-item__header{
                 padding-left:10px !important;
@@ -539,14 +577,30 @@ export default {
           }
         }
         .script{
+          overflow-y: scroll;
           box-sizing: border-box;
-          padding-bottom:30px;
-          width:400px;
-          min-height:500px;
-          background-color:rgb(245,247,250);
+          //padding-bottom:30px;
+          width:390px;
+          padding: 0 15px 15px 15px;
+          border:1px solid #ebeef5;
+          border-radius: 5px;
+          height:700px;
+          //background-color:rgb(245,247,250);
           .barTitle{
-                  padding:10px 0;
-              }
+            padding:30px 0;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 9;
+            margin: 0;
+          }
+          .inline-input {
+            width: 100%;
+            position: sticky;
+            top: 80px;
+            background-color: white;
+            z-index: 9;
+          }
           .el-autocomplete{
             margin-bottom:20px;
           }
@@ -607,7 +661,7 @@ export default {
           flex-direction: column;
           margin-bottom: 0;
           border: 0;
-          padding:0 10px;
+          //padding:0 10px;
           //.list-group-item:first-child {
           //  border-top-left-radius: 0.25rem;
           //  border-top-right-radius: 0.25rem;
