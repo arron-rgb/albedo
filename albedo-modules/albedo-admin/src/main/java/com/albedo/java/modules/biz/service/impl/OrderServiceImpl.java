@@ -190,8 +190,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // 自己上传录音 直接给一个文件路径即可
     Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    video.setAdUrl(orderVo.getAdUrl());
-    video.setLogoUrl(orderVo.getLogoUrl());
+    // video.setAdUrl(orderVo.getAdUrl());
+    // video.setLogoUrl(orderVo.getLogoUrl());
     if (orderVo.getType() != 1) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
@@ -207,15 +207,15 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public void dubbingBySelf(SubOrderVo orderVo, Video video) {
     video.setAudioUrl(orderVo.getAudioUrl());
-    video.setAudioText(orderVo.getContent());
+    video.setAudioText(orderVo.appendContent());
     videoRepository.updateById(video);
   }
 
   @Async
   @Override
   public void machineDubbing(SubOrderVo orderVo, Video video) {
-    String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId());
-    video.setAudioText(orderVo.getContent());
+    String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId());
+    video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(filePath);
     videoRepository.updateById(video);
   }
@@ -235,7 +235,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       order.setTotalAmount(totalAmount);
       order.setType(DUBBING);
       order.setUserId(SecurityUtil.getUser().getId());
-      order.setContent(orderVo.getContent());
+      order.setContent(orderVo.appendContent());
       order.setDescription(orderVo.getDescription());
       order.setState(NOT_STARTED);
       baseMapper.insert(order);

@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.domain;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubOrderVo {
-  private String content;
+  private transient String contentText;
+  private List<String> content;
   private String description;
   /**
    * 订单id
@@ -43,4 +46,12 @@ public class SubOrderVo {
    * 贴片
    */
   private String adUrl;
+
+  public String appendContent() {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (String text : getContent()) {
+      stringBuilder.append(text);
+    }
+    return stringBuilder.toString();
+  }
 }
