@@ -9,7 +9,7 @@
     title="新增商品"
     :visible.sync="productData.dialogVisible"
     width="600px">
-    <component v-bind:productData="productData" is="product" ></component>
+    <component v-bind:productData="productData" @fatherMethod="getCommodityList" is="product" ></component>
   </el-dialog>
 
   <el-dialog
@@ -167,25 +167,10 @@
             </el-card>
           </el-collapse-item>
         </el-collapse>
-<!--          <el-scrollbar>-->
-<!--            <draggable-->
-<!--              class="dragArea list-group"-->
-<!--              :list="searchData"-->
-<!--              :group="{ name: 'comp', pull: 'clone', put: false }"-->
-<!--              :clone="clone"-->
-<!--              @change="log"-->
-<!--            >-->
-<!--                <div  class="itemContainer" v-for="(item,index) in searchData" :key="index">-->
-<!--                    <scriptItem class='scriptItem' :item="item"></scriptItem>-->
-<!--                </div>-->
-<!--            </draggable>-->
-<!--        </el-scrollbar>-->
-
 
       </div>
   </div>
   </div>
-<!-- </div> -->
 </template>
 <script>
 import product from './product'
@@ -195,14 +180,12 @@ import crudCommodity from '@/views/biz/commodity/commodity-service'
 import crudScript from '@/views/biz/script/script-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 
-let anchorName='W';
-let touristName='LH';
-let followerName='LH';
-let deadline=28;
-let restTime=5;
-let luckyDog='LH';
-let startTime=8;
-let price = 200;
+// let anchorName='W';
+// let touristName='LH';
+// let deadline=28;
+// let restTime=5;
+// let startTime=8;
+// let price = 200;
 export default {
   name: "proDetail",
   components : {
@@ -332,96 +315,14 @@ export default {
           dubText.push(this.chooseList[i].data.value);
       }
       console.log(dubText);
-      this.$router.replace('addMark')
+      this.$router.replace('dubTone')
       // this.$store.commit('NEXT')
     },
-    // log: function (evt) {
-    //   window.console.log("evt:", evt);
-    // },
-    // clone({content, type}) {
-    //   let tmp = content;
-    //   let kind = type;
-    //   ++this.$store.state.dub.idGlobal
-    //   return {
-    //     id: ++this.$store.state.dub.scriptid,
-    //     name: `${this.$store.state.dub.scriptid}号串词-${this.scriptName}`,
-    //     content: tmp,
-    //     type: kind
-    //   };
-    // },
-
-
-    // // 保存中间配置数据
-    // saveConfig() {
-    //   // this.$store.commit('ADD_CONFIG_DATA',this.chooseList)
-    // },
-    // // 保存商品数据
-    // saveData(productData) {
-    //   this.$store.commit('ADD_PRODUCT', productData)
-    // },
-    // querySearch(queryString, cb) {
-    //   var data = this.scriptData;
-    //   var results = queryString ? data.filter(this.createFilter(queryString)) : data;
-    //   cb(results);
-    // },
-    // createFilter(queryString) {
-    //   return (type) => {
-    //     return (type.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-    //   };
-    // },
-    // loadAll() {
-    //   return [
-    //     {value: "开场白"},
-    //     {value: "欢迎词"},
-    //     {value: "抽奖词"},
-    //     {value: "追单词"},
-    //     {value: "感谢词"},
-    //     {value: "结束词"},
-    //   ]
-    // },
-    // handleSelect(item) {
-    //   console.log('handleSelect:', item);
-    // },
-    // handleChange: function () {
-    // },
-
     mounted() {
       // this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
     },
     computed: {
       searchData: function () {
-        // var search = this.search;
-        // var listid = -1
-        // if (search) {
-        //   // 直接搜索类别
-        //   this.typeList.filter((item, id) => {
-        //     if (item.value === search) {
-        //       listid = id
-        //       this.scriptName = this.typeList[listid].value
-        //     }
-        //   })
-        //   if (listid !== -1) {
-        //     return this.scriptList[listid]
-        //   } else {
-        //     var list = []
-        //     this.scriptList.filter((list, index) => {
-        //       list.filter(item => {
-        //         if (item.content.indexOf(search) >= 0) {
-        //           list.push(item)
-        //           this.scriptName = this.typeList[index].value
-        //           return item
-        //         }
-        //       })
-        //
-        //     })
-        //     return list;
-        //   }
-        // } else {
-        //   this.scriptName = this.typeList[0].value
-        //   return this.scriptList[0]
-        // }
-
-
       }
     },
     watch: {

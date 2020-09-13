@@ -199,6 +199,8 @@ export default {
             this.data.name = '';
             this.data.description = '';
             this.imageUrl = '';
+            // 更新商品库数据
+            this.$emit('fatherMethod');
             //关闭对话框
             this.productData.dialogVisible = false;
 
@@ -210,48 +212,7 @@ export default {
         })
       })
     }
-    // handleChange(file,fileList){
-    //   this.fileList.push(file)
-    //   if(fileList.length >= 1){
-    //     this.uploadDisabled = true;
-    //   }
-    //   this.productData.profileList=this.fileList
-    //   this.commitData()
-    // },
-    //   handleRemove(file) {
-    //   this.fileList.filter((item,index)=>{
-    //     if (file === item){
-    //       this.fileList.splice(index,1)
-    //       this.productData.profileList=this.fileList
-    //     }
-    //   })
-    //
-    //   this.uploadDisabled = false
-    // },
-    //  exceed(){
-    //       this.$message.error('每个商品最多上传1张图片哦！')
-    // },
-    // handlePictureCardPreview(file) {
-    //   this.dialogImageUrl = file.url;
-    //   this.dialogVisible = true;
-    // },
-    // commitData(){
-    //   // 是否要修改
-    //   this.item.ifModify=1
-    //   this.item.profileList=this.productData.profileList
-    //   this.item.proTitle=this.productData.proTitle
-    //   this.item.proDescription=this.productData.proDescription
-    //    // 点击保存将本次创建的商品信息传到父组件中
-    //   this.$emit('saveData',this.item)
-    // }
   },
-  // mounted(){
-    // if(this.item.profileList)
-    // {
-    //   this.fileList=this.item.profileList
-    //   this.uploadDisabled = true
-    // }
-  // }
 }
 </script>
 <style lang="scss" scoped>
