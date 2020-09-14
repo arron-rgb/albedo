@@ -175,15 +175,15 @@ export const constantRouterMap = [
   //配音选项
   {
     path: '/mechineDub',
-    meta: { title: '个人中心', noCache: true, showHeader: true },
+    meta: { title: '配音台词', noCache: true, showHeader: true },
     component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/machineDub'], resolve),
     hidden: true,
-    children: [
-      {
-        path: '/proDetail',
-        meta: { showHeader: true },
-        component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/dubDetail'], resolve),
-        hidden: true,
+    // children: [
+    //   {
+    //     path: '/proDetail',
+    //     meta: { showHeader: true },
+    //     component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/dubDetail'], resolve),
+    //     hidden: true,
         children:[
           {
             path:'/newProduct',
@@ -192,15 +192,26 @@ export const constantRouterMap = [
             hidden: true,
           },
           {
+            path:'/selectAttri',
+            meta: { showHeader: true },
+            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/selectAttri'], resolve),
+            hidden: true,
+          },
+          {
             path:'/addMark',
             meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/addMark'], resolve),
             hidden: true,
+          },
+          {
+            path:'/dubTone',
+            meta: { showHeader: true },
+            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/dubTone'], resolve),
+            hidden: true,
           }
-
         ]
-      },
-    ]
+      // },
+    // ]
   },
   {
     path:'/selfDub',
@@ -243,12 +254,6 @@ export const constantRouterMap = [
         component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/dubDetail'], resolve),
         hidden: true,
         children:[
-          {
-            path:'/selectAttri',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/selectAttri'], resolve),
-            hidden: true,
-          },
           {
             path:'/paymentPage',
             meta: { showHeader: true },

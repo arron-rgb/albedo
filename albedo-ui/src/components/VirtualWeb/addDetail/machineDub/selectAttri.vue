@@ -4,7 +4,7 @@
             <h3>选择配音属性</h3>
             <div class="directBtn">
                 <el-button  @click="next">下一步</el-button>
-            </div> 
+            </div>
         </div>
         <div class="markContainer">
             <div class="addLogo">
@@ -24,12 +24,18 @@
                 </div>
             </div>
             <div class="showSelected">
+              <el-row style="min-height: 100px">
                 <h3 class="barTitle">
                     已选属性
                 </h3>
-                <div  class="selectedAttri">
-                    <el-tag v-for="(item,id) in selectedAttri" :key="id">{{item}}</el-tag>
-                </div>
+<!--                <div  class="selectedAttri">-->
+                    <el-tag v-for="(item,id) in selectedAttri" :key="item" :type="typeList[id % 5]" class="myTags">{{item}}</el-tag>
+<!--                </div>-->
+              </el-row>
+              <h3 class="barTitle">
+                配音字数
+              </h3>
+              xxxx
             </div>
         </div>
     </div>
@@ -44,7 +50,8 @@ export default {
             {listType:'类型',list:['讲述播报','综艺播报','新闻播报'],active:-1},
             {listType:'标签',list:['大气','活力','浑厚','甜美','激情'],active:-1}
           ],
-          selectedAttri:[]
+          selectedAttri:[],
+          typeList : ["", "success", "info", "warning", "danger"],
       }
   },
   methods:{
@@ -78,7 +85,7 @@ export default {
         this.$store.commit('NEXT')
     },
 
-  
+
   }
 }
 </script>
@@ -98,21 +105,24 @@ export default {
         display:flex;
         justify-content: space-around;
         align-items: flex-start;
-        padding:20px 0;
+        //padding:20px 0;
         .addLogo{
-            width:500px;
-            min-height:200px;
-            padding-bottom:20px;
-            background-color: rgb(245,247,250);
+          padding: 15px;
+          width:700px;
+          min-height:200px;
+          border:1px solid #ebeef5;
+          border-radius: 5px;
+            //background-color: rgb(245,247,250);
             .barTitle{
                 width:100%;
                 padding:10px;
                 text-align: left;
+              margin: 0;
             }
             .selectBar{
                 width:100%;
                 height:300px;
-                padding:20px;
+                padding: 0 15px;
                 display:flex;
                 flex-direction: column;
                 justify-content: space-evenly;
@@ -135,7 +145,7 @@ export default {
                                 margin-left:0
                             }
                         }
-                       
+
                     }
                      .select-button{
                         &:hover{
@@ -143,7 +153,7 @@ export default {
                             color: #ff5000;
                             border-color: #ff5000;
                         }
-    
+
                     }
                      .active{
                         background-color: #ff5000;;
@@ -154,16 +164,20 @@ export default {
             }
         }
         .showSelected{
-            width:500px;
-            min-height:200px;
-            padding-bottom:20px;
-            background-color: rgb(245,247,250);
+            width:480px;
+            margin-left: 20px;
+            min-height:370px;
+            border-radius: 5px;
+            border:1px solid #ebeef5;
+            padding: 15px;
             .barTitle{
                 width:100%;
                 padding:10px;
                 text-align: left;
+                margin: 0;
             }
             .selectedAttri{
+                margin-top: 30px;
                 padding:10px 40px;
                 height:100px;
                 display:flex;
@@ -191,14 +205,21 @@ export default {
                     border-radius:8px;
                 }
             }
-            
-            
-                
-                
+
+
+
+
         }
-        
+
     }
 }
-
+.myTags{
+  min-width: 80px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 14px;
+  min-height: 40px;
+  margin: 10px;
+}
 
 </style>
