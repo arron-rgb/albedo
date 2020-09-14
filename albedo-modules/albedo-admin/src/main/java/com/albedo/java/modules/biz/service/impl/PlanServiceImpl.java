@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
 
 import javax.annotation.Resource;
 
@@ -26,6 +27,8 @@ import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.alipay.api.AlipayApiException;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.lang.Assert;
+
 /**
  * @author arronshentu
  */
@@ -42,7 +45,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   @Override
   public String purchase(String planId) {
     Plan plan = baseMapper.selectById(planId);
-    TradePlus trade = TradePlus.builder().totalAmount(plan.getPrice().toString()).subject(plan.getName()).build();
+    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
+      .subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(PLAN_TYPE)
       .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
@@ -66,22 +70,29 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
       PurchaseRecord record =
         recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, PLAN_TYPE)
           .eq(PurchaseRecord::getOutTradeNo, outTradeNo).orderByAsc(PurchaseRecord::getCreatedDate));
-      if (record == null) {
-        throw new RuntimeMsgException("未查询到购买记录");
-      }
+      record.setStatus(TRADE_FINISHED);
+      recordService.updateById(record);
+      Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
       String outerId = record.getOuterId();
       Plan plan = baseMapper.selectById(outerId);
       if (plan == null) {
         return false;
       }
-      Balance balance =
-        Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
+      Balance balance;
+      balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", SecurityUtil.getUser().getId()));
+      if (balance != null) {
+        balance.setTimes(balance.getTimes() + plan.getTimes());
+      } else {
+        balance = Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
           .times(plan.getTimes()).storage(Double.valueOf(plan.getStorage())).build();
+      }
       balanceService.save(balance);
       // 买了套餐默认将他更新为企业管理员角色
       // todo PUBLIC_DEPT_ID是否会影响 目测不会
-      userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
-        .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
+      if (!SecurityUtil.getRoles().contains(BUSINESS_ADMIN_ROLE_ID)) {
+        userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
+          .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
+      }
       return true;
     }
     return false;

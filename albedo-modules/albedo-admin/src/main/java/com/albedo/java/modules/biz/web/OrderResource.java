@@ -5,6 +5,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUN
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -73,6 +74,8 @@ public class OrderResource extends BaseResource {
    *          the pagination information
    * @return the Result with status 200 (OK) and with body all Order
    */
+  @Resource
+  VideoService videoService;
 
   @PreAuthorize("@pms.hasPermission('biz_order_view')")
   @GetMapping
@@ -80,7 +83,16 @@ public class OrderResource extends BaseResource {
   @ApiOperation(value = "订单查询")
   public Result<PageModel<Order>> getPage(PageModel<Order> pm, OrderQueryCriteria orderQueryCriteria) {
     QueryWrapper<Order> wrapper = QueryWrapperUtil.getWrapper(pm, orderQueryCriteria);
-    return Result.buildOkData(service.page(pm, wrapper));
+    PageModel<Order> page = service.page(pm, wrapper);
+    List<Order> collect = page.getRecords().stream().map((key) -> {
+      Video video = videoService.getById(key.getVideoId());
+      if (video != null) {
+        key.setVideoId(video.getOriginUrl());
+      }
+      return key;
+    }).collect(Collectors.toList());
+    page.setRecords(collect);
+    return Result.buildOkData(page);
   }
 
   /**
@@ -161,9 +173,6 @@ public class OrderResource extends BaseResource {
 
   @Resource
   PurchaseRecordService purchaseRecordService;
-
-  @Resource
-  VideoService videoService;
 
   @ApiOperation(value = "用户下单")
   @PostMapping(value = "/place")
