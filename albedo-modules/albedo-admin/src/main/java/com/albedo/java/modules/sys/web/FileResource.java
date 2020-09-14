@@ -87,7 +87,7 @@ public class FileResource {
     ossSingleton.uploadFileStream(new FileInputStream(file1), "vlivest", file1.getName());
     boolean delete = file1.delete();
     Map<Object, Object> data = Maps.newHashMap();
-    String url = "www.vlivest.com/" + file1.getName();
+    String url = "static.vlivest.com/" + file1.getName();
     data.put("fileName", tempPath);
     data.put("url", url);
     return Result.buildOkData(data);

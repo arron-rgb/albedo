@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -24,9 +25,9 @@ import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.repository.OrderRepository;
+import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
-import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -185,45 +186,47 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void updateForm(SubOrderVo orderVo) {
+  public Video updateForm(SubOrderVo orderVo) {
     // 自己上传录音 直接给一个文件路径即可
-    Video video = videoService.getOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
+    Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    video.setAdUrl(orderVo.getAdUrl());
-    video.setLogoUrl(orderVo.getLogoUrl());
-    switch (orderVo.getType()) {
-      case 0:
-        // 自行上传配音
-        dubbingBySelf(orderVo, video);
-        break;
-      case 1:
-        // 人工配音 配音字段的属性及pojo
-        artificialDubbing(orderVo);
-        break;
-      case 2:
-        // tts配音
-        machineDubbing(orderVo, video);
-        break;
-      default:
-        throw new RuntimeMsgException("配音类型异常");
+    // video.setAdUrl(orderVo.getAdUrl());
+    // video.setLogoUrl(orderVo.getLogoUrl());
+    if (orderVo.getType() != 1) {
+      Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
-
+    return video;
   }
 
-  private void dubbingBySelf(SubOrderVo orderVo, Video video) {
+  /**
+   * 自行上传配音
+   *
+   * @param orderVo
+   * @param video
+   */
+  @Override
+  public void dubbingBySelf(SubOrderVo orderVo, Video video) {
     video.setAudioUrl(orderVo.getAudioUrl());
-    video.setAudioText(orderVo.getContent());
-    videoService.updateById(video);
+    video.setAudioText(orderVo.appendContent());
+    videoRepository.updateById(video);
   }
 
-  private void machineDubbing(SubOrderVo orderVo, Video video) {
-    String filePath = generateAudio(orderVo.getContent(), "", orderVo.getOrderId());
+  @Async
+  @Override
+  public void machineDubbing(SubOrderVo orderVo, Video video) {
+    String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId());
+    video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(filePath);
-    videoService.updateById(video);
+    videoRepository.updateById(video);
   }
 
-  private void artificialDubbing(SubOrderVo orderVo) {
-    String totalAmount = "";
+  @Override
+  public String artificialDubbing(SubOrderVo orderVo) {
+    String totalAmount = "999";
+    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音"));
+    if (price != null) {
+      totalAmount = price.getVal();
+    }
     String subject = "人工配音";
     TradePlus trade = TradePlus.builder().subject(subject).totalAmount(totalAmount).build();
     try {
@@ -232,28 +235,30 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       order.setTotalAmount(totalAmount);
       order.setType(DUBBING);
       order.setUserId(SecurityUtil.getUser().getId());
-      order.setContent(orderVo.getContent());
+      order.setContent(orderVo.appendContent());
+      order.setDescription(orderVo.getDescription());
       order.setState(NOT_STARTED);
       baseMapper.insert(order);
-      aliPayService.toPayAsPc(trade);
+      return aliPayService.toPayAsPc(trade);
     } catch (Exception ignored) {
+      throw new RuntimeMsgException("生成支付链接时发生错误");
     }
   }
 
-  /**
-   * 1. 商品选择及商品crud
-   * 2. 台词啥的
-   * 3.
-   */
-  public String generateAudio(String text, String commodityIds, String orderId) {
+  public String generateAudio(String text, String orderId) {
     TtsParams build = new TtsParams();
     build.setText(text);
-    File file = ttsSingleton.generateRadio(build);
+    build.setCodec("mp3");
+    File file = ttsSingleton.generateAudio(build);
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
-    // todo 商品创建完了要干啥
     String videoId = order.getVideoId();
-    Video video = videoService.getById(videoId);
+    // 更新视频中的音频信息
+    Video video = videoRepository.selectById(videoId);
+    Assert.notNull(video, VIDEO_NOT_FOUND);
+    video.setAudioUrl(file.getAbsolutePath());
+    video.setAudioText(text);
+    videoRepository.updateById(video);
     return file.getAbsolutePath();
   }
 
@@ -269,14 +274,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Resource
-  VideoService videoService;
-
-  @Override
-  public void uploadRadio(String orderId, String content) {
-    Order order = baseMapper.selectById(orderId);
-    String videoId = order.getVideoId();
-    Video video = videoService.getById(videoId);
-  }
+  VideoRepository videoRepository;
 
   @Override
   public boolean callback(String orderId) {

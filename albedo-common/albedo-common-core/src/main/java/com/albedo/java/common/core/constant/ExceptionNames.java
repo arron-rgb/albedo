@@ -19,6 +19,8 @@ public interface ExceptionNames {
   String ORDER_VIDEO_NOT_FOUNT = "未查询到订单相关的视频信息";
 
   String VIDEO_NOT_FOUND = "未查询到视频信息";
+  String VIDEO_DATA_NOT_FOUND = "未查询到视频源数据信息";
+  String AUDIO_NOT_FOUND = "未查询到音频信息";
 
   String ALIPAY_ERROR = "调用支付链接时发生错误";
 

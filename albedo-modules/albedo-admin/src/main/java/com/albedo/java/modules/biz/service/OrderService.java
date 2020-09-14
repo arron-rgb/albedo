@@ -2,10 +2,13 @@ package com.albedo.java.modules.biz.service;
 
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Async;
+
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 
 /**
@@ -55,7 +58,7 @@ public interface OrderService extends BaseService<Order> {
    *
    * @param orderVo
    */
-  void updateForm(SubOrderVo orderVo);
+  Video updateForm(SubOrderVo orderVo);
 
   /**
    * 返回员工名下的订单
@@ -64,16 +67,12 @@ public interface OrderService extends BaseService<Order> {
    */
   List<Order> belongs();
 
-  /**
-   * 上传音频
-   *
-   * @param orderId
-   *          订单
-   * @param content
-   *          base64
-   */
-  void uploadRadio(String orderId, String content);
-
   boolean callback(String orderId);
 
+  void dubbingBySelf(SubOrderVo orderVo, Video video);
+
+  @Async
+  void machineDubbing(SubOrderVo orderVo, Video video);
+
+  String artificialDubbing(SubOrderVo orderVo);
 }

@@ -94,6 +94,7 @@ public class FileUploadUtil {
    *           比如读写文件出错时
    */
   public static String upload(String baseDir, MultipartFile file, String[] allowedExtension) throws IOException {
+    Assert.notNull(file, "文件为空");
     String originalFilename = file.getOriginalFilename();
     Assert.isTrue(StringUtils.isNotEmpty(originalFilename), "文件名不合法");
     int fileNameLength = originalFilename.length();
@@ -161,7 +162,7 @@ public class FileUploadUtil {
     String extension = getExtension(file);
     if (allowedExtension != null && !isAllowedExtension(extension, allowedExtension)) {
       throw new RuntimeMsgException(
-        String.format("InvalidExtensionException : allowedExtension-{} extension-{} fileName-{}",
+        String.format("InvalidExtensionException : allowedExtension-%s extension-%s fileName-%s",
           Arrays.toString(allowedExtension), extension, fileName));
     }
 
@@ -197,5 +198,9 @@ public class FileUploadUtil {
       extension = MimeTypeUtil.getExtension(file.getContentType());
     }
     return extension;
+  }
+
+  public static String getExtension(@NonNull File file) {
+    return FileUtil.extName(file.getName());
   }
 }

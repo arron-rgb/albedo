@@ -1,6 +1,8 @@
 package com.albedo.java.modules.biz.web;
 
-import java.io.IOException;
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
+
 import java.util.List;
 import java.util.Set;
 
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.albedo.java.common.core.annotation.Token;
+import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.exception.OrderException;
+import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
@@ -22,6 +26,7 @@ import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.service.OrderService;
@@ -30,6 +35,7 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -142,10 +148,12 @@ public class OrderResource extends BaseResource {
 
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
-  public Result<String> uploadVideo(@RequestParam("file") MultipartFile file, String orderId) {
+  public Result<String> uploadVideo(MultipartFile file, String orderId) {
     try {
-      videoService.uploadVideo(orderId, file);
-    } catch (IOException e) {
+      String tempPath = FileUploadUtil.upload(ApplicationConfig.getUploadPath(), file);
+      videoService.uploadVideo(orderId, tempPath);
+    } catch (Exception e) {
+      e.printStackTrace();
       return Result.buildFail("保存失败");
     }
     return Result.buildOk("上传成功");
@@ -166,12 +174,28 @@ public class OrderResource extends BaseResource {
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
   public Result<String> placeSecond(SubOrderVo orderVo) {
-    service.updateForm(orderVo);
-    // 二次订单
-    // 1. 自己上传配音
-    // 2. 人工录音，新下订单
-    // 3. 语音合成
-    return Result.buildOk("下单成功");
+    // 通用流程
+    Video video = service.updateForm(orderVo);
+    String orderId = orderVo.getOrderId();
+    Order order = service.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
+    switch (orderVo.getType()) {
+      case 0:
+        // 自行上传配音
+        service.dubbingBySelf(orderVo, video);
+        break;
+      case 1:
+        // 人工配音 配音字段的属性及pojo
+        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，等待工作人员接单");
+      case 2:
+        // tts配音
+        service.machineDubbing(orderVo, video);
+        break;
+      default:
+        return Result.buildFail("配音类型异常");
+    }
+    return Result.buildOk("上传成功");
   }
 
   @ApiOperation(value = "用户拉取自己的订单状态")

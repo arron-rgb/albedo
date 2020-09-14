@@ -13,16 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
-import com.albedo.java.common.core.vo.PageModel;
-import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Commodity;
 import com.albedo.java.modules.biz.domain.dto.CommodityDto;
-import com.albedo.java.modules.biz.domain.dto.CommodityQueryCriteria;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.CommodityService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -65,9 +63,9 @@ public class CommodityResource extends BaseResource {
   @ApiOperation(value = "查询商品管理")
   @LogOperate(value = "商品管理查看")
   public Result<List<Commodity>> getPage() {
-	  List<Commodity> commodities =
-		  service.list(Wrappers.<Commodity>query().eq("created_by", SecurityUtil.getUser().getId()));
-	  return Result.buildOkData(commodities);
+    List<Commodity> commodities =
+      service.list(Wrappers.<Commodity>query().eq("user_id", SecurityUtil.getUser().getId()));
+    return Result.buildOkData(commodities);
   }
 
   /**

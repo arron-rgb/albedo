@@ -2,8 +2,6 @@ package com.albedo.java.modules.biz.service;
 
 import java.io.IOException;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Video;
 
@@ -28,12 +26,12 @@ public interface VideoService extends BaseService<Video> {
    *
    * @param orderId
    *          订单id
-   * @param file
-   *          流
+   * @param tempPath
+   *          本地文件路径
    * @exception IOException
    *              IO异常
    */
-  void uploadVideo(String orderId, MultipartFile file) throws IOException;
+  void uploadVideo(String orderId, String tempPath) throws IOException;
 
   /**
    * 给某条video添加配音处理

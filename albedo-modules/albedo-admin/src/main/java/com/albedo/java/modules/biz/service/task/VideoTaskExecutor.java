@@ -5,9 +5,9 @@ import java.io.File;
 import javax.annotation.Resource;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 
+import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.tool.util.OssSingleton;
 
@@ -18,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class VideoTaskExecutor {
+  public VideoTaskExecutor() {}
 
   /**
    * @param event
    *          含有video的信息
    */
   @Async
-  @Order
   @EventListener(VideoUploadTask.class)
   public void uploadVideoToOss(VideoUploadTask event) {
     String videoPath = event.video.getOriginUrl();
@@ -43,11 +43,22 @@ public class VideoTaskExecutor {
    *          含有video的信息
    */
   @Async
-  @Order
   @EventListener(VideoEncodeTask.class)
   public void concatAudio(VideoEncodeTask event) {
+    log.info("开始合成音频");
     ffmpegUtil.concatAudio(event.video);
     event.setStatus("end");
+    log.info("结束");
+  }
+
+  @Async
+  @EventListener(WatermarkTask.class)
+  public void addWatermark(WatermarkTask event) {
+    log.info("加水印");
+    Video video = event.video;
+    ffmpegUtil.addWatermark(video.getOriginUrl(), video.getLogoUrl(), event.getAxis());
+    event.setStatus("end");
+    log.info("加水印");
   }
 
   @Resource
