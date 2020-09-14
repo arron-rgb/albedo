@@ -133,7 +133,7 @@ export default {
   data() {
     return {
       duration: '',
-      dubType: '',
+      dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
     }
 
   },
@@ -145,7 +145,7 @@ export default {
     },
     toMore(){
       if(this.duration === '' || this.duration === null){
-        this.$alert('请先设置视频时长', '提示', {
+        this.$alert('请先设置视频时长!', '提示', {
           confirmButtonText: '确定',
         });
       }else if(this.dubType === '' || this.dubType === null)
@@ -159,12 +159,12 @@ export default {
           name: 'dubType',
           content: this.dubType,
           type: 'session'
-        })
+        });
         storeApi.set({
           name: 'duration',
           content: this.duration,
           type: 'session'
-        })
+        });
         switch (this.dubType){
           case "0": this.goTo('/uploadDub');break;
           case "1": this.goTo('/newProduct');break;

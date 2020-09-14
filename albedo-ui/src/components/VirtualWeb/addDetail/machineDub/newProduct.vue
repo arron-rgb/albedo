@@ -1,9 +1,39 @@
 <template>
 <div class="newProduct">
-    <div class="directBar">
-        <el-button  @click="next">下一步</el-button>
-     </div>
+  <el-row>
 
+<!--  {{words}}-->
+
+  </el-row>
+  <el-row style="text-align: center; margin-top: 10px;">
+    <el-col span="3" offset="1">
+      <h3>
+        当前台词总字数
+      </h3>
+    </el-col>
+    <el-col span="3" style="margin-top: 3px;">
+      <span style="font-size: 30px; color: #ff5000">{{words}}</span>
+    </el-col>
+    <el-col span="1">
+      <span style="line-height: 55px">字</span>
+    </el-col>
+    <el-col span="3" offset="1">
+      <h3>
+        预计时长
+      </h3>
+    </el-col>
+    <el-col span="3" style="margin-top: 3px;">
+      <span style="font-size: 30px; color: #ff5000">{{Math.ceil(this.words / 200)}}</span>
+    </el-col>
+    <el-col span="1">
+      <span style="line-height: 55px">分钟</span>
+    </el-col>
+    <el-col span="8">
+      <div class="directBar">
+        <el-button  @click="next">下一步</el-button>
+      </div>
+    </el-col>
+  </el-row>
 <!--  {{this.chooseList}}-->
   <el-dialog
     title="新增商品"
@@ -179,6 +209,7 @@ import draggable from "vuedraggable"
 import crudCommodity from '@/views/biz/commodity/commodity-service'
 import crudScript from '@/views/biz/script/script-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
+import storeApi from "@/utils/store";
 
 // let anchorName='W';
 // let touristName='LH';
@@ -213,11 +244,24 @@ export default {
         data : '',
       },
       dubText: '',
+      words : 0,
+      duration : 0,
     }
   },
   created() {
     this.getScripts()
     this.getCommodityList();
+    this.duration = storeApi.get({
+      name: 'duration'
+    }) || 0;
+    console.log(this.duration);
+    if(this.duration === 0 || this.duration === undefined){
+      this.$alert('请先选择视频长度！', '警告', {
+        confirmButtonText: '确定',
+      }).then(
+        this.$router.replace('addDetail')
+      );
+    }
   },
   methods: {
 
@@ -273,13 +317,26 @@ export default {
 
     // 添加已有商品到配置项
     add(item, type) {
+      if(Math.ceil(this.words / 200) > this.duration)
+      {
+        this.$alert('台词配音时长超过视频时长！', '警告', {
+            confirmButtonText: '确定',
+          });
+        return ;
+      }
       var data = {type: type, data: item};
       // console.log(JSON.stringify(data));
       // 深拷贝
-      this.chooseList.push(JSON.parse(JSON.stringify(data)))
+      this.chooseList.push(JSON.parse(JSON.stringify(data)));
+      type === 'product' ?
+        this.words += item.description.length :
+        this.words += item.value.length;
     },
     //从组件中移除
     removeItem(index) {
+      this.chooseList[index].type === 'product' ?
+        this.words -= this.chooseList[index].data.description.length :
+        this.words -= this.chooseList[index].data.value.length;
       this.chooseList.splice(index, 1);
     },
     //打开编辑串词框
@@ -287,12 +344,13 @@ export default {
       this.editScript.index = index;
       this.editScript.data = data
       this.scriptVisible = true;
+      this.words -= this.chooseList[index].data.value.length;
     },
     //保存修改好的串词
     saveScript(){
       this.chooseList[this.editScript.index].data.value = this.editScript.data;
+      this.words += this.editScript.data.length;
       this.scriptVisible = false;
-
     },
     //强制刷新input
     onInput(){
@@ -309,21 +367,28 @@ export default {
         return ;
       }
       var dubText = [];
+      var words = 0;
       for(var i = 0; i < this.chooseList.length; i++){
         this.chooseList[i].type === 'product' ?
           dubText.push(this.chooseList[i].data.description):
           dubText.push(this.chooseList[i].data.value);
+        words += dubText[i].length;
       }
+      // 保存台词总数
+      storeApi.set({
+        name: 'words',
+        content: words,
+        type: 'session'
+      });
       console.log(dubText);
-      this.$router.replace('dubTone')
+      this.$router.replace('selectAttri')
       // this.$store.commit('NEXT')
     },
     mounted() {
       // this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
     },
     computed: {
-      searchData: function () {
-      }
+
     },
     watch: {
       chooseList: {
