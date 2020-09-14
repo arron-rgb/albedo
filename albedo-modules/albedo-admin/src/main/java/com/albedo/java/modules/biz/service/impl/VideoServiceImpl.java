@@ -110,6 +110,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       video = Video.builder().userId(userId).orderId(orderId).build();
       baseMapper.insert(video);
     }
+    video.setOriginUrl(tempPath);
     video.setName(tempFile.getName());
     baseMapper.updateById(video);
     order.setState(PRODUCTION_COMPLETED);

@@ -33,7 +33,7 @@ public class MimeTypeUtil {
     // pdf
     "pdf",
     // media
-    "swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg", "asf", "rm", "rmvb"};
+    "swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg", "asf", "rm", "rmvb", "mp4"};
 
   public static String getExtension(String prefix) {
     switch (prefix) {

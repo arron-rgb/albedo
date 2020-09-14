@@ -189,6 +189,7 @@ public class OrderResource extends BaseResource {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
+    // todo orderVo会默认为0
     switch (orderVo.getType()) {
       case 0:
         // 自行上传配音
@@ -196,7 +197,7 @@ public class OrderResource extends BaseResource {
         break;
       case 1:
         // 人工配音 配音字段的属性及pojo
-        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，等待工作人员接单");
+        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，支付后等待工作人员接单即可");
       case 2:
         // tts配音
         service.machineDubbing(orderVo, video);
