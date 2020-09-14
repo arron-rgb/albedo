@@ -21,14 +21,14 @@ export function del(ids) {
   return request({
     url: '/biz/commodity',
     method: 'delete',
-    data: ids
+    data: [ids]
   })
 }
 
 
-export function get(id) {
+export function get() {
   return request({
-    url: '/biz/commodity/' + id,
+    url: '/biz/commodity/',
     method: 'get'
   })
 }

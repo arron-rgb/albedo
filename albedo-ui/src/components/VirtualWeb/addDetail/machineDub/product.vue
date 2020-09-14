@@ -31,7 +31,7 @@
   </el-row>
   <el-row>
     <el-col offset="10">
-      <el-button type="primary" @click="upload">保存</el-button>
+      <el-button :loading="loading" type="primary" @click="upload">保存</el-button>
     </el-col>
   </el-row>
 <!--    <el-upload-->
@@ -88,6 +88,7 @@ export default {
   props:['productData'],
   data(){
       return{
+        loading : false,
         imageUrl: '',
         uploadUrl: '',
         // 隐藏加号
@@ -150,6 +151,7 @@ export default {
             this.saveProduct()
           }
         }).catch(error => {
+          this.loading = false;
           reject(error)
         })
       });
@@ -170,6 +172,10 @@ export default {
       return isJPG && isLt2M;
     },
     upload(){
+      if(this.imageUrl === ''){
+        this.$message.error('请上传图片！');
+        return  false;
+      }
       if(this.data.name === ''){
         this.$message.error('商品名称不能为空！');
         return ;
@@ -178,6 +184,7 @@ export default {
         this.$message.error('商品描述不能为空！');
         return ;
       }
+      this.loading = true;
       //上传图片
       this.$refs.upload.submit()
     },
@@ -187,11 +194,19 @@ export default {
         dubOperate.saveProduct(this.data).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
+            // 清空表单数据
+            this.data.urls = '';
+            this.data.name = '';
+            this.data.description = '';
+            this.imageUrl = '';
             //关闭对话框
-            this.productData.dialogVisible = false
+            this.productData.dialogVisible = false;
+
+            this.loading = false;
           }
         }).catch(error => {
           reject(error)
+          this.loading = false;
         })
       })
     }

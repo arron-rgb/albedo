@@ -14,7 +14,8 @@
   justify-content:flex-start;
   align-items: center;
   flex-direction: column;
-  border:2px dashed #ccc;
+  //border-radius: 5px !important;
+  //border:1px solid #ebeef5 !important;
   box-sizing: border-box;
 
 }
