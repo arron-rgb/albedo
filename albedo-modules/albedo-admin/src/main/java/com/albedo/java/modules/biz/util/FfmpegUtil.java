@@ -1,6 +1,5 @@
 package com.albedo.java.modules.biz.util;
 
-import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
 import static com.albedo.java.common.core.util.FileUtil.generateFilePath;
 
 import java.io.File;
@@ -59,17 +58,18 @@ public class FfmpegUtil {
 
   /**
    * 给视频添加音频 时间填充
-   * todo 需要负责编码的格式
    *
    */
   public void concatAudio(Video video) {
     String audioPath = video.getAudioUrl();
-    String videoPath = concatFilePath("upload", video.getOriginUrl());
+    String videoPath = video.getOriginUrl();
+    // String videoPath = concatFilePath("upload", video.getOriginUrl());
     String extName = FileUtil.extName(videoPath);
     concatAudioWithGpu(audioPath, videoPath, generateFilePath(extName), false);
+    // concatAudioWithGpu(audioPath, videoPath, "", false);
   }
 
-  public void concatAudioWithGpu(String audioPath, String videoPath, String outputPath, boolean gpuFlag) {
+  public String concatAudioWithGpu(String audioPath, String videoPath, String outputPath, boolean gpuFlag) {
     String extName = FileUtil.extName(audioPath);
     String audioTempOutput = generateFilePath(extName);
     String codec = "copy";
@@ -84,25 +84,27 @@ public class FfmpegUtil {
     }
 
     // 先合成拼接的mp3
-    FFmpegBuilder builder = new FFmpegBuilder().addInput(videoPath);
+    FFmpegBuilder builder = new FFmpegBuilder();
     builder.addInput(concatMp3(list));
     builder.addOutput(audioTempOutput).setAudioCodec(codec).done();
     run(builder);
-    log.info("合成总mp3");
+    log.info("合成总mp3，合成路径{}", audioTempOutput);
 
     // 拼接结果放进mp4
     builder = new FFmpegBuilder().addInput(videoPath);
     builder.addInput(audioTempOutput);
-    if (gpuFlag) {
-      builder.addExtraArgs(gpuParam);
-    }
-    builder.addOutput(outputPath).setVideoCodec(codec).setAudioCodec(codec).done();
+    // if (gpuFlag) {
+    // builder.addExtraArgs(gpuParam);
+    // }
+    builder.addOutput(outputPath).setVideoCodec("libx264").setAudioBitRate(16000L).setAudioCodec("aac")
+      .setVideoCodec(codec).done();
     run(builder);
     log.info("注入音频");
 
     deleteFile(audioTempOutput);
-    log.info("结束");
+    log.info("结束，文件路径:{}", outputPath);
     // todo 执行完毕后更新订单情况及视频信息
+    return outputPath;
   }
 
   /**
@@ -112,7 +114,8 @@ public class FfmpegUtil {
    *          音频路径list
    * @return
    */
-  private String concatMp3(List<String> audioPaths) {
+  public String concatMp3(List<String> audioPaths) {
+    // ffmpeg -i "concat:test1.mp3|test2.mp3" -acodec copy output.mp3
     String concat = "concat:%s";
     StringBuilder builder = new StringBuilder();
     for (String path : audioPaths) {
@@ -126,30 +129,13 @@ public class FfmpegUtil {
     return "movie=" + logoPath + "[watermark];[in][watermark]overlay=" + axis + "[out]";
   }
 
-  /**
-   * 加水印
-   *
-   * @param videoPath
-   *          视频路径
-   * @param logoPath
-   *          水印路径
-   * @param axis
-   *          水印坐标
-   */
-  public void addWatermark(String videoPath, String logoPath, String axis) {
-    FFmpegBuilder builder = new FFmpegBuilder().addInput(videoPath);
-    builder.setAudioFilter(videoFilter(logoPath, axis));
-    builder.addOutput(output).done();
-    run(builder);
-  }
-
   public void run(FFmpegBuilder builder) {
     run(builder, null);
   }
 
   public void run(FFmpegBuilder builder, ProgressListener listener) {
-    FFmpegJob job = executor.createJob(builder);
-    executor.createJob(builder, listener);
+    FFmpegJob job;
+    job = executor.createJob(builder, listener);
     job.run();
   }
 

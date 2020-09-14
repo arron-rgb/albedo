@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 
-import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.tool.util.OssSingleton;
 
@@ -49,16 +48,6 @@ public class VideoTaskExecutor {
     ffmpegUtil.concatAudio(event.video);
     event.setStatus("end");
     log.info("结束");
-  }
-
-  @Async
-  @EventListener(WatermarkTask.class)
-  public void addWatermark(WatermarkTask event) {
-    log.info("加水印");
-    Video video = event.video;
-    ffmpegUtil.addWatermark(video.getOriginUrl(), video.getLogoUrl(), event.getAxis());
-    event.setStatus("end");
-    log.info("加水印");
   }
 
   @Resource
