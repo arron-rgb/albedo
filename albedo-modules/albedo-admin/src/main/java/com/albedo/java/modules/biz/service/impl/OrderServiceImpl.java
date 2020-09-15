@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -38,6 +39,7 @@ import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -61,8 +63,26 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   BalanceService balanceService;
   String val = "加速服务";
 
+  /**
+   * 非配音订单
+   * 并且
+   * 正在流程中的
+   * 订单
+   *
+   * @return
+   */
+  private Order currentOrder() {
+    return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING).ne("state",
+      COMPLETED_SUCCESS), false);
+  }
+
   @Override
   public String place(OrderVo form) {
+
+    if (!Objects.isNull(currentOrder())) {
+      throw new RuntimeMsgException("当前仍有订单未完成，无法创建新订单");
+    }
+
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
     order.setState(UNPAID_ORDER);
@@ -100,18 +120,22 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   public String price(String orderId, String subject) {
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
-    Assert.isTrue(order.getState().equals(UNPAID_ORDER), ORDER_ERROR);
+    Assert.isTrue(UNPAID_ORDER.equals(order.getState()), ORDER_ERROR);
 
     Integer times = balanceService.leftTimes();
     if (times == null || times.equals(0)) {
       // 1. 先检验次数 没次数的话返回支付整个订单的链接
       TradePlus plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
         .totalAmount(order.getTotalAmount()).build();
-      // todo 生成多次的record 脏数据怎么清除
-      PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-        .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
-      recordService.save(record);
-
+      PurchaseRecord record;
+      record =
+        recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
+      if (record == null) {
+        record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+          .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+      }
+      // todo orderId应该唯一索引 异常要处理
+      recordService.saveOrUpdate(record);
       return getPurchaseUrl(plus);
     }
 
@@ -143,8 +167,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   private String calculatePrice(String content) {
 
-    PlusService<Config> plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {});
-
+    PlusService<Config> plusService;
+    try {
+      plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {});
+    } catch (JSONException e) {
+      throw new RuntimeMsgException(ORDER_PARSE_ERROR);
+    }
     Assert.notNull(plusService, ORDER_PARSE_ERROR);
 
     List<Element<Config>> elements = plusService.getData().stream()
@@ -199,9 +227,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // 自己上传录音 直接给一个文件路径即可
     Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    // video.setAdUrl(orderVo.getAdUrl());
-    // video.setLogoUrl(orderVo.getLogoUrl());
-    if (orderVo.getType() != 1) {
+    if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
     return video;
@@ -258,7 +284,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       return aliPayService.toPayAsPc(trade);
     } catch (Exception e) {
       e.printStackTrace();
-      throw new RuntimeMsgException("生成支付链接时发生错误");
+      throw new RuntimeMsgException(ALIPAY_ERROR);
     }
   }
 
@@ -303,12 +329,14 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // 拒绝已进入付款后状态订单
     Assert.isTrue(order.getState() < NOT_STARTED, "订单已支付");
     order.setState(NOT_STARTED);
-
     PurchaseRecord record =
       recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, ORDER_TYPE)
         .eq(PurchaseRecord::getOuterId, orderId).orderByAsc(PurchaseRecord::getCreatedDate));
     Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
     record.setStatus(TRADE_FINISHED);
+    recordService.updateById(record);
+
     return baseMapper.updateById(order) == 1;
   }
+
 }

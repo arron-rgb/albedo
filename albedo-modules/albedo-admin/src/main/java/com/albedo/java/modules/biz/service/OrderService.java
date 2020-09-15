@@ -67,6 +67,14 @@ public interface OrderService extends BaseService<Order> {
    */
   List<Order> belongs();
 
+  /**
+   * 订单支付完成回调接口
+   * 1. 将购买记录更新为已支付
+   * 2. 订单状态更新为已支付
+   *
+   * @param orderId
+   * @return
+   */
   boolean callback(String orderId);
 
   /**

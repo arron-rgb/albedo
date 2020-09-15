@@ -70,7 +70,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   /**
    * 上传
    * todo 订单与video的唯一对应关系
-   * todo 二次上传时video记录的获取
    *
    * @param orderId
    *          订单id
@@ -103,7 +102,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       bucketName = StringUtils.isEmpty(user.getQqOpenId()) ? createBucket(userId) : user.getQqOpenId();
     }
     InputStream inputStream = new FileInputStream(tempFile);
-    // InputStream inputStream = file.getInputStream();
     Video video = baseMapper.selectOne(Wrappers.<Video>query().eq("order_id", orderId));
     // 保存视频记录至数据库
     if (video == null) {

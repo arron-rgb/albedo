@@ -48,6 +48,10 @@ public class UserOrderResource extends BaseResource {
   @ApiOperation(value = "查看当前订单")
   @GetMapping("/current")
   public Result<Order> currentOrder() {
+    // 判断条件
+    // 1. 当前用户的订单
+    // 2. 未处于结单状态
+    // todo 如果有多个怎么办
     Order order = service.getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", "2")
       .ne("state", COMPLETED_SUCCESS), false);
     return Result.buildOkData(order);
@@ -86,7 +90,7 @@ public class UserOrderResource extends BaseResource {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
-    // todo orderVo会默认为0
+    // orderVo会默认为0
     switch (orderVo.getType()) {
       case 0:
         // 自行上传配音
@@ -106,7 +110,7 @@ public class UserOrderResource extends BaseResource {
   }
 
   @ApiOperation(value = "用户拉取自己的订单状态")
-  @PostMapping(value = "/query")
+  @GetMapping(value = "/query")
   public Result<List<Order>> query() {
     return Result.buildOkData(service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId())));
   }
