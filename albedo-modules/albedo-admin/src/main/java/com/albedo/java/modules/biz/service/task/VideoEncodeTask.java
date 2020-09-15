@@ -18,9 +18,4 @@ public class VideoEncodeTask extends VideoTask {
     super(video);
   }
 
-  public VideoEncodeTask(Video video, boolean gpuFlag) {
-    super(video);
-    this.gpuFlag = gpuFlag;
-  }
-
 }

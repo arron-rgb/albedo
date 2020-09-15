@@ -60,12 +60,12 @@ public class FfmpegUtil {
    * 给视频添加音频 时间填充
    *
    */
-  public void concatAudio(Video video) {
+  public String concatAudio(Video video) {
     String audioPath = video.getAudioUrl();
     String videoPath = video.getOriginUrl();
     // String videoPath = concatFilePath("upload", video.getOriginUrl());
     String extName = FileUtil.extName(videoPath);
-    concatAudioWithGpu(audioPath, videoPath, generateFilePath(extName), false);
+    return concatAudioWithGpu(audioPath, videoPath, generateFilePath(extName), false);
     // concatAudioWithGpu(audioPath, videoPath, "", false);
   }
 

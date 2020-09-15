@@ -141,4 +141,9 @@ public class OssSingleton {
     return file;
   }
 
+  // todo 获取某个文件的链接
+  public String getFileUrl() {
+    return "";
+  }
+
 }

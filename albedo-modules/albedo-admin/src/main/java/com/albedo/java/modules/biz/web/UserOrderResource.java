@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
 import java.util.List;
@@ -106,6 +105,8 @@ public class UserOrderResource extends BaseResource {
       default:
         return Result.buildFail("配音类型异常");
     }
+    order.setState(NOT_UPDATED);
+    service.updateById(order);
     return Result.buildOk("上传成功");
   }
 
