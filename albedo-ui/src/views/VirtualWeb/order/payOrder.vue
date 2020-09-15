@@ -165,11 +165,13 @@ export default {
       })
     },
     toPurchase(key){
+
       var data = {
         orderId : key,
         subject : '单人主播视频订单',
         token : store.getters.token,
       }
+      console.log(data);
       payOrder.purchase(data).then(res => {
         if (res.code === MSG_TYPE_SUCCESS) {
           console.log(res)

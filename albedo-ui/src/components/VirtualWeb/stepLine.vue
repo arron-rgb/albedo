@@ -11,12 +11,16 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
   name: "stepLine",
   data(){
     return {
       active:0,
     }
+  },
+  created() {
+    this.$store.getters.user.userType
   }
 }
 </script>

@@ -9,8 +9,9 @@
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
                   <img class="img" v-show="o.url !== null" :src="o.url">
-                  <div class="button-text">{{o.value}} {{o.url}}</div>
+                  <div class="button-text">{{o.value}}</div>
                 </el-radio-button>
+                <div v-show="o.value !== null" class="button-text" style="line-height: 20px; color: #909399">{{o.value}}</div>
               </el-radio-group>
             </el-collapse-item>
           </el-collapse>
@@ -78,7 +79,7 @@ export default {
       if (this.data.length > this.backData.length) {
         //找到没有选择的第一个选项
         for (var i = 0; i < this.data.length ; i++) {
-          console.log(this.data[i].title)
+          // console.log(this.data[i].title)
           var dataIndex = this.backData.findIndex(o => o.title === this.data[i].title);
           console.log(dataIndex)
           if (dataIndex === -1) {
@@ -90,6 +91,7 @@ export default {
       }
       else{
         //保存已选的视频选项
+        console.log(this.backData)
         storeApi.set({
           name: 'videoConfig',
           content: this.backData,
@@ -130,6 +132,7 @@ export default {
   height: 280px;
 }
 .button-text{
+  max-width: 210px;
   line-height: 32px;
   font-size: 14px;
   padding: 0 20px;

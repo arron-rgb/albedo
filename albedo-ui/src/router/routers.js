@@ -165,6 +165,12 @@ export const constantRouterMap = [
       },
     ]
   },
+  {
+    path: '/historyOrder',
+    meta: { title: '历史订单', noCache: true, showHeader: true },
+    component: (resolve) => require(['@/views/VirtualWeb/order/historyOrder'], resolve),
+    hidden: true
+  },
 
   {
     path: '/addDetail',
@@ -201,12 +207,6 @@ export const constantRouterMap = [
             path:'/addMark',
             meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/addMark'], resolve),
-            hidden: true,
-          },
-          {
-            path:'/dubTone',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/dubTone'], resolve),
             hidden: true,
           }
         ]

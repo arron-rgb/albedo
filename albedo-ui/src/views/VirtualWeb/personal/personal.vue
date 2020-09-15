@@ -61,7 +61,7 @@ export default {
   },
   created() {
     // console.log(this.user);
-    if(this.user.roleNames === "个人用户")
+    if(this.user.userType === 1)
     {
       this.showMember = false;
     }
