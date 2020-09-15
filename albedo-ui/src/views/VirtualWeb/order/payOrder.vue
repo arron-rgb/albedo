@@ -95,6 +95,7 @@ import storeApi from "@/utils/store";
 import payOrder from '@/views/VirtualWeb/order/payOrder-server'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import store from "@/store";
+import loginService from "@/api/login";
 export default {
   name: "payOrder",
   data(){
@@ -108,6 +109,7 @@ export default {
       data : '',
       loading : false,
       priceList : [999, 1999, 0],
+      token : '',
     }
   },
   watch: {
@@ -150,7 +152,7 @@ export default {
       return new Promise((resolve, reject) => {
         payOrder.save(data).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            console.log(res)
+            // console.log(res)
             this.$message({
               message: '订单提交成功，即将跳转支付页面',
               type: 'success'
@@ -165,16 +167,19 @@ export default {
       })
     },
     toPurchase(key){
-
+      this.getToken();
       var data = {
         orderId : key,
         subject : '单人主播视频订单',
-        token : store.getters.token,
+        token : '',
       }
-      console.log(data);
+      loginService.token().then((res) =>{
+        data.token = res;
+      })
       payOrder.purchase(data).then(res => {
         if (res.code === MSG_TYPE_SUCCESS) {
           console.log(res)
+          window.open(res.message);
           this.$message({
             message: '支付成功！',
             type: 'success'
@@ -184,7 +189,7 @@ export default {
       }).catch(error => {
         reject(error)
       })
-    }
+    },
   }
 }
 </script>

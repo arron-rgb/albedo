@@ -53,7 +53,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudConfig.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            // console.log(res)
+            console.log(res)
             this.data = res.data.data
           }
         }).catch(error => {
@@ -81,7 +81,7 @@ export default {
         for (var i = 0; i < this.data.length ; i++) {
           // console.log(this.data[i].title)
           var dataIndex = this.backData.findIndex(o => o.title === this.data[i].title);
-          console.log(dataIndex)
+          // console.log(dataIndex)
           if (dataIndex === -1) {
             this.$alert('“' + this.data[i].title + '”尚未选择', '警告', {
               confirmButtonText: '确定',
@@ -91,7 +91,7 @@ export default {
       }
       else{
         //保存已选的视频选项
-        console.log(this.backData)
+        // console.log(this.backData)
         storeApi.set({
           name: 'videoConfig',
           content: this.backData,

@@ -166,13 +166,6 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/historyOrder',
-    meta: { title: '历史订单', noCache: true, showHeader: true },
-    component: (resolve) => require(['@/views/VirtualWeb/order/historyOrder'], resolve),
-    hidden: true
-  },
-
-  {
     path: '/addDetail',
     meta: { showHeader: true },
     component: (resolve) => require(['@/views/VirtualWeb/order/addDetail'], resolve),
