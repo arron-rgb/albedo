@@ -3,11 +3,11 @@ package com.albedo.java.modules.tool.service.impl;
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCT_CODE;
 import static com.albedo.java.common.core.constant.BusinessConstants.WAIT_BUYER_PAY;
 import static com.albedo.java.common.core.constant.ExceptionNames.ALIPAY_ERROR;
+import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,12 +35,14 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.aliyun.oss.HttpMethod;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
+import cn.hutool.core.lang.Assert;
 import lombok.AllArgsConstructor;
 
 /**
@@ -71,39 +73,43 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   }
 
   @Override
-  public String toPayAsPc(TradePlus trade) throws Exception {
+  public String toPayAsPc(TradePlus trade) {
     AlipayConfig alipay = find();
     return toPayAsPc(alipay, trade);
   }
 
-  private String toPayAsPc(AlipayConfig alipay, TradePlus trade) throws Exception {
+  private String toPayAsPc(AlipayConfig alipay, TradePlus trade) {
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
-    // 两个必带参数下沉至此
-    trade.setOutTradeNo(aliPayUtils.getOrderCode());
-
+    // 必带参数下沉至此
     trade.setProductCode(PRODUCT_CODE);
     // 构造请求
     AlipayClient alipayClient = buildAlipayClient();
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
-    request.setBizContent(mapper.writeValueAsString(trade));
     try {
-      AlipayTradePagePayResponse response = alipayClient.pageExecute(request, HttpMethod.GET.name());
-      // 购买记录下沉至此
-      PurchaseRecord record = new PurchaseRecord();
-      BeanUtils.copyProperties(response, record);
-      record.setStatus(WAIT_BUYER_PAY);
-      // response.getMerchantOrderNo();
-      // response.getTradeNo()
-      recordService.save(record);
-      return response.getBody();
+      request.setBizContent(mapper.writeValueAsString(trade));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("订单结构解析异常");
+    }
+    AlipayTradePagePayResponse response;
+    try {
+      response = alipayClient.pageExecute(request, HttpMethod.GET.name());
     } catch (AlipayApiException e) {
       e.printStackTrace();
       throw new RuntimeMsgException(ALIPAY_ERROR);
     }
+    // 购买记录更新下沉至此
+    String outTradeNo = trade.getOutTradeNo();
+    PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
+    Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
+    record.setSellerId(response.getSellerId());
+    record.setStatus(WAIT_BUYER_PAY);
+    recordService.updateById(record);
+    return response.getBody();
   }
 
   @Resource
@@ -114,12 +120,11 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
   @Override
-  public String queryOrderStatus(String outTradeNo) throws AlipayApiException {
+  public String queryOrderStatus(String outTradeNo) {
     if (StringUtils.isBlank(outTradeNo)) {
       return "";
     }
     AlipayClient alipayClient = buildAlipayClient();
-
     AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
     TradeQueryPlus query = TradeQueryPlus.builder().outTradeNo(outTradeNo).build();
     try {
@@ -128,7 +133,13 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
       request.setBizContent("");
     }
 
-    AlipayTradeQueryResponse response = alipayClient.execute(request);
+    AlipayTradeQueryResponse response;
+    try {
+      response = alipayClient.execute(request);
+    } catch (AlipayApiException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("支付宝侧接口异常");
+    }
     if (!response.isSuccess()) {
       return "";
     }

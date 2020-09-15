@@ -21,12 +21,16 @@ public class Order extends IdEntity<Invoice> {
    */
   private String userId;
   /**
-   * 订单状态 分为 0. 创建未付款 1. 付款未制作 2. 员工接单，制作中 3. 视频已上传 4. 商品、logo、贴片 5. 结单
-   * 6. 从0-1时关闭订单
+   * 订单状态 分为 0. 创建未付款 1. 付款未制作 2. 员工接单，制作中
+   * 3. 视频已上传 4. 商品、logo、贴片 5. 结单
+   * 6. 从0-1时关闭订单，支付超时关闭
    */
   private Integer state;
   /**
    * 0. 普通 1. 加速 2. 配音单子
+   *
+   * todo 只能在一个时间段下一个订单
+   *
    */
   private String type;
   /**

@@ -38,6 +38,8 @@ import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
+import com.albedo.java.modules.tool.domain.vo.TradeVo;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -63,6 +65,11 @@ public class AliPayResource {
   private final AliPayUtils alipayUtils;
   private final AliPayService alipayService;
 
+  @GetMapping
+  public Result<AlipayConfig> get() {
+    return Result.buildOkData(alipayService.find());
+  }
+
   @LogOperate("配置支付宝")
   @ApiOperation("配置支付宝")
   @PutMapping
@@ -71,10 +78,20 @@ public class AliPayResource {
     return new Result<>(HttpStatus.OK);
   }
 
+  @LogOperate("支付宝PC网页支付")
+  @ApiOperation("PC网页支付")
+  @PostMapping(value = "/toPayAsPC")
+  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
+    TradePlus build = TradePlus.builder().totalAmount(trade.getTotalAmount()).subject(trade.getSubject()).build();
+    String payUrl = alipayService.toPayAsPc(build);
+    return Result.buildOkData(payUrl);
+  }
+
   @ApiIgnore
   @GetMapping("/return")
   @AnonymousAccess
   @ApiOperation("回调接口")
+  // http://www.vlivest.com/a/aliPay/return?charset=utf-8&out_trade_no=202009142231323366&method=alipay.trade.page.pay.return&total_amount=100.00&sign=VqIhgVFs630wcshbhaperayF1dCXBLVoJkyIHLUojusbJLycooBBTdpfcgmH4%2F1hkknb57vX1UZN%2B0Mu1tlb3V4uCqr0pDxauRfqkvO7sc9a3Z927uE2Gyw7qg6lNJAvRcJFAnJwpJO6%2Fd6d5kgNoqb5wIKSv4ds3Z%2FY08Lxk1ukzlh9r3mDdsbflSQIQDqHhEeDBRt2ywe6uL343GzBMXGUKKSTm1mqmY2HiHt4TdLz11M35trjgHNB0oVOcSnrZBojkQcuzb85rvF%2F0IXsZnyOeFZOwK%2Bl6c9Pk%2Bzu86Mk5bZ8VrAp%2BKrRS%2FB%2BrjKjmC2alcT721G7L6h%2BaLSr6w%3D%3D&trade_no=2020091422001476590501531914&auth_app_id=2021000116688194&version=1.0&app_id=2021000116688194&sign_type=RSA2&seller_id=2088621955056287&timestamp=2020-09-14+22%3A32%3A32
   public Result<String> returnPage(HttpServletRequest request, HttpServletResponse response) {
     AlipayConfig alipay = alipayService.find();
     response.setContentType("text/html;charset=" + alipay.getCharset());
@@ -97,7 +114,8 @@ public class AliPayResource {
   /**
    * 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号；
    * 判断 total_amount 是否确实为该订单的实际金额（即商户订单创建时的金额）；
-   * 校验通知中的 seller_id（或者 seller_email) 是否为 out_trade_no 这笔单据的对应的操作方（有的时候，一个商户可能有多个 seller_id/seller_email）；
+   * 校验通知中的 seller_id（或者 seller_email) 是否为 out_trade_no 这笔单据的对应的操作方
+   * （有的时候，一个商户可能有多个 seller_id/seller_email）；
    * 验证 app_id 是否为该商户本身。
    *
    * @param request
@@ -122,27 +140,26 @@ public class AliPayResource {
   }
 
   private String update(HttpServletRequest request) {
-    // 订单状态
-    String tradeStatus = getParam(request, "trade_status");
-    Assert.isTrue(StringUtils.equals(tradeStatus, TRADE_SUCCESS), "");
+    // 订单状态 似乎没有这个字段
+    // String tradeStatus = getParam(request, "trade_status");
+    // Assert.isTrue(StringUtils.equals(tradeStatus, TRADE_SUCCESS), "");
     // 商户订单号
     String outTradeNo = getParam(request, "out_trade_no");
+    PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
+    Assert.notNull(record, "未查询到交易记录");
     // 商户号
     String sellerId = getParam(request, "seller_id");
-    PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
-    Assert.notNull(record, "");
     Assert.isTrue(sellerId.equals(record.getSellerId()), "");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
     Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount()), "");
-
+    // appId
     boolean callback = false;
-    // 消费记录上浮至接口处
     record.setStatus(TRADE_FINISHED);
     recordService.updateById(record);
-    if (record.getType().equals(PLAN_TYPE)) {
+    if (PLAN_TYPE.equals(record.getType())) {
       callback = planService.callback(outTradeNo);
-    } else if (record.getType().equals(ORDER_TYPE)) {
+    } else if (ORDER_TYPE.equals(record.getType())) {
       callback = orderService.callback(record.getOuterId());
     }
     if (callback) {
@@ -159,6 +176,10 @@ public class AliPayResource {
   PlanService planService;
 
   private String getParam(HttpServletRequest request, String paramName) {
-    return new String(request.getParameter(paramName).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+    String parameter = request.getParameter(paramName);
+    if (StringUtils.isEmpty(parameter)) {
+      return "";
+    }
+    return new String(parameter.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
   }
 }

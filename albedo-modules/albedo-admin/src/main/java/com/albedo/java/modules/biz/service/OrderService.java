@@ -69,10 +69,29 @@ public interface OrderService extends BaseService<Order> {
 
   boolean callback(String orderId);
 
+  /**
+   * 上传配音文件
+   *
+   * @param orderVo
+   * @param video
+   */
   void dubbingBySelf(SubOrderVo orderVo, Video video);
 
+  /**
+   * tts配音
+   * 1. 调用tts接口合成
+   *
+   * @param orderVo
+   * @param video
+   */
   @Async
   void machineDubbing(SubOrderVo orderVo, Video video);
 
+  /**
+   * 下订单等待员工接单
+   *
+   * @param orderVo
+   * @return
+   */
   String artificialDubbing(SubOrderVo orderVo);
 }

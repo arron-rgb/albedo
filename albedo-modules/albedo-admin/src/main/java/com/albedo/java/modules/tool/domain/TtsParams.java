@@ -64,7 +64,7 @@ public class TtsParams {
   }
 
   public TtsParams() {
-    codec = "wav";
+    codec = "mp3";
     // modelType = "1";
     // Action 是 String 公共参数，本接口取值：TextToVoice。
     // version = "2019-08-23";

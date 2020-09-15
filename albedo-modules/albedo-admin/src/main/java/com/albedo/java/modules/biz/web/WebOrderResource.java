@@ -1,10 +1,8 @@
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
-import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
-
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -13,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.exception.OrderException;
@@ -25,17 +22,13 @@ import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.SubOrderVo;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
-import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.service.OrderService;
-import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
-import cn.hutool.core.lang.Assert;
+import io.micrometer.core.instrument.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -49,8 +42,8 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/order")
 @AllArgsConstructor
-@Api(tags = "订单")
-public class OrderResource extends BaseResource {
+@Api(tags = "后台订单相关接口")
+public class WebOrderResource extends BaseResource {
 
   private final OrderService service;
 
@@ -63,7 +56,16 @@ public class OrderResource extends BaseResource {
   @PreAuthorize("@pms.hasPermission('biz_order_view')")
   public Result<Order> get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
-    return Result.buildOkData(service.getById(id));
+    Order key = service.getById(id);
+    Video video = videoService.getById(key.getVideoId());
+    if (video != null) {
+      key.setVideoId(video.getOriginUrl());
+    }
+    String username = SecurityUtil.getUser().getUsername();
+    if (StringUtils.isNotBlank(username)) {
+      key.setUserId(username);
+    }
+    return Result.buildOkData(key);
   }
 
   /**
@@ -73,6 +75,8 @@ public class OrderResource extends BaseResource {
    *          the pagination information
    * @return the Result with status 200 (OK) and with body all Order
    */
+  @Resource
+  VideoService videoService;
 
   @PreAuthorize("@pms.hasPermission('biz_order_view')")
   @GetMapping
@@ -80,7 +84,9 @@ public class OrderResource extends BaseResource {
   @ApiOperation(value = "订单查询")
   public Result<PageModel<Order>> getPage(PageModel<Order> pm, OrderQueryCriteria orderQueryCriteria) {
     QueryWrapper<Order> wrapper = QueryWrapperUtil.getWrapper(pm, orderQueryCriteria);
-    return Result.buildOkData(service.page(pm, wrapper));
+    PageModel<Order> page = service.page(pm, wrapper);
+    page.setRecords(updateInfo(page.getRecords()));
+    return Result.buildOkData(page);
   }
 
   /**
@@ -115,18 +121,12 @@ public class OrderResource extends BaseResource {
     return Result.buildOk("删除订单成功");
   }
 
-  @ApiOperation(value = "获取订单支付链接")
-  @Token
-  @PostMapping("/purchase")
-  public Result<String> purchase(@RequestParam(value = "token", required = false) String token,
-    @RequestParam(value = "orderId") String orderId, String subject) {
-    return Result.buildOk(service.price(orderId, subject));
-  }
-
   @ApiOperation(value = "员工查看待处理订单")
-  @GetMapping("/list")
+  @GetMapping("/todo/list")
   public Result<List<Order>> list() {
-    return Result.buildOkData(service.availableOrder());
+    List<Order> orders = service.availableOrder();
+    orders = updateInfo(orders);
+    return Result.buildOkData(orders);
   }
 
   @ApiOperation(value = "员工接单")
@@ -143,7 +143,9 @@ public class OrderResource extends BaseResource {
   @ApiOperation(value = "员工查看个人名下订单")
   @GetMapping("/list/belong")
   public Result<List<Order>> listBelongs() {
-    return Result.buildOkData(service.belongs());
+    List<Order> belongs = service.belongs();
+    updateInfo(belongs);
+    return Result.buildOkData(belongs);
   }
 
   @ApiOperation(value = "员工上传订单视频")
@@ -159,48 +161,16 @@ public class OrderResource extends BaseResource {
     return Result.buildOk("上传成功");
   }
 
-  @Resource
-  PurchaseRecordService purchaseRecordService;
-
-  @Resource
-  VideoService videoService;
-
-  @ApiOperation(value = "用户下单")
-  @PostMapping(value = "/place")
-  public Result<String> place(@RequestBody OrderVo orderVo) {
-    return Result.buildOkData(service.place(orderVo), "下单成功");
-  }
-
-  @ApiOperation(value = "用户上传二次订单")
-  @PostMapping(value = "/placeSecond")
-  public Result<String> placeSecond(SubOrderVo orderVo) {
-    // 通用流程
-    Video video = service.updateForm(orderVo);
-    String orderId = orderVo.getOrderId();
-    Order order = service.getById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUND);
-    Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
-    switch (orderVo.getType()) {
-      case 0:
-        // 自行上传配音
-        service.dubbingBySelf(orderVo, video);
-        break;
-      case 1:
-        // 人工配音 配音字段的属性及pojo
-        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，等待工作人员接单");
-      case 2:
-        // tts配音
-        service.machineDubbing(orderVo, video);
-        break;
-      default:
-        return Result.buildFail("配音类型异常");
-    }
-    return Result.buildOk("上传成功");
-  }
-
-  @ApiOperation(value = "用户拉取自己的订单状态")
-  @PostMapping(value = "/query")
-  public Result<List<Order>> query() {
-    return Result.buildOkData(service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId())));
+  private List<Order> updateInfo(List<Order> orders) {
+    return orders.stream().peek((key) -> {
+      Video video = videoService.getById(key.getVideoId());
+      if (video != null) {
+        key.setVideoId(video.getOriginUrl());
+      }
+      String username = SecurityUtil.getUser().getUsername();
+      if (StringUtils.isNotBlank(username)) {
+        key.setUserId(username);
+      }
+    }).collect(Collectors.toList());
   }
 }

@@ -56,6 +56,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   private String sellerId;
   /**
    * 消费状态 对齐支付宝字段
+   * 如果为空表示未进入获取支付链接状态
    */
   private String status;
 

@@ -28,12 +28,14 @@ import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
+import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.tool.domain.TtsParams;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
+import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -49,6 +51,10 @@ import cn.hutool.core.lang.Assert;
 public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, OrderDto, String>
   implements OrderService {
 
+  @Resource
+  PurchaseRecordService recordService;
+  @Resource
+  AliPayUtils aliPayUtils;
   @Resource
   AliPayService aliPayService;
   @Resource
@@ -97,11 +103,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.isTrue(order.getState().equals(UNPAID_ORDER), ORDER_ERROR);
 
     Integer times = balanceService.leftTimes();
-    if (times == null) {
+    if (times == null || times.equals(0)) {
       // 1. 先检验次数 没次数的话返回支付整个订单的链接
-      TradePlus plus = TradePlus.builder().subject(subject).totalAmount(order.getTotalAmount()).build();
+      TradePlus plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
+        .totalAmount(order.getTotalAmount()).build();
+      // todo 生成多次的record 脏数据怎么清除
+      PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+        .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+      recordService.save(record);
+
       return getPurchaseUrl(plus);
     }
+
     // 2. 有次数，就消耗次数
     // 扣了次数后，如果不需要额外支付，则将订单设为已支付
     // 减了次数，没支付成功；订单仍然处在未支付的状态
@@ -122,11 +135,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   private String getPurchaseUrl(TradePlus plus) {
-    try {
-      return aliPayService.toPayAsPc(plus);
-    } catch (Exception e) {
-      throw new RuntimeMsgException(ALIPAY_ERROR);
-    }
+    return aliPayService.toPayAsPc(plus);
   }
 
   @Resource
@@ -228,7 +237,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       totalAmount = price.getVal();
     }
     String subject = "人工配音";
-    TradePlus trade = TradePlus.builder().subject(subject).totalAmount(totalAmount).build();
+    TradePlus trade =
+      TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject).totalAmount(totalAmount).build();
+
     try {
       // 人工配音的下单方式
       Order order = new Order();
@@ -239,8 +250,14 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       order.setDescription(orderVo.getDescription());
       order.setState(NOT_STARTED);
       baseMapper.insert(order);
+
+      PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+        .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(order.getId()).build();
+      recordService.save(record);
+
       return aliPayService.toPayAsPc(trade);
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+      e.printStackTrace();
       throw new RuntimeMsgException("生成支付链接时发生错误");
     }
   }
@@ -279,7 +296,19 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public boolean callback(String orderId) {
     Order order = baseMapper.selectById(orderId);
+    // 订单状态
+    Assert.notNull(order.getState(), "订单状态异常");
+    // 拒绝非未付款订单
+    Assert.isTrue(UNPAID_ORDER.equals(order.getState()), "订单状态异常");
+    // 拒绝已进入付款后状态订单
+    Assert.isTrue(order.getState() < NOT_STARTED, "订单已支付");
     order.setState(NOT_STARTED);
+
+    PurchaseRecord record =
+      recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, ORDER_TYPE)
+        .eq(PurchaseRecord::getOuterId, orderId).orderByAsc(PurchaseRecord::getCreatedDate));
+    Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
+    record.setStatus(TRADE_FINISHED);
     return baseMapper.updateById(order) == 1;
   }
 }
