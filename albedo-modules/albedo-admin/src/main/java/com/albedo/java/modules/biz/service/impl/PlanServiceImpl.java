@@ -24,7 +24,6 @@ import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.AliPayUtils;
-import com.alipay.api.AlipayApiException;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -62,10 +61,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   @Override
   public boolean callback(String outTradeNo) {
     String status = "";
-    try {
-      status = aliPayService.queryOrderStatus(outTradeNo);
-    } catch (AlipayApiException ignored) {
-    }
+    status = aliPayService.queryOrderStatus(outTradeNo);
     if (StringUtils.equals(TRADE_FINISHED, status) || StringUtils.equals(TRADE_SUCCESS, status)) {
       PurchaseRecord record =
         recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, PLAN_TYPE)

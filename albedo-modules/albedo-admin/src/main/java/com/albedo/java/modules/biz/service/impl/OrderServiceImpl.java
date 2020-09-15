@@ -103,11 +103,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.isTrue(order.getState().equals(UNPAID_ORDER), ORDER_ERROR);
 
     Integer times = balanceService.leftTimes();
-    if (times == null) {
+    if (times == null || times.equals(0)) {
       // 1. 先检验次数 没次数的话返回支付整个订单的链接
-      TradePlus plus = TradePlus.builder().subject(subject).totalAmount(order.getTotalAmount()).build();
+      TradePlus plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
+        .totalAmount(order.getTotalAmount()).build();
+      // todo 生成多次的record 脏数据怎么清除
+      PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+        .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+      recordService.save(record);
+
       return getPurchaseUrl(plus);
     }
+
     // 2. 有次数，就消耗次数
     // 扣了次数后，如果不需要额外支付，则将订单设为已支付
     // 减了次数，没支付成功；订单仍然处在未支付的状态
@@ -128,11 +135,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   private String getPurchaseUrl(TradePlus plus) {
-    try {
-      return aliPayService.toPayAsPc(plus);
-    } catch (Exception e) {
-      throw new RuntimeMsgException(ALIPAY_ERROR);
-    }
+    return aliPayService.toPayAsPc(plus);
   }
 
   @Resource

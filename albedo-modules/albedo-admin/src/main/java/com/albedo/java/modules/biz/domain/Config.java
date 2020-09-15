@@ -37,4 +37,9 @@ public class Config {
    */
   @JSONField(serialize = false)
   private String type;
+
+  /**
+   * 文本描述
+   */
+  private String description;
 }

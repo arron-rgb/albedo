@@ -73,12 +73,12 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   }
 
   @Override
-  public String toPayAsPc(TradePlus trade) throws Exception {
+  public String toPayAsPc(TradePlus trade) {
     AlipayConfig alipay = find();
     return toPayAsPc(alipay, trade);
   }
 
-  private String toPayAsPc(AlipayConfig alipay, TradePlus trade) throws Exception {
+  private String toPayAsPc(AlipayConfig alipay, TradePlus trade) {
     if (alipay.getId() == null) {
       throw new BadRequestException("请先添加相应配置，再操作");
     }
@@ -89,22 +89,27 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
     request.setReturnUrl(alipay.getReturnUrl());
     request.setNotifyUrl(alipay.getNotifyUrl());
-    request.setBizContent(mapper.writeValueAsString(trade));
     try {
-      AlipayTradePagePayResponse response = alipayClient.pageExecute(request, HttpMethod.GET.name());
-      // 购买记录下沉至此
-      PurchaseRecord record;
-      String outTradeNo = response.getOutTradeNo();
-      record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
-      Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
-      record.setSellerId(response.getSellerId());
-      record.setStatus(WAIT_BUYER_PAY);
-      recordService.updateById(record);
-      return response.getBody();
+      request.setBizContent(mapper.writeValueAsString(trade));
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("订单结构解析异常");
+    }
+    AlipayTradePagePayResponse response;
+    try {
+      response = alipayClient.pageExecute(request, HttpMethod.GET.name());
     } catch (AlipayApiException e) {
       e.printStackTrace();
       throw new RuntimeMsgException(ALIPAY_ERROR);
     }
+    // 购买记录更新下沉至此
+    String outTradeNo = trade.getOutTradeNo();
+    PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
+    Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
+    record.setSellerId(response.getSellerId());
+    record.setStatus(WAIT_BUYER_PAY);
+    recordService.updateById(record);
+    return response.getBody();
   }
 
   @Resource
@@ -115,12 +120,11 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
   @Override
-  public String queryOrderStatus(String outTradeNo) throws AlipayApiException {
+  public String queryOrderStatus(String outTradeNo) {
     if (StringUtils.isBlank(outTradeNo)) {
       return "";
     }
     AlipayClient alipayClient = buildAlipayClient();
-
     AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
     TradeQueryPlus query = TradeQueryPlus.builder().outTradeNo(outTradeNo).build();
     try {
@@ -129,7 +133,13 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
       request.setBizContent("");
     }
 
-    AlipayTradeQueryResponse response = alipayClient.execute(request);
+    AlipayTradeQueryResponse response;
+    try {
+      response = alipayClient.execute(request);
+    } catch (AlipayApiException e) {
+      e.printStackTrace();
+      throw new RuntimeMsgException("支付宝侧接口异常");
+    }
     if (!response.isSuccess()) {
       return "";
     }

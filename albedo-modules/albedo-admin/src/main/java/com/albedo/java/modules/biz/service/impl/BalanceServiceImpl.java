@@ -113,7 +113,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     // 消耗传入的userId的次数
     Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
     Assert.notNull(balance, ExceptionNames.BALANCE_NOT_FOUND);
-    Assert.isTrue(balance.getTimes() > 1, ExceptionNames.TIMES_OVERSPEND);
+    Assert.isTrue(balance.getTimes() > 0, ExceptionNames.TIMES_OVERSPEND);
     balance.setTimes(balance.getTimes() - 1);
     boolean flag = baseMapper.updateById(balance) > 0;
     if (flag) {

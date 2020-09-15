@@ -50,7 +50,7 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    * @throws Exception
    *           json序列化错误
    */
-  String toPayAsPc(TradePlus trade) throws Exception;
+  String toPayAsPc(TradePlus trade);
 
   /**
    * 查询订单支付状态
@@ -62,5 +62,6 @@ public interface AliPayService extends BaseService<AlipayConfig> {
    * @throws AlipayApiException
    *           Api调用异常
    */
-  String queryOrderStatus(String outTradeNo) throws AlipayApiException;
+  String queryOrderStatus(String outTradeNo);
+
 }

@@ -13,6 +13,7 @@ import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.model.Bucket;
 
@@ -57,6 +58,15 @@ public class TestResource extends BaseResource {
     return Result.buildOkData(buckets);
   }
 
+  @GetMapping("/status")
+  public Result<String> query(String outTradeNo) {
+    String status;
+    status = aliPayService.queryOrderStatus(outTradeNo);
+    return Result.buildOkData(status);
+  }
+
+  @Resource
+  AliPayService aliPayService;
   @Resource
   OssSingleton ossSingleton;
   @Resource
