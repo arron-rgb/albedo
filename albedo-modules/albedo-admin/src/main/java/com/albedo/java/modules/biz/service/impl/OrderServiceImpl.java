@@ -72,8 +72,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
    * @return
    */
   private Order currentOrder() {
-    return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING).ne("state",
-      COMPLETED_SUCCESS), false);
+    return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING)
+      .ne("state", COMPLETED_SUCCESS).orderByAsc("created_date"), false);
   }
 
   @Override
