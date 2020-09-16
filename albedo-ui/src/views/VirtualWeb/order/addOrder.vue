@@ -32,6 +32,7 @@
 </template>
 <script>
 import crudConfig from '@/views/biz/config/config-service'
+import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import storeApi from '@/utils/store'
 export default {
@@ -45,15 +46,76 @@ export default {
     }
   },
   created() {
-    this.getData()
+    this.getCurrentOrder()
   },
   methods : {
+    getCurrentOrder(){//获取当前订单
+      return new Promise((resolve, reject) => {
+        crudOrder.current().then(res => {
+          console.log(res);
+          if (res.code === MSG_TYPE_SUCCESS) {
+            if(res.data === null || res.data.state === 5){//上一单已完结，可以进行下一单
+              storeApi.set({//更新步骤条状态
+                name: 'orderState',
+                content: 0,
+                type: 'session'
+              });
+              this.getData();
+            }
+            else if(res.data.state === 0){//有订单创建未付款
+              storeApi.set({//更新步骤条状态
+                name: 'orderState',
+                content: 1,
+                type: 'session'
+              });
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
+              this.$alert('您有订单尚未付款，即将前往付款页面！', '警告', {
+                confirmButtonText: '确定',
+              }).then(() => {
+                this.goTo("/payOrder", "hadOrder");
+              });
+            }
+            else if(res.data.state === 1 || res.data.state === 2 ){//已付款尚未制作
+              storeApi.set({//更新步骤条状态
+                name: 'orderState',
+                content: 2,
+                type: 'session'
+              });
+              this.goTo('/waiting');
+            }
+            else if(res.data.state === 4){//已经选好台词尚未加入音频
+              storeApi.set({//更新步骤条状态
+                name: 'orderState',
+                content: 3,
+                type: 'session'
+              });
+              this.goTo('/waiting');
+            }
+            else if(res.data.state === 3){//视频已上传等待配音
+              storeApi.set({//更新步骤条状态
+                name: 'orderState',
+                content: 3,
+                type: 'session'
+              });
+              this.goTo('/addDetail')
+            }
+            // this.data = res.data.data
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     getData(){
       //获得视频属性数据
       return new Promise((resolve, reject) => {
         crudConfig.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            console.log(res)
+            // console.log(res)
             this.data = res.data.data
           }
         }).catch(error => {
@@ -97,6 +159,12 @@ export default {
           content: this.backData,
           type: 'session'
         })
+
+        storeApi.set({//更新步骤条状态
+          name: 'orderState',
+          content: 1,
+          type: 'session'
+        });
         this.goTo("/payOrder");
       }
     },

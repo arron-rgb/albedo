@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <el-steps :active="active" align-center>
+    <el-steps :active="$route.meta.stepLine" align-center>
       <el-step title="需求定位"></el-step>
       <el-step title="支付订单"></el-step>
       <el-step title="等待制作"></el-step>
@@ -11,16 +11,19 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import storeApi from '@/utils/store'
 export default {
   name: "stepLine",
   data(){
     return {
-      active:0,
+      active:storeApi.get({
+        name: 'orderState'
+      }),
     }
   },
   created() {
-    this.$store.getters.user.userType
+    // var state =
+    // this.active = state;
   }
 }
 </script>
