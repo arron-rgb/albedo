@@ -1,5 +1,6 @@
 package com.albedo.java.common.core.config;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -125,7 +126,7 @@ public class ApplicationConfig {
    * 获取上传路径
    */
   public static String getUploadPath() {
-    return getStaticFileDirectory() + "/upload";
+    return getStaticFileDirectory() + File.separator + "upload";
   }
 
 }

@@ -203,4 +203,9 @@ public class FileUploadUtil {
   public static String getExtension(@NonNull File file) {
     return FileUtil.extName(file.getName());
   }
+
+  public static String changeFilePath(String filePath) {
+    File file = new File(filePath);
+    return file.getParent();
+  }
 }

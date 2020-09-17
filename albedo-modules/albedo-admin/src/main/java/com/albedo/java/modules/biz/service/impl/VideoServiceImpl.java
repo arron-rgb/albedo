@@ -231,4 +231,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     return bucketName;
   }
+
+  public String getRemoteUrlFromLocalUrl(String localPath) {
+
+    return "";
+  }
 }
