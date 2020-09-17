@@ -25,7 +25,7 @@ export function purchase(data) {
   ).then(res => {
     console.log(res.data);
     if (res.data.code === MSG_TYPE_SUCCESS) {
-      window.open(res.data.message);
+      window.open(res.data.data);
 
       // this.$message({
       //   message: '支付成功！',
