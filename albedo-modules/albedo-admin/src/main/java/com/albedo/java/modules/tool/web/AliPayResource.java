@@ -151,10 +151,10 @@ public class AliPayResource {
     // 商户号
     String sellerId = getParam(request, "seller_id");
     // 2088621955056287
-    Assert.isTrue(sellerId.equals(record.getSellerId()), "");
+    Assert.isTrue(sellerId.equals(record.getSellerId()), "商户号为空");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
-    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount()), "");
+    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount()), "金额数量异常");
     // appId
     boolean callback = false;
     record.setStatus(TRADE_FINISHED);
