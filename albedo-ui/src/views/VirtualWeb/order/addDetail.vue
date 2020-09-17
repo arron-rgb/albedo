@@ -126,8 +126,8 @@ export default {
     }
     else {
       this.videoData = videoOrder;
-      console.log(videoOrder);
-      this.playerOptions.sources[0].src = videoOrder.videoId;
+      this.playerOptions.sources[0].src = require(videoOrder.videoId);
+      // console.log(this.playerOptions.sources[0].src);
     }
   },
   methods: {

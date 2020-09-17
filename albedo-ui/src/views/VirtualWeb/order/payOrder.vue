@@ -156,7 +156,7 @@ export default {
       var content = {data : this.list}
       var data = {
         content : JSON.stringify(content),
-        methods : this.payType,
+        method : this.payType,
         totalAmount : this.totalAmount,
         type : this.type
       }
