@@ -71,7 +71,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
    *
    * @return
    */
-  private Order currentOrder() {
+  @Override
+  public Order currentOrder() {
     return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING)
       .ne("state", COMPLETED_SUCCESS).orderByAsc("created_date"), false);
   }
@@ -134,7 +135,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
           record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
             .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
         }
-        // todo orderId应该唯一索引 异常要处理
+        record.setSellerId("2088621955056287");
         recordService.saveOrUpdate(record);
         return getPurchaseUrl(plus);
       case "balance":
@@ -322,6 +323,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public boolean callback(String orderId) {
     Order order = baseMapper.selectById(orderId);
+    Assert.notNull(order, "未查询到订单");
     // 订单状态
     Assert.notNull(order.getState(), "订单状态异常");
     // 拒绝非未付款订单

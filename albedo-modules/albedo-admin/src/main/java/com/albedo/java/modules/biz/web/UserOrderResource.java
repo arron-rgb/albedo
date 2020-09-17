@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.BusinessConstants.NOT_UPDATED;
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
 import java.util.List;
@@ -51,8 +52,8 @@ public class UserOrderResource extends BaseResource {
     // 判断条件
     // 1. 当前用户的订单
     // 2. 未处于结单状态
-    Order order = service.getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", "2")
-      .ne("state", COMPLETED_SUCCESS), false);
+    Order order = service.currentOrder();
+    Assert.notNull(order, "未查询到正在进行的订单");
     Video video = videoService.getById(order.getVideoId());
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
       order.setVideoId(video.getOriginUrl());

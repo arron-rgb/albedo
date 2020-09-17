@@ -106,7 +106,6 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
     String outTradeNo = trade.getOutTradeNo();
     PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>query().eq("out_trade_no", outTradeNo));
     Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
-    record.setSellerId(response.getSellerId());
     record.setStatus(WAIT_BUYER_PAY);
     recordService.updateById(record);
     return response.getBody();

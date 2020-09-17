@@ -24,6 +24,8 @@ public interface OrderService extends BaseService<Order> {
    */
   String place(OrderVo order);
 
+  Order currentOrder();
+
   /**
    * 用户付款 or 扣次数
    *
