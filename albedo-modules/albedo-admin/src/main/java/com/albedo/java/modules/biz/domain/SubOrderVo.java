@@ -33,7 +33,8 @@ public class SubOrderVo {
   /**
    * 配音方式 0上传 1下单 2合成
    */
-  private int type;
+  @NotNull(message = "请选择配音方式")
+  private Integer type;
   /**
    * 音频链接
    */

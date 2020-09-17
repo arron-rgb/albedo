@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
@@ -30,6 +31,7 @@ import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.biz.service.task.Signal;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -261,6 +263,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(filePath);
     videoRepository.updateById(video);
+    SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
   @Override

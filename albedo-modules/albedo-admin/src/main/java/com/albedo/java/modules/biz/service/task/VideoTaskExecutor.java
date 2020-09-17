@@ -62,11 +62,10 @@ public class VideoTaskExecutor {
     video.setOutputUrl(file.getAbsolutePath());
     videoService.updateById(video);
     // 更新订单状态
-    String orderId = event.getOrderId();
+    String orderId = video.getOrderId();
     Order order = orderService.getById(orderId);
     order.setState(COMPLETED_SUCCESS);
     orderService.updateById(order);
-
   }
 
   @Resource
@@ -79,4 +78,10 @@ public class VideoTaskExecutor {
   OssSingleton ossSingleton;
   @Resource
   FfmpegUtil ffmpegUtil;
+
+  @Async
+  @EventListener(Signal.class)
+  public void signal(Signal signal) {
+    videoService.addAudio(signal.getVideoId());
+  }
 }

@@ -59,6 +59,11 @@ public class UserOrderResource extends BaseResource {
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
       String originUrl = video.getOriginUrl();
       originUrl = ossSingleton.localPathToUrl(originUrl);
+
+      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
+        originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+      }
+
       order.setVideoId(originUrl);
     }
     return Result.buildOkData(order);
@@ -74,9 +79,12 @@ public class UserOrderResource extends BaseResource {
     orders.forEach(order -> {
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
-        String outputUrl = video.getOutputUrl();
-        outputUrl = ossSingleton.localPathToUrl(outputUrl);
-        order.setVideoId(outputUrl);
+        String originUrl = video.getOriginUrl();
+        originUrl = ossSingleton.localPathToUrl(originUrl);
+        if (StringUtils.isNotEmpty(video.getOutputUrl())) {
+          originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+        }
+        order.setVideoId(originUrl);
       }
     });
     return Result.buildOkData(orders);
@@ -108,7 +116,7 @@ public class UserOrderResource extends BaseResource {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
-    // orderVo会默认为0
+    Assert.notNull(orderVo.getType(), "请选择配音方式");
     switch (orderVo.getType()) {
       case 0:
         // 自行上传配音
@@ -129,9 +137,4 @@ public class UserOrderResource extends BaseResource {
     return Result.buildOk("上传成功");
   }
 
-  @ApiOperation(value = "用户拉取自己的订单状态")
-  @GetMapping(value = "/query")
-  public Result<List<Order>> query() {
-    return Result.buildOkData(service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId())));
-  }
 }
