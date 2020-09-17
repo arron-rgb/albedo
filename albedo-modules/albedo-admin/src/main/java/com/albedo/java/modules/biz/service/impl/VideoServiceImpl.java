@@ -68,7 +68,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
   /**
    * 上传
-   * todo 订单与video的唯一对应关系
    *
    * @param orderId
    *          订单id

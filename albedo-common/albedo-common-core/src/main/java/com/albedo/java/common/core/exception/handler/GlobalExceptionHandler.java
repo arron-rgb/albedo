@@ -138,7 +138,7 @@ public class GlobalExceptionHandler {
     return Result.buildFail("请求缺少参数");
   }
 
-  @ExceptionHandler(value = IllegalArgumentException.class)
+  @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
   public Result<String> illegalArgumentException(IllegalArgumentException e) {
     String message = e.getMessage();
     return Result.buildFail(message);
