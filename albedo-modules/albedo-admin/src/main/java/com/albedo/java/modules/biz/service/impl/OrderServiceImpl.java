@@ -134,6 +134,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         if (record == null) {
           record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
             .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+        } else {
+          record.setOutTradeNo(plus.getOutTradeNo());
         }
         record.setSellerId("2088621955056287");
         recordService.saveOrUpdate(record);
@@ -149,7 +151,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
             map = new Dict();
             map.setVal("99");
           }
-          plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
+          plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).outTradeNo(orderId).build();
           return getPurchaseUrl(plus);
         }
         break;

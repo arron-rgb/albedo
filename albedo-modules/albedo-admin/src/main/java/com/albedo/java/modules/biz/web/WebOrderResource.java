@@ -1,5 +1,6 @@
 package com.albedo.java.modules.biz.web;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import io.micrometer.core.instrument.util.StringUtils;
@@ -148,17 +150,22 @@ public class WebOrderResource extends BaseResource {
     return Result.buildOkData(belongs);
   }
 
+  @Resource
+  UserService userService;
+
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
   public Result<String> uploadVideo(MultipartFile file, String orderId) {
     try {
-      String tempPath = FileUploadUtil.upload(ApplicationConfig.getUploadPath(), file);
+      String uploadPath =
+        ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(SecurityUtil.getUser().getId());
+      String tempPath = FileUploadUtil.upload(uploadPath, file);
       videoService.uploadVideo(orderId, tempPath);
     } catch (Exception e) {
       e.printStackTrace();
       return Result.buildFail("保存失败");
     }
-    return Result.buildOk("上传成功");
+    return Result.buildOkData("上传成功");
   }
 
   private List<Order> updateInfo(List<Order> orders) {

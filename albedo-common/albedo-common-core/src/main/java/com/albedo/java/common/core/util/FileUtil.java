@@ -602,6 +602,14 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     return result.toString();
   }
 
+  public static String concatSimpleFilePath(String... paths) {
+    StringBuilder result = new StringBuilder();
+    for (String path : paths) {
+      result.append(path).append(SEPARATOR);
+    }
+    return result.substring(0, result.length() - 1);
+  }
+
   /**
    * 生成文件名
    *

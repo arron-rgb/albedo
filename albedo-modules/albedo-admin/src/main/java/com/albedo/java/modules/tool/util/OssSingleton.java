@@ -38,6 +38,14 @@ public class OssSingleton {
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
+  public OssSingleton() {
+
+    // export ALIBABA_ID="LTAI4G9GELKL2AM8BxufjLUE"
+    // export ALIBABA_SECRET="usIxuCax2SM5cQ6uDnNBZ1CARpbuhg"
+    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    client = new OSSClientBuilder().build(endpoint, "LTAI4G9GELKL2AM8BxufjLUE", "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg");
+  }
+
   private OSS client;
 
   public void restart() {
