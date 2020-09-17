@@ -90,7 +90,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
-    // 存储空间不足
+    // 存储空间不足，todo 删除最老的一条video
     Assert.isTrue(storage > 0, STORAGE_NOT_SATISFIED);
     balance.setStorage(storage);
     String bucketName = userId;

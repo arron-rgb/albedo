@@ -266,26 +266,21 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     TradePlus trade =
       TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject).totalAmount(totalAmount).build();
 
-    try {
-      // 人工配音的下单方式
-      Order order = new Order();
-      order.setTotalAmount(totalAmount);
-      order.setType(DUBBING);
-      order.setUserId(SecurityUtil.getUser().getId());
-      order.setContent(orderVo.appendContent());
-      order.setDescription(orderVo.getDescription());
-      order.setState(NOT_STARTED);
-      baseMapper.insert(order);
+    // 人工配音的下单方式
+    Order order = new Order();
+    order.setTotalAmount(totalAmount);
+    order.setType(DUBBING);
+    order.setUserId(SecurityUtil.getUser().getId());
+    order.setContent(orderVo.appendContent());
+    order.setDescription(orderVo.getDescription());
+    order.setState(NOT_STARTED);
+    baseMapper.insert(order);
 
-      PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-        .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(order.getId()).build();
-      recordService.save(record);
+    PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+      .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(order.getId()).build();
+    recordService.save(record);
 
-      return aliPayService.toPayAsPc(trade);
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeMsgException(ALIPAY_ERROR);
-    }
+    return aliPayService.toPayAsPc(trade);
   }
 
   public String generateAudio(String text, String orderId) {
