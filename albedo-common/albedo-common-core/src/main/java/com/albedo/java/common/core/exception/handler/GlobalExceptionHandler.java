@@ -142,4 +142,5 @@ public class GlobalExceptionHandler {
   public Result<String> illegalArgumentException(IllegalArgumentException e) {
     return Result.buildFail(e.getMessage());
   }
+
 }

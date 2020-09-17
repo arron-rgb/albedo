@@ -31,7 +31,7 @@ public class SubOrderVo {
    */
   private Long time;
   /**
-   * 配音方式 下单 上传 合成
+   * 配音方式 0上传 1下单 2合成
    */
   private int type;
   /**
