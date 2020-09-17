@@ -47,5 +47,9 @@ public class Order extends IdEntity<Invoice> {
    * 填写的表单json信息
    */
   private String content;
+  /**
+   * 支付方式
+   */
+  private String method;
 
 }

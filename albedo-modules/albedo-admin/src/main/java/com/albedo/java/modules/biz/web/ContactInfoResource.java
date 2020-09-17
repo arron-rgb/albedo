@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -64,7 +66,11 @@ public class ContactInfoResource extends BaseResource {
   public Result<PageModel<ContactInfo>> getPage(PageModel<ContactInfo> pm,
     ContactInfoQueryCriteria contactInfoQueryCriteria) {
     QueryWrapper<ContactInfo> wrapper = QueryWrapperUtil.getWrapper(pm, contactInfoQueryCriteria);
-    return Result.buildOkData(service.page(pm, wrapper));
+    PageModel<ContactInfo> page = service.page(pm, wrapper);
+    List<ContactInfo> data = page.getRecords();
+    data.sort(Comparator.comparing(ContactInfo::getStatus));
+    page.setRecords(data);
+    return Result.buildOkData(page);
   }
 
   /**

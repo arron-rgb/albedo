@@ -87,6 +87,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setUserId(SecurityUtil.getUser().getId());
     order.setState(UNPAID_ORDER);
     order.setType(form.getType());
+    order.setMethod(form.getMethod());
     order.setDescription(form.getDescription());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
     order.setTotalAmount(calculatePrice(order.getContent().trim()));
@@ -121,38 +122,42 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(UNPAID_ORDER.equals(order.getState()), ORDER_ERROR);
-
-    Integer times = balanceService.leftTimes();
-    if (times == null || times.equals(0)) {
-      // 1. 先检验次数 没次数的话返回支付整个订单的链接
-      TradePlus plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
-        .totalAmount(order.getTotalAmount()).build();
-      PurchaseRecord record;
-      record =
-        recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
-      if (record == null) {
-        record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-          .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
-      }
-      // todo orderId应该唯一索引 异常要处理
-      recordService.saveOrUpdate(record);
-      return getPurchaseUrl(plus);
+    TradePlus plus;
+    switch (order.getMethod()) {
+      case "ali":
+        plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
+          .totalAmount(order.getTotalAmount()).build();
+        PurchaseRecord record;
+        record =
+          recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
+        if (record == null) {
+          record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
+            .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+        }
+        // todo orderId应该唯一索引 异常要处理
+        recordService.saveOrUpdate(record);
+        return getPurchaseUrl(plus);
+      case "balance":
+        // 扣了次数后，如果不需要额外支付，则将订单设为已支付
+        // 减了次数，没支付成功；订单仍然处在未支付的状态
+        balanceService.consumeTimes();
+        if (ACCELERATE.equals(order.getType())) {
+          // 加速订单 返回加速服务付款链接
+          Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+          if (map == null) {
+            map = new Dict();
+            map.setVal("99");
+          }
+          plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
+          return getPurchaseUrl(plus);
+        }
+        break;
+      case "wechat":
+        throw new RuntimeMsgException("暂不支持微信支付");
+      default:
+        throw new RuntimeMsgException("支付方式异常");
     }
 
-    // 2. 有次数，就消耗次数
-    // 扣了次数后，如果不需要额外支付，则将订单设为已支付
-    // 减了次数，没支付成功；订单仍然处在未支付的状态
-    balanceService.consumeTimes();
-    // 加速订单 返回加速服务付款链接
-    if (ACCELERATE.equals(order.getType())) {
-      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
-      if (map == null) {
-        map = new Dict();
-        map.setVal("99");
-      }
-      TradePlus plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).build();
-      return getPurchaseUrl(plus);
-    }
     order.setState(NOT_STARTED);
     baseMapper.updateById(order);
     return "success";
@@ -330,7 +335,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
     record.setStatus(TRADE_FINISHED);
     recordService.updateById(record);
-
     return baseMapper.updateById(order) == 1;
   }
 

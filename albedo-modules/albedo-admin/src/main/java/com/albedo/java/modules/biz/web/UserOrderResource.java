@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.annotation.Token;
@@ -50,9 +51,12 @@ public class UserOrderResource extends BaseResource {
     // 判断条件
     // 1. 当前用户的订单
     // 2. 未处于结单状态
-    // todo 如果有多个怎么办
     Order order = service.getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", "2")
       .ne("state", COMPLETED_SUCCESS), false);
+    Video video = videoService.getById(order.getVideoId());
+    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
+      order.setVideoId(video.getOriginUrl());
+    }
     return Result.buildOkData(order);
   }
 
@@ -60,6 +64,12 @@ public class UserOrderResource extends BaseResource {
   @GetMapping("/list")
   public Result<List<Order>> listOrder() {
     List<Order> orders = service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()));
+    orders.forEach(order -> {
+      Video video = videoService.getById(order.getVideoId());
+      if (video != null) {
+        order.setVideoId(video.getOutputUrl());
+      }
+    });
     return Result.buildOkData(orders);
   }
 
@@ -68,7 +78,7 @@ public class UserOrderResource extends BaseResource {
   @PostMapping("/purchase")
   public Result<String> purchase(@RequestParam(value = "token", required = false) String token,
     @RequestParam(value = "orderId") String orderId, String subject) {
-    return Result.buildOk(service.price(orderId, subject));
+    return Result.buildOkData(service.price(orderId, subject));
   }
 
   @Resource

@@ -140,6 +140,8 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(value = IllegalArgumentException.class)
   public Result<String> illegalArgumentException(IllegalArgumentException e) {
-    return Result.buildFail(e.getMessage());
+    String message = e.getMessage();
+    return Result.buildFail(message);
   }
+
 }
