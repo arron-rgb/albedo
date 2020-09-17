@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
+import com.albedo.java.common.core.util.FileUtil;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -143,6 +144,13 @@ public class OssSingleton {
     return downloadFile(bucketName, objectName, filePath, null);
   }
 
+  public File downloadFile(String bucketName, String objectName, ProgressListener listener) {
+    String filePath = FileUtil.concatFilePath(bucketName, objectName);
+    File file = new File(filePath);
+    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    return file;
+  }
+
   public File downloadFile(String bucketName, String objectName, String filePath, ProgressListener listener) {
     File file = new File(filePath);
     client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
@@ -161,4 +169,19 @@ public class OssSingleton {
     return stringBuilder.substring(0, stringBuilder.length() - 1);
   }
 
+  private String replace(String filePath, String parent) {
+    return filePath.replace(parent + File.separator, "");
+  }
+
+  public String getFileName(File file) {
+    return replace(file.getAbsolutePath(), file.getParent());
+  }
+
+  public String localPathToUrl(String filePath) {
+    File file = new File(filePath);
+    String fileParent = file.getParent();
+    String fileName = getFileName(file);
+    String bucketName = replace(fileParent, file.getParentFile().getParent());
+    return localPathToUrl(bucketName, fileName);
+  }
 }

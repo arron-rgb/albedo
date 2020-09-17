@@ -36,7 +36,6 @@ import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
 
@@ -139,9 +138,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Video video = baseMapper.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
-    // todo originUrl与name的区别
     Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
-    String extName = FileUtil.extName(video.getName());
     checkIfFileExist(video);
   }
 
@@ -157,12 +154,12 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   private void checkIfFileExist(Video video) {
     String bucketName = userService.getBucketName(video.getUserId());
     String name = video.getName();
-    File file = new File(concatFilePath("upload", name));
+    File file = new File(concatFilePath("upload", bucketName, name));
     if (file.exists()) {
       SpringContextHolder.publishEvent(new VideoEncodeTask(video));
     } else {
       // 下载完成后再执行addAudio的逻辑
-      ossSingleton.downloadFile(bucketName, name, getLocalPath(video), (progressEvent) -> {
+      ossSingleton.downloadFile(bucketName, name, (progressEvent) -> {
         ProgressEventType eventType = progressEvent.getEventType();
         switch (eventType) {
           case TRANSFER_STARTED_EVENT:

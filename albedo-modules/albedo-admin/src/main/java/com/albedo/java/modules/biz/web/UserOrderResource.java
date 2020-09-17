@@ -22,6 +22,7 @@ import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -56,10 +57,15 @@ public class UserOrderResource extends BaseResource {
     Assert.notNull(order, "未查询到正在进行的订单");
     Video video = videoService.getById(order.getVideoId());
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
-      order.setVideoId(video.getOriginUrl());
+      String originUrl = video.getOriginUrl();
+      originUrl = ossSingleton.localPathToUrl(originUrl);
+      order.setVideoId(originUrl);
     }
     return Result.buildOkData(order);
   }
+
+  @Resource
+  OssSingleton ossSingleton;
 
   @ApiOperation(value = "查看历史订单")
   @GetMapping("/list")
@@ -68,7 +74,9 @@ public class UserOrderResource extends BaseResource {
     orders.forEach(order -> {
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
-        order.setVideoId(video.getOutputUrl());
+        String outputUrl = video.getOutputUrl();
+        outputUrl = ossSingleton.localPathToUrl(outputUrl);
+        order.setVideoId(outputUrl);
       }
     });
     return Result.buildOkData(orders);
