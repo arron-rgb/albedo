@@ -149,9 +149,16 @@ public class OssSingleton {
     return file;
   }
 
-  // todo 获取某个文件的链接
-  public String getFileUrl() {
-    return "";
+  public String localPathToUrl(String bucketName, String filename) {
+    return concatUrl(bucketName, "oss-cn-hangzhou.aliyuncs.com") + "/" + filename;
+  }
+
+  public String concatUrl(String... paths) {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (String path : paths) {
+      stringBuilder.append(path).append(".");
+    }
+    return stringBuilder.substring(0, stringBuilder.length() - 1);
   }
 
 }
