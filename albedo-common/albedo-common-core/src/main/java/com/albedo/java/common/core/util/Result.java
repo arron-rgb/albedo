@@ -22,7 +22,10 @@ import org.springframework.util.ObjectUtils;
 
 import com.albedo.java.common.core.constant.CommonConstants;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -33,7 +36,6 @@ import lombok.experimental.Accessors;
  */
 @ToString
 @Accessors(chain = true)
-@Data
 @AllArgsConstructor
 public class Result<T> implements Serializable {
   private static final long serialVersionUID = 1L;

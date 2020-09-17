@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.annotation.Token;
@@ -52,6 +53,10 @@ public class UserOrderResource extends BaseResource {
     // 2. 未处于结单状态
     Order order = service.getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", "2")
       .ne("state", COMPLETED_SUCCESS), false);
+    Video video = videoService.getById(order.getVideoId());
+    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
+      order.setVideoId(video.getOriginUrl());
+    }
     return Result.buildOkData(order);
   }
 
