@@ -59,17 +59,17 @@
         </el-col>
         <el-col span="20">
           <el-radio-group v-model="payType" text-color="#ff5000" fill="#ff5000">
-            <el-radio style="height: 80px; width: 200px" label="0" border>
+            <el-radio style="height: 80px; width: 200px" label="ali" border>
               <a style="height: 60px; line-height: 60px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="1" border>
+            <el-radio style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="2" border>
+            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
@@ -104,7 +104,7 @@ export default {
       typeList : ["", "success", "info", "warning", "danger"],
       description : '',
       type : '1',//加速服务，0 不加速， 1加速
-      payType : '0', //0 支付宝支付， 1微信支付
+      payType : 'ali', //0 支付宝支付， 1微信支付
       totalAmount : 1029,
       data : '',
       loading : false,
@@ -156,7 +156,7 @@ export default {
       var content = {data : this.list}
       var data = {
         content : JSON.stringify(content),
-        methods : '',
+        methods : this.payType,
         totalAmount : this.totalAmount,
         type : this.type
       }
