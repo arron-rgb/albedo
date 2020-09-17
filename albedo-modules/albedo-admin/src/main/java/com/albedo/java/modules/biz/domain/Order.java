@@ -27,9 +27,7 @@ public class Order extends IdEntity<Invoice> {
    */
   private Integer state;
   /**
-   * 0. 普通 1. 加速 2. 配音单子
-   *
-   * todo 只能在一个时间段下一个订单
+   * 0. 普通订单 1. 加速订单 2. 配音单子
    *
    */
   private String type;

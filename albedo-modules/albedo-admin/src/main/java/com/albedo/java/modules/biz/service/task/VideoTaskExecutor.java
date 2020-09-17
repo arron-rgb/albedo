@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.service.task;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
+
 import java.io.File;
 
 import javax.annotation.Resource;
@@ -7,7 +9,12 @@ import javax.annotation.Resource;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 
+import com.albedo.java.modules.biz.domain.Order;
+import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.service.OrderService;
+import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
+import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +51,30 @@ public class VideoTaskExecutor {
   @Async
   @EventListener(VideoEncodeTask.class)
   public void concatAudio(VideoEncodeTask event) {
-    log.info("开始合成音频");
-    ffmpegUtil.concatAudio(event.video);
+    Video video = event.video;
+    String outputUrl = ffmpegUtil.concatAudio(video);
     event.setStatus("end");
-    log.info("结束");
+    // 更新video表
+    File file = new File(outputUrl);
+    String userId = video.getUserId();
+    userId = userService.getBucketName(userId);
+    ossSingleton.uploadFile(file, file.getName(), userId);
+    video.setOutputUrl(ossSingleton.getFileUrl());
+    videoService.updateById(video);
+    // 更新订单状态
+    String orderId = event.getOrderId();
+    Order order = orderService.getById(orderId);
+    order.setState(COMPLETED_SUCCESS);
+    orderService.updateById(order);
+
   }
 
+  @Resource
+  OrderService orderService;
+  @Resource
+  VideoService videoService;
+  @Resource
+  UserService userService;
   @Resource
   OssSingleton ossSingleton;
   @Resource

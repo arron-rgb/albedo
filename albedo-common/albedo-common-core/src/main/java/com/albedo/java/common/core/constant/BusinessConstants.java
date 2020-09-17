@@ -5,6 +5,8 @@ package com.albedo.java.common.core.constant;
  */
 public interface BusinessConstants {
 
+  Integer UPLOAD_AUDIO = 1;
+
   String PLUS_SERVICE = "1";
 
   String ALIBABA_ID = "ALIBABA_ID";
