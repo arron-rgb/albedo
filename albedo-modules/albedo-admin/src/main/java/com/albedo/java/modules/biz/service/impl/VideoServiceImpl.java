@@ -119,7 +119,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
     ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
-
     balanceService.updateById(balance);
   }
 
@@ -144,10 +143,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
     String extName = FileUtil.extName(video.getName());
     checkIfFileExist(video);
-    // String outPut = generateFilePath(extName);
-    // ossSingleton.uploadFile();
-    // video.setOutputUrl(outPut);
-    // baseMapper.updateById(video);
   }
 
   /**
@@ -232,8 +227,4 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     return bucketName;
   }
 
-  public String getRemoteUrlFromLocalUrl(String localPath) {
-
-    return "";
-  }
 }
