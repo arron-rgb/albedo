@@ -96,6 +96,11 @@ export default {
               this.goTo('/waiting');
             }
             else if(res.data.state === 3){//视频已上传等待配音
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
               storeApi.set({//更新步骤条状态
                 name: 'orderState',
                 content: 3,

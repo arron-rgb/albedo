@@ -5,6 +5,7 @@
       <el-step title="支付订单"></el-step>
       <el-step title="等待制作"></el-step>
       <el-step title="作品完善"></el-step>
+<!--      <el-step title="正在配音"></el-step>-->
       <el-step title="查看结果"></el-step>
     </el-steps>
   </div>

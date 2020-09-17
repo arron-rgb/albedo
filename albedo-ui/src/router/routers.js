@@ -168,13 +168,13 @@ export const constantRouterMap = [
         component: (resolve) => require(['@/components/VirtualWeb/waiting'], resolve),
         hidden: true
       },
-      {
-        path: '/addDetail',
-        meta: { showHeader: true, stepLine: 3 },
-        component: (resolve) => require(['@/views/VirtualWeb/order/addDetail'], resolve),
-        hidden: true
-      },
     ]
+  },
+  {
+    path: '/addDetail',
+    meta: { showHeader: true, stepLine: 3 },
+    component: (resolve) => require(['@/views/VirtualWeb/order/addDetail'], resolve),
+    hidden: true
   },
   //配音选项
   {
@@ -191,19 +191,19 @@ export const constantRouterMap = [
         children:[
           {
             path:'/newProduct',
-            // meta: { showHeader: true },
+            meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/newProduct'], resolve),
             hidden: true,
           },
           {
             path:'/selectAttri',
-            // meta: { showHeader: true },
+            meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/selectAttri'], resolve),
             hidden: true,
           },
           {
             path:'/addMark',
-            // meta: { showHeader: true },
+            meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/addMark'], resolve),
             hidden: true,
           }

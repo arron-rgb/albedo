@@ -25,7 +25,8 @@ import router from './router/routers'
 import './assets/icons' // icon
 import './router/index' // permission control
 import 'echarts-gl'
-
+//音频控件
+import Aplayer from 'vue-aplayer'
 Vue.use(VueHighlightJS)
 Vue.use(mavonEditor)
 Vue.use(permission)
@@ -35,7 +36,6 @@ Vue.use(Element, {
 require('video.js/dist/video-js.css')
 require('vue-video-player/src/custom-theme.css')
 Vue.use(VideoPlayer)
-
 Vue.config.productionTip = false
 
 new Vue({

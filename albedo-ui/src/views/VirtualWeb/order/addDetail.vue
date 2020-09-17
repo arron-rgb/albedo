@@ -2,38 +2,31 @@
 <div class='addDetail'>
 <!--  步骤条-->
   <step-line></step-line>
+
   <!-- 视频 -->
-  <my-video style="width: 1200px; margin: auto; padding: 0 50px"></my-video>
+  <div class='videoPlayer'>
+    <video-player  class="video-player vjs-custom-skin"
+                   ref="videoPlayer"
+                   :playsinline="true"
+                   :options="playerOptions">
+    </video-player>
+  </div>
 
   <!-- 提示开始配置，选择视频时长以及配音方式 -->
   <div class="descriBlock">
     <div class="blockTitle">详情配置</div>
     <div class="startBar">
-
       <el-row  class="box">
         <el-col span="4">
           设置视频时长：
         </el-col>
         <el-col span="20">
           <el-row>
-<!--            <el-input :rules="durationRules" style="width: 150px;" size="medium" v-model="duration" placeholder="请输入时长"></el-input>-->
             <el-input-number v-model="duration" size="medium"  :min="1" :max="120" label="设置视频时长"></el-input-number>
              分钟 （允许范围：1-120分钟）
           </el-row>
         </el-col>
       </el-row>
-<!--      <div class="setDuration">-->
-<!--        &lt;!&ndash; <div class="tips">选择视频时长</div> &ndash;&gt;-->
-<!--        <el-form ref="durationForm" :model="durationForm" >-->
-<!--          <el-form-item label="选择视频时长">-->
-<!--            <el-select v-model="durationForm.duration" placeholder="请选择视频时长">-->
-<!--              <el-option label="15分钟" value="15min"></el-option>-->
-<!--              <el-option label="30分钟" value="30min"></el-option>-->
-<!--              <el-option label="45分钟" value="45min"></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--      </div>-->
       <el-row  class="box">
         <el-col span="4">
           选择配音方式：
@@ -71,47 +64,6 @@
       <el-row style="margin: 50px 0">
         <el-button style="width: 150px" size="medium" type="primary" @click="toMore">下一步</el-button>
       </el-row>
-<!--      <div class="setDubway">-->
-<!--        <el-row :gutter="12">-->
-<!--          <el-col :span="5">-->
-<!--            <div class="cardBox" @click='goTo("uploadDub")'>-->
-<!--              <div class="cardBox" @click='goTo("newProduct")'>-->
-<!--                <el-card shadow='hover'>-->
-<!--                  <div slot='header' class='clearfix'>-->
-<!--                    <i class='el-icon-video-camera'></i>-->
-<!--                  </div>-->
-<!--                  <h3 class='cardTitle'>自行上传配音</h3>-->
-<!--                  &lt;!&ndash; <div>24小时不断直播，持续增加品牌曝光度</div> &ndash;&gt;-->
-<!--                </el-card>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </el-col>-->
-<!--          <el-col :span="5">-->
-<!--            <div class="cardBox" @click='goTo("selectAttri")'>-->
-<!--              <div class="cardBox" @click='goTo("uploadDub")'>-->
-<!--                <el-card shadow='hover' >-->
-<!--                  <div slot='header' class='clearfix'>-->
-<!--                    <i class='el-icon-magic-stick'></i>-->
-<!--                  </div>-->
-<!--                  <h3 class='cardTitle'>人工配音</h3>-->
-<!--                  &lt;!&ndash; <div>情绪表达饱满，主播形象更加生动</div> &ndash;&gt;-->
-<!--                </el-card>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </el-col>-->
-<!--          <el-col :span="5">-->
-<!--            <div class="cardBox" @click='goTo("newProduct")'>-->
-<!--              <el-card shadow='hover' >-->
-<!--                <div slot='header' class='clearfix'>-->
-<!--                  <i class='el-icon-monitor'></i>-->
-<!--                </div>-->
-<!--                <h3 class='cardTitle' @click='goTo("newProduct")'>智能机器配音</h3>-->
-<!--                &lt;!&ndash; <div>机器自动配音，快捷高效</div> &ndash;&gt;-->
-<!--              </el-card>-->
-<!--            </div>-->
-<!--          </el-col>-->
-<!--        </el-row>-->
-<!--      </div>-->
 
     </div>
   </div>
@@ -121,21 +73,61 @@
 
 <script>
 import stepLine from "@/components/VirtualWeb/stepLine";
-import myVideo from "@/components/VirtualWeb/video";
 import storeApi from "@/utils/store";
 
 export default {
   name: "addDetail",
   components : {
     stepLine,
-    myVideo,
   },
   data() {
     return {
       duration: '',
       dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
+      videoData : null,
+      playerOptions :	{
+        playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
+        autoplay: false, //如果true,浏览器准备好时开始回放。
+        muted: false, // 默认情况下将会消除任何音频。
+        loop: false, // 导致视频一结束就重新开始。
+        preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+        // language: 'zh-CN',
+        aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+        fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+        sources: [{
+          type: "video/mp4",
+          src: null //url地址
+
+        }],
+        // poster: require("@/assets/VirtualWeb/NormalUser/img/videoCover.jpg"), //你的封面地址
+        // width: document.documentElement.clientWidth,
+        notSupportedMessage: '此视频暂无法播放，请稍后再试',
+        //允许覆盖Video.js无法播放媒体源时显示的默认信息。
+        controlBar: {
+          timeDivider: true,
+          durationDisplay: true,
+          remainingTimeDisplay: false,
+          fullscreenToggle: false  //全屏按钮
+        }
+      },
     }
 
+  },
+  created() {
+    var videoOrder = storeApi.get({
+      name: 'videoOrder',
+    }) || null;
+    if (videoOrder === null || videoOrder === undefined) {
+      this.$alert('请先选择视频基础需求', {
+        confirmButtonText: '确定',
+      }).then(
+        this.goTo('/addOrder')
+      );
+    }
+    else {
+      this.videoData = videoOrder;
+      this.playerOptions.sources[0].src = videoOrder.videoId;
+    }
   },
   methods: {
     goTo(url, data){
@@ -271,6 +263,15 @@ export default {
 
 }
 
+.videoPlayer {
+  width: 1200px;
+  margin-bottom: 30px;
+  position: relative;
+  display: inline-block;
+  border: 1px solid transparent;
+  //overflow: hidden;
+  margin-right: 4px;
+}
 .button-icon{
   position: relative;
   top: 5px;

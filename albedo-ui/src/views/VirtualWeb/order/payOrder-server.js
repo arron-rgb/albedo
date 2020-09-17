@@ -37,5 +37,13 @@ export function purchase(data) {
   })
 }
 
+export function placeSecond(data){
+  return request({
+    url: '/biz/order/placeSecond',
+    method: 'post',
+    data : data
+  })
+}
 
-export default { save, purchase }
+
+export default { save, purchase, placeSecond }

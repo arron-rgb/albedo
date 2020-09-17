@@ -6,8 +6,27 @@
 </template>
 
 <script>
+import storeApi from "@/utils/store";
+
 export default {
-name: "waiting"
+  name: "waiting",
+  data() {
+    return {
+
+    }
+  },
+  created() {
+    var videoOrder = storeApi.get({
+      name: 'videoOrder',
+    }) || null;
+    if (videoOrder === null || videoOrder === undefined) {
+      this.$alert('请先选择视频基础需求', {
+        confirmButtonText: '确定',
+      }).then(
+        this.goTo('/addOrder')
+      );
+    }
+  }
 }
 </script>
 
