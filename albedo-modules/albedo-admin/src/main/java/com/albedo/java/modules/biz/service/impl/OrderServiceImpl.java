@@ -335,7 +335,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
     record.setStatus(TRADE_FINISHED);
     recordService.updateById(record);
-
     return baseMapper.updateById(order) == 1;
   }
 

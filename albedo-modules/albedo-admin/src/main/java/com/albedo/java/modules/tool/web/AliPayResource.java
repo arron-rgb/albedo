@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -87,14 +86,16 @@ public class AliPayResource {
     return Result.buildOkData(payUrl);
   }
 
+  @Resource
+  OrderService orderService;
+
   @ApiIgnore
   @GetMapping("/return")
   @AnonymousAccess
   @ApiOperation("回调接口")
-  // http://www.vlivest.com/a/aliPay/return?charset=utf-8&out_trade_no=202009142231323366&method=alipay.trade.page.pay.return&total_amount=100.00&sign=VqIhgVFs630wcshbhaperayF1dCXBLVoJkyIHLUojusbJLycooBBTdpfcgmH4%2F1hkknb57vX1UZN%2B0Mu1tlb3V4uCqr0pDxauRfqkvO7sc9a3Z927uE2Gyw7qg6lNJAvRcJFAnJwpJO6%2Fd6d5kgNoqb5wIKSv4ds3Z%2FY08Lxk1ukzlh9r3mDdsbflSQIQDqHhEeDBRt2ywe6uL343GzBMXGUKKSTm1mqmY2HiHt4TdLz11M35trjgHNB0oVOcSnrZBojkQcuzb85rvF%2F0IXsZnyOeFZOwK%2Bl6c9Pk%2Bzu86Mk5bZ8VrAp%2BKrRS%2FB%2BrjKjmC2alcT721G7L6h%2BaLSr6w%3D%3D&trade_no=2020091422001476590501531914&auth_app_id=2021000116688194&version=1.0&app_id=2021000116688194&sign_type=RSA2&seller_id=2088621955056287&timestamp=2020-09-14+22%3A32%3A32
-  public Result<String> returnPage(HttpServletRequest request, HttpServletResponse response) {
+  // http://localhost:8014/a/tool/aliPay/return?charset=utf-8&out_trade_no=202009142231323366&method=alipay.trade.page.pay.return&total_amount=100.00&sign=VqIhgVFs630wcshbhaperayF1dCXBLVoJkyIHLUojusbJLycooBBTdpfcgmH4%2F1hkknb57vX1UZN%2B0Mu1tlb3V4uCqr0pDxauRfqkvO7sc9a3Z927uE2Gyw7qg6lNJAvRcJFAnJwpJO6%2Fd6d5kgNoqb5wIKSv4ds3Z%2FY08Lxk1ukzlh9r3mDdsbflSQIQDqHhEeDBRt2ywe6uL343GzBMXGUKKSTm1mqmY2HiHt4TdLz11M35trjgHNB0oVOcSnrZBojkQcuzb85rvF%2F0IXsZnyOeFZOwK%2Bl6c9Pk%2Bzu86Mk5bZ8VrAp%2BKrRS%2FB%2BrjKjmC2alcT721G7L6h%2BaLSr6w%3D%3D&trade_no=2020091422001476590501531914&auth_app_id=2021000116688194&version=1.0&app_id=2021000116688194&sign_type=RSA2&seller_id=2088621955056287&timestamp=2020-09-14+22%3A32%3A32
+  public Result<String> returnPage(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
-    response.setContentType("text/html;charset=" + alipay.getCharset());
     // 内容验签，防止黑客篡改参数
     if (alipayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
@@ -149,6 +150,7 @@ public class AliPayResource {
     Assert.notNull(record, "未查询到交易记录");
     // 商户号
     String sellerId = getParam(request, "seller_id");
+    // 2088621955056287
     Assert.isTrue(sellerId.equals(record.getSellerId()), "");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
@@ -168,9 +170,6 @@ public class AliPayResource {
       return null;
     }
   }
-
-  @Resource
-  OrderService orderService;
 
   @Resource
   PlanService planService;
