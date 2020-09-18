@@ -6,7 +6,6 @@
         <span class="title">需求清单</span>
       </div>
 
-
       <el-row class="box">
         <el-col span="4">
           已选需求：
@@ -60,17 +59,17 @@
         </el-col>
         <el-col span="20">
           <el-radio-group v-model="payType" text-color="#ff5000" fill="#ff5000">
-            <el-radio style="height: 80px; width: 200px" label="0" border>
+            <el-radio style="height: 80px; width: 200px" label="ali" border>
               <a style="height: 60px; line-height: 60px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="1" border>
+            <el-radio style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="2" border>
+            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
@@ -84,6 +83,7 @@
 
       <el-row style="margin: 50px 0">
         <el-button :loading="loading" style="width: 150px" type="primary" @click="toPay">前往支付</el-button>
+        <el-button :loading="loading" style="width: 150px" v-if="this.orderId !== null" @click="cancel()">取消订单</el-button>
       </el-row>
     </el-card>
   </div>
@@ -93,8 +93,9 @@
 <script>
 import storeApi from "@/utils/store";
 import payOrder from '@/views/VirtualWeb/order/payOrder-server'
+import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
-import store from "@/store";
+import loginService from "@/api/login";
 export default {
   name: "payOrder",
   data(){
@@ -103,11 +104,12 @@ export default {
       typeList : ["", "success", "info", "warning", "danger"],
       description : '',
       type : '1',//加速服务，0 不加速， 1加速
-      payType : '0', //0 支付宝支付， 1微信支付
+      payType : 'ali', //0 支付宝支付， 1微信支付
       totalAmount : 1029,
       data : '',
       loading : false,
       priceList : [999, 1999, 0],
+      orderId : null,
     }
   },
   watch: {
@@ -118,18 +120,29 @@ export default {
 
   },
   created() {
-    var list = storeApi.get({
-      name: 'videoConfig'
-    }) || null;
-    if(list === null || list === undefined){
-      this.$alert('请先选择视频基础需求', {
-        confirmButtonText: '确定',
-      }).then(
-        this.goTo('/addOrder')
-      );
+    if(this.$route.query.data === "hadOrder"){//判断是否是已有订单
+      var videoOrder = storeApi.get({
+        name: 'videoOrder'
+      });
+      this.list = JSON.parse(videoOrder.content).data;
+      this.type = videoOrder.type;
+      this.totalAmount = videoOrder.totalAmount;
+      this.description = videoOrder.description;
+      this.orderId = videoOrder.id;
     }
-    else{
-      this.list = list
+    else {//是新的订单，尚未保存
+      var list = storeApi.get({
+        name: 'videoConfig'
+      }) || null;
+      if (list === null || list === undefined) {
+        this.$alert('请先选择视频基础需求', {
+          confirmButtonText: '确定',
+        }).then(
+          this.goTo('/addOrder')
+        );
+      } else {
+        this.list = list;
+      }
     }
   },
   methods:{
@@ -143,44 +156,78 @@ export default {
       var content = {data : this.list}
       var data = {
         content : JSON.stringify(content),
-        methods : '',
+        method : this.payType,
         totalAmount : this.totalAmount,
         type : this.type
       }
+      if(this.orderId !== null){
+        this.getToken(this.orderId);
+      }
+      else {
+        return new Promise((resolve, reject) => {
+          payOrder.save(data).then(res => {//保存订单并获取订单id
+            if (res.code === MSG_TYPE_SUCCESS) {
+              // console.log(res)
+              this.$message({
+                message: '订单提交成功，即将跳转支付页面',
+                type: 'success'
+              });
+              this.getToken(res.data);
+            }
+            this.loading = false;
+          }).catch(error => {
+            reject(error)
+            this.loading = false;
+          })
+        })
+      }
+    },
+    getToken(key){//获取token
       return new Promise((resolve, reject) => {
-        payOrder.save(data).then(res => {
-          if (res.code === MSG_TYPE_SUCCESS) {
-            console.log(res)
-            this.$message({
-              message: '订单提交成功，即将跳转支付页面',
-              type: 'success'
-            });
-            this.toPurchase(res.data);
-          }
-          this.loading = false;
+        loginService.token().then((res) => {
+          // console.log(res)
+          this.toPurchase(key, res);
         }).catch(error => {
           reject(error)
-          this.loading = false;
         })
       })
     },
-    toPurchase(key){
+    toPurchase(key, token){//提交支付请求
       var data = {
         orderId : key,
         subject : '单人主播视频订单',
-        token : store.getters.token,
+        token : token,
       }
-      payOrder.purchase(data).then(res => {
-        if (res.code === MSG_TYPE_SUCCESS) {
-          console.log(res)
-          this.$message({
-            message: '支付成功！',
-            type: 'success'
-          });
-        }
+      return new Promise((resolve, reject) => {
+        payOrder.purchase(data)
+        })
 
-      }).catch(error => {
-        reject(error)
+    },
+    cancel(){//取消订单
+      this.$alert('确定删除此订单?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonClass: '取消',
+      }).then(() => {
+        this.cancelOrder();
+      });
+    },
+    cancelOrder(){
+      var ids = [this.orderId.toString()]
+      return new Promise((resolve, reject) => {
+        crudOrder.del(ids).then((res) => {
+          // console.log(res)
+          this.$route.query.data = null;
+          storeApi.clear({
+            name: 'videoOrder'
+          })
+          this.$alert('订单删除成功！', '警告', {
+            confirmButtonText: '确定',
+          }).then(() => {
+            this.goTo("/addOrder");
+          });
+        }).catch(error => {
+          reject(error);
+        })
       })
     }
   }

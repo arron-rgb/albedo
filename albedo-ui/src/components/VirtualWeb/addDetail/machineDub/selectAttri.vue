@@ -1,46 +1,100 @@
 <template>
     <div class="selectAttri">
-        <div class="directBar">
-            <h3>选择配音属性</h3>
-            <div class="directBtn">
-                <el-button  @click="next">下一步</el-button>
-            </div>
-        </div>
+<!--        <div class="directBar">-->
+<!--            <h3>选择配音属性</h3>-->
+<!--            <div class="directBtn">-->
+<!--                <el-button  @click="next">下一步</el-button>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="markContainer">
+<!--          人工配音音色-->
             <div class="addLogo">
                 <h3 class="barTitle">
-                    选择属性
+                    选择音色属性
                 </h3>
-                <div class="selectBar">
+                <div class="selectBar" v-if="this.dubType === '1'">
                     <div class="attriType" v-for="(list,index) in attriType" :key="index">
                         <div class="listType">{{list.listType}}</div>
                         <div class="attriList">
-                            <el-button v-for="(attri,id) in list.list" :key="id" @click="changeActive(index,id)"
+                            <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="changeActive(index,id)"
                             :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
                                 {{attri}}
                             </el-button>
                         </div>
                     </div>
                 </div>
+<!--              机器配音音色-->
+              <div class="selectBar" v-if="this.dubType === '2'">
+                <div class="attriType" v-for="(list,index) in machineAttri" :key="index">
+                  <div class="listType">{{list.listType}}</div>
+                  <div class="attriList">
+                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="backData = attri.value"
+                               :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
+                      {{attri.value}}
+                    </el-button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="showSelected">
-              <el-row style="min-height: 100px">
+              <el-row style="min-height: 100px;">
                 <h3 class="barTitle">
                     已选属性
                 </h3>
 <!--                <div  class="selectedAttri">-->
-                    <el-tag v-for="(item,id) in selectedAttri" :key="item" :type="typeList[id % 5]" class="myTags">{{item}}</el-tag>
-<!--                </div>-->
+                <el-tag v-if="this.dubType === '1'" v-for="(item,id) in selectedAttri" :key="item" :type="typeList[id % 5]" class="myTags">{{item}}</el-tag>
+                <el-tag v-if="this.dubType === '2' && backData !== ''" :type="typeList[0]" class="myTags">{{backData}}</el-tag>
+<!--                <span v-if="this.dubType === '2'" style="line-height: 45px; margin-left: 100px">{{ backData }}</span>-->
+                <!--                </div>-->
               </el-row>
-              <h3 class="barTitle">
-                配音字数
-              </h3>
-              xxxx
+              <el-row style="text-align: left; margin-top: 10px;">
+                <el-col span="6">
+                  <h3 class="barTitle">
+                    配音字数
+                  </h3>
+                </el-col>
+                <el-col span="5" style="margin-top: 3px">
+                  <span style="font-size: 30px; color: #ff5000">{{this.words}}</span>
+                </el-col>
+                <el-col span="13">
+                  <span style="line-height: 45px">字</span>
+                </el-col>
+              </el-row>
+              <el-row style="text-align: left; margin-top: 10px;">
+                <el-col span="6">
+                  <h3 class="barTitle">
+                    预计时长
+                  </h3>
+                </el-col>
+                <el-col span="5" style="margin-top: 3px">
+                  <span style="font-size: 30px; color: #ff5000">{{this.time}}</span>
+                </el-col>
+                <el-col span="13">
+                  <span style="line-height: 45px">分钟</span>
+                </el-col>
+              </el-row>
+              <el-row style="text-align: left; margin-top: 10px;">
+                <el-col span="6">
+                  <h3 class="barTitle">
+                    配音价格
+                  </h3>
+                </el-col>
+                <el-col span="5" style="margin-top: 3px">
+                  <span style="font-size: 30px; color: #ff5000">{{this.price}}</span>
+                </el-col>
+                <el-col span="13">
+                  <span style="line-height: 45px">元</span>
+                </el-col>
+              </el-row>
+              <el-row style="margin-top: 30px">
+                <el-button type="primary" style="width: 300px" @click="payDub">前往支付</el-button>
+              </el-row>
             </div>
         </div>
     </div>
 </template>
 <script>
+import storeApi from "@/utils/store";
 export default {
   data(){
       return{
@@ -50,9 +104,43 @@ export default {
             {listType:'类型',list:['讲述播报','综艺播报','新闻播报'],active:-1},
             {listType:'标签',list:['大气','活力','浑厚','甜美','激情'],active:-1}
           ],
+          machineAttri:[
+            {listType:'男声', list:[{value: '亲和男声', id: 1},
+                {value: '成熟男声', id: 2},
+                {value: '情感男声', id: 6}]},
+            {listType:'女声', list:[{value: '亲和女声（默认）', id: 0},
+                {value: '温暖女声', id: 4},
+                {value: '情感女声', id: 5},
+                {value: '客服女声', id: 7},
+                {value: '通用女声', id: 1002},]}
+          ],
           selectedAttri:[],
           typeList : ["", "success", "info", "warning", "danger"],
+          words: 0,
+          time : '',
+          price : '',
+          dubType : '',
+          backData :'',
       }
+  },
+  created() {
+    // 向上取整
+    this.words = storeApi.get({
+      name: 'words'
+    }) || 0;
+    this.time = Math.ceil(this.words / 200);
+    this.price = this.time * 100;
+    //获取配音方式
+    this.dubType = storeApi.get({
+      name: 'dubType'
+    }) || null;
+    if(this.dubType === null || this.dubType === undefined){
+      this.$alert('请先选择配音方式！', '警告', {
+        confirmButtonText: '确定',
+      }).then(
+        this.$router.replace('addDetail')
+      );
+    }
   },
   methods:{
     changeActive(listid,id){
@@ -80,11 +168,36 @@ export default {
             this.selectedAttri.push(selectedItem)
         }
     },
-    next(){
-        this.$router.replace('paymentPage')
-        this.$store.commit('NEXT')
-    },
-
+    // next(){
+    //     this.$router.replace('paymentPage')
+    //     this.$store.commit('NEXT')
+    // },
+    payDub(){
+      if(this.dubType === '1')
+      {
+        if(this.selectedAttri.length < 4)
+        {
+          this.$alert('请完整选择音色属性！', '提示', {
+            confirmButtonText: '确定',
+          });
+        }else
+        {
+          //提交订单
+        }
+      }
+      if(this.dubType === '2')
+      {
+        if(this.selectedAttri.length < 2)
+        {
+          this.$alert('请完整选择音色属性！', '提示', {
+            confirmButtonText: '确定',
+          });
+        }else
+        {
+          //提交订单
+        }
+      }
+    }
 
   }
 }

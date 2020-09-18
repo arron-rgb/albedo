@@ -1,53 +1,49 @@
 <template>
-  <div style="height: 100%; overflow-y: scroll">
-    <div class="pageTitle">我的订单</div>
-<!--    <el-card class="table-card">-->
-      <el-table
-        :data="data"
-        stripe="true"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="视频属性">
-                <el-tag v-for="(item, index) in getJSON(props.row.content).data" :type="typeList[index % 5]" :key="item" class="myTags">
-                  {{item.data[0].value}}
-                </el-tag>
-                <!--              <span>{{ getJSON(props.row.content).data }}</span>-->
-              </el-form-item>
-              <el-form-item label="视频链接">
-                <span v-if="props.row.videoId === null">已失效</span>
-                <span v-else>
-                  <el-button @click="">点击前往</el-button>
-                </span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="创建时间"
-          prop="createdDate">
-        </el-table-column>
-        <el-table-column
-          label="创建人"
-          prop="createdBy">
-        </el-table-column>
-        <el-table-column
-          label="订单价格"
-          prop="totalAmount">
-        </el-table-column>
-        <el-table-column
-          label="订单状态"
-          prop="state">
-        </el-table-column>
-      </el-table>
-<!--    </el-card>-->
-  </div>
+  <el-card class="table-card">
+    <el-table
+      :data="data"
+      style="width: 1200px">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="视频属性">
+              <el-tag v-for="(item, index) in getJSON(props.row.content).data" :type="typeList[index % 5]" :key="item" class="myTags">
+                {{item.data[0].value}}
+              </el-tag>
+<!--              <span>{{ getJSON(props.row.content).data }}</span>-->
+            </el-form-item>
+            <el-form-item label="视频链接">
+              <span v-if="props.row.videoId === null">已失效</span>
+              <span v-else>
+                <el-button @click="">点击前往</el-button>
+              </span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="createdDate">
+      </el-table-column>
+      <el-table-column
+        label="创建人"
+        prop="createdBy">
+      </el-table-column>
+      <el-table-column
+        label="订单价格"
+        prop="totalAmount">
+      </el-table-column>
+      <el-table-column
+        label="订单状态"
+        prop="state">
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script>
 export default {
-  name: "myOrder",
+  name: "historyOrder",
   data(){
     return {
       data : [
@@ -227,16 +223,12 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import '@/common/style.scss';
-
-  .pageTitle {
-  @include pageTitle
-  }
-
+<style>
 .table-card{
+  width: 1200px;
   margin: auto;
-  margin-top: 10px;
+  margin-top: 50px;
+
 }
 .myTags{
   min-width: 80px;
@@ -253,6 +245,7 @@ export default {
 .demo-table-expand {
   margin-right: 0;
   margin-bottom: 0;
+  width: 50%;
 }
 .el-form-item {
   margin-right: 0;

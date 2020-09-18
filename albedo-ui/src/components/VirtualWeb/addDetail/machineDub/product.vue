@@ -91,26 +91,11 @@ export default {
         loading : false,
         imageUrl: '',
         uploadUrl: '',
-        // 隐藏加号
-        // fileList:[],
-        // uploadDisabled:false,
-        // dialogVisible: false,
-        // addPicture:!this.dialogVisible,
-        // disabled: false,
-        // dialogImageUrl:'',
-        // productData:{
-        // proTitle:'',
-        // proDescription:'',
         data:{
           urls : '',
           name : '',
           description : '',
         }
-        //   profileList:''
-          // proTitle:this.item.proTitle,
-          // proDescription:this.item.proDescription,
-          // profileList:this.item.profileList
-        // }
 
       }
   },
@@ -186,7 +171,7 @@ export default {
       }
       this.loading = true;
       //上传图片
-      this.$refs.upload.submit()
+      this.$refs.upload.submit();
     },
     saveProduct(){
       //保存商品

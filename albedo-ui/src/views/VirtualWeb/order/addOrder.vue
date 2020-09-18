@@ -9,8 +9,9 @@
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
                   <img class="img" v-show="o.url !== null" :src="o.url">
-                  <div class="button-text">{{o.value}} {{o.url}}</div>
+                  <div class="button-text">{{o.value}}</div>
                 </el-radio-button>
+                <div v-show="o.value !== null" class="button-text" style="line-height: 20px; color: #909399">{{o.value}}</div>
               </el-radio-group>
             </el-collapse-item>
           </el-collapse>
@@ -31,6 +32,7 @@
 </template>
 <script>
 import crudConfig from '@/views/biz/config/config-service'
+import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import storeApi from '@/utils/store'
 export default {
@@ -44,9 +46,51 @@ export default {
     }
   },
   created() {
-    this.getData()
+    // this.getData();
+    this.getCurrentOrder()
   },
   methods : {
+    getCurrentOrder(){//获取当前订单
+      return new Promise((resolve, reject) => {
+        crudOrder.current().then(res => {
+          console.log(res);
+          if (res.code === MSG_TYPE_SUCCESS) {
+            if(res.data.state === 5){//上一单已完结，可以进行下一单
+              this.getData();
+            }
+            else if(res.data.state === 0){//有订单创建未付款
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
+              this.$alert('您有订单尚未付款，即将前往付款页面！', '警告', {
+                confirmButtonText: '确定',
+              }).then(() => {
+                this.goTo("/payOrder", "hadOrder");
+              });
+            }
+            else if(res.data.state === 1 || res.data.state === 2 ){//已付款尚未制作
+              this.goTo('/waiting');
+            }
+            else if(res.data.state === 4){//已经选好台词尚未加入音频
+              this.goTo('/waiting');
+            }
+            else if(res.data.state === 3){//视频已上传等待配音
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
+              this.goTo('/addDetail')
+            }
+            // this.data = res.data.data
+          }
+        }).catch(error => {
+          this.getData();//没有新订单，可以进行下一单
+        })
+      })
+    },
     getData(){
       //获得视频属性数据
       return new Promise((resolve, reject) => {
@@ -78,9 +122,9 @@ export default {
       if (this.data.length > this.backData.length) {
         //找到没有选择的第一个选项
         for (var i = 0; i < this.data.length ; i++) {
-          console.log(this.data[i].title)
+          // console.log(this.data[i].title)
           var dataIndex = this.backData.findIndex(o => o.title === this.data[i].title);
-          console.log(dataIndex)
+          // console.log(dataIndex)
           if (dataIndex === -1) {
             this.$alert('“' + this.data[i].title + '”尚未选择', '警告', {
               confirmButtonText: '确定',
@@ -90,11 +134,18 @@ export default {
       }
       else{
         //保存已选的视频选项
+        // console.log(this.backData)
         storeApi.set({
           name: 'videoConfig',
           content: this.backData,
           type: 'session'
         })
+
+        storeApi.set({//更新步骤条状态
+          name: 'orderState',
+          content: 1,
+          type: 'session'
+        });
         this.goTo("/payOrder");
       }
     },
@@ -130,6 +181,7 @@ export default {
   height: 280px;
 }
 .button-text{
+  max-width: 210px;
   line-height: 32px;
   font-size: 14px;
   padding: 0 20px;

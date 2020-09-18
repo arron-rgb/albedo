@@ -74,7 +74,6 @@ export const constantRouterMap = [
     hidden: true
   },
 
-
   {
     path: '/contact',
     meta: { title: '帮助中心', noCache: true, showHeader: true },
@@ -153,29 +152,34 @@ export const constantRouterMap = [
     children: [
       {
         path: '/addOrder',
-        meta: { showHeader: true },
+        meta: { showHeader: true, stepLine: 0 },
         component: (resolve) => require(['@/views/VirtualWeb/order/addOrder'], resolve),
         hidden: true,
       },
       {
         path: '/payOrder',
-        meta: { showHeader: true },
+        meta: { showHeader: true, stepLine: 1 },
         component: (resolve) => require(['@/views/VirtualWeb/order/payOrder'], resolve),
         hidden: true,
       },
+      {
+        path: '/waiting',
+        meta: { showHeader: true, stepLine: 2 },
+        component: (resolve) => require(['@/components/VirtualWeb/waiting'], resolve),
+        hidden: true
+      },
     ]
   },
-
   {
     path: '/addDetail',
-    meta: { showHeader: true },
+    meta: { showHeader: true, stepLine: 3 },
     component: (resolve) => require(['@/views/VirtualWeb/order/addDetail'], resolve),
     hidden: true
   },
   //配音选项
   {
     path: '/mechineDub',
-    meta: { title: '配音台词', noCache: true, showHeader: true },
+    meta: { title: '配音台词', noCache: true, showHeader: true, stepLine: 3 },
     component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/machineDub'], resolve),
     hidden: true,
     // children: [
@@ -201,12 +205,6 @@ export const constantRouterMap = [
             path:'/addMark',
             meta: { showHeader: true },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/addMark'], resolve),
-            hidden: true,
-          },
-          {
-            path:'/dubTone',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/dubTone'], resolve),
             hidden: true,
           }
         ]

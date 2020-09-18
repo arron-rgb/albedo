@@ -222,6 +222,7 @@ export default {
     ])
   },
   created() {
+    console.log(this.user);
     this.form = {
       id: this.user.id,
       nickname: this.user.nickname,

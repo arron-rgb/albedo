@@ -264,19 +264,13 @@ aside {
   //background-color: #ff5000 !important;
 }
 
-//.el-input__inner:focus{
-//  border-color: #ff5000 !important;
-//}
-
-//.el-input__inner:hover{
-//  border-color: #ff5000 !important;
-//}
-//.el-input-number__increase:hover, .el-input-number__decrease:hover+.el-input__inner:hover{
-  //color: #ff5000 !important;
-  //border-color: #ff5000 !important;
-  //border-left-color: #DCDFE6 !important;
-  //border-right-color: #DCDFE6 !important;
-  //.el-input__inner{
-  //  border-color: #ff5000 !important;
-  //}
-//}
+.el-step__title.is-finish{//修改步骤条颜色
+  color: #ff5000;
+}
+.el-step__head.is-finish{
+  color: #ff5000;
+  border: #ff5000;
+}
+.el-menu-item:hover{
+  color: #ff5000 !important;
+}

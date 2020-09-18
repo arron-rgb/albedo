@@ -33,4 +33,10 @@ export function get(id) {
   })
 }
 
-export default { page, del, save, get }
+export function current() {
+  return request({
+    url: '/biz/order/current',
+    method: 'get'
+  })
+}
+export default { page, del, save, get, current }

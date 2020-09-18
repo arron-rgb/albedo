@@ -29,6 +29,7 @@ const whiteList = [
   '/security',
 
   '/dubTone',
+  '/historyOrder',
   // '/addOrder',
   // '/payOrder',
   // '/addDetail',
