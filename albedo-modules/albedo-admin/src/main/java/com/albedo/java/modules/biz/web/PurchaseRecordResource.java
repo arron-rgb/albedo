@@ -3,34 +3,29 @@
  */
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_SUCCESS;
+import static com.albedo.java.common.core.constant.BusinessConstants.TRADE_FINISHED;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
-import com.albedo.java.common.core.vo.PageModel;
-import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.InvoiceRequest;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
-import com.albedo.java.modules.biz.domain.dto.PurchaseRecordQueryCriteria;
+import com.albedo.java.modules.biz.domain.dto.Param;
+import com.albedo.java.modules.biz.service.InvoiceRequestService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.tool.service.AliPayService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -63,57 +58,61 @@ public class PurchaseRecordResource extends BaseResource {
   /**
    * GET / : get all purchaseRecord.
    *
-   * @param pm
-   *          the pagination information
    * @return the Result with status 200 (OK) and with body all purchaseRecord
    */
 
   @GetMapping
   @LogOperate(value = "购买记录查看")
   @ApiOperation(value = "查询可开票的购买记录")
-  public Result<PageModel<PurchaseRecord>> getPage(PageModel<PurchaseRecord> pm,
-    PurchaseRecordQueryCriteria purchaseRecordQueryCriteria, String available) {
-    QueryWrapper<PurchaseRecord> wrapper = QueryWrapperUtil.getWrapper(pm, purchaseRecordQueryCriteria);
-    wrapper.eq("user_id", SecurityUtil.getUser().getId());
-    wrapper.eq("status", TRADE_SUCCESS);
-    // todo 新增字段 是否已开票
-    wrapper.ne("", "");
-    if (StringUtils.equals(available, "1")) {
-      // 过滤已开的订单
-      List<String> orderIds = new ArrayList<>();
-      wrapper.notIn("order_id", orderIds);
-    }
-    return Result.buildOkData(service.page(pm, wrapper));
+  public Result<List<PurchaseRecord>> getPage() {
+    List<PurchaseRecord> records = service.list(Wrappers.<PurchaseRecord>query()
+      .eq("user_id", SecurityUtil.getUser().getId()).eq("status", TRADE_FINISHED).eq("available", "1"));
+    return Result.buildOkData(records);
   }
 
-  @GetMapping("generate")
+  @PostMapping("generate")
   @LogOperate(value = "购买记录查看")
   @ApiOperation(value = "生成开票请求")
-  public Result generate(List<String> recordIds) {
+  public Result<String> generate(@RequestBody Param param) {
     // 1. 查看支付状态
+    // invoiceId 3687bb330c6980ed12bd2b870b376e14
+    // recordIds [0fb21ef8fb2864924c63e2f0a667aba6]
     // 2. 把订单金额加起来
     // 3. 生成开票请求
     // 4. 将purcharsRecord设置为已开票的状态
+    String invoiceId = param.getInvoiceId();
+    List<String> recordIds = param.getRecordIds();
+
     recordIds = recordIds.stream().distinct().collect(Collectors.toList());
-    Set<PurchaseRecord> records = recordIds.stream().map((recordId) -> {
-      PurchaseRecord re = service.getById(recordId);
-      if (Objects.isNull(re)) {
-        return null;
-      }
-      if (StringUtils.equals(aliPayService.queryOrderStatus(re.getOutTradeNo()), TRADE_SUCCESS)) {
-        return re;
-      }
-      return null;
-    }).collect(Collectors.toSet());
+    List<PurchaseRecord> records = recordIds.stream().map(service::getById)
+      .filter(record -> StringUtils.equals(record.getStatus(), TRADE_FINISHED)).collect(Collectors.toList());
+    BigDecimal result =
+      records.stream().map(record -> record.getTotalAmount() == null ? BigDecimal.ZERO : record.getTotalAmount())
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+    InvoiceRequest request = new InvoiceRequest();
+    request.setTotalAmount(result);
+    request.setInvoiceId(invoiceId);
+    request.setRecordIds(concatId(recordIds));
+    requestService.saveOrUpdate(request);
     records.forEach(record -> {
-      // todo 设置为已开票
+      record.setAvailable("0");
       service.updateById(record);
     });
     // 开票所需信息 1. 抬头 2. 用户 3. 开票金额 4. 数据库存储消耗的order
-    return Result.buildOkData(null);
+    return Result.buildOkData("已发起请求");
   }
+
+  @Resource
+  InvoiceRequestService requestService;
 
   @Resource
   AliPayService aliPayService;
 
+  private String concatId(List<String> ids) {
+    StringBuilder builder = new StringBuilder();
+    for (String id : ids) {
+      builder.append(id).append(",");
+    }
+    return builder.substring(0, builder.length() - 1);
+  }
 }

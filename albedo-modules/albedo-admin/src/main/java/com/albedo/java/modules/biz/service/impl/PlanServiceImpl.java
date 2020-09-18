@@ -3,6 +3,8 @@ package com.albedo.java.modules.biz.service.impl;
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +50,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
       .subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(PLAN_TYPE)
-      .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId()).build();
+      .totalAmount(new BigDecimal(trade.getTotalAmount())).outTradeNo(trade.getOutTradeNo()).outerId(plan.getId())
+      .build();
     recordService.save(record);
     try {
       return aliPayService.toPayAsPc(trade);

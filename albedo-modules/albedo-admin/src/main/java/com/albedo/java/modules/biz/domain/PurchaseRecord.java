@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.domain;
 
+import java.math.BigDecimal;
+
 import javax.validation.constraints.Size;
 
 import com.albedo.java.common.persistence.domain.IdEntity;
@@ -49,7 +51,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
    * totalAmount 支付金额
    */
   @Size(max = 30)
-  private String totalAmount;
+  private BigDecimal totalAmount;
   /**
    * 商户号
    */
@@ -59,6 +61,10 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
    * 如果为空表示未进入获取支付链接状态
    */
   private String status;
+  /**
+   * 能否开发票 1可 0不可
+   */
+  private String available;
 
   // @ApiField("merchant_order_no")
   // private String merchantOrderNo;
