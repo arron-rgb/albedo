@@ -5,6 +5,7 @@ import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -135,7 +136,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
           recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
         if (record == null) {
           record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-            .totalAmount(order.getTotalAmount()).outTradeNo(plus.getOutTradeNo()).outerId(order.getId()).build();
+            .totalAmount(new BigDecimal(order.getTotalAmount())).outTradeNo(plus.getOutTradeNo()).outerId(order.getId())
+            .build();
         } else {
           record.setOutTradeNo(plus.getOutTradeNo());
         }
@@ -252,7 +254,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public void dubbingBySelf(SubOrderVo orderVo, Video video) {
     video.setAudioUrl(orderVo.getAudioUrl());
-    video.setAudioText(orderVo.appendContent());
     videoRepository.updateById(video);
   }
 
@@ -260,6 +261,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public void machineDubbing(SubOrderVo orderVo, Video video) {
     String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId());
+    Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(filePath);
     videoRepository.updateById(video);
@@ -276,7 +278,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String subject = "人工配音";
     TradePlus trade =
       TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject).totalAmount(totalAmount).build();
-
     // 人工配音的下单方式
     Order order = new Order();
     order.setTotalAmount(totalAmount);
@@ -285,10 +286,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setContent(orderVo.appendContent());
     order.setDescription(orderVo.getDescription());
     order.setState(NOT_STARTED);
+    // todo 人工配音的订单逻辑怎么处理
+    // 人工配音有哪些字段
     baseMapper.insert(order);
 
     PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-      .totalAmount(trade.getTotalAmount()).outTradeNo(trade.getOutTradeNo()).outerId(order.getId()).build();
+      .totalAmount(new BigDecimal(trade.getTotalAmount())).outTradeNo(trade.getOutTradeNo()).outerId(order.getId())
+      .build();
     recordService.save(record);
 
     return aliPayService.toPayAsPc(trade);

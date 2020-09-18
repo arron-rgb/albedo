@@ -131,10 +131,9 @@ public class AliPayResource {
     String appId = getParam(request, "app_id");
     Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "");
     if (alipayUtils.rsaCheck(request, alipay)) {
-      // 交易状态
-      String x = update(request);
-      if (StringUtils.isNotEmpty(x)) {
-        return x;
+      String update = update(request);
+      if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
+        return update;
       }
     }
     return "";
@@ -154,10 +153,11 @@ public class AliPayResource {
     Assert.isTrue(sellerId.equals(record.getSellerId()), "商户号为空");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
-    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount()), "金额数量异常");
+    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount().toString()), "金额数量异常");
     // appId
     boolean callback = false;
     record.setStatus(TRADE_FINISHED);
+    record.setAvailable("1");
     recordService.updateById(record);
     if (PLAN_TYPE.equals(record.getType())) {
       callback = planService.callback(outTradeNo);
