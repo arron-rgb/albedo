@@ -132,7 +132,7 @@ export default {
         });
       },
     saveAudio(audioUrl){//提交支付请求
-      console.log(this.videoOrder);
+      // console.log(this.videoOrder);
       var data = {
         orderId : this.videoOrder.id,
         type : 0,//配音方式  0上传   1下单   2合成

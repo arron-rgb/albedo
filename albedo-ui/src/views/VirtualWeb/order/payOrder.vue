@@ -64,12 +64,12 @@
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="balance" border>
+            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
               <a style=" line-height: 60px; padding-left: 10px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
+            <el-radio style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
