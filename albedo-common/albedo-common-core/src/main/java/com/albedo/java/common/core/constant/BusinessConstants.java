@@ -5,7 +5,7 @@ package com.albedo.java.common.core.constant;
  */
 public interface BusinessConstants {
 
-  Integer UPLOAD_AUDIO = 1;
+  Integer UPLOAD_AUDIO = 0;
 
   String PLUS_SERVICE = "1";
 
