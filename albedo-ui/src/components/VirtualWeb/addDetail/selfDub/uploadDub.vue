@@ -137,11 +137,11 @@ export default {
         orderId : this.videoOrder.id,
         type : 0,//配音方式  0上传   1下单   2合成
         audioUrl : audioUrl,
+        content : [],
         time : storeApi.get({
           name: 'duration',
         }),
       }
-      console.log(data);
       return new Promise((resolve, reject) => {
         payOrder.placeSecond(data).then((res) => {
           //订单保存成功，跳转等待页面
