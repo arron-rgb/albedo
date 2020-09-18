@@ -209,8 +209,12 @@ export default {
       }
       return new Promise((resolve, reject) => {
         payOrder.purchase(data)
+        //清除videoOrder
+          storeApi.clear({
+            name: 'videoOrder'
+          });
+          this.goTo('/addOrder');
         })
-
     },
     cancel(){//取消订单
       this.$alert('确定删除此订单?', '警告', {
@@ -229,6 +233,10 @@ export default {
           storeApi.clear({
             name: 'videoOrder'
           })
+          //清除videoOrder
+          storeApi.clear({
+            name: 'videoConfig'
+          });
           this.$alert('订单删除成功！', '警告', {
             confirmButtonText: '确定',
           }).then(() => {

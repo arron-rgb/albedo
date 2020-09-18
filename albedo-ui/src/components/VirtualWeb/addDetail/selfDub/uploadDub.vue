@@ -148,7 +148,11 @@ export default {
           // console.log(res)
           resolve();
           this.loading = false;
-          this.goTo('/waiting');
+          //清除videoOrder
+          storeApi.clear({
+            name: 'videoOrder'
+          });
+          this.goTo('/addOrder');
         }).catch(error => {
           reject(error)
           this.loading = false;
