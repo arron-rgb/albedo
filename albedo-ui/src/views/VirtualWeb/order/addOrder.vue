@@ -71,9 +71,19 @@ export default {
               });
             }
             else if(res.data.state === 1 || res.data.state === 2 ){//已付款尚未制作
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
               this.goTo('/waiting');
             }
             else if(res.data.state === 4){//已经选好台词尚未加入音频
+              storeApi.set({
+                name: 'videoOrder',
+                content: res.data,
+                type: 'session'
+              });
               this.goTo('/waiting');
             }
             else if(res.data.state === 3){//视频已上传等待配音

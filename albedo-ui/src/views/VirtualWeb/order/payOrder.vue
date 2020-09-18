@@ -124,11 +124,20 @@ export default {
       var videoOrder = storeApi.get({
         name: 'videoOrder'
       });
-      this.list = JSON.parse(videoOrder.content).data;
-      this.type = videoOrder.type;
-      this.totalAmount = videoOrder.totalAmount;
-      this.description = videoOrder.description;
-      this.orderId = videoOrder.id;
+      if (videoOrder === null || videoOrder === undefined) {
+        this.$alert('请先选择视频基础需求', {
+          confirmButtonText: '确定',
+        }).then(
+          this.goTo('/addOrder')
+        );
+      }
+      else {
+        this.list = JSON.parse(videoOrder.content).data;
+        this.type = videoOrder.type;
+        this.totalAmount = videoOrder.totalAmount;
+        this.description = videoOrder.description;
+        this.orderId = videoOrder.id;
+      }
     }
     else {//是新的订单，尚未保存
       var list = storeApi.get({
