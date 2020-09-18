@@ -28,6 +28,7 @@ import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import io.micrometer.core.instrument.util.StringUtils;
@@ -172,7 +173,9 @@ public class WebOrderResource extends BaseResource {
     return orders.stream().peek((key) -> {
       Video video = videoService.getById(key.getVideoId());
       if (video != null) {
-        key.setVideoId(video.getOriginUrl());
+        String originUrl = video.getOriginUrl();
+        originUrl = ossSingleton.localPathToUrl(originUrl);
+        key.setVideoId(originUrl);
       }
       String username = SecurityUtil.getUser().getUsername();
       if (StringUtils.isNotBlank(username)) {
@@ -180,4 +183,7 @@ public class WebOrderResource extends BaseResource {
       }
     }).collect(Collectors.toList());
   }
+
+  @Resource
+  OssSingleton ossSingleton;
 }

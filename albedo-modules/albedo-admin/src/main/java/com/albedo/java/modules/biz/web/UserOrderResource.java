@@ -22,6 +22,7 @@ import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -56,10 +57,20 @@ public class UserOrderResource extends BaseResource {
     Assert.notNull(order, "未查询到正在进行的订单");
     Video video = videoService.getById(order.getVideoId());
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
-      order.setVideoId(video.getOriginUrl());
+      String originUrl = video.getOriginUrl();
+      originUrl = ossSingleton.localPathToUrl(originUrl);
+
+      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
+        originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+      }
+
+      order.setVideoId(originUrl);
     }
     return Result.buildOkData(order);
   }
+
+  @Resource
+  OssSingleton ossSingleton;
 
   @ApiOperation(value = "查看历史订单")
   @GetMapping("/list")
@@ -68,7 +79,12 @@ public class UserOrderResource extends BaseResource {
     orders.forEach(order -> {
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
-        order.setVideoId(video.getOutputUrl());
+        String originUrl = video.getOriginUrl();
+        originUrl = ossSingleton.localPathToUrl(originUrl);
+        if (StringUtils.isNotEmpty(video.getOutputUrl())) {
+          originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+        }
+        order.setVideoId(originUrl);
       }
     });
     return Result.buildOkData(orders);
@@ -100,7 +116,7 @@ public class UserOrderResource extends BaseResource {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
-    // orderVo会默认为0
+    Assert.notNull(orderVo.getType(), "请选择配音方式");
     switch (orderVo.getType()) {
       case 0:
         // 自行上传配音
@@ -121,9 +137,4 @@ public class UserOrderResource extends BaseResource {
     return Result.buildOk("上传成功");
   }
 
-  @ApiOperation(value = "用户拉取自己的订单状态")
-  @GetMapping(value = "/query")
-  public Result<List<Order>> query() {
-    return Result.buildOkData(service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId())));
-  }
 }
