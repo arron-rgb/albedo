@@ -168,6 +168,12 @@ export const constantRouterMap = [
         component: (resolve) => require(['@/components/VirtualWeb/waiting'], resolve),
         hidden: true
       },
+      {
+        path: '/endOrder',
+        meta: { showHeader: true, stepLine: 5 },
+        component: (resolve) => require(['@/views/VirtualWeb/order/endOrder'], resolve),
+        hidden: true
+      },
     ]
   },
   {
