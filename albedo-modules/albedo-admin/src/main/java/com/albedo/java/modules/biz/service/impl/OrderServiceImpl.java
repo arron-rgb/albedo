@@ -33,6 +33,7 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.task.Signal;
+import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -82,7 +83,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public String place(OrderVo form) {
-
     if (!Objects.isNull(currentOrder())) {
       throw new RuntimeMsgException("当前仍有订单未完成，无法创建新订单");
     }
@@ -106,10 +106,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       String updateAmount = MoneyUtil.moneyAdd(order.getTotalAmount(), map.getVal());
       order.setTotalAmount(updateAmount);
     }
-    if (!compareOrderPrice(form, order)) {
-      // 和前端传过来的价格比较
-      throw new RuntimeMsgException(PRICE_ERROR);
-    }
+    Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
     return save(order) ? order.getId() : "";
   }
 
@@ -135,9 +132,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         record =
           recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
         if (record == null) {
-          record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-            .totalAmount(new BigDecimal(order.getTotalAmount())).outTradeNo(plus.getOutTradeNo()).outerId(order.getId())
-            .build();
+          record = PurchaseRecord.buildOrder(plus, order.getId());
         } else {
           record.setOutTradeNo(plus.getOutTradeNo());
         }
@@ -229,9 +224,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public List<Order> availableOrder() {
-    List<Order> orders = baseMapper.selectList(Wrappers.query());
-    orders = orders.stream().filter((order -> NOT_STARTED.equals(order.getState()))).collect(Collectors.toList());
-    return orders;
+    return baseMapper.selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED));
   }
 
   @Override
@@ -269,30 +262,50 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
+  public void uploadAudio(String orderId, String audioUrl) {
+    Order order = baseMapper.selectById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    Assert.isTrue(Objects.equals(order.getType(), DUBBING));
+    String videoOrderId = order.getVideoId();
+    Order videoOrder = baseMapper.selectById(videoOrderId);
+    Assert.notNull(videoOrder, ORDER_NOT_FOUND);
+    String videoId = videoOrder.getVideoId();
+    Video video = videoRepository.selectById(videoId);
+    Assert.notNull(video, VIDEO_NOT_FOUND);
+    video.setAudioUrl(audioUrl);
+    videoRepository.updateById(video);
+    order.setState(COMPLETED_SUCCESS);
+    baseMapper.updateById(order);
+
+    SpringContextHolder.publishEvent(new VideoEncodeTask(video));
+  }
+
+  @Override
   public String artificialDubbing(SubOrderVo orderVo) {
-    String totalAmount = "999";
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音"));
+    String pricePerText = "0.5";
+    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位字数价格"));
     if (price != null) {
-      totalAmount = price.getVal();
+      pricePerText = price.getVal();
     }
     String subject = "人工配音";
-    TradePlus trade =
-      TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject).totalAmount(totalAmount).build();
+    String content = orderVo.appendContent();
+    BigDecimal totalAmount = BigDecimal.valueOf(content.length() / Double.parseDouble(pricePerText));
+    Assert.isTrue(!MoneyUtil.compareTo(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
+
+    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
+      .totalAmount(totalAmount.toString()).build();
     // 人工配音的下单方式
     Order order = new Order();
-    order.setTotalAmount(totalAmount);
+    order.setTotalAmount(totalAmount.toString());
     order.setType(DUBBING);
     order.setUserId(SecurityUtil.getUser().getId());
-    order.setContent(orderVo.appendContent());
+    order.setContent(content);
     order.setDescription(orderVo.getDescription());
+    order.setVideoId(orderVo.getOrderId());
     order.setState(NOT_STARTED);
-    // todo 人工配音的订单逻辑怎么处理
-    // 人工配音有哪些字段
-    baseMapper.insert(order);
 
-    PurchaseRecord record = PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(ORDER_TYPE)
-      .totalAmount(new BigDecimal(trade.getTotalAmount())).outTradeNo(trade.getOutTradeNo()).outerId(order.getId())
-      .build();
+    baseMapper.insert(order);
+    PurchaseRecord record = PurchaseRecord.buildOrder(trade, order.getId());
     recordService.save(record);
 
     return aliPayService.toPayAsPc(trade);
@@ -340,6 +353,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // 拒绝已进入付款后状态订单
     Assert.isTrue(order.getState() < NOT_STARTED, "订单已支付");
     order.setState(NOT_STARTED);
+
     PurchaseRecord record =
       recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, ORDER_TYPE)
         .eq(PurchaseRecord::getOuterId, orderId).orderByAsc(PurchaseRecord::getCreatedDate));

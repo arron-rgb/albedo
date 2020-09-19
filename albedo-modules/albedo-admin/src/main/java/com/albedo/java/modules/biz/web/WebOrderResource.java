@@ -154,6 +154,13 @@ public class WebOrderResource extends BaseResource {
   @Resource
   UserService userService;
 
+  @ApiOperation(value = "员工上传配音订单音频")
+  @PostMapping(value = "/audio/upload")
+  public Result<String> uploadAudio(String audioUrl, String orderId) {
+    service.uploadAudio(orderId, audioUrl);
+    return Result.buildOkData("上传成功");
+  }
+
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
   public Result<String> uploadVideo(MultipartFile file, String orderId) {

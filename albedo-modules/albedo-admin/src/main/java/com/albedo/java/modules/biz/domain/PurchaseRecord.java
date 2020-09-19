@@ -1,10 +1,15 @@
 package com.albedo.java.modules.biz.domain;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_TYPE;
+import static com.albedo.java.common.core.constant.BusinessConstants.PLAN_TYPE;
+
 import java.math.BigDecimal;
 
 import javax.validation.constraints.Size;
 
 import com.albedo.java.common.persistence.domain.IdEntity;
+import com.albedo.java.common.security.util.SecurityUtil;
+import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.*;
@@ -70,4 +75,17 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   // private String merchantOrderNo;
   // @ApiField("trade_no")
   // private String tradeNo;
+
+  public static PurchaseRecord build(TradePlus trade, String outerId, String type) {
+    return PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(type)
+      .totalAmount(new BigDecimal(trade.getTotalAmount())).outTradeNo(trade.getOutTradeNo()).outerId(outerId).build();
+  }
+
+  public static PurchaseRecord buildOrder(TradePlus trade, String orderId) {
+    return build(trade, orderId, ORDER_TYPE);
+  }
+
+  public static PurchaseRecord buildPlan(TradePlus trade, String planId) {
+    return build(trade, planId, PLAN_TYPE);
+  }
 }

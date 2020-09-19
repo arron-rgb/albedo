@@ -32,7 +32,7 @@ public class Order extends IdEntity<Invoice> {
    */
   private String type;
   /**
-   * 存储的视频id
+   * 存储的视频id；如果是配音订单，该字段表示视频订单的id
    */
   private String videoId;
   /**
