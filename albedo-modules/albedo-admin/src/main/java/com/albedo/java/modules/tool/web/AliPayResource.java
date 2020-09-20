@@ -123,7 +123,7 @@ public class AliPayResource {
    * @return
    */
   @ApiIgnore
-  @RequestMapping("/notify")
+  @PostMapping("/notify")
   @AnonymousAccess
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {
