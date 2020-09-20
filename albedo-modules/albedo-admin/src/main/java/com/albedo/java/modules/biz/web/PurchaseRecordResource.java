@@ -57,11 +57,22 @@ public class PurchaseRecordResource extends BaseResource {
     return Result.buildOkData(service.getById(id));
   }
 
-  /**
-   * GET / : get all purchaseRecord.
-   *
-   * @return the Result with status 200 (OK) and with body all purchaseRecord
-   */
+  @GetMapping("list")
+  @ApiOperation("拉取已开票的消费记录")
+  public Result<List<PurchaseRecord>> list() {
+    List<PurchaseRecord> list = service.list(Wrappers.<PurchaseRecord>query().eq("status", TRADE_FINISHED)
+      .eq("available", "0").eq("user_id", SecurityUtil.getUser().getId()));
+    for (PurchaseRecord record : list) {
+      User user = userService.getById(record.getUserId());
+      if (user != null) {
+        String username = user.getUsername();
+        if (StringUtils.isNotBlank(username)) {
+          record.setUserId(username);
+        }
+      }
+    }
+    return Result.buildOkData(list);
+  }
 
   @GetMapping
   @LogOperate(value = "购买记录查看")
