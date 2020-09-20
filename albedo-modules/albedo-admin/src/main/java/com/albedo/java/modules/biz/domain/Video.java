@@ -21,7 +21,7 @@ public class Video extends IdEntity<Video> {
   private String originUrl;
   private String logoUrl;
   private String outputUrl;
-  private Integer duration;
+  private Long duration;
   private String adUrl;
   private String audioUrl;
   private String audioText;

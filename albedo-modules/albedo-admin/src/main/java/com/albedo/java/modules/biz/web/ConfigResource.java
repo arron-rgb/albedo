@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
@@ -85,7 +84,6 @@ public class ConfigResource {
     return Result.buildOkData(service.page(pm, wrapper));
   }
 
-  @PreAuthorize("@pms.hasPermission('biz_Config_edit')")
   @LogOperate(value = "表单项配置编辑")
   @ApiOperation("表单项配置编辑")
   @PostMapping
@@ -101,7 +99,6 @@ public class ConfigResource {
    *          the id of the Config to delete
    * @return the Result with status 200 (OK)
    */
-  @PreAuthorize("@pms.hasPermission('biz_Config_del')")
   @LogOperate(value = "表单项配置删除")
   @ApiOperation(value = "表单项配置删除")
   @DeleteMapping
