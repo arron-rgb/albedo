@@ -230,6 +230,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public Video updateForm(SubOrderVo orderVo) {
     Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
+    video.setDuration(orderVo.getDuration());
+    videoRepository.updateById(video);
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
