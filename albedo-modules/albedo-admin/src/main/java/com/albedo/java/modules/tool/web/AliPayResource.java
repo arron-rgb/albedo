@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
@@ -46,7 +45,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -56,13 +54,14 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("${application.admin-path}/tool/aliPay")
-@Api(tags = "工具：支付宝管理")
+@RequestMapping(value = "${application.admin-path}/tool/aliPay")
+@Api(tags = "支付宝管理")
 public class AliPayResource {
 
-  private final AliPayUtils alipayUtils;
-  private final AliPayService alipayService;
+  @Resource
+  AliPayUtils alipayUtils;
+  @Resource
+  AliPayService alipayService;
 
   @GetMapping
   public Result<AlipayConfig> get() {
@@ -91,7 +90,6 @@ public class AliPayResource {
 
   @ApiIgnore
   @GetMapping("/return")
-  @AnonymousAccess
   @ApiOperation("回调接口")
   // http://localhost:8014/a/tool/aliPay/return?charset=utf-8&out_trade_no=202009142231323366&method=alipay.trade.page.pay.return&total_amount=100.00&sign=VqIhgVFs630wcshbhaperayF1dCXBLVoJkyIHLUojusbJLycooBBTdpfcgmH4%2F1hkknb57vX1UZN%2B0Mu1tlb3V4uCqr0pDxauRfqkvO7sc9a3Z927uE2Gyw7qg6lNJAvRcJFAnJwpJO6%2Fd6d5kgNoqb5wIKSv4ds3Z%2FY08Lxk1ukzlh9r3mDdsbflSQIQDqHhEeDBRt2ywe6uL343GzBMXGUKKSTm1mqmY2HiHt4TdLz11M35trjgHNB0oVOcSnrZBojkQcuzb85rvF%2F0IXsZnyOeFZOwK%2Bl6c9Pk%2Bzu86Mk5bZ8VrAp%2BKrRS%2FB%2BrjKjmC2alcT721G7L6h%2BaLSr6w%3D%3D&trade_no=2020091422001476590501531914&auth_app_id=2021000116688194&version=1.0&app_id=2021000116688194&sign_type=RSA2&seller_id=2088621955056287&timestamp=2020-09-14+22%3A32%3A32
   public Result<String> returnPage(HttpServletRequest request) {
@@ -124,7 +122,6 @@ public class AliPayResource {
    */
   @ApiIgnore
   @PostMapping("/notify")
-  @AnonymousAccess
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
