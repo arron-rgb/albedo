@@ -28,7 +28,7 @@
                 <div class="attriType" v-for="(list,index) in machineAttri" :key="index">
                   <div class="listType">{{list.listType}}</div>
                   <div class="attriList">
-                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="voiceList = [{data : attri}]"
+                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="voiceList = [{data : attri.value, id : attri.id}]"
                                :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
                       {{attri.value}}
                     </el-button>
@@ -94,6 +94,8 @@
 </template>
 <script>
 import storeApi from "@/utils/store";
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 export default {
   data() {
     return {
@@ -131,7 +133,10 @@ export default {
     var videoOrder = storeApi.get({
       name: 'videoOrder',
     }) || null;
-    if (videoOrder === null || videoOrder === undefined) {
+    var textList = storeApi.get({
+        name: 'textList',
+      }) || null;
+    if (videoOrder === null || videoOrder === undefined || textList === null || textList === undefined) {
       this.$alert('请先选择视频基础需求', {
         confirmButtonText: '确定',
       }).then(
@@ -178,24 +183,28 @@ export default {
     //     this.$store.commit('NEXT')
     // },
     payDub() {
-      if (this.dubType === '1') {
-        if (this.selectedAttri.length < 4) {
+      if (this.dubType === '1') {//人工配音订单
+        if (this.voiceList.length < 4) {
           this.$alert('请完整选择音色属性！', '提示', {
             confirmButtonText: '确定',
           });
         } else {
           //提交订单
-          this.saveText(null,this.voiceList)
+          var text = [];
+          for(var i = 0; i < this.voiceList.length; i++){
+            text.push(this.voiceList[i].data)
+          }
+          this.saveText(null,text)
         }
       }
-      if (this.dubType === '2') {
-        if (this.backData === null) {
+      if (this.dubType === '2') {//机器配音订单
+        if (this.voiceList.length !== 1) {
           this.$alert('请完整选择音色属性！', '提示', {
             confirmButtonText: '确定',
           });
         } else {
           //提交订单
-          this.saveText(backData.id, null);
+          this.saveText(this.voiceList[0].id, null);
         }
       }
     },
@@ -203,8 +212,9 @@ export default {
       // console.log(this.videoOrder);
       var data = {
         orderId: this.videoOrder.id,
-        voiceType:voiceType === null ? [voiceType] : description,
+        voiceType:voiceType === null ? description : [voiceType],
         type: this.dubType,//配音方式  0上传   1下单   2合成
+        totalAmount: this.price,
         content: storeApi.get({
           name: 'textList',
         }),
@@ -212,7 +222,40 @@ export default {
           name: 'duration',
         }),
       }
-    }
+
+      return new Promise((resolve, reject) => {
+        payOrder.placeSecond(data).then(res => {//保存订单并获取订单id
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+
+            if(data.type === '2'){//机器配音
+              storeApi.clear({
+                name: 'textList',
+              });
+              storeApi.clear({
+                name: 'duration',
+              });
+              this.goTo('/addOrder');
+            }else{//人工配音
+              this.$message({
+                message: '订单提交成功，即将跳转支付页面',
+                type: 'success'
+              });
+
+            }
+          }
+          this.loading = false;
+        }).catch(error => {
+          reject(error)
+          this.loading = false;
+        })
+      })
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {data: data}});
+    },
   },
 }
 </script>

@@ -78,6 +78,7 @@
               class="list-group-item"
               v-for="(item,index) in this.productList[pager - 1]"
               :key="index"
+              v-loading="commodityLoading"
             >
               <el-row>
                 <el-col span="6">
@@ -237,6 +238,8 @@ export default {
   },
   data() {
     return {
+      commodityLoading: false,
+      scriptLoading: false,
       imageUrl: '',
       search:'',
       scriptVisible: false,
@@ -262,7 +265,10 @@ export default {
     var videoOrder = storeApi.get({
       name: 'videoOrder'
     });
-    if (videoOrder === null || videoOrder === undefined) {
+    var duration = storeApi.get({
+      name: 'duration'
+    }) || null;
+    if (videoOrder === null || videoOrder === undefined || duration === null || duration === undefined) {
       this.$alert('请先选择视频基础需求', {
         confirmButtonText: '确定',
       }).then(
@@ -273,9 +279,7 @@ export default {
       this.videoOrder = videoOrder;
       this.getScripts()
       this.getCommodityList();
-      this.duration = storeApi.get({
-        name: 'duration'
-      }) || 0;
+      this.duration = duration || 0;
       // console.log(this.duration);
       if(this.duration === 0 || this.duration === undefined){
         this.$alert('请先选择视频长度！', '警告', {
@@ -303,6 +307,7 @@ export default {
     },
     //获取商品库
     getCommodityList() {
+      this.commodityLoading = true;
       return new Promise((resolve, reject) => {
         crudCommodity.get().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
@@ -312,8 +317,10 @@ export default {
             for (i; i < this.productData.proDeposit.length / 10; i++)
               this.productList[i] = this.productData.proDeposit.slice(i * 10, i * 10 + 10);
             this.productList[i] = this.productData.proDeposit.slice(i * 10);
+            this.commodityLoading = false;
           }
         }).catch(error => {
+          this.commodityLoading = false;
           reject(error)
         })
       })
@@ -408,35 +415,15 @@ export default {
       //保存台词
       storeApi.set({
         name: 'textList',
-        content: this.chooseList,
+        content: dubText,
         type: 'session'
       });
-      console.log(dubText);
+      // console.log(dubText);
       this.$router.replace('selectAttri')
       // this.$store.commit('NEXT')
-    },
-    mounted() {
-      // this.chooseList = JSON.parse(localStorage.getItem('configData')||'[]')
-    },
-    computed: {
-
-    },
-    watch: {
-      chooseList: {
-        handler: function () {
-          // this.$store.commit('ADD_SCRIPT',this.chooseList)
-        },
-        deep: true
-      },
-      // proDeposit :{
-      //   handler:function(){
-      //     this.proDeposit = this.$store.state.dub.productData
-      //   },
-      //   deep: true
-      // }
-
     }
-  }
+
+  },
 
 }
 </script>
