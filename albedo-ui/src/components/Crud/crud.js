@@ -235,6 +235,7 @@ function CRUD(options) {
      * 提交新增/编辑
      */
     submitCU() {
+      console.log('提交');
       if (!callVmHook(crud, CRUD.HOOK.beforeValidateCU)) {
         return
       }
@@ -261,6 +262,7 @@ function CRUD(options) {
       }
       crud.status.add = CRUD.STATUS.PROCESSING
       crud.crudMethod.save(crud.form).then((res) => {
+        console.log(crud.form);
         crud.status.add = CRUD.STATUS.NORMAL
         crud.resetForm()
         // crud.addSuccessNotify(res && res.message)

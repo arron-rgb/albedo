@@ -41,7 +41,8 @@
         <!--增值服务填写plusService，非增值服务无需填写，默认为类型同名字段-->
         <el-form-item label="增值服务类型" prop="type"
                       :rules="[{required: true, min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
-          <el-radio v-model="form.type" label="0">视频配置项</el-radio>
+          <el-radio v-model="form.type" label="1">是</el-radio>
+          <el-radio v-model="form.type" label="0">否</el-radio>
         </el-form-item>
 
         <!--改为上传图片-->
@@ -54,7 +55,7 @@
             :http-request="uploadImg"
             accept="image/jpeg,image/png"
             :show-file-list="false"
-            :auto-upload="false"
+            :auto-upload="true"
             :multiple="false"
             :on-change="onUploadChange"
           >
@@ -66,7 +67,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="crud.cancelCU">取消</el-button>
-        <el-button :loading="crud.status.cu === 2" type="primary" @click="save">确认</el-button>
+        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
       </div>
     </el-dialog>
     <!--表格渲染-->
@@ -147,7 +148,14 @@ export default {
   },
   methods: {
     save(){
-      this.$refs.upload.submit();
+      // console.log(this.imageUrl);
+      if(this.imageUrl === null){
+        crud.submitCU;
+      }
+      else{
+
+
+      }
     },
     onUploadChange(file){
       // console.log(file);
@@ -181,7 +189,6 @@ export default {
         dubOperate.uploadFile(file).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             form.url = res.data.url;
-            crud.submitCU;
           }
         }).catch(error => {
           this.loading = false;

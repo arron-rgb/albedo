@@ -106,7 +106,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudConfig.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            // console.log(res)
+            console.log(res)
             this.data = res.data.data
           }
         }).catch(error => {
