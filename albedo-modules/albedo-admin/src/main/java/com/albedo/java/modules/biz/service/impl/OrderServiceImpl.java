@@ -284,14 +284,20 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public String artificialDubbing(SubOrderVo orderVo) {
-    String pricePerText = "0.5";
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位字数价格"));
-    if (price != null) {
-      pricePerText = price.getVal();
-    }
+    Assert.notEmpty(orderVo.getTotalAmount(), "价格字段缺失");
+    String textPerMin = "200";
     String subject = "人工配音";
     String content = orderVo.appendContent();
-    BigDecimal totalAmount = BigDecimal.valueOf(content.length() / Double.parseDouble(pricePerText));
+    int length = orderVo.appendContent().length();
+    // 向上取整 几分钟 几分钟再乘以单位价格
+    double v = Math.ceil(length / Double.parseDouble(textPerMin));
+    String pricePerMin = "100";
+    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位时间价格"));
+    if (price != null) {
+      pricePerMin = price.getVal();
+    }
+    double amount = Double.parseDouble(pricePerMin) * v;
+    BigDecimal totalAmount = BigDecimal.valueOf(amount);
     Assert.isTrue(!MoneyUtil.compareTo(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
 
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
