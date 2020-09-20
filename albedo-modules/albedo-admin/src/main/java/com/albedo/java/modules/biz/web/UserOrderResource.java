@@ -4,6 +4,8 @@ import static com.albedo.java.common.core.constant.BusinessConstants.NOT_UPDATED
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -155,4 +157,16 @@ public class UserOrderResource extends BaseResource {
     return Result.buildOk("上传成功");
   }
 
+  @ApiOperation(value = "更新支付方式")
+  @GetMapping("edit")
+  public Result<Order> edit(String orderId, String method) {
+    Order order = service.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    order.setMethod(method);
+    Assert.isTrue(METHODS.contains(method), "支付方式异常");
+    service.updateById(order);
+    return Result.buildOkData(order);
+  }
+
+  private static final List<String> METHODS = new ArrayList<>(Arrays.asList("ali", "balance", "wechat"));
 }
