@@ -22,6 +22,11 @@
     >
       <el-form ref="form" :model="form" label-width="120px" size="small">
 
+        <!--前端显示的请选择***的内容-->
+        <el-form-item label="配置项类别" prop="title" :rules="[{required: true,min: 0,max: 30,message: '长度在 0 到 30 个字符', trigger: 'blur'},]">
+          <el-input v-model="form.title" class="input-small"></el-input>
+        </el-form-item>
+
         <!--中文服务名称-->
         <el-form-item label="具体名称" prop="value"
                       :rules="[{required: true,message: '请输入具体名称', trigger: 'blur'},{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
@@ -29,29 +34,39 @@
         </el-form-item>
 
         <!--填写编码-->
-        <el-form-item label="类型" prop="name" :rules="[{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
-          <el-input v-model="form.name" class="input-small"></el-input>
+        <el-form-item label="详情描述" prop="name" :rules="[{min: 0,max: 20,message: '长度在 0 到 100 个字符', trigger: 'blur'},]">
+          <el-input v-model="form.description" class="input-small"></el-input>
         </el-form-item>
 
         <!--增值服务填写plusService，非增值服务无需填写，默认为类型同名字段-->
         <el-form-item label="增值服务类型" prop="type"
-                      :rules="[{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
-          <el-input v-model="form.type" class="input-small"></el-input>
+                      :rules="[{required: true, min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
+          <el-radio v-model="form.type" label="0">视频配置项</el-radio>
         </el-form-item>
 
         <!--改为上传图片-->
         <el-form-item label="图片链接" prop="url" :rules="[{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
-          <el-input v-model="form.url" class="input-small"></el-input>
+<!--          <el-input v-model="form.url" class="input-small"></el-input>-->
+          <el-upload
+            ref="upload"
+            class="avatar-uploader"
+            action="#"
+            :http-request="uploadImg"
+            accept="image/jpeg,image/png"
+            :show-file-list="false"
+            :auto-upload="false"
+            :multiple="false"
+            :on-change="onUploadChange"
+          >
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
 
-        <!--前端显示的请选择***的内容-->
-        <el-form-item label="表单名称" prop="title" :rules="[{min: 0,max: 30,message: '长度在 0 到 30 个字符', trigger: 'blur'},]">
-          <el-input v-model="form.title" class="input-small"></el-input>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="crud.cancelCU">取消</el-button>
-        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
+        <el-button @click="crud.cancelCU">取消</el-button>
+        <el-button :loading="crud.status.cu === 2" type="primary" @click="save">确认</el-button>
       </div>
     </el-dialog>
     <!--表格渲染-->
@@ -92,6 +107,8 @@ import crudOperation from '@crud/CRUD.operation'
 import pagination from '@crud/Pagination'
 import validate from '@/utils/validate'
 import {mapGetters} from 'vuex'
+import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 
 const defaultForm = {
   value: null,
@@ -110,6 +127,7 @@ export default {
   // 数据字典
   data() {
     return {
+      imageUrl : null,
       validateNumber: (rule, value, callback) => {
         validate.isNumber(rule, value, callback)
       },
@@ -127,6 +145,78 @@ export default {
   },
   created() {
   },
-  methods: {}
+  methods: {
+    save(){
+      this.$refs.upload.submit();
+    },
+    onUploadChange(file){
+      // console.log(file);
+      const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
+      const  isLt1M = file.size / 1024 / 1024 < 1;
+
+      if(!isIMAGE){
+        this.$message.error('只能上传jpg/png图片！');
+        return  false;
+      }
+      if(!isLt1M){
+        this.$message.error('上传文件大小不能超过1MB！');
+        return  false;
+      }
+
+      var _this = this;
+
+      var reader = new FileReader();
+      reader.readAsDataURL(file.raw)
+
+      reader.onload = function (e){
+        //this.result为图片的base64
+        // console.log(this.result)
+        //将图片路径赋值给url
+        _this.imageUrl = e.target.result;
+      }
+
+    },
+    uploadImg(file){
+      return new Promise((resolve, reject) => {
+        dubOperate.uploadFile(file).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            form.url = res.data.url;
+            crud.submitCU;
+          }
+        }).catch(error => {
+          this.loading = false;
+          reject(error)
+        })
+      });
+    },
+  }
 };
 </script>
+
+<style lang="scss" scoped>
+.avatar-uploader{
+  border: 1px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 178px;
+  height: 178px;
+}
+.avatar-uploader:hover {
+  border-color: #ff5000 !important;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>

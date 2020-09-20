@@ -69,7 +69,7 @@
 <!--                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">-->
 <!--              </a>-->
 <!--            </el-radio>-->
-            <el-radio v-if="accountAvailable > 0" style="height: 80px; width: 200px"  label="balance" border>
+            <el-radio v-if="times > 0" style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
@@ -110,7 +110,7 @@ export default {
       loading : false,
       priceList : [999, 1999, 0],
       orderId : null,
-      accountAvailable : 0,
+      times : 0,
     }
   },
   watch: {
@@ -172,11 +172,11 @@ export default {
         totalAmount : this.totalAmount,
         type : this.type,
       }
-      if(this.orderId !== null){
-        this.getToken(this.orderId);
+      if(this.orderId !== null){//原有订单直接提交请求
+        this.balancePurchase();
       }
       else {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {//新订单先保存
           payOrder.save(data).then(res => {//保存订单并获取订单id
             if (res.code === MSG_TYPE_SUCCESS) {
               // console.log(res)
@@ -193,6 +193,24 @@ export default {
           })
         })
       }
+    },
+    balancePurchase(){//会员次数支付
+        var data = {
+          method: this.payType,
+          orderId: this.orderId
+        }
+        return new Promise((resolve, reject) => {
+          payOrder.edit(data).then(res => {//修改订单支付方式成功
+            if (res.code === MSG_TYPE_SUCCESS) {
+              // console.log(res);
+              this.getToken(this.orderId);
+            }
+            this.loading = false;
+          }).catch(error => {
+            reject(error)
+            this.loading = false;
+          })
+        })
     },
     getToken(key){//获取token
       return new Promise((resolve, reject) => {
@@ -254,7 +272,7 @@ export default {
       return new Promise((resolve, reject) => {
         payOrder.balance().then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.accountAvailable = res.data.accountAvailable;
+            this.times = res.data.tims;
           }
         }).catch(res =>{
           reject();
