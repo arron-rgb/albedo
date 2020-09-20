@@ -103,6 +103,14 @@ public class MoneyUtil {
     return result >= 0;
   }
 
+  public static boolean equals(String valueStr, String compValueStr) {
+    BigDecimal value = new BigDecimal(valueStr);
+    BigDecimal compValue = new BigDecimal(compValueStr);
+    // 0:等于 >0:大于 <0:小于
+    int result = value.compareTo(compValue);
+    return result == 0;
+  }
+
   /**
    * 值比较大小
    * <br/>

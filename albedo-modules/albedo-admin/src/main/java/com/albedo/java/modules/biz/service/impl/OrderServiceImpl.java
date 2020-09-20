@@ -115,7 +115,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   private boolean compareOrderPrice(OrderVo form, Order order) {
-    return MoneyUtil.compareTo(form.getTotalAmount(), order.getTotalAmount());
+    return MoneyUtil.equals(form.getTotalAmount(), order.getTotalAmount());
   }
 
   @Override
@@ -290,15 +290,15 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String content = orderVo.appendContent();
     int length = orderVo.appendContent().length();
     // 向上取整 几分钟 几分钟再乘以单位价格
-    double v = Math.ceil(length / Double.parseDouble(textPerMin));
-    String pricePerMin = "100";
+    double minutes = Math.ceil(length / Double.parseDouble(textPerMin));
+    String perMinute = "100";
     Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位时间价格"));
     if (price != null) {
-      pricePerMin = price.getVal();
+      perMinute = price.getVal();
     }
-    double amount = Double.parseDouble(pricePerMin) * v;
+    double amount = Double.parseDouble(perMinute) * minutes;
     BigDecimal totalAmount = BigDecimal.valueOf(amount);
-    Assert.isTrue(!MoneyUtil.compareTo(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
+    Assert.isTrue(MoneyUtil.equals(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
 
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
       .totalAmount(totalAmount.toString()).build();
