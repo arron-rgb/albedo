@@ -27,6 +27,7 @@ import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
+import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -184,9 +185,12 @@ public class WebOrderResource extends BaseResource {
         originUrl = ossSingleton.localPathToUrl(originUrl);
         key.setVideoId(originUrl);
       }
-      String username = SecurityUtil.getUser().getUsername();
-      if (StringUtils.isNotBlank(username)) {
-        key.setUserId(username);
+      User user = userService.getById(key.getUserId());
+      if (user != null) {
+        String username = user.getUsername();
+        if (StringUtils.isNotBlank(username)) {
+          key.setUserId(username);
+        }
       }
     }).collect(Collectors.toList());
   }

@@ -84,7 +84,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
     // 2. 企业用户默认扣公司 公司不够再扣个人
     if (roles.contains(BUSINESS_ADMIN_ROLE_ID) || roles.contains(BUSINESS_COMMON_ROLE_ID)) {
-      String adminId = userService.getOutTradeNosByUserId(deptId);
+      String adminId = userService.getAdminIdByDeptId(deptId);
       Assert.notEmpty(adminId, ExceptionNames.ENTERPRISE_ADMIN_NOT_FOUND);
 
       try {

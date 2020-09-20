@@ -24,6 +24,8 @@ import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.domain.dto.Param;
 import com.albedo.java.modules.biz.service.InvoiceRequestService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -67,8 +69,20 @@ public class PurchaseRecordResource extends BaseResource {
   public Result<List<PurchaseRecord>> getPage() {
     List<PurchaseRecord> records = service.list(Wrappers.<PurchaseRecord>query()
       .eq("user_id", SecurityUtil.getUser().getId()).eq("status", TRADE_FINISHED).eq("available", "1"));
+    records.forEach(record -> {
+      User user = userService.getById(record.getUserId());
+      if (user != null) {
+        String username = user.getUsername();
+        if (StringUtils.isNotBlank(username)) {
+          record.setUserId(username);
+        }
+      }
+    });
     return Result.buildOkData(records);
   }
+
+  @Resource
+  UserService userService;
 
   @PostMapping("generate")
   @LogOperate(value = "购买记录查看")

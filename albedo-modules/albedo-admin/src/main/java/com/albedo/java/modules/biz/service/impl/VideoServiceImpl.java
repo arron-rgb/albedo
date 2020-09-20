@@ -202,7 +202,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
     // 如果为付费用户，则找管理员；管理员为其余两种情况均无需变动userId
     if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
-      userId = userService.getOutTradeNosByUserId(userId);
+      userId = userService.getAdminIdByDeptId(userId);
     }
     // 没bucket的话 storage也不会被调用
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));

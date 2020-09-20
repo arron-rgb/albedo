@@ -305,7 +305,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setState(NOT_STARTED);
 
     baseMapper.insert(order);
-    PurchaseRecord record = PurchaseRecord.buildOrder(trade, order.getId());
+    PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
     recordService.save(record);
 
     return aliPayService.toPayAsPc(trade);
