@@ -31,8 +31,10 @@ public interface BusinessConstants {
    */
   String DUBBING = "2";
 
+  String DUBBING_TYPE = "2";
   String ORDER_TYPE = "1";
   String PLAN_TYPE = "0";
+
   String PERSONAL_TYPE = "1";
   String ENTERPRISE_TYPE = "2";
 

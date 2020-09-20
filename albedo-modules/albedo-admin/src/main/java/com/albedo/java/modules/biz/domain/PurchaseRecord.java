@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.domain;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.ORDER_TYPE;
-import static com.albedo.java.common.core.constant.BusinessConstants.PLAN_TYPE;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
 import java.math.BigDecimal;
 
@@ -43,7 +42,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   @Size(max = 64)
   private String outTradeNo;
   /**
-   * type 购买类型 0 套餐 1 订单
+   * type 购买类型 0 套餐 1 订单 2 语音订单
    */
   @Size(max = 2)
   private String type;
@@ -87,5 +86,9 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
 
   public static PurchaseRecord buildPlan(TradePlus trade, String planId) {
     return build(trade, planId, PLAN_TYPE);
+  }
+
+  public static PurchaseRecord buildDub(TradePlus trade, String planId) {
+    return build(trade, planId, DUBBING_TYPE);
   }
 }
