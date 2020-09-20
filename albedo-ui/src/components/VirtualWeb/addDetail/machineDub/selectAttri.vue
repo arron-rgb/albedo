@@ -86,7 +86,7 @@
                 </el-col>
               </el-row>
               <el-row style="margin-top: 30px">
-                <el-button type="primary" style="width: 300px" @click="payDub">前往支付</el-button>
+                <el-button :loading="loading" type="primary" style="width: 300px" @click="payDub">前往支付</el-button>
               </el-row>
             </div>
         </div>
@@ -99,6 +99,7 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 export default {
   data() {
     return {
+      loading: false,
       attriType: [
         {listType: '性别', list: ['男', '女'], active: -1},
         {listType: '声音', list: ['婴儿', '儿童', '少年', '青年', '中年'], active: -1},
@@ -189,6 +190,7 @@ export default {
             confirmButtonText: '确定',
           });
         } else {
+          this.loading = true;
           //提交订单
           var text = [];
           for(var i = 0; i < this.voiceList.length; i++){
@@ -204,6 +206,7 @@ export default {
           });
         } else {
           //提交订单
+          this.loading = true;
           this.saveText(this.voiceList[0].id, null);
         }
       }
@@ -235,13 +238,17 @@ export default {
               storeApi.clear({
                 name: 'duration',
               });
+              this.loading = false;
               this.goTo('/addOrder');
             }else{//人工配音
-              this.$message({
-                message: '订单提交成功，即将跳转支付页面',
-                type: 'success'
+              storeApi.clear({
+                name: 'textList',
               });
-
+              storeApi.clear({
+                name: 'duration',
+              });
+              this.loading = false;
+              window.open(res.data);
             }
           }
           this.loading = false;

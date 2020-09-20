@@ -45,5 +45,11 @@ export function placeSecond(data){
   })
 }
 
+export function balance() {
+  return request({
+    url: '/biz/balance/undefined',
+    method: 'get',
+  })
+}
 
-export default { save, purchase, placeSecond }
+export default { save, purchase, placeSecond,balance }

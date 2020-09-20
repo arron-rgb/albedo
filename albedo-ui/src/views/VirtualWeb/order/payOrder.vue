@@ -64,12 +64,12 @@
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
-              <a style=" line-height: 60px; padding-left: 10px">
-                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
-              </a>
-            </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="balance" border>
+<!--            <el-radio style="height: 80px; width: 200px"  label="wechat" border>-->
+<!--              <a style=" line-height: 60px; padding-left: 10px">-->
+<!--                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">-->
+<!--              </a>-->
+<!--            </el-radio>-->
+            <el-radio v-if="accountAvailable > 0" style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
@@ -110,6 +110,7 @@ export default {
       loading : false,
       priceList : [999, 1999, 0],
       orderId : null,
+      accountAvailable : 0,
     }
   },
   watch: {
@@ -132,6 +133,7 @@ export default {
         );
       }
       else {
+        this.getBalance();
         this.list = JSON.parse(videoOrder.content).data;
         this.type = videoOrder.type;
         this.totalAmount = videoOrder.totalAmount;
@@ -151,6 +153,7 @@ export default {
         );
       } else {
         this.list = list;
+        this.getBalance();
       }
     }
   },
@@ -165,9 +168,9 @@ export default {
       var content = {data : this.list}
       var data = {
         content : JSON.stringify(content),
-        method : this.payType,
+        method : this.payType,//支付方式
         totalAmount : this.totalAmount,
-        type : this.type
+        type : this.type,
       }
       if(this.orderId !== null){
         this.getToken(this.orderId);
@@ -245,6 +248,18 @@ export default {
         }).catch(error => {
           reject(error);
         })
+      })
+    },
+    getBalance(){
+      return new Promise((resolve, reject) => {
+        payOrder.balance().then(res => {
+          if(res.code === MSG_TYPE_SUCCESS){
+            this.accountAvailable = res.data.accountAvailable;
+          }
+        }).catch(res =>{
+          reject();
+          }
+        )
       })
     }
   }
