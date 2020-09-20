@@ -1,7 +1,10 @@
 package com.albedo.java.modules.biz.web;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
-import com.albedo.java.common.core.vo.PageModel;
-import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.Invoice;
 import com.albedo.java.modules.biz.domain.dto.InvoiceDto;
-import com.albedo.java.modules.biz.domain.dto.InvoiceQueryCriteria;
 import com.albedo.java.modules.biz.service.InvoiceService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.albedo.java.modules.sys.service.UserService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,19 +54,26 @@ public class InvoiceResource extends BaseResource {
   /**
    * GET / : get all invoice.
    *
-   * @param pm
-   *          the pagination information
+   * the pagination information
+   *
    * @return the Result with status 200 (OK) and with body all invoice
    */
 
   @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
-  @GetMapping
+  @GetMapping("list")
   @LogOperate(value = "发票抬头查询")
   @ApiOperation(value = "发票抬头查询")
-  public Result getPage(PageModel pm, InvoiceQueryCriteria invoiceQueryCriteria) {
-    QueryWrapper wrapper = QueryWrapperUtil.getWrapper(pm, invoiceQueryCriteria);
-    return Result.buildOkData(service.page(pm, wrapper));
+  public Result<List<Invoice>> getPage() {
+    List<Invoice> list = service.list(Wrappers.<Invoice>query().eq("user_id", SecurityUtil.getUser().getId()));
+    String adminId = userService.getAdminIdByDeptId(SecurityUtil.getUser().getDeptId());
+    List<Invoice> adminInvoices = service.list(Wrappers.<Invoice>query().eq("user_id", adminId));
+    list.addAll(adminInvoices);
+    list = list.stream().distinct().collect(Collectors.toList());
+    return Result.buildOkData(list);
   }
+
+  @Resource
+  UserService userService;
 
   /**
    * POST / : Save a invoiceDto.

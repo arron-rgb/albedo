@@ -506,7 +506,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   }
 
   @Override
-  public String getOutTradeNosByUserId(String deptId) {
+  public String getAdminIdByDeptId(String deptId) {
     return baseMapper.getDeptAdminIdByDeptId(deptId);
   }
 

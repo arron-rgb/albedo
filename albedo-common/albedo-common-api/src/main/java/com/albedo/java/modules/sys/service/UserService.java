@@ -209,7 +209,7 @@ public interface UserService extends DataService<User, UserDto, String> {
    *          部门id
    * @return 管理员id
    */
-  String getOutTradeNosByUserId(String deptId);
+  String getAdminIdByDeptId(String deptId);
 
   String getBucketName(String userId);
 }
