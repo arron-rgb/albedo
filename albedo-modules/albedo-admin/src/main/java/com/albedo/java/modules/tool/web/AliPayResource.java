@@ -153,7 +153,7 @@ public class AliPayResource {
     Assert.isTrue(sellerId.equals(record.getSellerId()), "商户号为空");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
-    Assert.isTrue(MoneyUtil.compareTo(totalAmount, record.getTotalAmount().toString()), "金额数量异常");
+    Assert.isTrue(MoneyUtil.equals(totalAmount, record.getTotalAmount().toString()), "金额数量异常");
     // appId
     boolean callback = false;
     record.setStatus(TRADE_FINISHED);
