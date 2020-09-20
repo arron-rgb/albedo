@@ -4,7 +4,7 @@
 
   <el-dialog
     title="新增抬头"
-    :visible.sync="dialogVisible"
+    :visible.sync="addVisible"
     width="800px"
     style="padding: 0"
   >
@@ -84,6 +84,15 @@
 
     <el-button :loading="loading" type="primary" @click="toSave">保存</el-button>
   </el-dialog>
+
+  <el-dialog
+    title="选择抬头"
+    :visible.sync="selectVisible"
+    width="800px"
+    style="padding: 0"
+  >
+
+  </el-dialog>
 </div>
 
 </template>
@@ -97,7 +106,8 @@ export default {
   },
   data() {
     return {
-      dialogVisible : false,
+      addVisible : false,
+      selectVisible: true,
       invoiceData: {
         accountBank: "",//开户行
         accountNumber: "",//银行账号
@@ -142,7 +152,7 @@ export default {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
             this.loading = false;
-            this.dialogVisible = false;
+            this.addVisible = false;
             resolve();
           }
         }).catch(error => {
