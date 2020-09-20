@@ -15,21 +15,20 @@ const whiteList = [
   '/proService',
 
   //delete later
-  '/contact',
-  '/siteGuide',
-  '/taobaoGuide',
-  '/problems',
-  '/contactUs',
-
-  '/personal',
+  // '/contact',
+  // '/siteGuide',
+  // '/taobaoGuide',
+  // '/problems',
+  // '/contactUs',
+  //
+  // '/personal',
   // '/myData',
-  '/memberCenter',
-  '/myOrder',
-  '/myReceipt',
-  '/security',
-
-  '/dubTone',
-  '/historyOrder',
+  // '/memberCenter',
+  // '/myOrder',
+  // '/myReceipt',
+  // '/security',
+  //
+  // '/dubTone',
   // '/addOrder',
   // '/payOrder',
   // '/addDetail',

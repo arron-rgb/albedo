@@ -17,18 +17,29 @@
     <el-col span="1">
       <span style="line-height: 55px">字</span>
     </el-col>
-    <el-col span="3" offset="1">
+    <el-col span="2" offset="1">
+      <h3>
+        设置时长
+      </h3>
+    </el-col>
+    <el-col span="2" style="margin-top: 3px;">
+      <span style="font-size: 30px; color: #ff5000">{{this.duration}}</span>
+    </el-col>
+    <el-col span="1">
+      <span style="line-height: 55px">分钟</span>
+    </el-col>
+    <el-col span="2" offset="1">
       <h3>
         预计时长
       </h3>
     </el-col>
-    <el-col span="3" style="margin-top: 3px;">
+    <el-col span="2" style="margin-top: 3px;">
       <span style="font-size: 30px; color: #ff5000">{{Math.ceil(this.words / 200)}}</span>
     </el-col>
     <el-col span="1">
       <span style="line-height: 55px">分钟</span>
     </el-col>
-    <el-col span="8">
+    <el-col span="4">
       <div class="directBar">
         <el-button  @click="next">下一步</el-button>
       </div>
@@ -70,7 +81,7 @@
             >
               <el-row>
                 <el-col span="6">
-                  <img class="commodityImg" :src="item.urls">
+                  <img class="commodityImg" :src="'http://' + item.urls">
                 </el-col>
                 <el-col style="padding-left: 10px" span="18">
                   <el-row>
@@ -128,7 +139,7 @@
                 >
                   <el-row v-if="item.type === 'product'">
                     <el-col span="6">
-                      <img class="commodityImg" :src="item.data.urls">
+                      <img class="commodityImg" :src="'http://' + item.data.urls">
                       <!--                  <img class="commodityImg" src="@/assets/VirtualWeb/timg.jpg">-->
                     </el-col>
                     <el-col style="padding-left: 10px" span="18">
@@ -238,29 +249,41 @@ export default {
       productList : [],
       scriptData : [],
       chooseList: [],
-      value: '',
       editScript: {
         index : '',
         data : '',
       },
-      dubText: '',
       words : 0,
       duration : 0,
+      videoOrder : null,
     }
   },
   created() {
-    this.getScripts()
-    this.getCommodityList();
-    this.duration = storeApi.get({
-      name: 'duration'
-    }) || 0;
-    console.log(this.duration);
-    if(this.duration === 0 || this.duration === undefined){
-      this.$alert('请先选择视频长度！', '警告', {
+    var videoOrder = storeApi.get({
+      name: 'videoOrder'
+    });
+    if (videoOrder === null || videoOrder === undefined) {
+      this.$alert('请先选择视频基础需求', {
         confirmButtonText: '确定',
       }).then(
-        this.$router.replace('addDetail')
+        this.goTo('/addOrder')
       );
+    }
+    else {
+      this.videoOrder = videoOrder;
+      this.getScripts()
+      this.getCommodityList();
+      this.duration = storeApi.get({
+        name: 'duration'
+      }) || 0;
+      // console.log(this.duration);
+      if(this.duration === 0 || this.duration === undefined){
+        this.$alert('请先选择视频长度！', '警告', {
+          confirmButtonText: '确定',
+        }).then(
+          this.$router.replace('addDetail')
+        );
+      }
     }
   },
   methods: {
@@ -317,7 +340,11 @@ export default {
 
     // 添加已有商品到配置项
     add(item, type) {
-      if(Math.ceil(this.words / 200) > this.duration)
+      var words = this.words;
+      type === 'product' ?
+        words += item.description.length :
+        words += item.value.length;
+      if(Math.ceil(words / 200) > this.duration)
       {
         this.$alert('台词配音时长超过视频时长！', '警告', {
             confirmButtonText: '确定',
@@ -326,11 +353,9 @@ export default {
       }
       var data = {type: type, data: item};
       // console.log(JSON.stringify(data));
-      // 深拷贝
       this.chooseList.push(JSON.parse(JSON.stringify(data)));
-      type === 'product' ?
-        this.words += item.description.length :
-        this.words += item.value.length;
+      // 深拷贝
+      this.words = words;
     },
     //从组件中移除
     removeItem(index) {
@@ -378,6 +403,12 @@ export default {
       storeApi.set({
         name: 'words',
         content: words,
+        type: 'session'
+      });
+      //保存台词
+      storeApi.set({
+        name: 'textList',
+        content: this.chooseList,
         type: 'session'
       });
       console.log(dubText);

@@ -73,7 +73,7 @@
                   <span style="line-height: 45px">分钟</span>
                 </el-col>
               </el-row>
-              <el-row style="text-align: left; margin-top: 10px;">
+              <el-row style="text-align: left; margin-top: 10px;" v-if="this.dubType === '1'">
                 <el-col span="6">
                   <h3 class="barTitle">
                     配音价格
@@ -96,34 +96,51 @@
 <script>
 import storeApi from "@/utils/store";
 export default {
-  data(){
-      return{
-          attriType:[
-            {listType:'性别',list:['男','女'],active:-1},
-            {listType:'声音',list: ['婴儿','儿童','少年','青年','中年'],active:-1},
-            {listType:'类型',list:['讲述播报','综艺播报','新闻播报'],active:-1},
-            {listType:'标签',list:['大气','活力','浑厚','甜美','激情'],active:-1}
-          ],
-          machineAttri:[
-            {listType:'男声', list:[{value: '亲和男声', id: 1},
-                {value: '成熟男声', id: 2},
-                {value: '情感男声', id: 6}]},
-            {listType:'女声', list:[{value: '亲和女声（默认）', id: 0},
-                {value: '温暖女声', id: 4},
-                {value: '情感女声', id: 5},
-                {value: '客服女声', id: 7},
-                {value: '通用女声', id: 1002},]}
-          ],
-          selectedAttri:[],
-          typeList : ["", "success", "info", "warning", "danger"],
-          words: 0,
-          time : '',
-          price : '',
-          dubType : '',
-          backData :'',
-      }
+  data() {
+    return {
+      attriType: [
+        {listType: '性别', list: ['男', '女'], active: -1},
+        {listType: '声音', list: ['婴儿', '儿童', '少年', '青年', '中年'], active: -1},
+        {listType: '类型', list: ['讲述播报', '综艺播报', '新闻播报'], active: -1},
+        {listType: '标签', list: ['大气', '活力', '浑厚', '甜美', '激情'], active: -1}
+      ],
+      machineAttri: [
+        {
+          listType: '男声', list: [{value: '亲和男声', id: 1},
+            {value: '成熟男声', id: 2},
+            {value: '情感男声', id: 6}]
+        },
+        {
+          listType: '女声', list: [{value: '亲和女声（默认）', id: 0},
+            {value: '温暖女声', id: 4},
+            {value: '情感女声', id: 5},
+            {value: '客服女声', id: 7},
+            {value: '通用女声', id: 1002},]
+        }
+      ],
+      selectedAttri: [],
+      typeList: ["", "success", "info", "warning", "danger"],
+      words: 0,
+      time: '',
+      price: '',
+      dubType: '',
+      backData: '',
+      videoOrder: '',
+    }
   },
   created() {
+    var videoOrder = storeApi.get({
+      name: 'videoOrder',
+    }) || null;
+    if (videoOrder === null || videoOrder === undefined) {
+      this.$alert('请先选择视频基础需求', {
+        confirmButtonText: '确定',
+      }).then(
+        this.goTo('/addOrder')
+      );
+    } else {
+      this.videoOrder = videoOrder;
+    }
     // 向上取整
     this.words = storeApi.get({
       name: 'words'
@@ -134,7 +151,7 @@ export default {
     this.dubType = storeApi.get({
       name: 'dubType'
     }) || null;
-    if(this.dubType === null || this.dubType === undefined){
+    if (this.dubType === null || this.dubType === undefined) {
       this.$alert('请先选择配音方式！', '警告', {
         confirmButtonText: '确定',
       }).then(
@@ -142,64 +159,66 @@ export default {
       );
     }
   },
-  methods:{
-    changeActive(listid,id){
-        let selectedItem = this.attriType[listid].list[id]
-        if(this.attriType[listid].active===-1)
-        {
-            this.attriType[listid].active=id
-            this.selectedAttri.push(selectedItem)
-        }
-        else if(this.attriType[listid].active===id)
-        {
-            this.attriType[listid].active=-1
-            this.selectedAttri.filter((item,i)=>{
-                if(item===selectedItem)
-                    this.selectedAttri.splice(i,1)
-            })
-        }
-        else{
-            let prevAttri = this.attriType[listid].list[this.attriType[listid].active]
-            this.selectedAttri.filter((item,i)=>{
-                if(item===prevAttri)
-                    this.selectedAttri.splice(i,1)
-            })
-            this.attriType[listid].active=id
-            this.selectedAttri.push(selectedItem)
-        }
+  methods: {
+    changeActive(listid, id) {
+      let selectedItem = this.attriType[listid].list[id]
+      if (this.attriType[listid].active === -1) {
+        this.attriType[listid].active = id
+        this.selectedAttri.push(selectedItem)
+      } else if (this.attriType[listid].active === id) {
+        this.attriType[listid].active = -1
+        this.selectedAttri.filter((item, i) => {
+          if (item === selectedItem)
+            this.selectedAttri.splice(i, 1)
+        })
+      } else {
+        let prevAttri = this.attriType[listid].list[this.attriType[listid].active]
+        this.selectedAttri.filter((item, i) => {
+          if (item === prevAttri)
+            this.selectedAttri.splice(i, 1)
+        })
+        this.attriType[listid].active = id
+        this.selectedAttri.push(selectedItem)
+      }
     },
     // next(){
     //     this.$router.replace('paymentPage')
     //     this.$store.commit('NEXT')
     // },
-    payDub(){
-      if(this.dubType === '1')
-      {
-        if(this.selectedAttri.length < 4)
-        {
+    payDub() {
+      if (this.dubType === '1') {
+        if (this.selectedAttri.length < 4) {
           this.$alert('请完整选择音色属性！', '提示', {
             confirmButtonText: '确定',
           });
-        }else
-        {
+        } else {
           //提交订单
         }
       }
-      if(this.dubType === '2')
-      {
-        if(this.selectedAttri.length < 2)
-        {
+      if (this.dubType === '2') {
+        if (this.selectedAttri.length < 1) {
           this.$alert('请完整选择音色属性！', '提示', {
             confirmButtonText: '确定',
           });
-        }else
-        {
+        } else {
           //提交订单
         }
+      }
+    },
+    saveText() {//提交支付请求
+      // console.log(this.videoOrder);
+      var data = {
+        orderId: this.videoOrder.id,
+        type: this.dubType,//配音方式  0上传   1下单   2合成
+        content: storeApi.get({
+          name: 'textList',
+        }),
+        time: storeApi.get({
+          name: 'duration',
+        }),
       }
     }
-
-  }
+  },
 }
 </script>
 <style lang="scss" scoped>

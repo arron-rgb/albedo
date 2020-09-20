@@ -132,23 +132,27 @@ export default {
         });
       },
     saveAudio(audioUrl){//提交支付请求
-      console.log(this.videoOrder);
+      // console.log(this.videoOrder);
       var data = {
         orderId : this.videoOrder.id,
         type : 0,//配音方式  0上传   1下单   2合成
         audioUrl : audioUrl,
+        content : [],
         time : storeApi.get({
           name: 'duration',
         }),
       }
-      console.log(data);
       return new Promise((resolve, reject) => {
         payOrder.placeSecond(data).then((res) => {
           //订单保存成功，跳转等待页面
           // console.log(res)
           resolve();
           this.loading = false;
-          this.goTo('/waiting');
+          //清除videoOrder
+          storeApi.clear({
+            name: 'videoOrder'
+          });
+          this.goTo('/addOrder');
         }).catch(error => {
           reject(error)
           this.loading = false;

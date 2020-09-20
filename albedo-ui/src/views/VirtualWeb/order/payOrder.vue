@@ -64,12 +64,12 @@
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/alipay.jpg">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="balance" border>
+            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
               <a style=" line-height: 60px; padding-left: 10px">
                 <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">
               </a>
             </el-radio>
-            <el-radio style="height: 80px; width: 200px"  label="wechat" border>
+            <el-radio style="height: 80px; width: 200px"  label="balance" border>
               <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
                 <i class="el-icon-s-custom"></i>
               </a>
@@ -124,11 +124,20 @@ export default {
       var videoOrder = storeApi.get({
         name: 'videoOrder'
       });
-      this.list = JSON.parse(videoOrder.content).data;
-      this.type = videoOrder.type;
-      this.totalAmount = videoOrder.totalAmount;
-      this.description = videoOrder.description;
-      this.orderId = videoOrder.id;
+      if (videoOrder === null || videoOrder === undefined) {
+        this.$alert('请先选择视频基础需求', {
+          confirmButtonText: '确定',
+        }).then(
+          this.goTo('/addOrder')
+        );
+      }
+      else {
+        this.list = JSON.parse(videoOrder.content).data;
+        this.type = videoOrder.type;
+        this.totalAmount = videoOrder.totalAmount;
+        this.description = videoOrder.description;
+        this.orderId = videoOrder.id;
+      }
     }
     else {//是新的订单，尚未保存
       var list = storeApi.get({
@@ -200,8 +209,12 @@ export default {
       }
       return new Promise((resolve, reject) => {
         payOrder.purchase(data)
+        //清除videoOrder
+          storeApi.clear({
+            name: 'videoOrder'
+          });
+          this.goTo('/addOrder');
         })
-
     },
     cancel(){//取消订单
       this.$alert('确定删除此订单?', '警告', {
@@ -220,6 +233,10 @@ export default {
           storeApi.clear({
             name: 'videoOrder'
           })
+          //清除videoOrder
+          storeApi.clear({
+            name: 'videoConfig'
+          });
           this.$alert('订单删除成功！', '警告', {
             confirmButtonText: '确定',
           }).then(() => {

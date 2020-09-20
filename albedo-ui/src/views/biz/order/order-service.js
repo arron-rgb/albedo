@@ -39,4 +39,11 @@ export function current() {
     method: 'get'
   })
 }
-export default { page, del, save, get, current }
+
+export function list() {
+  return request({
+    url: '/biz/order/list',
+    method: 'get'
+  })
+}
+export default { page, del, save, get, current, list }
