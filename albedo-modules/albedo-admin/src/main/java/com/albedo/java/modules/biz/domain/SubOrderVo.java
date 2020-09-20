@@ -48,6 +48,11 @@ public class SubOrderVo {
    */
   private String adUrl;
 
+  /**
+   * 人工下单的订单金额
+   */
+  private String totalAmount;
+
   public String appendContent() {
     StringBuilder stringBuilder = new StringBuilder();
     for (String text : getContent()) {

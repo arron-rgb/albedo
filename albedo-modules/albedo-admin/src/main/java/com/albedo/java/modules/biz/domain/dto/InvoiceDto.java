@@ -54,7 +54,6 @@ public class InvoiceDto extends DataDto<String> {
   @Size(max = 255)
   private String name;
   /** taxNum 公司税号 */
-  @Size(max = 0)
   private String taxNum;
   /** companyLocation 注册地址 */
   @Size(max = 255)
@@ -66,7 +65,6 @@ public class InvoiceDto extends DataDto<String> {
   @Size(max = 255)
   private String accountBank;
   /** accountNumber 开户账号 */
-  @Size(max = 32)
   private String accountNumber;
 
 }
