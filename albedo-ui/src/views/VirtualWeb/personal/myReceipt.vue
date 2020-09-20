@@ -18,12 +18,44 @@
 
     <el-row class="formRow">
       <el-col span="6">
-        <span v-if="invoiceData.type === '1'">公司名称：</span>
-        <span v-else>您的姓名：</span>
+        <span>抬头名称：</span>
       </el-col>
       <el-col span="15">
         <el-input
           v-model="invoiceData.name"
+        ></el-input>
+      </el-col>
+    </el-row>
+
+    <el-row class="formRow" v-if="invoiceData.type === '1'">
+      <el-col span="6">
+        <span>社会统一信用代码：</span>
+      </el-col>
+      <el-col span="15">
+        <el-input
+          v-model="invoiceData.taxNum"
+        ></el-input>
+      </el-col>
+    </el-row>
+
+    <el-row class="formRow" v-if="invoiceData.type === '1'">
+      <el-col span="6">
+        <span>银行账户：</span>
+      </el-col>
+      <el-col span="15">
+        <el-input
+          v-model="invoiceData.accountNumber"
+        ></el-input>
+      </el-col>
+    </el-row>
+
+    <el-row class="formRow" v-if="invoiceData.type === '1'">
+      <el-col span="6">
+        <span>开户银行：</span>
+      </el-col>
+      <el-col span="15">
+        <el-input
+          v-model="invoiceData.accountBank"
         ></el-input>
       </el-col>
     </el-row>
@@ -50,36 +82,73 @@
       </el-col>
     </el-row>
 
-    <el-button type="primary" @click="saveInvoice">保存</el-button>
+    <el-button :loading="loading" type="primary" @click="toSave">保存</el-button>
   </el-dialog>
 </div>
 
 </template>
 
 <script>
-
+import crudInvoice from '@/views/biz/invoice/invoice-service'
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 export default {
   name: "proDetail",
   components: {
   },
   data() {
     return {
-      dialogVisible : true,
+      dialogVisible : false,
       invoiceData: {
         accountBank: "",//开户行
         accountNumber: "",//银行账号
         companyLocation: "",//公司地址
         companyPhone: "",//公司电话
         description: "",
-        name: "",//公司名称
+        name: "",//抬头名称
         type : '0',//0-个人，1-企业
         taxNum: "",//纳税人识别号\社会统一信用代码
       },
+      loading : false,
     }
   },
   methods : {
-    saveInvoice(){//保存发票
-
+    toSave(){
+      this.loading = true;
+      if(this.invoiceData.name === ""){//检查抬头名称
+        this.$alert('抬头名称不能为空！', '警告', {
+          confirmButtonText: '确定',
+        });
+        this.loading = false;
+        return ;
+      }
+      if(this.invoiceData.type === "0"){
+        this.saveInvoice(this.invoiceData);//保存抬头
+      }
+      else{
+        if(this.invoiceData.taxNum === ""){//企业发票，检查社会统一信用代码
+          this.$alert('社会统一信用代码不能为空！', '警告', {
+            confirmButtonText: '确定',
+          });
+          this.loading = false;
+        }
+        else{
+          this.saveInvoice(this.invoiceData);
+        }
+      }
+    },
+    saveInvoice(data){//保存抬头
+      return new Promise((resolve, reject) => {
+        crudInvoice.save(data).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            this.loading = false;
+            this.dialogVisible = false;
+            resolve();
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
     },
   }
 }
