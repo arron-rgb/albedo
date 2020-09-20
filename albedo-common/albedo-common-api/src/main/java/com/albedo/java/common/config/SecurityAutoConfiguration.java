@@ -25,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.filter.CorsFilter;
@@ -131,8 +130,8 @@ public class SecurityAutoConfiguration extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
-    http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-      .addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class)
+    http.csrf().disable();
+    http.addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class)
       .addFilterBefore(passwordDecoderFilter, CsrfFilter.class).addFilterBefore(corsFilter, CsrfFilter.class)
       .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint()).and().rememberMe()
       .rememberMeServices(rememberMeServices).key(applicationProperties.getSecurity().getRememberMe().getKey()).and()
