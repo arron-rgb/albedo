@@ -16,7 +16,7 @@
                     <div class="attriType" v-for="(list,index) in attriType" :key="index">
                         <div class="listType">{{list.listType}}</div>
                         <div class="attriList">
-                            <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="changeActive(index,id)"
+                            <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="addVoice(index,id)"
                             :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
                                 {{attri}}
                             </el-button>
@@ -28,7 +28,7 @@
                 <div class="attriType" v-for="(list,index) in machineAttri" :key="index">
                   <div class="listType">{{list.listType}}</div>
                   <div class="attriList">
-                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="backData = attri.value"
+                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="voiceList = [{data : attri}]"
                                :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
                       {{attri.value}}
                     </el-button>
@@ -42,8 +42,7 @@
                     已选属性
                 </h3>
 <!--                <div  class="selectedAttri">-->
-                <el-tag v-if="this.dubType === '1'" v-for="(item,id) in selectedAttri" :key="item" :type="typeList[id % 5]" class="myTags">{{item}}</el-tag>
-                <el-tag v-if="this.dubType === '2' && backData !== ''" :type="typeList[0]" class="myTags">{{backData}}</el-tag>
+                <el-tag v-for="(item,id) in voiceList" :key="item" :type="typeList[id % 5]" class="myTags">{{item.data}}</el-tag>
 <!--                <span v-if="this.dubType === '2'" style="line-height: 45px; margin-left: 100px">{{ backData }}</span>-->
                 <!--                </div>-->
               </el-row>
@@ -118,14 +117,14 @@ export default {
             {value: '通用女声', id: 1002},]
         }
       ],
-      selectedAttri: [],
       typeList: ["", "success", "info", "warning", "danger"],
       words: 0,
       time: '',
       price: '',
       dubType: '',
-      backData: '',
+      backData: null,
       videoOrder: '',
+      voiceList:[],
     }
   },
   created() {
@@ -160,26 +159,19 @@ export default {
     }
   },
   methods: {
-    changeActive(listid, id) {
-      let selectedItem = this.attriType[listid].list[id]
-      if (this.attriType[listid].active === -1) {
-        this.attriType[listid].active = id
-        this.selectedAttri.push(selectedItem)
-      } else if (this.attriType[listid].active === id) {
-        this.attriType[listid].active = -1
-        this.selectedAttri.filter((item, i) => {
-          if (item === selectedItem)
-            this.selectedAttri.splice(i, 1)
-        })
-      } else {
-        let prevAttri = this.attriType[listid].list[this.attriType[listid].active]
-        this.selectedAttri.filter((item, i) => {
-          if (item === prevAttri)
-            this.selectedAttri.splice(i, 1)
-        })
-        this.attriType[listid].active = id
-        this.selectedAttri.push(selectedItem)
+    addVoice(listid, id){
+      var selectItem = {
+        title : this.attriType[listid].listType,
+        data : this.attriType[listid].list[id]
       }
+      var dataIndex = this.voiceList.findIndex(o => o.title === selectItem.title);
+      if(dataIndex === -1){//不在库里
+        this.voiceList.push(selectItem);
+      }
+      else{
+        this.voiceList[dataIndex] = selectItem;
+      }
+      this.attriType[listid].active = id;
     },
     // next(){
     //     this.$router.replace('paymentPage')
@@ -193,27 +185,30 @@ export default {
           });
         } else {
           //提交订单
+          this.saveText(null,this.voiceList)
         }
       }
       if (this.dubType === '2') {
-        if (this.selectedAttri.length < 1) {
+        if (this.backData === null) {
           this.$alert('请完整选择音色属性！', '提示', {
             confirmButtonText: '确定',
           });
         } else {
           //提交订单
+          this.saveText(backData.id, null);
         }
       }
     },
-    saveText() {//提交支付请求
+    saveText(voiceType, description) {//提交支付请求
       // console.log(this.videoOrder);
       var data = {
         orderId: this.videoOrder.id,
+        voiceType:voiceType === null ? [voiceType] : description,
         type: this.dubType,//配音方式  0上传   1下单   2合成
         content: storeApi.get({
           name: 'textList',
         }),
-        time: storeApi.get({
+        duration: storeApi.get({
           name: 'duration',
         }),
       }
