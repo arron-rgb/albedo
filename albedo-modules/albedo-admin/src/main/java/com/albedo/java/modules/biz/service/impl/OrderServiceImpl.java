@@ -229,7 +229,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public Video updateForm(SubOrderVo orderVo) {
-    // 自己上传录音 直接给一个文件路径即可
     Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
@@ -253,7 +252,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Async
   @Override
   public void machineDubbing(SubOrderVo orderVo, Video video) {
-    String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId());
+    List<String> voiceTypes = orderVo.getVoiceType();
+    Assert.notEmpty(voiceTypes, "请选择配音音色");
+    String voiceType = voiceTypes.get(0);
+    String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(filePath);
@@ -300,7 +302,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setType(DUBBING);
     order.setUserId(SecurityUtil.getUser().getId());
     order.setContent(content);
-    order.setDescription(orderVo.getDescription());
+    order.setDescription(String.valueOf(orderVo.getVoiceType()));
     order.setVideoId(orderVo.getOrderId());
     order.setState(NOT_STARTED);
 
@@ -312,7 +314,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   public String generateAudio(String text, String orderId) {
+    return generateAudio(text, orderId, "");
+  }
+
+  public String generateAudio(String text, String orderId, String voiceType) {
     TtsParams build = new TtsParams();
+    build.setVoiceType(voiceType);
     build.setText(text);
     build.setCodec("mp3");
     File file = ttsSingleton.generateAudio(build);

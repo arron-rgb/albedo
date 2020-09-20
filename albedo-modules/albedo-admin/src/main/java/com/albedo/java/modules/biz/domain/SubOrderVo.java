@@ -29,12 +29,16 @@ public class SubOrderVo {
   /**
    * 视频时长
    */
-  private Long time;
+  private Long duration;
   /**
    * 配音方式 0上传 1下单 2合成
    */
   @NotNull(message = "请选择配音方式")
   private Integer type;
+  /**
+   * 音色
+   */
+  private List<String> voiceType;
   /**
    * 音频链接
    */
