@@ -41,4 +41,6 @@ public interface VideoService extends BaseService<Video> {
    */
   void addAudio(String videoId);
 
+  Video getOneByOrderId(String orderId);
+
 }

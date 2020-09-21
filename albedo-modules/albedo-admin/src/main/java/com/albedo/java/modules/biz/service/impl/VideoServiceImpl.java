@@ -1,7 +1,6 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
 
@@ -33,6 +32,7 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.oss.internal.OSSUtils;
+import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -66,7 +66,10 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   /**
-   * 上传
+   * 上传视频，可执行多次
+   * 逻辑：
+   * 员工上传视频：一条订单可对应多个video
+   *
    *
    * @param orderId
    *          订单id
@@ -84,29 +87,31 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
     Assert.notNull(balance, EMPTY_STORAGE);
-
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
-    String bucketName = userService.getBucketName(userId);;
-    if (storage > 0) {
-      ossSingleton.removeOldestFile(bucketName);
+    String bucketName = userService.getBucketName(userId);
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      createBucket(bucketName);
+    }
+    if (storage < 0) {
+      try {
+        ossSingleton.removeOldestFile(bucketName);
+      } catch (Exception ignored) {
+        log.error("删除失败");
+      }
     }
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
     InputStream inputStream = new FileInputStream(tempFile);
-    Video video = baseMapper.selectOne(Wrappers.<Video>query().eq("order_id", orderId));
-    // 保存视频记录至数据库
-    if (video == null) {
-      video = Video.builder().userId(userId).orderId(orderId).build();
-      baseMapper.insert(video);
-    }
+    // 只要上传视频就插入新的记录
+    Video video = Video.builder().userId(userId).orderId(orderId).build();
     video.setOriginUrl(tempPath);
     video.setName(tempFile.getName());
-    baseMapper.updateById(video);
-    order.setState(PRODUCTION_COMPLETED);
-    order.setVideoId(video.getId());
-    orderService.updateById(order);
+    baseMapper.insert(video);
+    if (StringUtils.isEmpty(order.getVideoId())) {
+      order.setVideoId(video.getId());
+    }
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
     // 本地：./upload/bucketName/文件名
@@ -134,6 +139,21 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
     Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
     checkIfFileExist(video);
+  }
+
+  /**
+   * 查询一个订单id并且audio非空的video
+   *
+   * @param orderId
+   * @return
+   */
+  @Override
+  public Video getOneByOrderId(String orderId) {
+    Order order = orderService.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    Video video = baseMapper.selectById(order.getVideoId());
+    Assert.notNull(video, VIDEO_NOT_FOUND);
+    return video;
   }
 
   /**

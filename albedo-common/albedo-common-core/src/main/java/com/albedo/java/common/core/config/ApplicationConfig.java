@@ -105,6 +105,17 @@ public class ApplicationConfig {
     // mac: ~/albedo-file
     // linux: /home/albedo/file/
     // win: C:\albedo\file\
+
+    // String os = System.getProperty("os.name").toLowerCase();
+    // boolean win = os.startsWith("win");
+    // boolean mac = os.startsWith("mac");
+    // if (win) {
+    // return get("application.static-file-directory.win");
+    // } else if (mac) {
+    // return get("application.static-file-directory.mac");
+    // }
+    // return get("application.static-file-directory.linux");
+
     return System.getenv("PWD");
   }
 

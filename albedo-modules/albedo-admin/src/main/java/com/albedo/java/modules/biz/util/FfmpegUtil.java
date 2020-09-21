@@ -93,6 +93,7 @@ public class FfmpegUtil {
 
   public String newConcatAudio(String audioUrl, List<Video> videos) {
     String tempOutput = shuffleList(videos);
+
     String outputPath = loopOrCut(audioUrl, tempOutput);
     deleteFile(tempOutput);
     return outputPath;
@@ -126,7 +127,7 @@ public class FfmpegUtil {
     job.run();
   }
 
-  public static void deleteFile(String path) {
+  public void deleteFile(String path) {
     File file = new File(path);
     // 路径为文件且不为空则进行删除
     if (file.isFile() && file.exists()) {
@@ -141,7 +142,7 @@ public class FfmpegUtil {
    * @param videoList
    * @return
    */
-  public static String shuffleList(List<Video> videoList) {
+  public String shuffleList(List<Video> videoList) {
     Assert.notEmpty(videoList, "");
     Collections.shuffle(videoList);
     List<String> videoPaths = videoList.stream().map(Video::getOriginUrl).collect(Collectors.toList());
@@ -166,7 +167,7 @@ public class FfmpegUtil {
    * @param prior
    * @param inferior
    */
-  public static String loopOrCut(String prior, String inferior) {
+  public String loopOrCut(String prior, String inferior) {
     FFmpegBuilder builder;
     String extName = FileUtil.extName(inferior);
     String videoOutputPath = generateFilePath(extName);
@@ -186,10 +187,10 @@ public class FfmpegUtil {
     String tempOutput = generateFilePath(tempExtName);
     builder.addOutput(tempOutput).setVideoCodec(COPY).done();
     // 清除声音
+    run(builder);
     if (hasAudio(tempOutput)) {
       delAudio(tempOutput);
     }
-    run(builder);
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
     builder.addInput(tempOutput);

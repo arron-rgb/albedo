@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.annotation.Token;
@@ -129,6 +130,7 @@ public class UserOrderResource extends BaseResource {
 
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
+  @Transactional(rollbackFor = Exception.class)
   public Result<String> placeSecond(@RequestBody SubOrderVo orderVo) {
     // 通用流程
     Video video = service.updateForm(orderVo);

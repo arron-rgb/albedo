@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -170,6 +172,20 @@ public class WebOrderResource extends BaseResource {
         ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(SecurityUtil.getUser().getId());
       String tempPath = FileUploadUtil.upload(uploadPath, file);
       videoService.uploadVideo(orderId, tempPath);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Result.buildFail("保存失败");
+    }
+    return Result.buildOkData("上传成功");
+  }
+
+  @ApiOperation(value = "员工更新订单状态")
+  @GetMapping(value = "/update")
+  public Result<String> update(String orderId) {
+    try {
+      Order order = service.getById(orderId);
+      order.setState(PRODUCTION_COMPLETED);
+      service.updateById(order);
     } catch (Exception e) {
       e.printStackTrace();
       return Result.buildFail("保存失败");
