@@ -11,7 +11,9 @@
           已选需求：
         </el-col>
         <el-col span="20">
-          <el-tag class="tag" v-for="(o,index) in this.list" :key="o" :type="typeList[index % 5]" span="18">{{o.data[0].value}}</el-tag>
+          <span v-for="(o,index) in this.list" :key="o">
+            <el-tag v-for="(item, n) in o.data" class="tag" :type="typeList[(index + n) % 5]" span="18">{{item.value}}</el-tag>
+          </span>
         </el-col>
       </el-row>
 

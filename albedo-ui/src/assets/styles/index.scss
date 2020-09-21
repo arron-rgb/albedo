@@ -236,12 +236,34 @@ aside {
   color: #ff5000;
   border-color: #ff5000 !important;
 }
+
 .el-radio-button__orig-radio:checked+.el-radio-button__inner{
   color: white;
   background-color: #ff5000;
   border-color: #ff5000;
   box-shadow: none;
 }
+//修改el-check-button样式
+.el-checkbox-button{
+  margin: 5px;
+}
+.el-checkbox-button__inner{
+  border: 1px solid #DCDFE6 !important;
+  border-radius: 4px !important;
+  padding: 2px !important;
+}
+.el-checkbox-button__inner:hover{
+  background-color: rgba(255, 237, 229, 0.4);
+  color: #ff5000;
+  border-color: #ff5000 !important;
+}
+.el-checkbox-button.is-checked .el-checkbox-button__inner{
+  background-color: #ff5000;
+  color: white;
+  border-color: #ff5000;
+  box-shadow: none;
+}
+
 
 .el-radio.is-bordered.is-checked{
   border-color: #ff5000 !important;
