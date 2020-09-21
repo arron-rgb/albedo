@@ -117,7 +117,6 @@ public interface OrderService extends BaseService<Order> {
    * // 1. 新建配音订单：绑定视频订单-配音订单。用配音订单的**videoId字段**存储视频订单的id
    * // 2. 员工接单同个流程，在制作完成上传后直接将配音订单结束。把视频订单videoId的音频文件更新发起合成事件
    * // 3. 合成事件中会将视频订单状态更新，并上传至oss
-   * // todo 如果不新建订单记录 怎么走流程
    *
    * @param orderId
    *          配音订单id

@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SEC
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Async;
@@ -40,7 +41,6 @@ public class OssSingleton {
   }
 
   public OssSingleton() {
-
     // export ALIBABA_ID="LTAI4G9GELKL2AM8BxufjLUE"
     // export ALIBABA_SECRET="usIxuCax2SM5cQ6uDnNBZ1CARpbuhg"
     String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
@@ -183,5 +183,12 @@ public class OssSingleton {
     String fileName = getFileName(file);
     String bucketName = replace(fileParent, file.getParentFile().getParent());
     return localPathToUrl(bucketName, fileName);
+  }
+
+  public void removeOldestFile(String bucketName) {
+    ObjectListing objectListing = client.listObjects(bucketName);
+    List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+    objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));
+    remove(bucketName, objectSummaries.get(0).getKey());
   }
 }
