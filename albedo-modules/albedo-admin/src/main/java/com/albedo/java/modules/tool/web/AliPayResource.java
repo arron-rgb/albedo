@@ -92,6 +92,23 @@ public class AliPayResource {
   @Resource
   PurchaseRecordService recordService;
 
+  @ApiIgnore
+  @AnonymousAccess
+  @GetMapping("/return")
+  @ApiOperation("异步通知接口")
+  public String returnUrl(HttpServletRequest request) {
+    AlipayConfig alipay = alipayService.find();
+    String appId = getParam(request, "app_id");
+    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
+    if (alipayUtils.rsaCheck(request, alipay)) {
+      String update = update(request);
+      if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
+        return update;
+      }
+    }
+    return "failed";
+  }
+
   /**
    * 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号；
    * 判断 total_amount 是否确实为该订单的实际金额（即商户订单创建时的金额）；

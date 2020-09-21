@@ -67,19 +67,20 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
           .eq(PurchaseRecord::getOutTradeNo, outTradeNo).orderByAsc(PurchaseRecord::getCreatedDate));
       Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
       String outerId = record.getOuterId();
+      String userId = record.getUserId();
       Plan plan = baseMapper.selectById(outerId);
       if (plan == null) {
         return false;
       }
       Balance balance;
-      balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", SecurityUtil.getUser().getId()));
+      balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
       if (balance != null) {
         balance.setTimes(balance.getTimes() + plan.getTimes());
       } else {
         balance = Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
           .times(plan.getTimes()).storage(Double.valueOf(plan.getStorage())).build();
       }
-      balanceService.save(balance);
+      balanceService.saveOrUpdate(balance);
       // 买了套餐默认将他更新为企业管理员角色
       // todo PUBLIC_DEPT_ID是否会影响 目测不会
       if (!SecurityUtil.getRoles().contains(BUSINESS_ADMIN_ROLE_ID)) {
