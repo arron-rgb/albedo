@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.util.FileUtil;
+import com.albedo.java.common.core.util.StringUtil;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -180,6 +181,9 @@ public class OssSingleton {
   public String localPathToUrl(String filePath) {
     File file = new File(filePath);
     String fileParent = file.getParent();
+    if (StringUtil.isEmpty(fileParent)) {
+      return "文件状态异常";
+    }
     String fileName = getFileName(file);
     String bucketName = replace(fileParent, file.getParentFile().getParent());
     return localPathToUrl(bucketName, fileName);

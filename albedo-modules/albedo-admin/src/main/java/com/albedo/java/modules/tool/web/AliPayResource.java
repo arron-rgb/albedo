@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
@@ -79,7 +80,7 @@ public class AliPayResource {
   @LogOperate("支付宝PC网页支付")
   @ApiOperation("PC网页支付")
   @PostMapping(value = "/toPayAsPC")
-  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
+  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) {
     TradePlus build = TradePlus.builder().totalAmount(trade.getTotalAmount()).subject(trade.getSubject()).build();
     String payUrl = alipayService.toPayAsPc(build);
     return Result.buildOkData(payUrl);
@@ -87,24 +88,6 @@ public class AliPayResource {
 
   @Resource
   OrderService orderService;
-
-  @ApiIgnore
-  @GetMapping("/return")
-  @ApiOperation("回调接口")
-  public Result<String> returnPage(HttpServletRequest request) {
-    AlipayConfig alipay = alipayService.find();
-    // 内容验签，防止黑客篡改参数
-    if (alipayUtils.rsaCheck(request, alipay)) {
-      String update = update(request);
-      if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
-        return Result.buildOk("支付成功");
-      }
-    } else {
-      // 根据业务需要返回数据
-      return Result.buildFail("支付异常");
-    }
-    return null;
-  }
 
   @Resource
   PurchaseRecordService recordService;
@@ -120,6 +103,7 @@ public class AliPayResource {
    * @return
    */
   @ApiIgnore
+  @AnonymousAccess
   @PostMapping("/notify")
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {

@@ -46,6 +46,6 @@ application:
       - ${application.adminPath}/code/**
       - ${application.adminPath}/sys/user/register
       - ${application.adminPath}/biz/plan/list
-      - ${application.adminPath}/tool/aliPay/*
+      - ${application.adminPath}/tool/aliPay/notify
       - /cdn/*
       - /fonts/*
