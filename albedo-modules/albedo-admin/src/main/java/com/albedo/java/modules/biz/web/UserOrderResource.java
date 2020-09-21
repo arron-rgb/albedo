@@ -26,6 +26,7 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -100,7 +101,7 @@ public class UserOrderResource extends BaseResource {
         }
         order.setVideoId(originUrl);
       }
-      User user = userService.getById(order.getUserId());
+      UserDto user = userService.findDtoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
