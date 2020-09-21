@@ -235,7 +235,6 @@ function CRUD(options) {
      * 提交新增/编辑
      */
     submitCU() {
-      console.log('提交');
       if (!callVmHook(crud, CRUD.HOOK.beforeValidateCU)) {
         return
       }

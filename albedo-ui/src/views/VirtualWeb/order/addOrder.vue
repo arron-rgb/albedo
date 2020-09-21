@@ -8,10 +8,10 @@
 
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
-                  <img class="img" v-show="o.url !== null" :src="o.url">
+                  <img class="img" v-show="o.url !== null" :src="'http://' + o.url">
                   <div class="button-text">{{o.value}}</div>
                 </el-radio-button>
-                <div v-show="o.value !== null" class="button-text" style="line-height: 20px; color: #909399">{{o.value}}</div>
+                <div v-show="o.description !== null" class="button-text" style="line-height: 20px; color: #909399">描述：{{o.description}}</div>
               </el-radio-group>
             </el-collapse-item>
           </el-collapse>
@@ -187,7 +187,8 @@ export default {
 }
 
 .img{
-  width: 210px;
+  background-color: white;
+  width: 180px;
   height: 280px;
 }
 .button-text{

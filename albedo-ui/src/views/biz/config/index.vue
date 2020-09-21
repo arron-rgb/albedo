@@ -34,20 +34,21 @@
         </el-form-item>
 
         <!--填写编码-->
-        <el-form-item label="详情描述" prop="name" :rules="[{min: 0,max: 20,message: '长度在 0 到 100 个字符', trigger: 'blur'},]">
+        <el-form-item label="详情描述" prop="description" :rules="[{min: 0,max: 100,message: '长度在 0 到 100 个字符', trigger: 'blur'},]">
           <el-input v-model="form.description" class="input-small"></el-input>
         </el-form-item>
 
         <!--增值服务填写plusService，非增值服务无需填写，默认为类型同名字段-->
         <el-form-item label="增值服务类型" prop="type"
-                      :rules="[{required: true, min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
+                      :rules="[{required: true, message: '必选', trigger: 'blur'},]">
           <el-radio v-model="form.type" label="1">是</el-radio>
           <el-radio v-model="form.type" label="0">否</el-radio>
         </el-form-item>
 
         <!--改为上传图片-->
-        <el-form-item label="图片链接" prop="url" :rules="[{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
-<!--          <el-input v-model="form.url" class="input-small"></el-input>-->
+        <el-form-item label="图片链接" prop="url" :rules="[{trigger: 'blur'},]">
+          <el-input ref="url"  disabled v-model="form.url" class="input-small"></el-input>
+<!--          {{form}}-->
           <el-upload
             ref="upload"
             class="avatar-uploader"
@@ -117,6 +118,7 @@ const defaultForm = {
   type: null,
   url: null,
   title: null,
+  description: null,
 }
 export default {
   name: 'Config',
@@ -147,16 +149,6 @@ export default {
   created() {
   },
   methods: {
-    save(){
-      // console.log(this.imageUrl);
-      if(this.imageUrl === null){
-        crud.submitCU;
-      }
-      else{
-
-
-      }
-    },
     onUploadChange(file){
       // console.log(file);
       const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
@@ -182,13 +174,13 @@ export default {
         //将图片路径赋值给url
         _this.imageUrl = e.target.result;
       }
-
+      this.uploadImg(file);
     },
     uploadImg(file){
       return new Promise((resolve, reject) => {
         dubOperate.uploadFile(file).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            form.url = res.data.url;
+            this.form.url = res.data.url;
           }
         }).catch(error => {
           this.loading = false;
