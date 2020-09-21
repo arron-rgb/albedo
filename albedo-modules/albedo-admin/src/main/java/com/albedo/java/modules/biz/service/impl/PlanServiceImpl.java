@@ -47,7 +47,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
       .subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
-    PurchaseRecord record = PurchaseRecord.buildPlan(trade, trade.getOutTradeNo());
+    PurchaseRecord record = PurchaseRecord.buildPlan(trade, planId);
     recordService.save(record);
     try {
       return aliPayService.toPayAsPc(trade);
@@ -65,8 +65,6 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
       PurchaseRecord record =
         recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, PLAN_TYPE)
           .eq(PurchaseRecord::getOutTradeNo, outTradeNo).orderByAsc(PurchaseRecord::getCreatedDate));
-      record.setStatus(TRADE_FINISHED);
-      recordService.updateById(record);
       Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
       String outerId = record.getOuterId();
       Plan plan = baseMapper.selectById(outerId);
