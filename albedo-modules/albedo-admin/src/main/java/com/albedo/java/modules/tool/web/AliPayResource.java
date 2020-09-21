@@ -109,14 +109,14 @@ public class AliPayResource {
   public String notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
     String appId = getParam(request, "app_id");
-    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "");
+    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
     if (alipayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
       if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
         return update;
       }
     }
-    return "";
+    return "failed";
   }
 
   private String update(HttpServletRequest request) {

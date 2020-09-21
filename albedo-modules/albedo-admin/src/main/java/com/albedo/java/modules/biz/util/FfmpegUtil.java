@@ -43,7 +43,7 @@ public class FfmpegUtil {
   public static FFmpeg ffmpeg;
   static FFmpegExecutor executor;
 
-  public FfmpegUtil(@Value("path.ffprobe") String ffprobePath, @Value("path.ffmpeg") String ffmpegPath) {
+  public FfmpegUtil(@Value("${path.ffprobe}") String ffprobePath, @Value("${path.ffmpeg}") String ffmpegPath) {
     try {
       ffprobe = new FFprobe(ffprobePath);
       ffmpeg = new FFmpeg(ffmpegPath);
