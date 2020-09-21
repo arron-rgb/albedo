@@ -617,9 +617,11 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
    * @return
    */
   public static String generateFilePath(String extName) {
-    String filePath = concatFilePath(IdUtil.fastUUID() + "." + extName);
-    if (createFile(filePath)) {
-      return filePath;
+    String fileName = concatSimpleFilePath("/Users/arronshentu/Downloads", IdUtil.fastUUID() + "." + extName);
+    log.info("generateFilePath: {}", fileName);
+    // 传入绝对路径
+    if (createFile(fileName)) {
+      return fileName;
     }
     return "";
   }

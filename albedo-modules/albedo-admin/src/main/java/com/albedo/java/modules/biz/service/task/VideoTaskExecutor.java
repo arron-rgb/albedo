@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.service.task;
 import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
 
 import java.io.File;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -16,6 +17,8 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
+import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +47,7 @@ public class VideoTaskExecutor {
   /**
    * 将音频与视频合成
    * 合成完毕后 1. 将视频上传至oss 2. 更新video表字段 3. 更新订单表字段
+   * todo
    *
    * @param event
    *          含有video的信息
@@ -52,7 +56,10 @@ public class VideoTaskExecutor {
   @EventListener(VideoEncodeTask.class)
   public void concatAudio(VideoEncodeTask event) {
     Video video = event.video;
-    String outputUrl = ffmpegUtil.concatAudio(video);
+    List<Video> videos = videoService.list(Wrappers.<Video>query().eq("order_id", video.getOrderId()));
+    Assert.notEmpty(videos, "");
+    Assert.notEmpty(video.getAudioUrl(), "");
+    String outputUrl = ffmpegUtil.newConcatAudio(video.getAudioUrl(), videos);
     event.setStatus("end");
     // 更新video表
     File file = new File(outputUrl);
