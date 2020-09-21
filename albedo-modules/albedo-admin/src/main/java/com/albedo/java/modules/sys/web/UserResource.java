@@ -1,12 +1,16 @@
 package com.albedo.java.modules.sys.web;
 
+import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
+
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.util.ExcelUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.sys.domain.RegisterUserData;
+import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.domain.dto.UserInfoDto;
 import com.albedo.java.modules.sys.domain.dto.UserQueryCriteria;
@@ -29,8 +34,11 @@ import com.albedo.java.modules.sys.domain.vo.UserExcelVo;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -217,4 +225,36 @@ public class UserResource extends BaseResource {
     return Result.buildOk("注册成功");
   }
 
+  @GetMapping("generate")
+  @LogOperate("获取邀请码")
+  @ApiOperation("查询邀请码")
+  public Result<String> getInviteCode() {
+    String id = SecurityUtil.getUser().getId();
+    User user = userService.getById(id);
+    Assert.notNull(user, "请登录后重试");
+    if (StringUtils.isNotEmpty(user.getInviteCode())) {
+      return Result.buildOkData(user.getInviteCode());
+    }
+    String uuid = getUUID();
+    user.setInviteCode(uuid);
+    userService.updateById(user);
+    return Result.buildOkData(user.getInviteCode());
+  }
+
+  private String getUUID() {
+    return String.valueOf(Math.abs(Integer.parseInt(String.valueOf(IdUtil.fastSimpleUUID().hashCode()))));
+  }
+
+  @GetMapping("list")
+  @ApiOperation("后台员工查看自己邀请注册的用户")
+  public Result<Set<User>> getUserInfo() {
+    String id = SecurityUtil.getUser().getId();
+    List<String> roles = SecurityUtil.getRoles();
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), "非后台员工无法使用该接口");
+    User user = userService.getById(id);
+    Assert.notEmpty(user.getInviteCode(), "邀请码为空，无法查询");
+    List<User> results = userService.list(Wrappers.<User>query().eq("invite_code", user.getInviteCode()));
+    Set<User> userSet = results.stream().filter(ele -> StringUtils.equals(ele.getId(), id)).collect(Collectors.toSet());
+    return Result.buildOkData(userSet);
+  }
 }
