@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.modules.biz.domain.Video;
@@ -42,10 +43,10 @@ public class FfmpegUtil {
   public static FFmpeg ffmpeg;
   static FFmpegExecutor executor;
 
-  static {
+  public FfmpegUtil(@Value("path.ffprobe") String ffprobePath, @Value("path.ffmpeg") String ffmpegPath) {
     try {
-      ffprobe = new FFprobe("/usr/local/bin/ffprobe");
-      ffmpeg = new FFmpeg("/usr/local/bin/ffmpeg");
+      ffprobe = new FFprobe(ffprobePath);
+      ffmpeg = new FFmpeg(ffmpegPath);
       executor = new FFmpegExecutor(ffmpeg, ffprobe);
     } catch (IOException e) {
       e.printStackTrace();

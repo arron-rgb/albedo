@@ -16,11 +16,13 @@ import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.Invoice;
 import com.albedo.java.modules.biz.domain.InvoiceRequest;
 import com.albedo.java.modules.biz.domain.dto.InvoiceRequestDto;
 import com.albedo.java.modules.biz.domain.dto.InvoiceRequestQueryCriteria;
 import com.albedo.java.modules.biz.service.InvoiceRequestService;
-import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.biz.service.InvoiceService;
+import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
@@ -62,6 +64,9 @@ public class InvoiceRequestResource extends BaseResource {
    * @return the Result with status 200 (OK) and with body all invoiceRequest
    */
 
+  @Resource
+  InvoiceService invoiceService;
+
   @PreAuthorize("@pms.hasPermission('biz_invoiceRequest_view')")
   @GetMapping
   @ApiOperation(value = "查询开票请求")
@@ -72,12 +77,17 @@ public class InvoiceRequestResource extends BaseResource {
     PageModel<InvoiceRequest> page = service.page(pm, wrapper);
     List<InvoiceRequest> records = page.getRecords();
     records.forEach(record -> {
-      User user = userService.getById(record.getCreatedBy());
+      Invoice invoice = invoiceService.getById(record.getInvoiceId());
+      if (invoice == null) {
+        return;
+      }
+      record.setInvoiceId(invoice.getName());
+      UserDto user = userService.findDtoById(record.getCreatedBy());
       if (user == null) {
         return;
       }
-      if (StringUtils.isNotEmpty(user.getNickname())) {
-        record.setCreatedBy(user.getNickname());
+      if (StringUtils.isNotEmpty(user.getUsername())) {
+        record.setCreatedBy(user.getUsername());
       }
     });
     return Result.buildOkData(page);

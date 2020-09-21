@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.task;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
+import static com.albedo.java.common.core.constant.ExceptionNames.VIDEO_NOT_FOUND;
 
 import java.io.File;
 import java.util.List;
@@ -47,7 +48,6 @@ public class VideoTaskExecutor {
   /**
    * 将音频与视频合成
    * 合成完毕后 1. 将视频上传至oss 2. 更新video表字段 3. 更新订单表字段
-   * todo
    *
    * @param event
    *          含有video的信息
@@ -57,8 +57,8 @@ public class VideoTaskExecutor {
   public void concatAudio(VideoEncodeTask event) {
     Video video = event.video;
     List<Video> videos = videoService.list(Wrappers.<Video>query().eq("order_id", video.getOrderId()));
-    Assert.notEmpty(videos, "");
-    Assert.notEmpty(video.getAudioUrl(), "");
+    Assert.notEmpty(videos, VIDEO_NOT_FOUND);
+    Assert.notEmpty(video.getAudioUrl(), "音频链接为空");
     String outputUrl = ffmpegUtil.newConcatAudio(video.getAudioUrl(), videos);
     event.setStatus("end");
     // 更新video表

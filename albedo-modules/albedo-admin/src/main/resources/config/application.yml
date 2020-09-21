@@ -3,17 +3,37 @@ jasypt:
   encryptor:
     password: albedo #根密码
 
+logging:
+  level:
+    ROOT: INFO
+    com.albedo.java: DEBUG
+
+server:
+  port: 8061
+  servlet:
+    session:
+      timeout: 30m
 spring:
   application:
     name: albedo-admin
   session:
     store-type: redis
   profiles:
-    active: ${spring.profiles.active}
+    active: prod
   servlet:
     multipart:
       max-file-size: "100MB"
       max-request-size: "1000MB"
+  redis:
+    password:
+    host: localhost
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: gavin
+    password: g1126ang
+    url: jdbc:mysql://47.100.1.162:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+
 # mybaits-plus配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*/*Mapper.xml
@@ -43,6 +63,13 @@ application:
     public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAN4UOrkIuLpL0o7WItgIUkP/RFBsurMPQ7fTaOKwT+S9tWly0xMmJzSl9Kdh8MpWcyz+5nUSb7SgGWxiE3qIL2sCAwEAAQ==
     private-key: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEA3hQ6uQi4ukvSjtYi2AhSQ/9EUGy6sw9Dt9No4rBP5L21aXLTEyYnNKX0p2HwylZzLP7mdRJvtKAZbGITeogvawIDAQABAkBnojsRE//Yd/+nRkh2VdPGBX5kpYiufKYWR6K/fpWZ4QrASv5sIuD2Cqfp5e8K6fZ4DW/CSUMKGq6Vq6xZVeLJAiEA/BazblQTEeGFsQydEmaBA1CWupPOAFO2xg7c/5s1sI8CIQDhhlRtXfjqcUWhj4Um1t8pFBkFHiN8RC1hufaZs9OJZQIgEuLogoWOADLzPzaAthYz6DmrcUMNlfyvntsSN5w7Q4UCIQCu7raAWvsgRxqe1iePV+6j+33o1VbrJisZedkJok48bQIgWVX940QICkAUhYRJgX9uj7oWOAyE1V8ambte6SHBHhs=
   security:
+    authentication:
+      jwt:
+        # 必须使用最少88位的Base64对该令牌进行编码
+        base64-secret: bXktc2VjcmV0LWtleS13aGljaC1zaG91bGQtYmUtY2hhbmdlZC1pbi1wcm9kdWN0aW9uLWFuZC1iZS1iYXNlNjQtZW5jb2RlZAo=
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
     # 前端密码密钥，必须16位
     encode-key: 'somewhere-albedo'
     remember-me:
@@ -54,5 +81,13 @@ application:
       - /v2/api-docs/**
       - /swagger-resources/configuration/ui
       - /swagger-ui.html
+      - ${application.adminPath}/code/**
+      - ${application.adminPath}/sys/user/register
+      - ${application.adminPath}/biz/plan/list
+      - ${application.adminPath}/tool/aliPay/notify
+      - /cdn/*
+      - /fonts/*
 
-
+path:
+  ffmpeg: /usr/bin/ffmpeg
+  ffprobe: /usr/bin/ffprobe
