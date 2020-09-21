@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
@@ -79,7 +80,7 @@ public class AliPayResource {
   @LogOperate("支付宝PC网页支付")
   @ApiOperation("PC网页支付")
   @PostMapping(value = "/toPayAsPC")
-  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) throws Exception {
+  public Result<String> toPayAsPc(@Validated @RequestBody TradeVo trade) {
     TradePlus build = TradePlus.builder().totalAmount(trade.getTotalAmount()).subject(trade.getSubject()).build();
     String payUrl = alipayService.toPayAsPc(build);
     return Result.buildOkData(payUrl);
@@ -87,25 +88,6 @@ public class AliPayResource {
 
   @Resource
   OrderService orderService;
-
-  @ApiIgnore
-  @GetMapping("/return")
-  @ApiOperation("回调接口")
-  // http://localhost:8014/a/tool/aliPay/return?charset=utf-8&out_trade_no=202009142231323366&method=alipay.trade.page.pay.return&total_amount=100.00&sign=VqIhgVFs630wcshbhaperayF1dCXBLVoJkyIHLUojusbJLycooBBTdpfcgmH4%2F1hkknb57vX1UZN%2B0Mu1tlb3V4uCqr0pDxauRfqkvO7sc9a3Z927uE2Gyw7qg6lNJAvRcJFAnJwpJO6%2Fd6d5kgNoqb5wIKSv4ds3Z%2FY08Lxk1ukzlh9r3mDdsbflSQIQDqHhEeDBRt2ywe6uL343GzBMXGUKKSTm1mqmY2HiHt4TdLz11M35trjgHNB0oVOcSnrZBojkQcuzb85rvF%2F0IXsZnyOeFZOwK%2Bl6c9Pk%2Bzu86Mk5bZ8VrAp%2BKrRS%2FB%2BrjKjmC2alcT721G7L6h%2BaLSr6w%3D%3D&trade_no=2020091422001476590501531914&auth_app_id=2021000116688194&version=1.0&app_id=2021000116688194&sign_type=RSA2&seller_id=2088621955056287&timestamp=2020-09-14+22%3A32%3A32
-  public Result<String> returnPage(HttpServletRequest request) {
-    AlipayConfig alipay = alipayService.find();
-    // 内容验签，防止黑客篡改参数
-    if (alipayUtils.rsaCheck(request, alipay)) {
-      String update = update(request);
-      if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
-        return Result.buildOk("支付成功");
-      }
-    } else {
-      // 根据业务需要返回数据
-      return Result.buildFail("支付异常");
-    }
-    return null;
-  }
 
   @Resource
   PurchaseRecordService recordService;
@@ -121,19 +103,20 @@ public class AliPayResource {
    * @return
    */
   @ApiIgnore
+  @AnonymousAccess
   @PostMapping("/notify")
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {
     AlipayConfig alipay = alipayService.find();
     String appId = getParam(request, "app_id");
-    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "");
+    Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
     if (alipayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
       if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
         return update;
       }
     }
-    return "";
+    return "failed";
   }
 
   private String update(HttpServletRequest request) {

@@ -33,7 +33,6 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.oss.internal.OSSUtils;
-import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -88,17 +87,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
-    // 存储空间不足，todo 删除最老的一条video
-    Assert.isTrue(storage > 0, STORAGE_NOT_SATISFIED);
     balance.setStorage(storage);
-    String bucketName = userId;
+    String bucketName = userService.getBucketName(userId);;
+    if (storage > 0) {
+      ossSingleton.removeOldestFile(bucketName);
+    }
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
-    if (!OSSUtils.validateBucketName(bucketName)) {
-      User user = userService.getById(userId);
-      // 因此 只要符合 userId不符合命名规范 并且 qqOpenId为空的用户 就是没有bucket 所以需要创建
-      bucketName = StringUtils.isEmpty(user.getQqOpenId()) ? createBucket(userId) : user.getQqOpenId();
-    }
     InputStream inputStream = new FileInputStream(tempFile);
     Video video = baseMapper.selectOne(Wrappers.<Video>query().eq("order_id", orderId));
     // 保存视频记录至数据库

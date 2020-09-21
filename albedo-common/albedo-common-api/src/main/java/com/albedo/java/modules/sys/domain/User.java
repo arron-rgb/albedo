@@ -85,4 +85,6 @@ public class User extends IdEntity<User> {
    */
   private String qqOpenId;
 
+  private String inviteCode;
+
 }

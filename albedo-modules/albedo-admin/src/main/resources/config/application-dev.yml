@@ -43,9 +43,17 @@ application:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
     authorize-permit-all:
+      - /management/health
+      - /v2/api-docs/**
+      - /swagger-resources/configuration/ui
+      - /swagger-ui.html
       - ${application.adminPath}/code/**
       - ${application.adminPath}/sys/user/register
       - ${application.adminPath}/biz/plan/list
-      - ${application.adminPath}/tool/aliPay/*
+      - ${application.adminPath}/tool/aliPay/notify
       - /cdn/*
       - /fonts/*
+
+path:
+  ffmpeg: /usr/local/bin/ffmpeg
+  ffprobe: /usr/local/bin/ffprobe
