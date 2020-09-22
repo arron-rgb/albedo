@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.service;
 import com.albedo.java.common.core.exception.TimesOverspendException;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.domain.dto.BalanceDto;
 
 /**
  * @author arronshentu
@@ -33,4 +34,6 @@ public interface BalanceService extends BaseService<Balance> {
    *           次数不够扣
    */
   void consumeTimes() throws TimesOverspendException;
+
+  BalanceDto getBalanceInfo();
 }

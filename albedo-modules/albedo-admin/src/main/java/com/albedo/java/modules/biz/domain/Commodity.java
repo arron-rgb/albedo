@@ -22,6 +22,5 @@ public class Commodity extends IdEntity<Commodity> {
    * 图片路径，但只有一张图片
    */
   private String urls;
-  private String userId;
 
 }

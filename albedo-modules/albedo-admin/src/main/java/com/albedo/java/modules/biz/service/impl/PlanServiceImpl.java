@@ -75,10 +75,19 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
       Balance balance;
       balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
       if (balance != null) {
+        Plan oldPlan = baseMapper.selectById(balance.getPlanId());
+        Assert.notNull(oldPlan, "未查询到旧套餐记录");
+        int compare = plan.compareTo(oldPlan);
+        // 更新套餐记录
+        if (compare > 0) {
+          balance.setPlanId(plan.getId());
+          balance.setPlanType(plan.getName());
+        }
         balance.setTimes(balance.getTimes() + plan.getTimes());
       } else {
         balance = Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
-          .times(plan.getTimes()).storage(Double.valueOf(plan.getStorage())).build();
+          .planId(plan.getId()).times(plan.getTimes()).planType(plan.getName())
+          .storage(Double.valueOf(plan.getStorage())).build();
       }
       balanceService.saveOrUpdate(balance);
       // 买了套餐默认将他更新为企业管理员角色

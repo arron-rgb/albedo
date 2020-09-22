@@ -17,9 +17,14 @@ import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.BalanceRecord;
+import com.albedo.java.modules.biz.domain.Commodity;
+import com.albedo.java.modules.biz.domain.Plan;
+import com.albedo.java.modules.biz.domain.dto.BalanceDto;
 import com.albedo.java.modules.biz.repository.BalanceRecordRepository;
 import com.albedo.java.modules.biz.repository.BalanceRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
+import com.albedo.java.modules.biz.service.CommodityService;
+import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -124,5 +129,34 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     }
     return flag;
   }
+
+  @Override
+  public BalanceDto getBalanceInfo() {
+    Balance balance = getOne(Wrappers.<Balance>query().eq("user_id", SecurityUtil.getUser().getId()));
+    Assert.notNull(balance, "用户未购买任何套餐");
+    BalanceDto dto = new BalanceDto();
+    dto.setTimes(balance.getTimes());
+    dto.setAccountAvailable(balance.getAccountAvailable());
+    int amount = commodityService.count(Wrappers.<Commodity>query().eq("created_by", SecurityUtil.getUser().getId()));
+    dto.setCommodity(amount);
+    dto.setPlanName(balance.getPlanType());
+    dto.setStorage(balance.getStorage());
+    String deptId = SecurityUtil.getUser().getDeptId();
+    List<String> users = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getUsername)
+      .collect(Collectors.toList());
+    dto.setAccountIds(users);
+    Plan plan = planService.getById(balance.getPlanId());
+    Assert.notNull(plan, "未查询到旧套餐记录");
+    dto.setAccountAvailable(plan.getChildAccount());
+    dto.setAllowedCommodity(plan.getGoodsQuantity());
+    dto.setAllowedStorage(plan.getStorage().doubleValue());
+    // recordRepository.selectOne()
+    return dto;
+  }
+
+  @Resource
+  PlanService planService;
+  @Resource
+  CommodityService commodityService;
 
 }
