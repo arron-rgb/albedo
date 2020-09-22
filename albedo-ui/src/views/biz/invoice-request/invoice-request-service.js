@@ -33,4 +33,18 @@ export function get(id) {
   })
 }
 
-export default { page, del, save, get }
+export function list() {
+  return request({
+    url: '/biz/purchase-record/',
+    method: 'get'
+  })
+}
+
+export function requestInvoice(data) {
+  return request({
+    url: '/biz/purchase-record/generate',
+    method: 'post',
+    data: data
+  })
+}
+export default { page, del, save, get, list, requestInvoice }

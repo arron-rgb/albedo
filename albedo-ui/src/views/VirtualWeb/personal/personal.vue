@@ -12,19 +12,19 @@
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose">
-          <el-menu-item index="myData">
+          <el-menu-item class="myItem" index="myData">
             <i class='el-icon-user'></i>
             <span slot="title">个人资料</span>
           </el-menu-item>
-          <el-menu-item index="memberCenter" v-show="showMember">
+          <el-menu-item class="myItem" index="memberCenter" v-show="showMember">
             <i class='el-icon-coin'></i>
             <span slot="title">会员中心</span>
           </el-menu-item>
-          <el-menu-item index="myOrder">
+          <el-menu-item class="myItem" index="myOrder">
             <i class='el-icon-s-order'></i>
             <span slot="title">我的订单</span>
           </el-menu-item>
-          <el-menu-item index="myReceipt">
+          <el-menu-item class="myItem" index="myReceipt">
             <i class='el-icon-tickets'></i>
             <span slot="title">我的发票</span>
           </el-menu-item>
@@ -146,6 +146,8 @@ export default {
   }
  }
 }
-
+.myItem:hover{
+  color: white !important;
+}
 
 </style>

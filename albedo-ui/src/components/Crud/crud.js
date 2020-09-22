@@ -261,6 +261,7 @@ function CRUD(options) {
       }
       crud.status.add = CRUD.STATUS.PROCESSING
       crud.crudMethod.save(crud.form).then((res) => {
+        console.log(crud.form);
         crud.status.add = CRUD.STATUS.NORMAL
         crud.resetForm()
         // crud.addSuccessNotify(res && res.message)

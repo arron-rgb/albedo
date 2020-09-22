@@ -1,27 +1,43 @@
 <template>
     <div class="container">
       <el-row>
-        <el-col span="18">
+        <el-col span="17">
           <el-collapse accordion class="container-box">
-            <el-collapse-item v-for="item in data" :key="item">
+            <div class="pageTitle">请选择您的视频需求</div>
+            <el-collapse-item>
+              <template slot="title">{{this.belongType.title}}</template>
+              <el-checkbox-group v-model="this.selectBelong" size="small">
+                <el-checkbox-button @change="changeBelongType(o.value)" v-for="o in this.belongType.data" :key="o" :label="o.value">
+                  <div class="button-text">
+                    {{o.value}}
+                  </div>
+                </el-checkbox-button>
+              </el-checkbox-group>
+            </el-collapse-item>
+            <el-collapse-item v-for="item in data" v-if="item.title !== '您的所属类型'" :key="item">
               <template slot="title">{{item.title}}</template>
-
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
-                  <img class="img" v-show="o.url !== null" :src="o.url">
+                  <img class="img" v-show="o.url !== null" :src="'http://' + o.url">
                   <div class="button-text">{{o.value}}</div>
                 </el-radio-button>
-                <div v-show="o.value !== null" class="button-text" style="line-height: 20px; color: #909399">{{o.value}}</div>
+                <div v-show="o.description !== null" class="button-text" style="line-height: 20px; color: #909399">
+                  <span style="color: #ff5000">描述：</span>
+                  <span style="font-style: italic;">{{o.description}}</span>
+                </div>
               </el-radio-group>
             </el-collapse-item>
           </el-collapse>
         </el-col>
-        <el-col span="6">
+        <el-col span="7">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <span>已选需求</span>
               <a class="text-button" @click="toPay()">前往支付></a>
             </div>
+            <el-tag v-for="(item, index) in selectBelongType" v-show="selectBelongType.length > 0" :type="typeList[index % 5]" :key="item" class="myTags">
+              {{item.value}}
+            </el-tag>
             <el-tag v-for="(item, index) in backData" v-show="backData.length > 0" :type="typeList[index % 5]" :key="item" class="myTags">
               {{item.data[0].value}}
             </el-tag>
@@ -42,18 +58,21 @@ export default {
       backData : [],
       data : [],
       selectData : '',
+      selectBelong : [],
       typeList : ["", "success", "info", "warning", "danger"],
+      belongType : null,
+      selectBelongType : [],
     }
   },
   created() {
-    // this.getData();
-    this.getCurrentOrder()
+    this.getData();
+    // this.getCurrentOrder()
   },
   methods : {
     getCurrentOrder(){//获取当前订单
       return new Promise((resolve, reject) => {
         crudOrder.current().then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code === MSG_TYPE_SUCCESS) {
             if(res.data.state === 5){//上一单已完结，可以进行下一单
               this.getData();
@@ -107,7 +126,8 @@ export default {
         crudConfig.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
-            this.data = res.data.data
+            this.data = res.data.data;
+            this.getBelongType();
           }
         }).catch(error => {
           reject(error)
@@ -129,6 +149,10 @@ export default {
     },
     toPay() {
       //没有选完选项
+      this.backData.push({
+        title : '您的所属类型',
+        data: this.selectBelongType,
+      });
       if (this.data.length > this.backData.length) {
         //找到没有选择的第一个选项
         for (var i = 0; i < this.data.length ; i++) {
@@ -164,19 +188,45 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    getBelongType(){//获得多选框类型
+      var dataIndex = this.data.findIndex(o => o.title === '您的所属类型');
+      console.log(dataIndex);
+      this.belongType = this.data[dataIndex];
+    },
+    changeBelongType(value){//更改多选框数据
+      var dataIndex = this.selectBelongType.findIndex(o => o.value === value);
+      if(dataIndex === -1){
+        this.selectBelongType.push({
+          value : value
+        });
+        this.selectBelong.push(value);
+      }
+      else{
+        console.log('删除');
+        this.selectBelongType.splice(dataIndex, 1);
+        this.selectBelong.slice(dataIndex, 1)
+      }
+    }
   }
 }
 </script>
-<style>
+<style lang="scss" scoped>
+
+.pageTitle {
+  font-size: 20px;
+  //text-align: left;
+  line-height: 70px;
+  border-bottom: 1px solid #EBEEF5;
+}
 .container{
   width: 1200px;
   margin: auto;
   padding: 30px 0;
 }
 .container-box{
-  margin: auto;
   margin: 0 30px;
   padding: 0 30px;
+  padding-bottom: 50px;
   /*float: left;*/
   border: 1px solid #EBEEF5;
   background-color:#FFF;
@@ -187,7 +237,8 @@ export default {
 }
 
 .img{
-  width: 210px;
+  background-color: white;
+  width: 180px;
   height: 280px;
 }
 .button-text{
@@ -198,7 +249,8 @@ export default {
 }
 
 .box-card{
-  height: 300px;
+  height: 500px;
+  overflow-y: scroll;
 }
 .myTags{
   min-width: 80px;
