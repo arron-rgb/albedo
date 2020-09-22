@@ -47,4 +47,11 @@ export function requestInvoice(data) {
     data: data
   })
 }
-export default { page, del, save, get, list, requestInvoice }
+
+export function history() {
+  return request({
+    url: '/biz/purchase-record/list',
+    method: 'get'
+  })
+}
+export default { page, del, save, get, list, requestInvoice, history }

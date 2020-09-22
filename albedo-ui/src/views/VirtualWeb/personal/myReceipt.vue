@@ -165,6 +165,7 @@
     stripe="true"
     :default-sort = "{prop: 'createdDate', order: 'descending'}"
     style=""
+    v-loading="tableLoading"
   >
     <el-table-column
       label="创建时间"
@@ -188,6 +189,11 @@
       label="订单价格"
       sortable
       prop="totalAmount">
+    </el-table-column>
+    <el-table-column
+      label="流水号"
+      sortable
+      prop="outTradeNo">
     </el-table-column>
     <el-table-column
       label="操作">
@@ -306,7 +312,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudInvoiceRequest.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
-            console.log(res);
+            // console.log(res);
             this.purchaseList = res.data;
             this.tableLoading = false;
             resolve();
@@ -329,7 +335,7 @@ export default {
         "invoiceId": id,
         "recordIds": [this.recordId]
       }
-      console.log(data)
+      // console.log(data)
       return new Promise((resolve, reject) => {
         crudInvoiceRequest.requestInvoice(data).then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {

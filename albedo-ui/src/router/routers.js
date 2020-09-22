@@ -136,9 +136,9 @@ export const constantRouterMap = [
         hidden: true
       },
       {
-        path: '/security',
+        path: '/historyReceipt',
         meta: { showHeader: true },
-        component: (resolve) => require(['@/views/VirtualWeb/personal/security'], resolve),
+        component: (resolve) => require(['@/views/VirtualWeb/personal/historyReceipt'], resolve),
         hidden: true
       },
     ]

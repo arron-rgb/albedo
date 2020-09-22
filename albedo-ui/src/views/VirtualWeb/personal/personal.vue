@@ -26,12 +26,12 @@
           </el-menu-item>
           <el-menu-item class="myItem" index="myReceipt">
             <i class='el-icon-tickets'></i>
+            <span slot="title">开取发票</span>
+          </el-menu-item>
+          <el-menu-item class="myItem" index="historyReceipt">
+            <i class='el-icon-s-claim'></i>
             <span slot="title">我的发票</span>
           </el-menu-item>
-<!--          <el-menu-item index="security">-->
-<!--            <i class='el-icon-first-aid-kit'></i>-->
-<!--            <span slot="title">安全中心</span>-->
-<!--          </el-menu-item>-->
         </el-menu>
       </el-col>
       <el-col :span="19" class='showText'>

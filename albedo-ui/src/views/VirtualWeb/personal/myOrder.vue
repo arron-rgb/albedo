@@ -7,6 +7,7 @@
         :data="data"
         stripe="true"
         :default-sort = "{prop: 'createdDate', order: 'descending'}"
+        v-loading="loading"
       >
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -77,18 +78,22 @@ export default {
     return {
       data : [],
       typeList : ["", "success", "info", "warning", "danger"],
+      loading : false,
     }
   },
   methods : {
     getData(){
+      this.loading = true;
       return new Promise((resolve, reject) => {
         crudOrder.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             //重新获取商品列表
-            console.log(res);
+            // console.log(res);
             this.data = res.data
+            this.loading = false;
           }
         }).catch(error => {
+          this.loading = false;
           reject(error)
         })
       })
