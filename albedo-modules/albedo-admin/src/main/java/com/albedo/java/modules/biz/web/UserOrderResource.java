@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.annotation.Token;
@@ -25,6 +26,7 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -99,7 +101,7 @@ public class UserOrderResource extends BaseResource {
         }
         order.setVideoId(originUrl);
       }
-      User user = userService.getById(order.getUserId());
+      UserDto user = userService.findDtoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
@@ -129,6 +131,7 @@ public class UserOrderResource extends BaseResource {
 
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
+  @Transactional(rollbackFor = Exception.class)
   public Result<String> placeSecond(@RequestBody SubOrderVo orderVo) {
     // 通用流程
     Video video = service.updateForm(orderVo);

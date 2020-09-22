@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.task;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
+import static com.albedo.java.common.core.constant.ExceptionNames.AUDIO_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.VIDEO_NOT_FOUND;
 
 import java.io.File;
@@ -58,8 +59,10 @@ public class VideoTaskExecutor {
     Video video = event.video;
     List<Video> videos = videoService.list(Wrappers.<Video>query().eq("order_id", video.getOrderId()));
     Assert.notEmpty(videos, VIDEO_NOT_FOUND);
-    Assert.notEmpty(video.getAudioUrl(), "音频链接为空");
-    String outputUrl = ffmpegUtil.newConcatAudio(video.getAudioUrl(), videos);
+    String audioUrl = video.getAudioUrl();
+    Assert.notEmpty(audioUrl, AUDIO_NOT_FOUND);
+    audioUrl = ossSingleton.urlToLocalPath(audioUrl);
+    String outputUrl = ffmpegUtil.newConcatAudio(audioUrl, videos);
     event.setStatus("end");
     // 更新video表
     File file = new File(outputUrl);
@@ -73,6 +76,7 @@ public class VideoTaskExecutor {
     Order order = orderService.getById(orderId);
     order.setState(COMPLETED_SUCCESS);
     orderService.updateById(order);
+    ffmpegUtil.deleteFile(audioUrl);
   }
 
   @Resource

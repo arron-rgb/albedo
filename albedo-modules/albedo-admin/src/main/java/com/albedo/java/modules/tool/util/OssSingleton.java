@@ -195,4 +195,17 @@ public class OssSingleton {
     objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));
     remove(bucketName, objectSummaries.get(0).getKey());
   }
+
+  // static.vlivest.com/8a8171830ee64954e8c3cbae03fbd75e.mp3
+  String prefix = "static.vlivest.com/";
+
+  public String urlToLocalPath(String url) {
+    String localPath = url.replaceFirst(prefix, "/Users/arronshentu/Downloads/");
+    String objectName = url.replaceFirst(prefix, "");
+    File file = new File(localPath);
+    if (!file.exists()) {
+      downloadFile("vlivest", objectName, localPath);
+    }
+    return localPath;
+  }
 }

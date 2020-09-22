@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +29,7 @@ import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
-import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -177,19 +179,33 @@ public class WebOrderResource extends BaseResource {
     return Result.buildOkData("上传成功");
   }
 
+  @ApiOperation(value = "员工更新订单状态")
+  @GetMapping(value = "/update")
+  public Result<String> update(String orderId) {
+    try {
+      Order order = service.getById(orderId);
+      order.setState(PRODUCTION_COMPLETED);
+      service.updateById(order);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Result.buildFail("保存失败");
+    }
+    return Result.buildOkData("上传成功");
+  }
+
   private List<Order> updateInfo(List<Order> orders) {
-    return orders.stream().peek((key) -> {
-      Video video = videoService.getById(key.getVideoId());
+    return orders.stream().peek((order) -> {
+      Video video = videoService.getById(order.getVideoId());
       if (video != null) {
         String originUrl = video.getOriginUrl();
         originUrl = ossSingleton.localPathToUrl(originUrl);
-        key.setVideoId(originUrl);
+        order.setVideoId(originUrl);
       }
-      User user = userService.getById(key.getUserId());
+      UserDto user = userService.findDtoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
-          key.setUserId(username);
+          order.setUserId(username);
         }
       }
     }).collect(Collectors.toList());

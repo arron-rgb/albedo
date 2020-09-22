@@ -43,14 +43,6 @@ public class SubOrderVo {
    * 音频链接
    */
   private String audioUrl;
-  /**
-   * 水印
-   */
-  private String logoUrl;
-  /**
-   * 贴片
-   */
-  private String adUrl;
 
   /**
    * 人工下单的订单金额

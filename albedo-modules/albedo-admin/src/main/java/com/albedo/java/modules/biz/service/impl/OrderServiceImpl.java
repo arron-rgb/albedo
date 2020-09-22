@@ -89,6 +89,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
+    order.setLogoUrl(form.getLogoUrl());
+    order.setAdUrl(form.getAdUrl());
     order.setState(UNPAID_ORDER);
     order.setType(form.getType());
     order.setMethod(form.getMethod());
@@ -229,10 +231,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public Video updateForm(SubOrderVo orderVo) {
-    Video video = videoRepository.selectOne(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderVo.getOrderId()));
+    String orderId = orderVo.getOrderId();
+    Order order = baseMapper.selectById(orderId);
+    String videoId = order.getVideoId();
+    Video video = videoRepository.selectById(videoId);
+    Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     video.setDuration(orderVo.getDuration());
     videoRepository.updateById(video);
-    Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
@@ -247,8 +252,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
    */
   @Override
   public void dubbingBySelf(SubOrderVo orderVo, Video video) {
+    Assert.notEmpty(orderVo.getAudioUrl(), "音频链接不得为空，请检查后重试");
     video.setAudioUrl(orderVo.getAudioUrl());
     videoRepository.updateById(video);
+    SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
   @Async
@@ -267,10 +274,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public void uploadAudio(String orderId, String audioUrl) {
-    Order order = baseMapper.selectById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUND);
-    Assert.isTrue(Objects.equals(order.getType(), DUBBING));
-    String videoOrderId = order.getVideoId();
+    Order audioOrder = baseMapper.selectById(orderId);
+    Assert.notNull(audioOrder, ORDER_NOT_FOUND);
+    Assert.isTrue(Objects.equals(audioOrder.getType(), DUBBING));
+    String videoOrderId = audioOrder.getVideoId();
     Order videoOrder = baseMapper.selectById(videoOrderId);
     Assert.notNull(videoOrder, ORDER_NOT_FOUND);
     String videoId = videoOrder.getVideoId();
@@ -278,8 +285,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(video, VIDEO_NOT_FOUND);
     video.setAudioUrl(audioUrl);
     videoRepository.updateById(video);
-    order.setState(COMPLETED_SUCCESS);
-    baseMapper.updateById(order);
+    audioOrder.setState(COMPLETED_SUCCESS);
+    baseMapper.updateById(audioOrder);
 
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
