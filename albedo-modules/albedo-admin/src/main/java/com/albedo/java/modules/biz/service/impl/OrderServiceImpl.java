@@ -89,6 +89,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
     Order order = new Order();
     order.setUserId(SecurityUtil.getUser().getId());
+    order.setLogoUrl(form.getLogoUrl());
+    order.setAdUrl(form.getAdUrl());
     order.setState(UNPAID_ORDER);
     order.setType(form.getType());
     order.setMethod(form.getMethod());

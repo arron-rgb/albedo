@@ -52,4 +52,12 @@ public class Order extends IdEntity<Invoice> {
    */
   private String method;
 
+  /**
+   * 水印
+   */
+  private String logoUrl;
+  /**
+   * 贴片
+   */
+  private String adUrl;
 }

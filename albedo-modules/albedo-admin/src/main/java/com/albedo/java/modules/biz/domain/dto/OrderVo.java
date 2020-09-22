@@ -38,4 +38,13 @@ public class OrderVo {
    * 订单描述
    */
   String description;
+
+  /**
+   * 水印
+   */
+  private String logoUrl;
+  /**
+   * 贴片
+   */
+  private String adUrl;
 }
