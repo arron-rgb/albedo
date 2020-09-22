@@ -17,7 +17,7 @@ import lombok.*;
 @AllArgsConstructor
 @TableName("t_plan")
 @EqualsAndHashCode(callSuper = true)
-public class Plan extends IdEntity<Plan> {
+public class Plan extends IdEntity<Plan> implements Comparable<Plan> {
   /**
    * 套餐价格
    */
@@ -70,4 +70,14 @@ public class Plan extends IdEntity<Plan> {
    * 套餐名
    */
   String name;
+
+  /**
+   * 排序依据
+   */
+  Integer order;
+
+  @Override
+  public int compareTo(Plan plan) {
+    return this.order.compareTo(plan.order);
+  }
 }

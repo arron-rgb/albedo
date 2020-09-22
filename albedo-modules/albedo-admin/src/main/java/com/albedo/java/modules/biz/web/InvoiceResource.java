@@ -64,9 +64,9 @@ public class InvoiceResource extends BaseResource {
   @LogOperate(value = "发票抬头查询")
   @ApiOperation(value = "发票抬头查询")
   public Result<List<Invoice>> getPage() {
-    List<Invoice> list = service.list(Wrappers.<Invoice>query().eq("user_id", SecurityUtil.getUser().getId()));
+    List<Invoice> list = service.list(Wrappers.<Invoice>query().eq("created_by", SecurityUtil.getUser().getId()));
     String adminId = userService.getAdminIdByDeptId(SecurityUtil.getUser().getDeptId());
-    List<Invoice> adminInvoices = service.list(Wrappers.<Invoice>query().eq("user_id", adminId));
+    List<Invoice> adminInvoices = service.list(Wrappers.<Invoice>query().eq("created_by", adminId));
     list.addAll(adminInvoices);
     list = list.stream().distinct().collect(Collectors.toList());
     return Result.buildOkData(list);

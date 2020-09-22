@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
-import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.domain.dto.BalanceDto;
 import com.albedo.java.modules.biz.service.BalanceService;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.ApiOperation;
@@ -32,8 +31,8 @@ public class BalanceResource extends BaseResource {
 
   @ApiOperation(value = "获取用户套餐余量")
   @GetMapping(CommonConstants.URL_ID_REGEX)
-  public Result<Balance> get() {
-    Balance balance = service.getOne(Wrappers.<Balance>query().eq("user_id", SecurityUtil.getUser().getId()));
+  public Result<BalanceDto> get() {
+    BalanceDto balance = service.getBalanceInfo();
     Assert.notNull(balance, "用户未购买任何套餐");
     return Result.buildOkData(balance);
   }
