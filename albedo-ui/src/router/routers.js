@@ -197,84 +197,24 @@ export const constantRouterMap = [
         children:[
           {
             path:'/newProduct',
-            meta: { showHeader: true },
+            meta: { showHeader: true, stepLine: 3 },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/newProduct'], resolve),
             hidden: true,
           },
           {
             path:'/selectAttri',
-            meta: { showHeader: true },
+            meta: { showHeader: true, stepLine: 3 },
             component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/selectAttri'], resolve),
             hidden: true,
           },
           {
-            path:'/addMark',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/addMark'], resolve),
-            hidden: true,
-          }
-        ]
-      // },
-    // ]
-  },
-  {
-    path:'/selfDub',
-    meta: { showHeader: true },
-    component: (resolve) => require(['@/components/VirtualWeb/addDetail/selfDub/selfDub'], resolve),
-    hidden: true,
-    children:[
-      {
-        path:'/dubDetail',
-        meta: { showHeader: true },
-        component: (resolve) => require(['@/components/VirtualWeb/addDetail/selfDub/DubDetail'], resolve),
-        hidden: true,
-        children:[
-          {
             path:'/uploadDub',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/selfDub/uploadDub'], resolve),
+            meta: { showHeader: true, stepLine: 3 },
+            component: (resolve) => require(['@/components/VirtualWeb/addDetail/machineDub/uploadDub'], resolve),
             hidden: true,
           },
-          {
-            path:'/selfMark',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/selfDub/addMark'], resolve),
-            hidden: true,
-          }
         ]
-      }
-
-    ]
   },
-  {
-    path:'/manualDub',
-    meta: { showHeader: true },
-    component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/manualDub'], resolve),
-    hidden: true,
-    children:[
-      {
-        path:'/dubDetail',
-        meta: { showHeader: true },
-        component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/dubDetail'], resolve),
-        hidden: true,
-        children:[
-          {
-            path:'/paymentPage',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/paymentPage'], resolve),
-            hidden: true,
-          },
-          {
-            path:'/addMark',
-            meta: { showHeader: true },
-            component: (resolve) => require(['@/components/VirtualWeb/addDetail/manualDub/addMark'], resolve),
-            hidden: true,
-          }
-        ]
-      }
-
-    ]
-  }
 ]
 
 export default new Router({

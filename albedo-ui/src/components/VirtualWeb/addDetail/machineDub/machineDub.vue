@@ -2,11 +2,8 @@
 <!-- 上传商品，添加图片，商品文字详情描述 -->
 <div class="machineDub">
   <div class="descriBlock">
-    <el-steps class="directStep" :active="this.$store.state.dub.active" finish-status="success" simple style="margin-top: 20px">
-      <el-step title="创建商品" ></el-step>
-      <el-step title="添加水印" ></el-step>
-      <el-step title="等待结果" ></el-step>
-    </el-steps>
+    <!--    步骤条-->
+    <step-line></step-line>
     <div class="proBlock">
       <router-view></router-view>
     </div>
@@ -17,9 +14,13 @@
 </template>
 
 <script>
+import stepLine from "@/components/VirtualWeb/stepLine";
+
 export default {
-    components:{
-    }
+  name: "machineDub",
+  components : {
+    stepLine,
+  },
 }
 </script>
 
