@@ -225,7 +225,7 @@ export default {
         totalAmount : this.totalAmount,
         type : this.type,
         logoUrl : this.urls.logo,//logo图片
-        outputUrl : this.urls.pic,//贴片图片
+        adUrl : this.urls.pic,//贴片图片
       }
       if(this.orderId !== null){//原有订单直接提交请求
         this.getToken(this.orderId);
