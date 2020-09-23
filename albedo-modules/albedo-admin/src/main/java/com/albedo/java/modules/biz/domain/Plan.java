@@ -74,10 +74,10 @@ public class Plan extends IdEntity<Plan> implements Comparable<Plan> {
   /**
    * 排序依据
    */
-  Integer order;
+  Integer orderBy;
 
   @Override
   public int compareTo(Plan plan) {
-    return this.order.compareTo(plan.order);
+    return this.orderBy.compareTo(plan.orderBy);
   }
 }

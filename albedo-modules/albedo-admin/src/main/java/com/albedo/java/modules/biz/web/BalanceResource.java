@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
@@ -30,7 +29,7 @@ public class BalanceResource extends BaseResource {
   private final BalanceService service;
 
   @ApiOperation(value = "获取用户套餐余量")
-  @GetMapping(CommonConstants.URL_ID_REGEX)
+  @GetMapping
   public Result<BalanceDto> get() {
     BalanceDto balance = service.getBalanceInfo();
     Assert.notNull(balance, "用户未购买任何套餐");

@@ -147,7 +147,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setAccountIds(users);
     Plan plan = planService.getById(balance.getPlanId());
     Assert.notNull(plan, "未查询到旧套餐记录");
-    dto.setAccountAvailable(plan.getChildAccount());
+    dto.setAccountAmount(plan.getChildAccount());
     dto.setAllowedCommodity(plan.getGoodsQuantity());
     dto.setAllowedStorage(plan.getStorage().doubleValue());
     // recordRepository.selectOne()
