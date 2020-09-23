@@ -99,7 +99,7 @@
             <th style="line-height: 60px;">{{list.title}}</th>
             <th v-for="item in priceData" :key="item">
               <p style="line-height: 60px;" >{{item.title}}</p>
-              <el-button style="margin-bottom: 5px" round >￥{{getPrice(item.title)}}&emsp;立即抢购</el-button>
+              <el-button round style="margin-bottom: 5px" >￥{{item.price}}}}&emsp;立即抢购</el-button>
             </th>
           </tr>
           <td class="col">
@@ -147,39 +147,39 @@ export default {
              "极高","商用", "无限", "有"]},
       ],
       data: [
-        {
-          name :'标准版',
-          price : '100',
-          data : [
-            {
-              title: '调用虚拟场景',
-              value: '有'
-            },
-            {
-              title: '调用虚拟人物',
-              value: '有'
-            }
-          ]
-        },
-        {
-          name :'升级版',
-          price : '100',
-          data : [
-            {
-              title: '调用虚拟场景',
-              value: '有'
-            },
-            {
-              title: '调用虚拟人物',
-              value: '有'
-            }
-          ]
-        }
+        // {
+        //   name :'标准版',
+        //   price : '100',
+        //   data : [
+        //     {
+        //       title: '调用虚拟场景',
+        //       value: '有'
+        //     },
+        //     {
+        //       title: '调用虚拟人物',
+        //       value: '有'
+        //     }
+        //   ]
+        // },
+        // {
+        //   name :'升级版',
+        //   price : '100',
+        //   data : [
+        //     {
+        //       title: '调用虚拟场景',
+        //       value: '有'
+        //     },
+        //     {
+        //       title: '调用虚拟人物',
+        //       value: '有'
+        //     }
+        //   ]
+        // }
       ],
     }
   },
   created() {
-    this.getData();
+    // this.getData();
   },
   methods:{
     getData() {
@@ -201,22 +201,23 @@ export default {
       this.$router.push({path:url, query : {func: data}});
     },
     getPrice(title){
-      if(title === "标准版"){
-        var dataIndex = this.data.findIndex(o => o.name === "标准");
-        return this.data[dataIndex].price
-      }
-      else if(title === "旗舰版"){
-        var dataIndex = this.data.findIndex(o => o.name === "旗舰");
-        return this.data[dataIndex].price
-      }
-      else if(title === "升级版"){
-        var dataIndex = this.data.findIndex(o => o.name === "升级");
-        return this.data[dataIndex].price
-      }
-      else if(title === "大客户专属定制版"){
-        var dataIndex = this.data.findIndex(o => o.name === "定制");
-        return this.data[dataIndex].price
-      }
+      var dataIndex = this.priceData.findIndex(o => o.title = title);
+      // if(title === "标准版"){
+      //   var dataIndex = this.data.findIndex(o => o.name === "标准");
+      //   return this.data[dataIndex].price
+      // }
+      // else if(title === "旗舰版"){
+      //   var dataIndex = this.data.findIndex(o => o.name === "旗舰");
+      //   return this.data[dataIndex].price
+      // }
+      // else if(title === "升级版"){
+      //   var dataIndex = this.data.findIndex(o => o.name === "升级");
+      //   return this.data[dataIndex].price
+      // }
+      // else if(title === "大客户专属定制版"){
+      //   var dataIndex = this.data.findIndex(o => o.name === "定制");
+      //   return this.data[dataIndex].price
+      // }
     }
   }
 }
