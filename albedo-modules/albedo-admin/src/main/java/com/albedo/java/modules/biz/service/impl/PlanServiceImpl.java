@@ -77,12 +77,16 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
         Plan oldPlan = baseMapper.selectById(balance.getPlanId());
         Assert.notNull(oldPlan, "未查询到旧套餐记录");
         int compare = plan.compareTo(oldPlan);
+        Integer oldStorage = plan.getStorage();
+        Double usedStorage = oldStorage - balance.getStorage();
         // 更新为高级套餐记录
         if (compare > 0) {
           updateBalance(balance, plan);
         }
         // 添加次数
         addBalance(balance, plan);
+        Integer full = plan.getStorage();
+        balance.setStorage(full - usedStorage);
       } else {
         balance = new Balance();
         // 写入新余量
