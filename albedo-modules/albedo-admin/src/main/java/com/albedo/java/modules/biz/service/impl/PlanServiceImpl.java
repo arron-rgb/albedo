@@ -103,8 +103,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     Integer audioTime = plan.getAudioTime();
     Integer customTimes = plan.getCustomTimes();
     balance.setEditTimes(balance.getEditTimes() + editTime);
-    balance.setTimes(balance.getTimes() + audioTime);
-    balance.setAudioTime(balance.getAudioTime() + times);
+    balance.setTimes(balance.getTimes() + times);
+    balance.setAudioTime(balance.getAudioTime() + audioTime);
     balance.setCustomTimes(balance.getCustomTimes() + customTimes);
   }
 
