@@ -108,4 +108,5 @@ public class InvoiceResource extends BaseResource {
     service.removeByIds(ids);
     return Result.buildOk("删除发票抬头成功");
   }
+
 }
