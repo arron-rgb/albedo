@@ -21,7 +21,7 @@ import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
-import com.albedo.java.modules.biz.domain.dto.VideoDto;
+import com.albedo.java.modules.biz.domain.dto.	VideoDto;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
