@@ -26,8 +26,6 @@ public interface PlanService extends BaseService<Plan> {
    * 给用户更新套餐使用情况
    * 将用户角色设为企业管理员
    *
-   * todo 购买多次套餐如何设置?
-   *
    * @return
    */
   boolean callback(String outTradeNo);
