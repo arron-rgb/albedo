@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * @author arronshentu
@@ -15,6 +13,8 @@ import lombok.EqualsAndHashCode;
 @Builder
 @TableName("t_balance")
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class Balance {
 
   @TableId
@@ -23,12 +23,19 @@ public class Balance {
    * 剩余可下单次数
    */
   private Integer times;
-  @Version
-  private Integer version;
+  /**
+   * 定制次数
+   */
+  private Integer customTimes;
+  /**
+   * 可修改次数
+   * 订单上传视频后，反馈员工可重做
+   */
+  private Integer editTimes;
   /**
    * 子账户数量
    */
-  private Integer accountAvailable;
+  private Integer childAccount;
   /**
    * 存储空间单位 GB
    */
@@ -36,7 +43,16 @@ public class Balance {
   /**
    * 现有商品数量
    */
-  private Integer commodity;
+  private Integer goodsQuantity;
+  /**
+   * 人工专属配音抵扣配音订单金额
+   */
+  Integer audioTime;
+  /**
+   * 单条视频时长上限
+   */
+  Integer videoTime;
+
   /**
    * 套餐类型
    */
@@ -46,4 +62,6 @@ public class Balance {
    */
   private String planId;
 
+  @Version
+  private Integer version;
 }

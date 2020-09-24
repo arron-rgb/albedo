@@ -23,6 +23,7 @@ import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
+import com.albedo.java.common.security.service.UserDetail;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
@@ -37,6 +38,7 @@ import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
+import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.TtsParams;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
@@ -229,6 +231,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return baseMapper.selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED));
   }
 
+  @Resource
+  UserService userService;
+
   @Override
   public Video updateForm(SubOrderVo orderVo) {
     String orderId = orderVo.getOrderId();
@@ -236,7 +241,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String videoId = order.getVideoId();
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    video.setDuration(orderVo.getDuration());
+    UserDetail user = SecurityUtil.getUser();
+    Balance one = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, user.getId()));
+    String adminId = userService.getAdminIdByDeptId(user.getDeptId());
+    if (one == null) {
+      one = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
+    }
+    Assert.notNull(one, BALANCE_NOT_FOUND);
+    Long duration = orderVo.getDuration();
+    // todo 套餐余量获取的标准需要考虑到企业、个人的情况
+    Balance byUserId = balanceService.getByUserId(user.getId());
+    Assert.isTrue(byUserId.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
+    video.setDuration(duration);
     videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
@@ -291,22 +307,30 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
+  String textPerMin = "200";
+  String subject = "人工配音";
+  String perMinute = "100";
+
   @Override
   public String artificialDubbing(SubOrderVo orderVo) {
     Assert.notEmpty(orderVo.getTotalAmount(), "价格字段缺失");
-    String textPerMin = "200";
-    String subject = "人工配音";
     String content = orderVo.appendContent();
     int length = orderVo.appendContent().length();
+    String userId = SecurityUtil.getUser().getId();
     // 向上取整 几分钟 几分钟再乘以单位价格
     double minutes = Math.ceil(length / Double.parseDouble(textPerMin));
-    String perMinute = "100";
     Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位时间价格"));
     if (price != null) {
       perMinute = price.getVal();
     }
     double amount = Double.parseDouble(perMinute) * minutes;
     BigDecimal totalAmount = BigDecimal.valueOf(amount);
+    Balance balance = balanceService.getByUserId(userId);
+
+    if (balance != null && balance.getAudioTime() > 0) {
+      totalAmount = MoneyUtil.moneySub(totalAmount, BigDecimal.valueOf(balance.getAudioTime()));
+    }
+
     Assert.isTrue(MoneyUtil.equals(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
 
     TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
@@ -315,7 +339,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = new Order();
     order.setTotalAmount(totalAmount.toString());
     order.setType(DUBBING);
-    order.setUserId(SecurityUtil.getUser().getId());
+
+    order.setUserId(userId);
     order.setContent(content);
     order.setDescription(String.valueOf(orderVo.getVoiceType()));
     order.setVideoId(orderVo.getOrderId());

@@ -35,5 +35,22 @@ public interface BalanceService extends BaseService<Balance> {
    */
   void consumeTimes() throws TimesOverspendException;
 
+  /**
+   * 获取用户套餐余量
+   *
+   * @return
+   *         套餐余量信息
+   */
   BalanceDto getBalanceInfo();
+
+  /**
+   * 获取某个用户的套餐余量记录，自己没买就找企业的；
+   * todo 个人用户 公共部门的adminId？
+   *
+   *
+   * @param userId
+   *          用户id
+   * @return 套餐余量
+   */
+  Balance getByUserId(String userId);
 }

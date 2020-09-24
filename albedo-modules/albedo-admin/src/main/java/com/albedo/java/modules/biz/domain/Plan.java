@@ -32,18 +32,14 @@ public class Plan extends IdEntity<Plan> implements Comparable<Plan> {
    */
   Integer times;
   /**
+   * 定制次数
+   */
+  Integer customTimes;
+  /**
    * 可修改次数
    * 订单上传视频后，反馈员工可重做
    */
   Integer editTime;
-  /**
-   * 商品数量
-   */
-  Integer goodsQuantity;
-  /**
-   * 人工专属配音抵扣配音订单金额
-   */
-  Integer audioTime;
   /**
    * 子账户个数
    */
@@ -52,6 +48,15 @@ public class Plan extends IdEntity<Plan> implements Comparable<Plan> {
    * 账号存储空间，子账号共享，可存储空间 单位GB
    */
   Integer storage;
+
+  /**
+   * 商品数量
+   */
+  Integer goodsQuantity;
+  /**
+   * 人工专属配音抵扣配音订单金额
+   */
+  Integer audioTime;
   /**
    * 单条视频时长上限
    */
