@@ -35,7 +35,7 @@ export function get(id) {
 
 export function list() {
   return request({
-    url: '/biz/invoice/',
+    url: '/biz/invoice/list',
     method: 'get'
   })
 }

@@ -65,8 +65,8 @@ export default {
     }
   },
   created() {
-    this.getData();
-    // this.getCurrentOrder()
+    // this.getData();
+    this.getCurrentOrder()
   },
   methods : {
     getCurrentOrder(){//获取当前订单

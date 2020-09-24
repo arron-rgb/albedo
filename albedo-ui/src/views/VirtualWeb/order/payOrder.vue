@@ -17,12 +17,56 @@
         </el-col>
       </el-row>
 
+      <el-row class="box" v-if="!orderId">
+        <el-col span="4">
+          Logo水印（选填）：
+        </el-col>
+        <el-col span="20">
+          <el-upload
+            ref="logoUpload"
+            class="avatar-uploader"
+            action="#"
+            :http-request="(file) => uploadImg(file, 'logo')"
+            accept="image/jpeg,image/png"
+            :show-file-list="false"
+            :auto-upload="false"
+            :multiple="false"
+            :on-change="(file) => onUploadChange(file, 'logo')"
+          >
+            <img v-if="logoUrl" :src="logoUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-col>
+      </el-row>
+
+      <el-row class="box" v-if="!orderId">
+        <el-col span="4">
+          贴片水印（选填）：
+        </el-col>
+        <el-col span="20">
+          <el-upload
+            ref="picUpload"
+            class="avatar-uploader"
+            action="#"
+            :http-request="(file) => uploadImg(file, 'pic')"
+            accept="image/jpeg,image/png"
+            :show-file-list="false"
+            :auto-upload="false"
+            :multiple="false"
+            :on-change="(file) => onUploadChange(file, 'pic')"
+          >
+            <img v-if="picUrl" :src="picUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-col>
+      </el-row>
+
       <el-row class="box">
         <el-col span="4">
           补充需求（选填）：
         </el-col>
         <el-col span="20">
-          <el-input type="textarea" :rows="3" v-model="description" placeholder="请输入文本"></el-input>
+          <el-input type="textarea" :rows="3" v-model="description" placeholder="可告知工作人员您想要的主题配色、水印效果及其他需求哦！"></el-input>
         </el-col>
       </el-row>
 
@@ -84,7 +128,7 @@
       </el-row>
 
       <el-row style="margin: 50px 0">
-        <el-button :loading="loading" style="width: 150px" type="primary" @click="toPay">前往支付</el-button>
+        <el-button :loading="loading" style="width: 150px" type="primary" @click="beforePay">前往支付</el-button>
         <el-button :loading="loading" style="width: 150px" v-if="this.orderId !== null" @click="cancel()">取消订单</el-button>
       </el-row>
     </el-card>
@@ -98,6 +142,7 @@ import payOrder from '@/views/VirtualWeb/order/payOrder-server'
 import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
+import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
 export default {
   name: "payOrder",
   data(){
@@ -113,6 +158,12 @@ export default {
       priceList : [999, 1999, 0],
       orderId : null,
       times : 0,
+      logoUrl : '',
+      picUrl : '',
+      urls : {
+        logo : '',
+        pic : '',
+      },
     }
   },
   watch: {
@@ -173,9 +224,11 @@ export default {
         method : this.payType,//支付方式
         totalAmount : this.totalAmount,
         type : this.type,
+        logoUrl : this.urls.logo,//logo图片
+        adUrl : this.urls.pic,//贴片图片
       }
       if(this.orderId !== null){//原有订单直接提交请求
-        this.balancePurchase();
+        this.getToken(this.orderId);
       }
       else {
         return new Promise((resolve, reject) => {//新订单先保存
@@ -227,7 +280,7 @@ export default {
     toPurchase(key, token){//提交支付请求
       var data = {
         orderId : key,
-        subject : '单人主播视频订单',
+        subject : '虚拟工坊视频订单',
         token : token,
       }
       return new Promise((resolve, reject) => {
@@ -281,12 +334,112 @@ export default {
           }
         )
       })
+    },
+    uploadImg(file, type){//上传图片
+      var _this = this
+      return new Promise((resolve, reject) => {
+        dubOperate.uploadFile(file).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            if(type === 'logo'){
+              _this.urls.logo = res.data.url
+              if(_this.urls.pic === '' && _this.picUrl !== ''){//贴片图片尚未上传
+                this.$refs.picUpload.submit();
+              }
+              else{
+                _this.toPay();
+              }
+            }
+            else{
+              _this.urls.pic = res.data.url;
+              if(_this.urls.pic === '' && _this.picUrl !== ''){//贴logo图片尚未上传
+                this.$refs.logoUpload.submit();
+              }
+              else{
+                _this.toPay();
+              }
+            }
+
+          }
+        }).catch(error => {
+          this.loading = false;
+          reject(error)
+        })
+      });
+    },
+    onUploadChange(file, type){
+      // console.log(file);
+      const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
+      const  isLt1M = file.size / 1024 / 1024 < 1;
+
+      if(!isIMAGE){
+        this.$message.error('只能上传jpg/png图片！');
+        return  false;
+      }
+      if(!isLt1M){
+        this.$message.error('上传文件大小不能超过1MB！');
+        return  false;
+      }
+
+      var _this = this;
+
+      var reader = new FileReader();
+      reader.readAsDataURL(file.raw)
+
+      reader.onload = function (e){
+        //this.result为图片的base64
+        // console.log(this.result)
+        //将图片路径赋值给url
+        if(type === 'pic')
+          _this.picUrl =  e.target.result;
+        else
+          _this.logoUrl = e.target.result;
+
+      }
+
+    },
+    beforePay(){
+      if(this.logoUrl !== ''){
+        this.$refs.logoUpload.submit();
+      }
+      else if(this.picUrl !== ''){
+        this.$refs.logoUpload.submit();
+      }
+      else
+        this.toPay();//没上传logo 和 贴片，直接保存订单
     }
   }
 }
 </script>
 
 <style scoped>
+.avatar-uploader{
+  border: 1px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 128px;
+  height: 128px;
+}
+.avatar-uploader:hover {
+  border-color: #ff5000 !important;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 128px;
+  height: 128px;
+  line-height: 128px;
+  text-align: center;
+}
+.avatar-uploader-icon:hover {
+  color: #ff5000 !important;
+}
+.avatar {
+  width: 128px;
+  height: 128px;
+  display: block;
+}
 .container{
   width: 1200px;
   margin: auto;

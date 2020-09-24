@@ -216,7 +216,6 @@
 </template>
 <script>
 import product from './product'
-import scriptItem from './scriptItem'
 import draggable from "vuedraggable"
 import crudCommodity from '@/views/biz/commodity/commodity-service'
 import crudScript from '@/views/biz/script/script-service'
@@ -233,7 +232,6 @@ export default {
   name: "proDetail",
   components : {
     product,
-    scriptItem,
     draggable,
   },
   data() {
@@ -581,11 +579,6 @@ export default {
           }
           .itemContainer{
             margin:10px 0;
-            .scriptItem{
-              display:inline-block;
-              width:100%;
-              height:100%;
-            }
           }
         }
       .el-icon-circle-close {
