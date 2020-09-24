@@ -121,7 +121,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
 
     // todo 原有的存储容量 需要更新一下
     balance.setStorage(storage.doubleValue());
-    balance.setVersion(videoTime);
+    balance.setVideoTime(videoTime);
     balance.setPlanId(id);
     balance.setGoodsQuantity(goodsQuantity);
   }
