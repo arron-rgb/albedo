@@ -14,6 +14,7 @@ import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.dto.BalanceDto;
 import com.albedo.java.modules.biz.service.BalanceService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/balance")
 @AllArgsConstructor
+@Api("套餐余量")
 public class BalanceResource extends BaseResource {
 
   private final BalanceService service;

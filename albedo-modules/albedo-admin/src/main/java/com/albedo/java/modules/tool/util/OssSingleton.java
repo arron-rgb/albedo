@@ -206,6 +206,7 @@ public class OssSingleton {
     if (!file.exists()) {
       downloadFile("vlivest", objectName, localPath);
     }
+    log.info("objectName: {}", objectName);
     return localPath;
   }
 }
