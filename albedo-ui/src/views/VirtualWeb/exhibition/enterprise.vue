@@ -3,13 +3,13 @@
     <!--  banner栏-->
     <div class="exhibition_background" :style="{backgroundImage: 'url(' + backgroundImg + ')'}">
       <div class="exhibition">
-        <div class="exhibition_title word_container" >虚拟直播企业版</div>
-        <div class="exhibition_desc word_container">批量下单更优惠，客户服务更到位</div>
+<!--        <div class="exhibition_title word_container" >虚拟直播企业版</div>-->
+<!--        <div class="exhibition_desc word_container">批量下单更优惠，客户服务更到位</div>-->
         <div class="exhibition_link word_container">
           <a class="exhibition_link_login" @click="goTo('/login')">登录企业账户</a>
           <a class="exhibition_link_register" @click="goTo('/login', 'createBusiness')">创建企业账户</a>
         </div>
-        <div class="exhibition_phone">咨询电话：0571-88888888</div>
+<!--        <div class="exhibition_phone">咨询电话：0571-28878118</div>-->
       </div>
     </div>
 
@@ -18,81 +18,85 @@
     </div>
 
     <div class="container_background">
-      <el-row class="word_container">
-        <el-col :span="12">
-          <div class="exhibition_block2">
-            <div class="container_title" style="text-align: left">
-              企业定制
-            </div>
-            <div class="container_title" style="text-align: right">
-              品牌专享
-            </div>
-            <div class="container_text">
-              虚拟直播直降XXX元
-            </div>
-            <div  class="container_text">
-              赠送改稿权限及配音服务，无忧打造智慧直播间
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="exhibition_block">
-            <div class="container_title" style="text-align: left">
-              专属商务
-            </div>
-            <div class="container_title" style="text-align: right">
-              快速响应
-            </div>
-            <div class="container_text">
-              7*12h专属客服，采购、售后全程无忧
-            </div>
-            <div  class="container_text">
-              规范商务流程，合同、发票无需等待
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row class="word_container">
-        <el-col :span="12">
-          <div class="exhibition_block">
-            <div class="container_title" style="text-align: left">
-              团队协作
-            </div>
-            <div class="container_title" style="text-align: right">
-              方便安全
-            </div>
-            <div class="container_text">
-              支持绑定多个子账户，方便团队协作
-            </div>
-            <div  class="container_text">
-              账号解绑即关闭访问权限，企业信息更安全
-            </div>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="exhibition_block2">
-            <div class="container_title" style="text-align: left; padding: 5px 0">
-              更多
-            </div>
-            <div class="container_title" style="text-align: center; padding: 5px 0">
-              更快
-            </div>
-            <div class="container_title" style="text-align: right; padding: 5px 0">
-              更轻松
-            </div>
-            <div class="container_text">
-              存储更多记录，视频云备份，节省本地空间
-            </div>
-            <div  class="container_text">
-              云渲染效率提升，下载更快，省时省力
-            </div>
-          </div>
-        </el-col>
-      </el-row>
+      <img src="http://static.vlivest.com/3996e0ae9f7ab7725ca29575f0e57162.jpg" style="width: 1200px;">
+<!--      <el-row class="word_container">-->
+<!--        <el-col :span="12">-->
+<!--          <div class="exhibition_block2">-->
+<!--            <div class="container_title" style="text-align: left">-->
+<!--              企业定制-->
+<!--            </div>-->
+<!--            <div class="container_title" style="text-align: right">-->
+<!--              品牌专享-->
+<!--            </div>-->
+<!--            <div class="container_text">-->
+<!--              虚拟直播直降XXX元-->
+<!--            </div>-->
+<!--            <div  class="container_text">-->
+<!--              赠送改稿权限及配音服务，无忧打造智慧直播间-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </el-col>-->
+<!--        <el-col :span="12">-->
+<!--          <div class="exhibition_block">-->
+<!--            <div class="container_title" style="text-align: left">-->
+<!--              专属商务-->
+<!--            </div>-->
+<!--            <div class="container_title" style="text-align: right">-->
+<!--              快速响应-->
+<!--            </div>-->
+<!--            <div class="container_text">-->
+<!--              7*12h专属客服，采购、售后全程无忧-->
+<!--            </div>-->
+<!--            <div  class="container_text">-->
+<!--              规范商务流程，合同、发票无需等待-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </el-col>-->
+<!--      </el-row>-->
+<!--      <el-row class="word_container">-->
+<!--        <el-col :span="12">-->
+<!--          <div class="exhibition_block">-->
+<!--            <div class="container_title" style="text-align: left">-->
+<!--              团队协作-->
+<!--            </div>-->
+<!--            <div class="container_title" style="text-align: right">-->
+<!--              方便安全-->
+<!--            </div>-->
+<!--            <div class="container_text">-->
+<!--              支持绑定多个子账户，方便团队协作-->
+<!--            </div>-->
+<!--            <div  class="container_text">-->
+<!--              账号解绑即关闭访问权限，企业信息更安全-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </el-col>-->
+<!--        <el-col :span="12">-->
+<!--          <div class="exhibition_block2">-->
+<!--            <div class="container_title" style="text-align: left; padding: 5px 0">-->
+<!--              更多-->
+<!--            </div>-->
+<!--            <div class="container_title" style="text-align: center; padding: 5px 0">-->
+<!--              更快-->
+<!--            </div>-->
+<!--            <div class="container_title" style="text-align: right; padding: 5px 0">-->
+<!--              更轻松-->
+<!--            </div>-->
+<!--            <div class="container_text">-->
+<!--              存储更多记录，视频云备份，节省本地空间-->
+<!--            </div>-->
+<!--            <div  class="container_text">-->
+<!--              云渲染效率提升，下载更快，省时省力-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </el-col>-->
+<!--      </el-row>-->
     </div>
     <!--套餐展示栏-->
     <div class="price">
-      <div class="price_title">套餐资费</div>
+
+      <img src="http://static.vlivest.com/495e1465d84fbc724d5f8e621831241d.jpg" style="width: 1200px;margin: 20px auto">
+
+<!--      <div class="price_title">套餐资费</div>-->
       <div class="box-card">
         <table rules=none>
           <tr>
@@ -126,7 +130,7 @@ export default {
   name: "exhibition",
   data(){
     return{
-      backgroundImg : require('@/assets/VirtualWeb/enterprise/create.jpg'),
+      backgroundImg : 'http://static.vlivest.com/3822a330caec55b9c5ac9538ae36d871.png',
       list:        {title :"功能权限", contain : ["调用虚拟人物", "调用虚拟场景","标准版视频制作次数",
           "定制版视频制作次数", "人物/场景修改次数", "上传商品数量",
           "调用话术模板","系统智能配音", "人工专属配音", "视频时长上限","专属商务服务", "子账号数量",
@@ -253,7 +257,9 @@ export default {
   line-height: 27px;
 }
 .exhibition_link{
-  padding-top: 32px;
+  position: absolute;
+  top: 200px;
+  left: 600px;
 }
 .exhibition_link_login{
   display: inline-block;
@@ -283,6 +289,7 @@ export default {
   margin-left: 32px;
 }
 .exhibition_phone{
+  position: absolute;
   width: 1200px;
   margin: auto;
   margin-top: 18px;
@@ -292,9 +299,10 @@ export default {
 }
 
 .container_background{
+  margin: 30px 0;
   height: 800px;
   /*padding: 72px 0 82px;*/
-  background-color: #f8fafd;
+  /*background-color: #f8fafd;*/
 }
 .container{
   width: 1200px;

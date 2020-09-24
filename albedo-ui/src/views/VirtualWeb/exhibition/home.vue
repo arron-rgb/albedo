@@ -12,20 +12,38 @@
 
     <!-- 平台介绍 -->
     <el-container class="body">
-      <el-aside width="400px;" style=" background: none">
-        <p class="mouseover_button" :class="{active:i==isShow}" @mouseover="mouseover(i)"  v-for="(item,i) in virtual" :key="i">{{item.title}}</p>
+      <el-aside style=" background: none" width="300px;">
+        <p class="mouseover_button" style="background-color: rgba(153, 94, 251, 0.3)">虚拟直播</p>
+        <p class="mouseover_button" style="background-color: #c9bafb">虚拟场景</p>
+        <p class="mouseover_button" style="background-color: #fbb9ab">智能详情匹配</p>
       </el-aside>
       <el-main>
-        <el-carousel height="400px" @change="carouselChange" direction="vertical" ref="carousel" :autoplay="false" indicator-position="none">
-          <el-carousel-item v-for="(item,i) in virtual" :key="i" >
-            <img style="background-size: cover; margin: 10px; width: 100%" :src="item.img">
-          </el-carousel-item>
-        </el-carousel>
+<!--        static.vlivest.com/3e5c8a0c8bd70742c5af00782176f782.png-->
+        <el-row>
+          <el-col span="20">
+            <div class="showBox">
+              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">
+            </div>
+          </el-col>
+          <el-col span="4">
+            <div class="phoneBox">
+<!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif">-->
+            </div>
+          </el-col>
+        </el-row>
+
+<!--        <el-carousel height="400px" @change="carouselChange" direction="vertical" ref="carousel" :autoplay="false" indicator-position="none">-->
+<!--          <el-carousel-item v-for="(item,i) in virtual" :key="i" >-->
+<!--            <img style="background-size: cover; margin: 10px; width: 100%" :src="item.img">-->
+<!--          </el-carousel-item>-->
+<!--        </el-carousel>-->
       </el-main>
     </el-container>
 
     <!-- 视频 -->
-    <my-video></my-video>
+    <div class="body">
+      <my-video></my-video>
+    </div>
 
 
     <!-- 步骤条 -->
@@ -37,13 +55,11 @@
             <el-step title="需求定位"></el-step>
             <el-step title="确认订单"></el-step>
             <el-step title="查看虚拟制作结果"></el-step>
-            <el-step title="上传商品详情"></el-step>
+            <el-step title="编辑、配音"></el-step>
             <el-step title="生成直播视频"></el-step>
           </el-steps>
         </div>
       </div>
-
-
     </div>
 
 
@@ -107,18 +123,18 @@
           </tr>
           <tr>
             <td>主播费用</td>
-            <td>低</td>
-            <td>高</td>
+            <td>一次生成、长期使用</td>
+            <td>≥10000元/月</td>
           </tr>
           <tr>
             <td>机构服务费用</td>
-            <td>低</td>
-            <td>高</td>
+            <td>无</td>
+            <td>坑位费+佣金</td>
           </tr>
           <tr>
             <td>动画制作费用</td>
-            <td>低</td>
-            <td>高</td>
+            <td></td>
+            <td>≥100000元/人/场景</td>
           </tr>
         </table>
       </div>
@@ -176,10 +192,10 @@ export default {
 
       // carousel:[{img:require(''), url: ''}],
       isShow: 0,
-      carousel:[{img:require('@/assets/VirtualWeb/NormalUser/img/img1.jpg'),url:''},
-        {img:require('@/assets/VirtualWeb/NormalUser/img/img2.jpg'),url:''},
-        {img:require('@/assets/VirtualWeb/NormalUser/img/img3.jpg'),url:''},
-        {img:require('@/assets/VirtualWeb/NormalUser/img/img4.jpg'),url:''}],
+      carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
+        {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
+        {img:'http://static.vlivest.com/65b46aacbcddea99e6b13f45087ffdaf.jpg',url:''},
+        ],
 
 
       form: {
@@ -210,7 +226,7 @@ export default {
 
   methods: {
     mouseover(key){//button绑定走马灯
-      this.$refs.carousel.setActiveItem(key);
+      // this.$refs.carousel.setActiveItem(key);
       this.isShow = key;
     },
     carouselChange(key){//走马灯绑定button
@@ -257,18 +273,40 @@ export default {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  .showBox{
+    background-image: url("http://static.vlivest.com/3e5c8a0c8bd70742c5af00782176f782.png");
+
+    width:700px;
+    height:600px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+  }
+  .phoneBox{
+    //static.vlivest.com/da54c6b8ddccfba88a8352f8c5996cb0.png
+    background-image: url("http://static.vlivest.com/da54c6b8ddccfba88a8352f8c5996cb0.png");
+    width:210px;
+    height:300px;
+    bottom: 0;
+    position: absolute;
+    left: 600px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+  }
   .body{
     width: 1200px;
-    margin: 50px auto;
+    margin: 30px auto;
     .mouseover_button{
       width: 316px;
       height: 121px;
-      margin: 30px 50px;
+      margin: 50px 0;
       background-color: #f6f9fc;
       border-radius: 10px;
       line-height: 121px;
-      color: #203152;
-      font-size: 20px;
+      color: white;
+      font-weight: bold;
+      font-size: 22px;
       font-family: "SourceHanSansCN-Regular","Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
     }
     .active {
@@ -284,7 +322,6 @@ export default {
     //  w:100%;
     //}
     width: 100%;
-    margin: auto;
   }
 
 

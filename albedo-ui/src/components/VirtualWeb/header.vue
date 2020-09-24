@@ -3,7 +3,7 @@
     <el-menu :default-active="$route.path" router id="banner_container" active-text-color="#ff5000" mode="horizontal">
       <!--      <el-menu-item index="logo">-->
       <el-link :underline="false" index="logo" type="text" id="logo" @click = "goTo('/')">
-        <img alt="Vue logo" style="height: 60px" :src="logo_src">
+        <img :src="logo_src" alt="Vue logo" style="height: 50px; margin: 5px 0 ">
       </el-link>
       <!--      </el-menu-item>-->
       <el-menu-item index="addOrder">
@@ -56,7 +56,7 @@ export default {
   data()
   {
     return{
-      logo_src: require('@/assets/VirtualWeb/logo.png'),
+      logo_src: 'http://static.vlivest.com/dfc7b86a7d1f3be3b8b7ea580f0936c6.png',
     }
   },
   methods: {

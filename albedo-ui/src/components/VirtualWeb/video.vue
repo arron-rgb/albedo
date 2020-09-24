@@ -61,7 +61,7 @@ export default {
   margin-bottom: 150px;
   position: relative;
   display: inline-block;
-  width: 100%;
+  width: 800px;
   border: 1px solid transparent;
   //overflow: hidden;
   margin-right: 4px;
