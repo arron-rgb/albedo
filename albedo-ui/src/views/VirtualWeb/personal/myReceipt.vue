@@ -297,7 +297,7 @@ export default {
         crudInvoice.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
-            this.invoiceList = res.data.records;
+            this.invoiceList = res.data;
             this.tableLoading = false;
             resolve();
           }

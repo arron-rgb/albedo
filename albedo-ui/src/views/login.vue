@@ -107,8 +107,22 @@
           <el-input v-model="registerForm.rePassword" type="password" placeholder="请再次输入密码">
           </el-input>
         </el-form-item>
-        <el-form-item label="手机号">
+        <el-form-item label="手机号" prop="phone">
           <el-input v-model="registerForm.phone" placeholder="请输入手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="验证码" prop="verifyCode">
+          <el-col span="14">
+            <el-input
+             :length="6"
+              v-model="registerForm.verifyCode">
+            </el-input>
+          </el-col>
+          <el-col span="10">
+            <el-button  :disabled="disabled"  @click="sendcode" style="width: 100%">
+             {{btntxt}}
+            </el-button>
+          </el-col>
+
         </el-form-item>
         <el-form-item label="邀请码">
           <el-input v-model="registerForm.invitationCode" placeholder="请输入邀请码"></el-input>
@@ -131,6 +145,10 @@
 <script>
 import commonUtil from '../utils/common'
 import defaultSettings from '@/settings'
+import loginService from "@/api/login";
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+import {setUserInfo} from "@/store/modules/user";
 
 export default {
   name: 'Login',
@@ -151,6 +169,9 @@ export default {
       codeLength: 4,
       cookiePass: '',
       passwordType: 'password',
+      btntxt : '获取验证码',
+      time : 60,
+      disabled : false,
       registerForm: {
         userType: 'personal',
         username: '',
@@ -178,7 +199,8 @@ export default {
         username: [{required: true, trigger: 'blur', message: '用户名不能为空'}],
         password: [{required: true, trigger: 'blur', message: '密码不能为空'}],
         rePassword: [{required: true, trigger: 'blur', message: '密码不能为空'}, {validator: validateConfirmPass}],
-        // verifyCode: [{required: true, trigger: 'blur', message: '手机验证码不能为空'}]
+        phone: [{required: true, length : 11, trigger: 'blur', message: '请输入11位手机号'}],
+        verifyCode: [{required: true, length : 6, trigger: 'blur', message: '请输入6位验证码'}]
       },
       loading: false,
       redirect: undefined
@@ -250,6 +272,40 @@ export default {
           })
         }
       });
+    },
+    //验证手机号码部分
+    sendcode(){
+
+      if(this.registerForm.phone === ''){
+        this.$alert('请输入手机号码！', '提示', {
+          confirmButtonText: '确定',
+        });
+        return;
+      }
+
+      this.time = 60;
+      this.disabled=true;
+      this.timer();
+
+      return new Promise((resolve, reject) => {//获取验证码
+        loginService.getVerify(this.registerForm.phone).then((res) => {
+          resolve(res)
+        }).catch((err) => {
+          reject(err)
+        })
+      });
+    },
+    timer:function () {
+      if (this.time > 0) {
+        this.time--;
+//                 console.log(this.time);
+        this.btntxt=this.time+"s,后重新获取";
+        setTimeout(this.timer, 1000);
+      } else{
+        this.time=0;
+        this.btntxt="获取验证码";
+        this.disabled=false;
+      }
     }
   }
 }

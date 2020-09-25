@@ -32,7 +32,14 @@ const loginService = {
     return request({
       url: '/sys/user/register',
       method: 'post',
-      data: user
+      data: user,
+    })
+  },
+  getVerify(phone) {
+    return request({
+      url: '/account/register',
+      method: 'get',
+      params : {phone : phone}
     })
   },
   token(){
