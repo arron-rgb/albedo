@@ -14,12 +14,13 @@ const whiteList = [
   '/',
   '/proService',
 
+
+  '/contact',
+  '/siteGuide',
+  '/problems',
+  '/contactUs',
+
   //delete later
-  // '/contact',
-  // '/siteGuide',
-  // '/taobaoGuide',
-  // '/problems',
-  // '/contactUs',
   //
   // '/personal',
   // '/myData',

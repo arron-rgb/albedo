@@ -25,7 +25,7 @@ spring:
     url: jdbc:mysql://47.100.1.162:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 
 
-# ===================================================================
+# ===================================================================、
 # Albedo specific properties
 # ===================================================================
 

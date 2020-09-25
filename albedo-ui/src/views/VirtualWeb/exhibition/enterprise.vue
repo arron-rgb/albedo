@@ -102,13 +102,16 @@
           <tr>
             <th style="line-height: 60px;">{{list.title}}</th>
             <th v-for="item in priceData" :key="item">
-              <p style="line-height: 60px;" >{{item.title}}</p>
-              <el-button round style="margin-bottom: 5px" >￥{{item.price}}}}&emsp;立即抢购</el-button>
+              <p style="line-height: 60px;font-size: 16px;" >{{item.title}}</p>
+              <span style="font-weight: 100; text-decoration:line-through;" v-if="item.title !== '大客户专属定制版'">￥{{item.oldPrice}}</span>
+              <span style="color: #ff5000"  v-if="item.title !== '大客户专属定制版'">￥{{item.price}}</span>
+              <span style="color: #ff5000"  v-if="item.title === '大客户专属定制版'">{{item.price}}</span>
+              <el-button round style="margin-bottom: 5px" >立即抢购</el-button>
             </th>
           </tr>
           <td class="col">
             <tr v-for="(i) in list.contain" :key="i">
-              <p style="width: 239px; line-height: 50px; font-size: 14px">{{i}}</p>
+              <p style="width: 239px; line-height: 46px; font-size: 16px; font-weight: bold">{{i}}</p>
             </tr>
           </td>
           <td class="data" v-for="(item) in priceData" :key="item">
@@ -137,17 +140,17 @@ export default {
           "在线制作协议", "在线发票服务","账号存储空间", "制作渲染效率",
           "授权类型", "授权期限", "授权协议"]},
       priceData: [
-        {title : "标准版", price : "999", contain : ["有", "有", "3", "/", "0", "100", "无限",
-            "无限", "/", "2h/条","有", "3","有", "有","1G",
+        {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
+            "无限", "/", "2h/条","有", "3","有", "有","5G",
              "高","商用", "30天", "有"]},
-        {title : "升级版", price : "xxx", contain : ["有", "有", "6", "/", "0", "200", "无限",
-            "无限", "/", "2h/条","有", "3","有", "有","3G",
+        {title : "升级版", price : "7699", oldPrice : "9599", contain : ["有", "有", "6", "/", "0", "200", "无限",
+            "无限", "/", "2h/条","有", "3","有", "有","8G",
              "高","商用", "30天", "有"]},
-        {title : "旗舰版", price : "xxx", contain : ["有", "有", "12", "1", "1", "无限", "无限",
-            "无限", "30min", "4h/条","有", "5","有", "有","6G",
+        {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["有", "有", "12", "1", "1", "无限", "无限",
+            "无限", "30min", "4h/条","有", "5","有", "有","10G",
              "极高","商用", "60天", "有"]},
-        {title : "大客户专属定制版", price : "xxx", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
-            "无限", "60min", "无限","有", "5","有", "有","无限",
+        {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
+            "无限", "60min", "无限","有", "5","有", "有","100G",
              "极高","商用", "无限", "有"]},
       ],
       data: [

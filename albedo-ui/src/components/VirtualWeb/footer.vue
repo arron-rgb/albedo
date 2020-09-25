@@ -8,16 +8,16 @@
           <el-link :underline='false' type='info' href='javascript;'>信息中心</el-link>
 
         </div>
-        <span>Copyright © 2018-2020 xxx有限公司版权所有</span>
+        <span>Copyright © 2019-2020 杭州葳锐信息科技有限公司版权所有</span>
       </div>
       <div class="footerRight">
         <img class='QRCode' :src="QRCode" alt="" >
-        <span>微信扫一扫 使用小程序</span>
+        <span>微信扫一扫 - 联系我们</span>
       </div>
     </div>
     <span class="authority">
       <img class='policeIcon' :src="policeIcon" alt="">
-            <span>皖ICP备88888888号</span>
+            <span>浙ICP备2020031611号</span>
     </span>
   </div>
 
@@ -26,7 +26,7 @@
 export default {
   data(){
     return {
-      QRCode:require('@/assets/VirtualWeb/footerBar/img/QRCode.jpg'),
+      QRCode:'http://static.vlivest.com/327e84ea1ab73cae84d0c4d293b8e31a.jpg',
       policeIcon:require('@/assets/VirtualWeb/footerBar/img/policeIcon.jpg')
 
     }
@@ -84,8 +84,8 @@ export default {
   align-items: center;
 }
 .QRCode{
-  width:50px;
-  height:50px;
+  width:120px;
+  height:120px;
 }
 .authority{
   margin:20px 0;
@@ -99,13 +99,3 @@ export default {
 }
 
 </style>
-<script>
-export default {
-  data(){
-    return{
-      QRCode: require('@/assets/VirtualWeb/footerBar/img/QRCode.jpg'),
-      policeIcon:require('@/assets/VirtualWeb/footerBar/img/policeIcon.jpg')
-    }
-  }
-}
-</script>

@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      title: 'ALBEDO-后台管理',
+      title: '虚拟工坊-后台管理',
       logo: Logo
     }
   }
