@@ -140,7 +140,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         } else {
           record.setOutTradeNo(plus.getOutTradeNo());
         }
-        record.setSellerId("2088621955056287");
         recordService.saveOrUpdate(record);
         return getPurchaseUrl(plus);
       case "balance":

@@ -76,7 +76,7 @@ public class PurchaseRecord extends IdEntity<PurchaseRecord> {
   // private String tradeNo;
 
   public static PurchaseRecord build(TradePlus trade, String outerId, String type) {
-    return PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(type).sellerId("2088621955056287")
+    return PurchaseRecord.builder().userId(SecurityUtil.getUser().getId()).type(type).sellerId("2088331270404521")
       .totalAmount(new BigDecimal(trade.getTotalAmount())).outTradeNo(trade.getOutTradeNo()).outerId(outerId).build();
   }
 
