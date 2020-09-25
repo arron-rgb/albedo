@@ -92,6 +92,7 @@ export default {
 @import '@/common/style.scss';
 #banner{
   width: 100%;
+  min-width: 1200px;
   height: 61px;
   border-bottom: solid 1px #e6e6e6;
   position: sticky;

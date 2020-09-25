@@ -106,7 +106,7 @@
               <span style="font-weight: 100; text-decoration:line-through;" v-if="item.title !== '大客户专属定制版'">￥{{item.oldPrice}}</span>
               <span style="color: #ff5000"  v-if="item.title !== '大客户专属定制版'">￥{{item.price}}</span>
               <span style="color: #ff5000"  v-if="item.title === '大客户专属定制版'">{{item.price}}</span>
-              <el-button round style="margin-bottom: 5px" >立即抢购</el-button>
+              <el-button @click="toPurchase(item.title)" round style="margin-bottom: 5px" >立即抢购</el-button>
             </th>
           </tr>
           <td class="col">
@@ -207,24 +207,15 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {func: data}});
     },
-    getPrice(title){
-      var dataIndex = this.priceData.findIndex(o => o.title = title);
-      // if(title === "标准版"){
-      //   var dataIndex = this.data.findIndex(o => o.name === "标准");
-      //   return this.data[dataIndex].price
-      // }
-      // else if(title === "旗舰版"){
-      //   var dataIndex = this.data.findIndex(o => o.name === "旗舰");
-      //   return this.data[dataIndex].price
-      // }
-      // else if(title === "升级版"){
-      //   var dataIndex = this.data.findIndex(o => o.name === "升级");
-      //   return this.data[dataIndex].price
-      // }
-      // else if(title === "大客户专属定制版"){
-      //   var dataIndex = this.data.findIndex(o => o.name === "定制");
-      //   return this.data[dataIndex].price
-      // }
+    toPurchase(title){
+      if(title === '大客户专属定制版'){
+        this.$alert('即将前往客服联系页面！', '提示', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.goTo('/contactUs');
+          }
+        });
+      }
     }
   }
 }
