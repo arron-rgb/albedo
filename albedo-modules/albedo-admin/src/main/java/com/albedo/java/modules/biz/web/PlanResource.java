@@ -1,5 +1,6 @@
 package com.albedo.java.modules.biz.web;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,9 @@ public class PlanResource extends BaseResource {
   @ApiOperation(value = "获取套餐")
   @GetMapping("/list")
   public Result<List<Plan>> list() {
-    return Result.buildOkData(service.list());
+    List<Plan> list = service.list();
+    list.sort(Comparator.comparing(Plan::getOrderBy));
+    return Result.buildOkData(list);
   }
 
   @ApiOperation(value = "更新套餐")

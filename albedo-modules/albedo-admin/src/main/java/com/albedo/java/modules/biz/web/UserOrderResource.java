@@ -1,14 +1,16 @@
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.NOT_UPDATED;
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.ExceptionNames.BALANCE_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotEmpty;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +20,12 @@ import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
+import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.VideoService;
@@ -65,9 +69,11 @@ public class UserOrderResource extends BaseResource {
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
       String originUrl = video.getOriginUrl();
       originUrl = ossSingleton.localPathToUrl(originUrl);
-
       if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+        File file = new File(video.getOutputUrl());
+        String userId = SecurityUtil.getUser().getId();
+        String bucketName = userService.getBucketName(userId);
+        originUrl = ossSingleton.localPathToUrl(bucketName, file.getName());
       }
       order.setVideoId(originUrl);
     }
@@ -171,5 +177,35 @@ public class UserOrderResource extends BaseResource {
     return Result.buildOkData(order);
   }
 
+  @ApiOperation(value = "用户确认视频")
+  @GetMapping("accept")
+  public Result<String> accept(@NotEmpty(message = "请选择订单") String orderId,
+    @NotEmpty(message = "请选择是否满意") String state) {
+    Order order = service.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    switch (state) {
+      case SATISFIED:
+        return Result.buildOk("订单状态更新成功");
+      case DISSATISFIED:
+        String id = SecurityUtil.getUser().getId();
+        Balance balance = balanceService.getByUserId(id);
+        Assert.notNull(balance, BALANCE_NOT_FOUND);
+        Assert.isTrue(balance.getEditTimes() > 0, "套餐内已无可修改次数");
+        balance.setEditTimes(balance.getEditTimes() - 1);
+        balanceService.updateById(balance);
+        // 员工上传完视频后 用户决定是否需要重做
+        order.setState(IN_PRODUCTION);
+        String description = order.getDescription();
+        description = "【用户打回】" + description;
+        order.setDescription(description);
+        service.updateById(order);
+        return Result.buildOk("已通知员工对视频进行修改");
+      default:
+        return Result.buildFail("订单状态异常");
+    }
+  }
+
+  @Resource
+  BalanceService balanceService;
   private static final List<String> METHODS = new ArrayList<>(Arrays.asList("ali", "balance", "wechat"));
 }

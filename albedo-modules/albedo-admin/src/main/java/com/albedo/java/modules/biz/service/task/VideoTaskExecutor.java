@@ -68,6 +68,7 @@ public class VideoTaskExecutor {
     File file = new File(outputUrl);
     String userId = video.getUserId();
     userId = userService.getBucketName(userId);
+    // 上传视频
     ossSingleton.uploadFile(file, file.getName(), userId);
     video.setOutputUrl(file.getAbsolutePath());
     videoService.updateById(video);

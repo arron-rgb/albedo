@@ -6,11 +6,11 @@ import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECOR
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
-import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
@@ -19,7 +19,6 @@ import com.albedo.java.modules.biz.repository.PlanRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
@@ -66,9 +65,9 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
         recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getType, PLAN_TYPE)
           .eq(PurchaseRecord::getOutTradeNo, outTradeNo).orderByAsc(PurchaseRecord::getCreatedDate));
       Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);
-      String outerId = record.getOuterId();
+      String planId = record.getOuterId();
       String userId = record.getUserId();
-      Plan plan = baseMapper.selectById(outerId);
+      Plan plan = baseMapper.selectById(planId);
       if (plan == null) {
         return false;
       }
@@ -78,27 +77,53 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
         Plan oldPlan = baseMapper.selectById(balance.getPlanId());
         Assert.notNull(oldPlan, "未查询到旧套餐记录");
         int compare = plan.compareTo(oldPlan);
-        // 更新套餐记录
+        // 更新为高级套餐记录
         if (compare > 0) {
-          balance.setPlanId(plan.getId());
-          balance.setPlanType(plan.getName());
+          updateBalance(balance, plan);
         }
-        balance.setTimes(balance.getTimes() + plan.getTimes());
+        // 添加次数
+        addBalance(balance, plan);
       } else {
-        balance = Balance.builder().accountAvailable(plan.getChildAccount()).userId(SecurityUtil.getUser().getId())
-          .planId(plan.getId()).times(plan.getTimes()).planType(plan.getName())
-          .storage(Double.valueOf(plan.getStorage())).build();
+        balance = new Balance();
+        // 写入新余量
+        BeanUtils.copyProperties(plan, balance);
+        balance.setPlanType(plan.getName());
+        balance.setPlanId(plan.getId());
+        balance.setStorage(plan.getStorage().doubleValue());
+        balance.setUserId(userId);
       }
-      balanceService.saveOrUpdate(balance);
-      // 买了套餐默认将他更新为企业管理员角色
-      // todo PUBLIC_DEPT_ID是否会影响 目测不会
-      if (!SecurityUtil.getRoles().contains(BUSINESS_ADMIN_ROLE_ID)) {
-        userRoleService.update(Wrappers.<UserRole>update().eq("role_id", PERSONAL_USER_ROLE_ID)
-          .eq("user_id", SecurityUtil.getUser().getId()).set("role_id", BUSINESS_ADMIN_ROLE_ID));
-      }
-      return true;
+      return balanceService.saveOrUpdate(balance);
     }
     return false;
+  }
+
+  public void addBalance(Balance balance, Plan plan) {
+    Integer editTime = plan.getEditTime();
+    Integer times = plan.getTimes();
+    Integer audioTime = plan.getAudioTime();
+    Integer customTimes = plan.getCustomTimes();
+    balance.setEditTimes(balance.getEditTimes() + editTime);
+    balance.setTimes(balance.getTimes() + audioTime);
+    balance.setAudioTime(balance.getAudioTime() + times);
+    balance.setCustomTimes(balance.getCustomTimes() + customTimes);
+  }
+
+  private void updateBalance(Balance balance, Plan plan) {
+    String name = plan.getName();
+    Integer childAccount = plan.getChildAccount();
+    Integer storage = plan.getStorage();
+    Integer goodsQuantity = plan.getGoodsQuantity();
+    String id = plan.getId();
+    Integer videoTime = plan.getVideoTime();
+
+    balance.setPlanType(name);
+    balance.setChildAccount(childAccount);
+
+    // todo 原有的存储容量 需要更新一下
+    balance.setStorage(storage.doubleValue());
+    balance.setVersion(videoTime);
+    balance.setPlanId(id);
+    balance.setGoodsQuantity(goodsQuantity);
   }
 
   @Resource

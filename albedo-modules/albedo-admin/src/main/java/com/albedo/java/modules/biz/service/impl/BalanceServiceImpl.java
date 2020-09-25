@@ -26,6 +26,7 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.CommodityService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -132,16 +133,16 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   @Override
   public BalanceDto getBalanceInfo() {
-    Balance balance = getOne(Wrappers.<Balance>query().eq("user_id", SecurityUtil.getUser().getId()));
-    Assert.notNull(balance, "用户未购买任何套餐");
+    String id = SecurityUtil.getUser().getId();
+    String deptId = SecurityUtil.getUser().getDeptId();
+    Balance balance = getByUserId(id);
     BalanceDto dto = new BalanceDto();
     dto.setTimes(balance.getTimes());
-    dto.setAccountAvailable(balance.getAccountAvailable());
-    int amount = commodityService.count(Wrappers.<Commodity>query().eq("created_by", SecurityUtil.getUser().getId()));
+    dto.setAccountAvailable(balance.getChildAccount());
+    int amount = commodityService.count(Wrappers.<Commodity>query().eq("created_by", id));
     dto.setCommodity(amount);
     dto.setPlanName(balance.getPlanType());
     dto.setStorage(balance.getStorage());
-    String deptId = SecurityUtil.getUser().getDeptId();
     List<String> users = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getUsername)
       .collect(Collectors.toList());
     dto.setAccountIds(users);
@@ -152,6 +153,19 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setAllowedStorage(plan.getStorage().doubleValue());
     // recordRepository.selectOne()
     return dto;
+  }
+
+  @Override
+  public Balance getByUserId(String userId) {
+    Balance one = getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, userId));
+    if (one == null) {
+      UserDto oneDto = userService.getOneDto(userId);
+      if (oneDto != null && !PUBLIC_DEPT_ID.equals(oneDto.getDeptId())) {
+        String adminId = userService.getAdminIdByDeptId(oneDto.getDeptId());
+        return getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
+      }
+    }
+    return one;
   }
 
   @Resource

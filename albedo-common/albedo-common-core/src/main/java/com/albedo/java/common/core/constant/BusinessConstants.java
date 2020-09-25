@@ -5,6 +5,16 @@ package com.albedo.java.common.core.constant;
  */
 public interface BusinessConstants {
 
+  /**
+   * 用户满意
+   */
+  String SATISFIED = "1";
+
+  /**
+   * 用户不满意
+   */
+  String DISSATISFIED = "0";
+
   Integer UPLOAD_AUDIO = 0;
 
   String PLUS_SERVICE = "1";

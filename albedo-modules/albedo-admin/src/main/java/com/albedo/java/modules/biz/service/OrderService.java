@@ -65,6 +65,9 @@ public interface OrderService extends BaseService<Order> {
    * 二次下单
    *
    * @param orderVo
+   *          表单内容
+   * @return
+   *         订单对应的视频记录
    */
   Video updateForm(SubOrderVo orderVo);
 

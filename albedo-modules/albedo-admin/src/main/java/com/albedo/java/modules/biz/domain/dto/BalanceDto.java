@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class BalanceDto {
 
-  // 4、商品库容量及余量
-  // 5、用户类型（普通用户、升级版套餐用户、旗舰版套餐用户）
-
   /**
    * 子账户数量
    */
@@ -37,7 +34,6 @@ public class BalanceDto {
    * 空间容量
    */
   private Double allowedStorage;
-
   /**
    * 剩余可下单次数
    */
@@ -54,5 +50,14 @@ public class BalanceDto {
    * 购买的套餐名
    */
   private String planName;
+  /**
+   * 可修改次数
+   * 订单上传视频后，反馈员工可重做
+   */
+  private Integer editTimes;
 
+  /**
+   * 人工专属配音抵扣配音订单金额
+   */
+  private Integer audioTime;
 }

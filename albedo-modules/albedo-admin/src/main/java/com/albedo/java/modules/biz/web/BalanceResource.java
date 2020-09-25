@@ -14,7 +14,7 @@ import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.dto.BalanceDto;
 import com.albedo.java.modules.biz.service.BalanceService;
 
-import cn.hutool.core.lang.Assert;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping(value = "${application.admin-path}/biz/balance")
 @AllArgsConstructor
+@Api("套餐余量")
 public class BalanceResource extends BaseResource {
 
   private final BalanceService service;
@@ -32,7 +33,6 @@ public class BalanceResource extends BaseResource {
   @GetMapping
   public Result<BalanceDto> get() {
     BalanceDto balance = service.getBalanceInfo();
-    Assert.notNull(balance, "用户未购买任何套餐");
     return Result.buildOkData(balance);
   }
 

@@ -78,16 +78,15 @@ public class InvoiceRequestResource extends BaseResource {
     List<InvoiceRequest> records = page.getRecords();
     records.forEach(record -> {
       Invoice invoice = invoiceService.getById(record.getInvoiceId());
-      if (invoice == null) {
-        return;
+      if (invoice != null) {
+        record.setInvoiceId(invoice.getName());
       }
-      record.setInvoiceId(invoice.getName());
+
       UserDto user = userService.findDtoById(record.getCreatedBy());
-      if (user == null) {
-        return;
-      }
-      if (StringUtils.isNotEmpty(user.getUsername())) {
-        record.setCreatedBy(user.getUsername());
+      if (user != null) {
+        if (StringUtils.isNotEmpty(user.getUsername())) {
+          record.setCreatedBy(user.getUsername());
+        }
       }
     });
     return Result.buildOkData(page);

@@ -204,8 +204,9 @@ public class OssSingleton {
     String objectName = url.replaceFirst(prefix, "");
     File file = new File(localPath);
     if (!file.exists()) {
-      downloadFile("vlivest", objectName, localPath);
+      // downloadFile("vlivest", objectName, localPath);
     }
+    log.info("objectName: {}", objectName);
     return localPath;
   }
 }

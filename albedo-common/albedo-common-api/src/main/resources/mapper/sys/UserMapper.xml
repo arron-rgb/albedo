@@ -225,7 +225,7 @@
 	</select>
 
 	<select id="getOutTradeNosByUserId" resultType="java.lang.Integer">
-		SELECT tb.account_available
+		SELECT tb.child_account
 		FROM sys_user user
 				 LEFT JOIN t_balance tb ON user.id = tb.user_id
 		WHERE user.id = #{userId}
