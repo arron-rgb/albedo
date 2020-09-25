@@ -130,6 +130,7 @@ export default {
       this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
        console.log(this.playerOptions.sources[0].src);
     }
+    console.log(videoOrder.videoId);
   },
   methods: {
     goTo(url, data){

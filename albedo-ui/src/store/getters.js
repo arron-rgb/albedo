@@ -11,6 +11,7 @@ const getters = {
   user: state => state.user.user,
   loadMenus: state => state.user.loadMenus,
   loginSuccess: state => state.user.loginSuccess,
+  balance: state => state.user.balance,
   dicts: state => state.dict.dicts,
   permissions: state => state.user.permissions,
   permission_routers: state => state.permission.routers,

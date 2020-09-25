@@ -12,7 +12,7 @@
       <el-menu-item index="proService">
         企业版
       </el-menu-item>
-      <el-menu-item index="contact">
+      <el-menu-item index="contactUs">
         联系我们
       </el-menu-item>
 

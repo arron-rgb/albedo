@@ -52,7 +52,7 @@ export default {
 .helpContact{
   .el-menu-vertical-demo {
     box-shadow: 1px 1px 20px rgba(0,0,0,0.1);
-    height: 600px;
+    min-height: 600px;
   }
   width:1200px;
   margin: auto;

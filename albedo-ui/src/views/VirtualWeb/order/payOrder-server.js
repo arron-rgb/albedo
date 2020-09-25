@@ -57,7 +57,7 @@ export function placeSecond(data){
 
 export function balance() {
   return request({
-    url: '/biz/balance/undefined',
+    url: '/biz/balance',
     method: 'get',
   })
 }

@@ -143,6 +143,7 @@ import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
 import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
+import {mapGetters} from "vuex";
 export default {
   name: "payOrder",
   data(){
@@ -210,7 +211,13 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'balance',
+    ])
+  },
   methods:{
+
     goTo(url, data){
       //带参数跳转
       // console.log(data)
@@ -324,16 +331,7 @@ export default {
       })
     },
     getBalance(){
-      return new Promise((resolve, reject) => {
-        payOrder.balance().then(res => {
-          if(res.code === MSG_TYPE_SUCCESS){
-            this.times = res.data.tims;
-          }
-        }).catch(res =>{
-          reject();
-          }
-        )
-      })
+      this.times = this.balance.times;
     },
     uploadImg(file, type){//上传图片
       var _this = this

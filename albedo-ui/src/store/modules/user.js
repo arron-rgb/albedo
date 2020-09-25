@@ -2,6 +2,7 @@ import commonUtil from '@/utils/common'
 import loginService from '@/api/login'
 import storeApi from '@/utils/store'
 import {MSG_TYPE_SUCCESS} from '@/const/common'
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 
 const user = {
   state: {
@@ -13,7 +14,8 @@ const user = {
     }) || false,
     // 第一次加载菜单时用到
     loadMenus: false,
-    token : ''
+    token : '',
+    balance : {},
   },
 
   mutations: {
@@ -22,6 +24,9 @@ const user = {
     },
     SET_TOKEN: (state, data) => {
       state.token = data
+    },
+    SET_BALANCE: (state, data) => {
+      state.balance = data
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -86,17 +91,22 @@ const user = {
       return new Promise((resolve, reject) => {
         loginService.getUser().then((res) => {
           const data = res.data || {}
-          setUserInfo(data, commit)
+          setUserInfo(data, commit);
+          payOrder.balance().then(res => {//获取用户套餐信息
+            if(res.code === MSG_TYPE_SUCCESS){
+              commit('SET_BALANCE', res.data)
+            }
+          }).catch(res =>{
+              reject();
+            }
+          )
           resolve(data)
-          loginService.token().then((res) =>{
-            commit('SET_TOKEN', res)
-          })
         }).catch((err) => {
           reject(err)
         })
       })
     },
-    // 登出
+        // 登出
     LogOut({commit}) {
       return new Promise((resolve, reject) => {
         loginService.logout().then(res => {
@@ -122,6 +132,7 @@ export const logOut = (commit) => {
   commit('SET_USER', {})
   commit('SET_ROLES', [])
   commit('SET_PERMISSIONS', [])
+  commit('SET_BALANCE', {})
 }
 
 export const setUserInfo = (res, commit) => {

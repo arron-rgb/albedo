@@ -82,7 +82,7 @@ export default {
 .personal{
 
   width: 1200px;
-  min-height: 600px;
+  min-height: 620px;
   margin: auto;
   margin-bottom: 30px;
   box-sizing: border-box;
@@ -141,7 +141,7 @@ export default {
     border-left:1px solid #ddd;
     margin-left:20px;
     background-color:white;
-    height:500px;
+    height:600px;
   }
   }
  }
