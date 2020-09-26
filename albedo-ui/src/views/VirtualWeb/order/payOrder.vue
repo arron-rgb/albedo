@@ -72,7 +72,7 @@
 
       <el-row class="box">
         <el-col span="4">
-          加速服务（30元/次）：
+          加速服务（99元/次）：
         </el-col>
         <el-col span="20">
           <el-row>
@@ -94,7 +94,9 @@
         </el-col>
         <el-col span="20">
           <el-row>
-            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">{{this.totalAmount}}</span>元</el-col>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
+<!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
+              {{this.totalAmount}}</span>元</el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -156,7 +158,7 @@ export default {
       totalAmount : 1029,
       data : '',
       loading : false,
-      priceList : [999, 1999, 0],
+      priceList : [1599, 1999, 0],
       orderId : null,
       times : 0,
       logoUrl : '',
@@ -170,7 +172,7 @@ export default {
   watch: {
     type : function (val){
       this.type = val;
-      this.totalAmount = this.priceList[0] + val * 30;
+      this.totalAmount = this.priceList[0] + val * 99;
     }
 
   },
