@@ -33,7 +33,6 @@ import com.albedo.java.common.core.exception.EntityExistException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.BeanUtil;
 import com.albedo.java.common.core.util.CollUtil;
-import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
@@ -385,10 +384,10 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
 
   @Override
   public void register(RegisterUserData userData) {
-    if (!SpringContextHolder.isDevelopment()) {
-      Object code = RedisUtil.getCacheString("register" + userData.getPhone());
-      Assert.notNull(code, "验证码无效，请重新申请");
-    }
+    // if (!SpringContextHolder.isDevelopment()) {
+    Object code = RedisUtil.getCacheString("register" + userData.getPhone());
+    Assert.notNull(code, "验证码无效，请重新申请");
+    // }
 
     List<User> list = baseMapper.selectList(Wrappers.<User>query().eq(User.F_USERNAME, userData.getUsername()));
     Assert.isTrue(CollectionUtils.isEmpty(list), "用户名已存在");
