@@ -326,9 +326,10 @@ export default {
 
 
   .descriBlock{
-    width:100%;
-    padding:100px 0px;
-    display:flex;
+    //width:100%;
+    min-width: 1200px;
+    width: 100%;
+    padding:100px 0;
     justify-content: space-around;
     align-items: center;
     flex-direction:column;
@@ -418,6 +419,7 @@ export default {
     box-sizing: border-box;
     .costContainer{
       width:1200px;
+      margin: auto;
       display: flex;
       justify-content: center;
       align-items: center;
