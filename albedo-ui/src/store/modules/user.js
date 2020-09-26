@@ -15,12 +15,16 @@ const user = {
     // 第一次加载菜单时用到
     loadMenus: false,
     token : '',
+    userType : '',//用户类型
     balance : {},
   },
 
   mutations: {
     SET_USER: (state, user) => {
       state.user = user
+    },
+    SET_USERTYPE: (state, userType) => {
+      state.userType = userType
     },
     SET_TOKEN: (state, data) => {
       state.token = data
@@ -136,6 +140,7 @@ export const logOut = (commit) => {
 }
 
 export const setUserInfo = (res, commit) => {
+  commit('SET_USERTYPE', res.userType)
   commit('SET_USER', res.user)
   commit('SET_ROLES', res.roles || [])
   commit('SET_PERMISSIONS', res.permissions || [])

@@ -9,6 +9,7 @@ const getters = {
   cachedViews: state => state.tagsView.cachedViews,
   roles: state => state.user.roles,
   user: state => state.user.user,
+  userType: state => state.user.userType,
   loadMenus: state => state.user.loadMenus,
   loginSuccess: state => state.user.loginSuccess,
   balance: state => state.user.balance,

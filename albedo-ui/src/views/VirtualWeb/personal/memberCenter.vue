@@ -112,7 +112,7 @@
               <el-col class="infoData" span="8">
                 {{data.accountAvailable}} / {{data.accountAmount}}
               </el-col>
-              <el-col span="8">
+              <el-col span="8" v-if="this.userType !== '1'">
                 <el-button type="primary" >管理</el-button>
               </el-col>
             </el-row>
@@ -169,11 +169,13 @@ export default {
   },
   mounted() {
     this.getBalance();
+    console.log(this.userType);
     this.buildStorageCharts();
   },
   computed: {
     ...mapGetters([
       'balance',
+      'userType',
     ])
   },
   methods : {
