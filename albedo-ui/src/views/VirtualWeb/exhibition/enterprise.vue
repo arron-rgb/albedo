@@ -101,12 +101,12 @@
         <table rules=none>
           <tr>
             <th style="line-height: 60px;">{{list.title}}</th>
-            <th v-for="item in priceData" :key="item">
+            <th :key="item" v-for="(item) in priceData">
               <p style="line-height: 60px;font-size: 16px;" >{{item.title}}</p>
               <span style="font-weight: 100; text-decoration:line-through;" v-if="item.title !== '大客户专属定制版'">￥{{item.oldPrice}}</span>
               <span style="color: #ff5000"  v-if="item.title !== '大客户专属定制版'">￥{{item.price}}</span>
               <span style="color: #ff5000"  v-if="item.title === '大客户专属定制版'">{{item.price}}</span>
-              <el-button @click="toPurchase(item.title)" round style="margin-bottom: 5px" >立即抢购</el-button>
+              <el-button @click="toPurchase(item)" round style="margin-bottom: 5px" >立即抢购</el-button>
             </th>
           </tr>
           <td class="col">
@@ -122,13 +122,56 @@
         </table>
       </div>
     </div>
+
+
+<!--    购买页对话框-->
+    <el-dialog
+      :visible.sync="dialogVisible"
+      style="padding-bottom: 200px"
+      title="套餐订单"
+      width="600px"
+      >
+      <table rules=none style="overflow-y: scroll;">
+        <tr style="font-size: 16px">
+          <th style="line-height: 60px;">套餐名称</th>
+          <th >
+            {{this.selectedPlan.title}}
+          </th>
+        </tr>
+        <td class="data">
+          <tr :key="i" v-for="(i) in list.contain">
+            <p class="tableText">{{i}}</p>
+          </tr>
+          <tr>
+            <p class="tableText">总价</p>
+          </tr>
+        </td>
+        <td class="data">
+          <tr :key="o" v-for="(o) in selectedPlan.contain">
+            <p class="tableText">{{o}}</p>
+          </tr>
+          <tr>
+            <p class="tableText">{{ selectedPlan.price }}</p>
+          </tr>
+        </td>
+      </table>
+      <div style="margin: 10px 0 30px 0">
+        <span style="font-size: 14px; color: #909399;">
+          tips：套餐中”标准版视频制作次数“仅为单人主播，双人主播每单需另支付￥1000元！
+        </span>
+      </div>
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="beforePay(selectedPlan.title)" type="primary">支  付</el-button>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import crudPlan from '@/views/biz/plan/plan-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
-import crudConfig from "@/views/biz/config/config-service";
+import loginService from "@/api/login";
+import store from "@/store";
 export default {
   name: "exhibition",
   data(){
@@ -153,40 +196,20 @@ export default {
             "无限", "60min", "无限","有", "5","有", "有","100G",
              "极高","商用", "无限", "有"]},
       ],
-      data: [
-        // {
-        //   name :'标准版',
-        //   price : '100',
-        //   data : [
-        //     {
-        //       title: '调用虚拟场景',
-        //       value: '有'
-        //     },
-        //     {
-        //       title: '调用虚拟人物',
-        //       value: '有'
-        //     }
-        //   ]
-        // },
-        // {
-        //   name :'升级版',
-        //   price : '100',
-        //   data : [
-        //     {
-        //       title: '调用虚拟场景',
-        //       value: '有'
-        //     },
-        //     {
-        //       title: '调用虚拟人物',
-        //       value: '有'
-        //     }
-        //   ]
-        // }
-      ],
+      data: [],
+      dialogVisible : false,
+      selectedPlan : {},
     }
   },
   created() {
-    // this.getData();
+    this.getData();
+  },
+  watch:{
+    dialogVisible(val){//清空selectedPlan 否则发生复制错误
+      if(val === false){
+        this.selectedPlan = {};
+      }
+    }
   },
   methods:{
     getData() {
@@ -207,8 +230,8 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {func: data}});
     },
-    toPurchase(title){
-      if(title === '大客户专属定制版'){
+    toPurchase(item){
+      if(item.title === '大客户专属定制版'){
         this.$alert('即将前往客服联系页面！', '提示', {
           confirmButtonText: '确定',
           callback: action => {
@@ -216,6 +239,62 @@ export default {
           }
         });
       }
+      else{
+        if(store.getters.loginSuccess){
+          this.dialogVisible = true;
+          this.selectedPlan = JSON.parse(JSON.stringify(item));
+        }
+        else{
+          this.$alert('请先登录！', '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.goTo('/login');
+            }
+          });
+        }
+      }
+    },
+    beforePay(title){
+      var dataIndex = this.data.findIndex(o => o.name === title);
+      if(dataIndex === -1){//找不到该套餐
+        this.$alert('系统错误，请稍后重试！', '提示', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.goTo('/');
+          }
+        });
+      }
+      else {
+        var planId = this.data[dataIndex].id;
+        this.getToken(planId);//获取token
+      }
+      this.dialogVisible = false;
+    },
+    getToken(planId){//获取token
+      return new Promise((resolve, reject) => {
+        loginService.token().then((res) => {
+          // console.log(res)
+          this.toPay(planId, res);
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    toPay(planId, token){//获取支付链接
+      // var data = {
+      //   planId : planId,
+      //   token : token
+      // }
+      return new Promise((resolve, reject) => {
+        crudPlan.purchase(planId, token).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            window.open(res.message);//前往支付页面
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
     }
   }
 }
@@ -383,5 +462,11 @@ table th{
   font-size: 14px;
   font-weight: lighter;
   color: #ff5000;
+}
+
+.tableText{
+  width: 280px;
+  line-height: 30px;
+  font-size: 16px;
 }
 </style>

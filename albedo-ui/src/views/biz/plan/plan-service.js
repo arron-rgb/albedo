@@ -40,4 +40,15 @@ export function list() {
   })
 }
 
-export default {page, del, save, get, list}
+export function purchase(planId, token) {
+  return request({
+    url: '/biz/plan/purchase',
+    method: 'post',
+    params : {
+      planId : planId,
+      token : token
+    }
+  })
+}
+
+export default {page, del, save, get, list, purchase}

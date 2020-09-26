@@ -87,8 +87,37 @@
         </el-col>
       </el-row>
 
+      <el-row class="box" v-if="times > 0">
+        <el-col span="4">
+          使用套餐（余{{this.times}}次）：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="6">
+              <el-radio-group fill="#ff5000" text-color="#ff5000" v-model="isBalance">
+                <el-radio border label="1">是</el-radio>
+                <el-radio border label="0">否</el-radio>
+              </el-radio-group>
+            </el-col>
+            <el-col span="18" style="font-size: 14px; color: #909399">tips：使用套餐余量仅收取补充费用</el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+
+      <el-row  class="box">
+        <el-col span="4">
+          合计：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
+<!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
+              {{this.totalAmount}}</span>元</el-col>
+          </el-row>
+        </el-col>
+      </el-row>
 <!--      ￥<span style="font-size: 26px; color: #ff5000; margin: 0 10px">999</span>元/次-->
-      <el-row class="box">
+      <el-row class="box" v-if="this.totalAmount > 0">
         <el-col span="4">
           支付方式：
         </el-col>
@@ -104,28 +133,15 @@
             <!--                <img style="height: 60px; position: absolute" src="@/assets/VirtualWeb/wechat.png">-->
             <!--              </a>-->
             <!--            </el-radio>-->
-            <el-radio border label="balance"  style="height: 80px; width: 200px" v-if="times > 0">
-              <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">
-                <i class="el-icon-s-custom"></i>
-              </a>
-              <a style=" line-height: 60px;font-size: 16px">
-                抵扣会员次数
-              </a>
-            </el-radio>
+<!--            <el-radio border label="balance"  style="height: 80px; width: 200px" v-if="times > 0">-->
+<!--              <a style=" line-height: 60px; padding-left: 10px;font-size: 24px">-->
+<!--                <i class="el-icon-s-custom"></i>-->
+<!--              </a>-->
+<!--              <a style=" line-height: 60px;font-size: 16px">-->
+<!--                抵扣会员次数-->
+<!--              </a>-->
+<!--            </el-radio>-->
           </el-radio-group>
-        </el-col>
-      </el-row>
-
-      <el-row  class="box">
-        <el-col span="4">
-          合计：
-        </el-col>
-        <el-col span="20">
-          <el-row>
-            <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
-<!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
-              {{this.totalAmount}}</span>元</el-col>
-          </el-row>
         </el-col>
       </el-row>
 
@@ -158,6 +174,7 @@ export default {
       type : '1',//加速服务，0 不加速， 1加速
       payType : 'ali', //0 支付宝支付， 1微信支付
       totalAmount : 1698,
+      isBalance : '0', //是否使用套餐
       data : '',
       loading : false,
       priceList : [1599, 2599, 1000],//单人主播价格、双人主播价格、双人主播用套餐差价
@@ -176,26 +193,28 @@ export default {
       this.type = val;
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
-        this.payType === 'balance' ?
+        this.isBalance === '1' ?
           this.totalAmount = this.priceList[2] + val * 99://双人主播且有套餐余量
           this.totalAmount = this.priceList[1] + val * 99; //双人主播且无套餐余量
       }
       else{
-        this.payType === 'balance'?
+        this.isBalance === '1'?
           this.totalAmount = val * 99://单人主播且有套餐余量
           this.totalAmount = this.priceList[0] + val * 99;//单人主播且无套餐余量
       }
     },
-    payType : function (val){
-      this.payType = val;
+    isBalance : function (val){
+      this.isBalance = val;
+      if(val === 1)
+        this.payType = 'balance';
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
-        this.payType === 'balance' ?
+        this.isBalance === '1' ?
           this.totalAmount = this.priceList[2] + this.type * 99://双人主播且有套餐余量
           this.totalAmount = this.priceList[1] + this.type * 99; //双人主播且无套餐余量
       }
       else{
-        this.payType === 'balance'?
+        this.isBalance === '1'?
           this.totalAmount = this.type * 99://单人主播且有套餐余量
           this.totalAmount = this.priceList[0] + this.type * 99;//单人主播且无套餐余量
       }
