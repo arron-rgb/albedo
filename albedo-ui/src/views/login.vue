@@ -79,7 +79,7 @@
     <el-dialog
       title="注册用户"
       :visible.sync="centerDialogVisible"
-      width="30%"
+      width="500px"
       center>
       <el-form ref="registerForm" :model="registerForm" label-width="80px" :rules="registerRules"
       >
