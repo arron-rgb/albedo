@@ -13,17 +13,20 @@
   </div>
 
   <!-- 反馈信息 -->
-  <div class="descriBlock">
+  <div class="descriBlock" v-if="this.balance.editTimes > 0">
     <div class="startBar">
       <el-row  class="box">
         <el-col span="4">
           视频意见：
         </el-col>
-        <el-col span="20">
+        <el-col span="6">
           <el-row>
             <el-radio label='1' v-model="satisfy">满意</el-radio>
             <el-radio label='0' v-model="satisfy">不满意</el-radio>
           </el-row>
+        </el-col>
+        <el-col span="14" style="font-size: 14px; color: #909399">
+          （您还有{{this.balance.editTimes}}次修改机会！）
         </el-col>
       </el-row>
 
@@ -39,7 +42,7 @@
       </el-row>
 
       <el-row style="margin: 50px 0"  v-if="satisfy === '0'">
-        <el-button @click="toMore" size="medium" style="width: 150px" type="primary">提交</el-button>
+        <el-button :loading="loading" @click="isSatisfy" size="medium" style="width: 150px" type="primary">提交</el-button>
       </el-row>
 
     </div>
@@ -95,7 +98,7 @@
       </el-row>
 
       <el-row style="margin: 50px 0">
-        <el-button style="width: 150px" size="medium" type="primary" @click="toMore">下一步</el-button>
+        <el-button :loading="loading" @click="toMore" size="medium" style="width: 150px" type="primary">下一步</el-button>
       </el-row>
 
     </div>
@@ -107,6 +110,9 @@
 <script>
 import stepLine from "@/components/VirtualWeb/stepLine";
 import storeApi from "@/utils/store";
+import {mapGetters} from "vuex";
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 
 export default {
   name: "addDetail",
@@ -119,6 +125,7 @@ export default {
       duration: '',
       dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
       videoData : null,
+      loading : false,
       feedback : '',
       playerOptions :	{
         playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
@@ -147,6 +154,11 @@ export default {
     }
 
   },
+  computed: {
+    ...mapGetters([
+      'balance',
+    ])
+  },
   created() {
     var videoOrder = storeApi.get({
       name: 'videoOrder',
@@ -160,7 +172,7 @@ export default {
     }
     else {
       this.videoData = videoOrder;
-      console.log(videoOrder.videoId);
+      console.log(videoOrder);
       this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
        console.log(this.playerOptions.sources[0].src);
     }
@@ -172,7 +184,41 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    isSatisfy(){//提交反馈信息
+      this.loading = true;
+      var data = {
+        editDescription : this.feedback,
+        orderId : this.videoData.id,
+        state : this.satisfy,//用户意见  1满意   0 不满意
+      }
+      return new Promise((resolve, reject) => {
+        payOrder.isAccept(data).then(res => {//保存订单并获取订单id
+          if (res.code === MSG_TYPE_SUCCESS) {
+            if(this.satisfy === '0')
+            this.$alert("您的反馈我们已收到，请你耐心等待！", '提示', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.goTo('/addOrder')
+              }
+            })
+            else {
+              switch (this.dubType){
+                case "0": this.goTo('/uploadDub');break;
+                case "1": this.goTo('/newProduct');break;
+                case "2": this.goTo('/newProduct');break;
+              }
+              resolve();
+            }
+          }
+          this.loading = false;
+        }).catch(error => {
+          reject(error)
+          this.loading = false;
+        })
+      })
+    },
     toMore(){
+      this.loading = true;
       if(this.duration === '' || this.duration === null){
         this.$alert('请先设置视频时长!', '提示', {
           confirmButtonText: '确定',
@@ -194,12 +240,9 @@ export default {
           content: this.duration,
           type: 'session'
         });
-        switch (this.dubType){
-          case "0": this.goTo('/uploadDub');break;
-          case "1": this.goTo('/newProduct');break;
-          case "2": this.goTo('/newProduct');break;
-        }
+        this.isSatisfy();
       }
+      this.loading = false;
     }
 
  }

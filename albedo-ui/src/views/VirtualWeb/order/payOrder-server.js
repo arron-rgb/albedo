@@ -62,4 +62,15 @@ export function balance() {
   })
 }
 
-export default { save, purchase, placeSecond, balance, edit }
+export function isAccept(data){
+  return request({
+    url: '/biz/order/accept',
+    method: 'get',
+    params : {
+      editDescription : data.editDescription,
+      orderId : data.orderId,
+      state : data.state,//用户意见  1满意   0 不满意
+    }
+  })
+}
+export default { save, purchase, placeSecond, balance, edit, isAccept }
