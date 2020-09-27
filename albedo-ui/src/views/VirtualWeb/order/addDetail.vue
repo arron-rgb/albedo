@@ -97,7 +97,6 @@ export default {
         sources: [{
           type: "video/mp4",
           src: null //url地址
-
         }],
         // poster: require("@/assets/VirtualWeb/NormalUser/img/videoCover.jpg"), //你的封面地址
         // width: document.documentElement.clientWidth,

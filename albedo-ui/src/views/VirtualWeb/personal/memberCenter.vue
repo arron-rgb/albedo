@@ -150,6 +150,13 @@
         </el-row>
 
       </el-card>
+  <el-dialog
+    :visible.sync="dialogVisible"
+    style=""
+    title="子账户管理"
+    width="600px"
+  >
+  </el-dialog>
 </div>
 
 </template>
@@ -165,6 +172,7 @@ export default {
   data() {
     return {
       data: {},
+      dialogVisable : true,
     }
   },
   mounted() {
