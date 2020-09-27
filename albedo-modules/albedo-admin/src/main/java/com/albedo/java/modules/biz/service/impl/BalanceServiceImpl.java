@@ -92,7 +92,6 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     if (roles.contains(BUSINESS_ADMIN_ROLE_ID) || roles.contains(BUSINESS_COMMON_ROLE_ID)) {
       String adminId = userService.getAdminIdByDeptId(deptId);
       Assert.notEmpty(adminId, ExceptionNames.ENTERPRISE_ADMIN_NOT_FOUND);
-
       try {
         if (!consumeTimes(adminId)) {
           throw new RuntimeMsgException("扣费失败");
@@ -151,7 +150,9 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setAccountAmount(plan.getChildAccount());
     dto.setAllowedCommodity(plan.getGoodsQuantity());
     dto.setAllowedStorage(plan.getStorage().doubleValue());
-    // recordRepository.selectOne()
+    dto.setAudioTime(balance.getAudioTime());
+    dto.setVideoTime(balance.getVideoTime());
+    dto.setEditTimes(balance.getEditTimes());
     return dto;
   }
 
