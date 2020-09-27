@@ -12,8 +12,41 @@
     </video-player>
   </div>
 
-  <!-- 提示开始配置，选择视频时长以及配音方式 -->
+  <!-- 反馈信息 -->
   <div class="descriBlock">
+    <div class="startBar">
+      <el-row  class="box">
+        <el-col span="4">
+          视频意见：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-radio label='1' v-model="satisfy">满意</el-radio>
+            <el-radio label='0' v-model="satisfy">不满意</el-radio>
+          </el-row>
+        </el-col>
+      </el-row>
+
+      <el-row  class="box" v-if="satisfy === '0'">
+        <el-col span="4">
+          反馈意见：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-input :rows="5" placeholder="请输入您对视频的改进意见！"  size="medium" type="textarea" v-model="feedback"></el-input>
+          </el-row>
+        </el-col>
+      </el-row>
+
+      <el-row style="margin: 50px 0"  v-if="satisfy === '0'">
+        <el-button @click="toMore" size="medium" style="width: 150px" type="primary">提交</el-button>
+      </el-row>
+
+    </div>
+  </div>
+
+  <!-- 提示开始配置，选择视频时长以及配音方式 -->
+  <div class="descriBlock" v-if="satisfy === '1'">
     <div class="blockTitle">详情配置</div>
     <div class="startBar">
       <el-row  class="box">
@@ -82,9 +115,11 @@ export default {
   },
   data() {
     return {
+      satisfy : '1',//用户意见  1满意   0 不满意
       duration: '',
       dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
       videoData : null,
+      feedback : '',
       playerOptions :	{
         playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
         autoplay: false, //如果true,浏览器准备好时开始回放。
@@ -129,7 +164,7 @@ export default {
       this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
        console.log(this.playerOptions.sources[0].src);
     }
-    console.log(videoOrder.videoId);
+    // console.log(videoOrder.videoId);
   },
   methods: {
     goTo(url, data){
@@ -189,7 +224,7 @@ export default {
     width: 100%;
   }
   .descriBlock{
-    margin:50px 0;
+    margin-bottom:50px;
     width:1200px;
     display:flex;
     flex-direction:column;
