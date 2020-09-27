@@ -120,11 +120,11 @@ public class AliPayResource {
    * @return
    */
   @ApiIgnore
-  @AnonymousAccess
+  @AnonymousAccess // 2088331270404521
   @PostMapping("/notify")
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {
-    AlipayConfig alipay = alipayService.find();
+    AlipayConfig alipay = alipayService.find(); // app_id: 2021001188668484 seller_id: 2088331270404521
     String appId = getParam(request, "app_id");
     Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
     if (alipayUtils.rsaCheck(request, alipay)) {

@@ -2,6 +2,7 @@ package com.albedo.java.modules.biz.service;
 
 import java.util.List;
 
+import com.albedo.java.common.core.util.Result;
 import org.springframework.scheduling.annotation.Async;
 
 import com.albedo.java.common.core.exception.OrderException;
@@ -112,7 +113,7 @@ public interface OrderService extends BaseService<Order> {
    * @param orderVo
    * @return
    */
-  String artificialDubbing(SubOrderVo orderVo);
+  Result<String> artificialDubbing(SubOrderVo orderVo);
 
   /**
    *

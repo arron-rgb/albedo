@@ -153,7 +153,7 @@ public class UserOrderResource extends BaseResource {
         break;
       case 1:
         // 人工配音 配音字段的属性及pojo
-        return Result.buildOkData(service.artificialDubbing(orderVo), "请前往支付链接支付，支付后等待工作人员接单即可");
+        return service.artificialDubbing(orderVo);
       case 2:
         // tts配音
         service.machineDubbing(orderVo, video);
@@ -179,8 +179,8 @@ public class UserOrderResource extends BaseResource {
 
   @ApiOperation(value = "用户确认视频")
   @GetMapping("accept")
-  public Result<String> accept(@NotEmpty(message = "请选择订单") String orderId,
-    @NotEmpty(message = "请选择是否满意") String state) {
+  public Result<String> accept(@NotEmpty(message = "请选择订单") String orderId, @NotEmpty(message = "请选择是否满意") String state,
+    String editDescription) {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     switch (state) {
@@ -196,7 +196,7 @@ public class UserOrderResource extends BaseResource {
         // 员工上传完视频后 用户决定是否需要重做
         order.setState(IN_PRODUCTION);
         String description = order.getDescription();
-        description = "【用户打回】" + description;
+        description = "【用户打回】" + editDescription + "【原订单信息】" + description;
         order.setDescription(description);
         service.updateById(order);
         return Result.buildOk("已通知员工对视频进行修改");

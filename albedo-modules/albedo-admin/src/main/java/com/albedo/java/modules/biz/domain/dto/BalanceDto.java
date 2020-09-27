@@ -57,7 +57,8 @@ public class BalanceDto {
   private Integer editTimes;
 
   /**
-   * 人工专属配音抵扣配音订单金额
+   * 人工专属配音 抵扣配音订单金额
    */
   private Integer audioTime;
+  private Integer videoTime;
 }
