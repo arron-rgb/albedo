@@ -11,6 +11,7 @@ NProgress.configure({ showSpinner: false })// NProgress Configuration
 
 const whiteList = [
   '/login',
+  '/findPassword',
   '/',
   '/proService',
 

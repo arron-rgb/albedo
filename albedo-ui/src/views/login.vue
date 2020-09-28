@@ -46,9 +46,19 @@
           <img :src="codeUrl" @click="refreshCode">
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">
-        记住我
-      </el-checkbox>
+      <el-row>
+        <el-col span="12">
+          <el-checkbox style="margin:0 0 25px 0;" v-model="loginForm.rememberMe">
+            记住我
+          </el-checkbox>
+        </el-col>
+        <el-col span="12">
+          <el-link :underline="false" @click="goTo('/findPassword')" class="forgetPsd">忘记密码</el-link>
+        </el-col>
+      </el-row>
+<!--      <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">-->
+<!--        记住我-->
+<!--      </el-checkbox>-->
       <el-form-item>
         <el-button
           :loading="loading"
@@ -299,14 +309,19 @@ export default {
       if (this.time > 0) {
         this.time--;
 //                 console.log(this.time);
-        this.btntxt=this.time+"s,后重新获取";
+        this.btntxt=this.time+"s,后获取";
         setTimeout(this.timer, 1000);
       } else{
         this.time=0;
         this.btntxt="获取验证码";
         this.disabled=false;
       }
-    }
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 }
 </script>
@@ -334,9 +349,7 @@ export default {
   background: #ffffff;
   width: 385px;
   padding: 25px 25px 5px 25px;
-  box-shadow: -4px 5px 10px rgba(0, 0, 0, 0.4);
   margin-top: 30px;
-  padding: 25px 25px 5px 25px;
   box-shadow:0 2px 12px 0 rgba(0,0,0,0.1);
   .el-input {
     height: 38px;
@@ -369,5 +382,9 @@ export default {
     cursor: pointer;
     vertical-align: middle
   }
+}
+
+.forgetPsd:hover{
+  color: #ff5000 !important;
 }
 </style>
