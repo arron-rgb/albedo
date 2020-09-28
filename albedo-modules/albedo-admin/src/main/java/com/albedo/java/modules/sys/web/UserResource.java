@@ -1,11 +1,13 @@
 package com.albedo.java.modules.sys.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.PERSONAL_USER_ROLE_ID;
 import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -25,6 +27,8 @@ import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.util.ExcelUtil;
 import com.albedo.java.common.web.resource.BaseResource;
+import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.sys.domain.RegisterUserData;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
@@ -33,6 +37,7 @@ import com.albedo.java.modules.sys.domain.dto.UserQueryCriteria;
 import com.albedo.java.modules.sys.domain.vo.UserExcelVo;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.service.SmsService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -164,9 +169,20 @@ public class UserResource extends BaseResource {
     if (add) {
       userDto.setPassword("123456");
     }
+    String id = SecurityUtil.getUser().getId();
+    List<String> roles = SecurityUtil.getRoles();
+    Assert.isFalse(roles.contains(PERSONAL_USER_ROLE_ID), "个人账号无法绑定子账号，请升级为企业账号");
+    Balance balance = balanceService.getByUserId(id);
+    Integer childAccount = balance.getChildAccount();
+    Assert.isTrue(childAccount >= 1, "子账号数量已超出套餐允许数量");
+    balance.setChildAccount(childAccount - 1);
+    balanceService.updateById(balance);
     userService.saveOrUpdate(userDto);
     return Result.buildOk(add ? "新增成功，默认密码：123456" : "修改成功");
   }
+
+  @Resource
+  BalanceService balanceService;
 
   /**
    * @param username
@@ -218,12 +234,16 @@ public class UserResource extends BaseResource {
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
   public Result<String> register(@Valid @RequestBody RegisterUserData registerUserData) {
-    if (!registerUserData.getPassword().equals(registerUserData.getRePassword())) {
-      return Result.buildFail("两次密码输入不一致");
-    }
+    Assert.isTrue(StringUtils.equals(registerUserData.getPassword(), registerUserData.getRePassword()), "两次密码输入不一致");
+    String key = "register" + registerUserData.getPhone();
+    String value = registerUserData.getVerifyCode();
+    Assert.isTrue(smsService.validated(key, value), "验证码无效");
     userService.register(registerUserData);
     return Result.buildOk("注册成功");
   }
+
+  @Resource
+  SmsService smsService;
 
   @GetMapping("generate")
   @LogOperate("获取邀请码")
@@ -250,11 +270,12 @@ public class UserResource extends BaseResource {
   public Result<Set<User>> getUserInfo() {
     String id = SecurityUtil.getUser().getId();
     List<String> roles = SecurityUtil.getRoles();
-    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), "非后台员工无法使用该接口");
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), "非后台员工无法查看");
     User user = userService.getById(id);
     Assert.notEmpty(user.getInviteCode(), "邀请码为空，无法查询");
     List<User> results = userService.list(Wrappers.<User>query().eq("invite_code", user.getInviteCode()));
     Set<User> userSet = results.stream().filter(ele -> StringUtils.equals(ele.getId(), id)).collect(Collectors.toSet());
     return Result.buildOkData(userSet);
   }
+
 }

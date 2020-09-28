@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +29,7 @@ import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordChangeVo;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
-import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.EmailService;
-import com.albedo.java.modules.tool.service.SmsService;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;
@@ -147,25 +144,6 @@ public class AccountResource extends BaseResource {
   @ApiOperation(value = "重置密码")
   public Result resetPassword(@RequestBody @Valid PasswordRestVo passwordRestVo) {
     userService.resetPassword(passwordRestVo);
-    return Result.buildOk("发送成功");
-  }
-
-  @Resource
-  SmsService smsService;
-
-  @GetMapping("/password/reset")
-  @ApiOperation("验证码重置密码")
-  public Result<String> validatedByPhone(@RequestParam String phone) {
-    String code = "reset";
-    smsService.sendMsg(phone, code, SmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
-    return Result.buildOk("发送成功");
-  }
-
-  @GetMapping("/account/register")
-  @ApiOperation("注册账号")
-  public Result<String> getCode(@RequestParam String phone) {
-    String code = "register";
-    smsService.sendMsg(phone, code, SmsEnum.REGISTER_TEMPLATE_CODE);
     return Result.buildOk("发送成功");
   }
 

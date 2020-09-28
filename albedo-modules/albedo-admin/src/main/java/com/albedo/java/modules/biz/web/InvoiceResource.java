@@ -58,7 +58,6 @@ public class InvoiceResource extends BaseResource {
    *
    * @return the Result with status 200 (OK) and with body all invoice
    */
-
   @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
   @GetMapping("list")
   @LogOperate(value = "发票抬头查询")
