@@ -212,6 +212,11 @@ public class WebOrderResource extends BaseResource {
     }).collect(Collectors.toList());
   }
 
+  @ApiOperation("员工新增订单")
+  public Result<String> addOrder() {
+    return Result.buildOk("");
+  }
+
   @Resource
   OssSingleton ossSingleton;
 }
