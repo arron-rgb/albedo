@@ -20,4 +20,14 @@ export function reset(data) {
   })
 }
 
-export default { getVerify, reset }
+export function add(data) {
+  return request({
+    url: '/sys/user/change',
+    method: 'post',
+    data : {
+      companyName : data
+    },
+  })
+}
+
+export default { getVerify, reset, add}

@@ -169,6 +169,7 @@
 
 <script>
 import crudPlan from '@/views/biz/plan/plan-service'
+import accountService from "@/views/VirtualWeb/account/account-service";
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
 import store from "@/store";
@@ -231,6 +232,8 @@ export default {
       this.$router.push({path:url, query : {func: data}});
     },
     toPurchase(item){
+      var _this = this;
+      // console.log(store.state.user);
       if(item.title === '大客户专属定制版'){
         this.$alert('即将前往客服联系页面！', '提示', {
           confirmButtonText: '确定',
@@ -240,12 +243,31 @@ export default {
         });
       }
       else{
-        if(store.getters.loginSuccess){
-          this.dialogVisible = true;
-          this.selectedPlan = JSON.parse(JSON.stringify(item));
+        if(store.getters.loginSuccess){//已登录
+          if(store.state.user.user.roleNames === '个人用户'){//个人用户购买套餐需补全企业信息
+            // console.log('补全信息');
+            this.$prompt('请输入企业/店铺名称', '补全企业信息', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+              inputErrorMessage: '企业名称不能为空'
+            }).then(({ value }) => {
+              // console.log(value);
+              _this.addCompany(value);
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '取消输入'
+              });
+            });
+          }
+          else{
+            this.dialogVisible = true;
+            this.selectedPlan = JSON.parse(JSON.stringify(item));
+          }
         }
         else{
-          this.$alert('请先登录！', '提示', {
+          this.$alert('请先登录！', '提示', {//未登录则需先登录
             confirmButtonText: '确定',
             callback: action => {
               this.goTo('/login');
@@ -253,6 +275,25 @@ export default {
           });
         }
       }
+    },
+    addCompany(companyName){
+      console.log(companyName);
+      return new Promise((resolve, reject) => {//补充企业信息
+        accountService.add(companyName).then((res) => {
+          // console.log(res)
+          this.$alert('已将账户升级为企业版，请重新登录！', '提示', {//未登录则需先登录
+            confirmButtonText: '确定',
+            callback: action => {// 重新登录
+              this.$store.dispatch('LogOut').then(() => {
+                this.$router.push({path:'/'});
+              })
+            }
+          });
+          resolve(res)
+        }).catch(error => {
+          reject(error)
+        })
+      })
     },
     beforePay(title){
       var dataIndex = this.data.findIndex(o => o.name === title);

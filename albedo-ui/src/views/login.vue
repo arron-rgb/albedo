@@ -91,7 +91,7 @@
       :visible.sync="centerDialogVisible"
       width="500px"
       center>
-      <el-form ref="registerForm" :model="registerForm" label-width="80px" :rules="registerRules"
+      <el-form :model="registerForm" :rules="registerRules" label-width="110px" ref="registerForm"
       >
         <el-form-item prop='userType' label="用户类型">
           <el-select v-model="registerForm.userType" placeholder="请选择用户类型">
@@ -99,12 +99,12 @@
             <el-option label="企业用户" value="business"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="registerForm.userType==='business'" label="企业/店铺名称">
+        <el-form-item label="企业/店铺名称" prop='newCompanyName' v-if="registerForm.userType==='business'">
           <el-input v-model="registerForm.newCompanyName" placeholder="请输入企业/店铺名称"></el-input>
         </el-form-item>
-        <el-form-item v-if="registerForm.userType==='business'" label="所属企业/店铺名称">
-          <el-input v-model="registerForm.ownedCompanyName" placeholder="请输入所属企业/店铺名称"></el-input>
-        </el-form-item>
+<!--        <el-form-item v-if="registerForm.userType==='business'" label="所属企业/店铺名称">-->
+<!--          <el-input v-model="registerForm.ownedCompanyName" placeholder="请输入所属企业/店铺名称"></el-input>-->
+<!--        </el-form-item>-->
         <el-form-item prop='username' label="用户名">
           <el-input v-model="registerForm.username" auto-complete="off" placeholder="账号" type="text">
           </el-input>
@@ -206,6 +206,7 @@ export default {
         code: [{required: true, trigger: 'blur', message: '验证码不能为空'}]
       },
       registerRules: {
+        newCompanyName: [{required: true, trigger: 'blur', message: '企业/店铺名不能为空'}],
         username: [{required: true, trigger: 'blur', message: '用户名不能为空'}],
         password: [{required: true, trigger: 'blur', message: '密码不能为空'}],
         rePassword: [{required: true, trigger: 'blur', message: '密码不能为空'}, {validator: validateConfirmPass}],

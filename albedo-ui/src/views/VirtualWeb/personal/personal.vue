@@ -18,7 +18,7 @@
           </el-menu-item>
           <el-menu-item class="myItem" index="memberCenter" v-show="showMember">
             <i class='el-icon-coin'></i>
-            <span slot="title">会员中心</span>
+            <span slot="title" >会员中心</span>
           </el-menu-item>
           <el-menu-item class="myItem" index="myOrder">
             <i class='el-icon-s-order'></i>
@@ -61,7 +61,7 @@ export default {
   },
   created() {
     // console.log(this.user);
-    if(this.user.userType === 1)
+    if(this.user.roleNames === '个人用户')
     {
       this.showMember = false;
     }
