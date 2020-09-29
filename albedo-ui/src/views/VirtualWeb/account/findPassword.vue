@@ -4,11 +4,11 @@
       找回密码
     </h3>
 
-    <el-form :model="data" :rules="dataRules" label-width="80px" v-if="step === 0">
-      <el-form-item label="用户名" prop='username'>
-        <el-input placeholder="请输入账户名" v-model="data.username">
-        </el-input>
-      </el-form-item>
+    <el-form :model="data" :rules="dataRules" label-width="80px">
+<!--      <el-form-item label="用户名" prop='username'>-->
+<!--        <el-input placeholder="请输入账户名" v-model="data.username">-->
+<!--        </el-input>-->
+<!--      </el-form-item>-->
       <el-form-item label="手机号" prop="phone">
         <el-input placeholder="请输入手机号" v-model="data.phone"></el-input>
       </el-form-item>
@@ -27,25 +27,26 @@
           </el-col>
         </el-col>
       </el-form-item>
-      <el-button @click="verity" style="width: 120px" type="primary" >下一步</el-button>
-    </el-form>
-
-    <el-form :model="changeForm" :rules="changeFormRules" label-width="80px" v-else>
       <el-form-item label="密码" prop='password'>
-        <el-input placeholder="请输入密码" type="password" v-model="changeForm.password">
+        <el-input placeholder="请输入密码" type="password" v-model="data.password">
         </el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop='rePassword'>
-        <el-input placeholder="请再次输入密码" type="password" v-model="changeForm.rePassword">
+        <el-input placeholder="请再次输入密码" type="password" v-model="data.rePassword">
         </el-input>
       </el-form-item>
-      <el-button style="width: 120px" type="primary" >提交</el-button>
+      <el-button @click="save" style="width: 120px" type="primary" >提交</el-button>
+      <el-button @click="this.step = 1" style="width: 120px" type="primary" >下一步</el-button>
     </el-form>
+
+<!--    <el-form :model="changeForm" :rules="changeFormRules" label-width="80px" v-else>-->
+
+<!--    </el-form>-->
   </div>
 </template>
 
 <script>
-import loginService from "@/api/login";
+import accountService from "@/views/VirtualWeb/account/account-service";
 
 export default {
   name: "findPassword",
@@ -62,27 +63,23 @@ export default {
     };
     return {
       data:{
-        username : '',
+        // username : '',
         phone : '',
         verifyCode : '',
-      },
-      changeForm:{
         password : '',
         rePassword : '',
       },
       btntxt : '获取验证码',
       time : 60,
-      step : 0,
+      // step : 0,
       disabled : false,
       dataRules:{
-        username: [{required: true, trigger: 'blur', message: '用户名不能为空'}],
+        // username: [{required: true, trigger: 'blur', message: '用户名不能为空'}],
         phone: [{required: true, length : 11, trigger: 'blur', message: '请输入11位手机号'}],
-        verifyCode: [{required: true, length : 6, trigger: 'blur', message: '请输入6位验证码'}]
-      },
-      changeFormRules :{
+        verifyCode: [{required: true, length : 6, trigger: 'blur', message: '请输入6位验证码'}],
         password: [{required: true, trigger: 'blur', message: '密码不能为空'}],
         rePassword: [{required: true, trigger: 'blur', message: '密码不能为空'}, {validator: validateConfirmPass}],
-      }
+      },
     }
   },
   methods:{
@@ -100,7 +97,7 @@ export default {
     },
     //验证手机号码部分
     sendcode(){
-      if(this.registerForm.phone === ''){
+      if(this.data.phone === ''){
         this.$alert('请输入手机号码！', '提示', {
           confirmButtonText: '确定',
         });
@@ -112,7 +109,7 @@ export default {
       this.timer();
 
       return new Promise((resolve, reject) => {//获取验证码
-        loginService.getVerify(this.registerForm.phone).then((res) => {
+        accountService.getVerify(this.data.phone).then((res) => {
           resolve(res)
         }).catch((err) => {
           reject(err)
@@ -131,9 +128,32 @@ export default {
         this.disabled=false;
       }
     },
-    verity(){
-      this.step = 1;
-    }
+    save(){
+      var data = {
+        code: this.data.verifyCode,
+        password: this.data.password,
+        phone: this.data.phone,
+        rePassword: this.data.rePassword,
+      }
+      return new Promise((resolve, reject) => {//重置密码
+        accountService.reset(data).then((res) => {
+          resolve(res)
+          this.$alert('密码已重置，请重新登录！', '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.goTo('/login')
+            }
+          });
+        }).catch((err) => {
+          reject(err)
+        })
+      });
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 }
 </script>

@@ -14,7 +14,7 @@ export const constantRouterMap = [
   {
     path: '/findPassword',
     meta: { title: '找回密码', noCache: true, showHeader: true },
-    component: (resolve) => require(['@/views/VirtualWeb/exhibition/findPassword'], resolve),
+    component: (resolve) => require(['@/views/VirtualWeb/account/findPassword'], resolve),
     hidden: true
   },
   {
