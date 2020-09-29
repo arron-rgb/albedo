@@ -49,6 +49,7 @@ import com.albedo.java.modules.sys.repository.UserRepository;
 import com.albedo.java.modules.sys.service.DeptRelationService;
 import com.albedo.java.modules.sys.service.DeptService;
 import com.albedo.java.modules.sys.util.SysCacheUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -163,10 +164,11 @@ public class DeptServiceImpl extends TreeServiceImpl<DeptRepository, Dept, DeptD
   }
 
   @Override
-  @Cacheable(key = "'findTreeNode:' + #p0")
+  // @Cacheable(key = "'findTreeNode:' + #p0")
   public <Q> List<TreeNode> findTreeNode(Q queryCriteria) {
-    return super.getNodeTree(repository.selectList(QueryWrapperUtil.<Dept>getWrapper(queryCriteria).lambda()
-      .eq(Dept::getAvailable, CommonConstants.STR_YES).orderByAsc(Dept::getSort)));
+    LambdaQueryWrapper<Dept> queryWrapper = QueryWrapperUtil.<Dept>getWrapper(queryCriteria).lambda()
+      .eq(Dept::getAvailable, CommonConstants.STR_YES).orderByAsc(Dept::getSort);
+    return super.getNodeTree(repository.selectList(queryWrapper));
   }
 
   @Override

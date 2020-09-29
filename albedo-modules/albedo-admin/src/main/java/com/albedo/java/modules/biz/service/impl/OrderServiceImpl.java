@@ -360,12 +360,11 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = new Order();
     order.setTotalAmount(totalAmount.toString());
     order.setType(DUBBING);
-
     order.setUserId(userId);
     order.setContent(content);
     order.setDescription(String.valueOf(orderVo.getVoiceType()));
     order.setVideoId(orderVo.getOrderId());
-    order.setState(NOT_STARTED);
+    order.setState(UNPAID_ORDER);
     baseMapper.insert(order);
 
     if (balance != null) {
@@ -374,6 +373,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       if (audioTime > minutes) {
         balance.setAudioTime(audioTime - minutes);
         balanceService.updateById(balance);
+        order.setState(NOT_STARTED);
+        baseMapper.updateById(order);
         return Result.buildOk("支付成功，请等待工作人员接单");
       }
     }

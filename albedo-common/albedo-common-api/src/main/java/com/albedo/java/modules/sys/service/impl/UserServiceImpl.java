@@ -523,4 +523,10 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     }
   }
 
+  @Override
+  public String resetPassword(User user) {
+    String encodePassword = passwordEncoder.encode(user.getPassword());
+    user.setPassword(encodePassword);
+    return updateById(user) ? "更新成功，请重新登录" : "更新失败，请联系网站管理员";
+  }
 }

@@ -212,4 +212,6 @@ public interface UserService extends DataService<User, UserDto, String> {
   String getAdminIdByDeptId(String deptId);
 
   String getBucketName(String userId);
+
+  String resetPassword(User user);
 }

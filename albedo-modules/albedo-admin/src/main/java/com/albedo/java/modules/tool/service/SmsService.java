@@ -15,7 +15,7 @@ public interface SmsService {
    * @param code
    *          redis中的value
    */
-  void validated(String key, String code);
+  boolean validated(String key, String code);
 
   /**
    * 发送消息

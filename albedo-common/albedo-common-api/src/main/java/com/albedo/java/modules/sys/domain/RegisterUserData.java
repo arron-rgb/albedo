@@ -14,7 +14,6 @@ public class RegisterUserData {
    */
   @NotBlank
   private String userType;
-  private String companyName;
   @NotBlank
   private String username;
   @NotBlank
@@ -22,7 +21,7 @@ public class RegisterUserData {
   @NotBlank
   private String rePassword;
   private String phone;
-  private int verifyCode;
+  private String verifyCode;
   /**
    * 邀请码
    */

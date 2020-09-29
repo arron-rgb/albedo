@@ -41,8 +41,17 @@ public interface BusinessConstants {
    */
   String DUBBING = "2";
 
+  /**
+   * 支付类型 订单 配音
+   */
   String DUBBING_TYPE = "2";
+  /**
+   * 支付类型 订单 视频
+   */
   String ORDER_TYPE = "1";
+  /**
+   * 支付类型 套餐
+   */
   String PLAN_TYPE = "0";
 
   String PERSONAL_TYPE = "1";

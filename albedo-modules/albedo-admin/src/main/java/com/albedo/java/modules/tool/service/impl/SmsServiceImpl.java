@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.constant.CommonConstants;
-import com.albedo.java.common.core.exception.BadRequestException;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.SmsService;
@@ -27,12 +26,12 @@ public class SmsServiceImpl implements SmsService {
   SmsSingleton smsSingleton;
 
   @Override
-  public void validated(String key, String code) {
+  public boolean validated(String key, String code) {
     Object value = RedisUtil.getCacheString(key);
     if (value == null || !value.toString().equals(code)) {
-      throw new BadRequestException("无效验证码");
+      return false;
     } else {
-      RedisUtil.delete(key);
+      return RedisUtil.delete(key);
     }
   }
 

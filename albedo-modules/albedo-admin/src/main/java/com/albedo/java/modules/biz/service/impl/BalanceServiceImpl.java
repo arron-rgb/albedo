@@ -135,6 +135,9 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     String id = SecurityUtil.getUser().getId();
     String deptId = SecurityUtil.getUser().getDeptId();
     Balance balance = getByUserId(id);
+    if (balance == null) {
+      return null;
+    }
     BalanceDto dto = new BalanceDto();
     dto.setTimes(balance.getTimes());
     dto.setAccountAvailable(balance.getChildAccount());
