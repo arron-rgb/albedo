@@ -16,7 +16,7 @@
 <!--        <p class="mouseover_button"  style="background-color: #99c2fb">虚拟直播</p>-->
 <!--        <p class="mouseover_button" style="background-color: #c9bafb">虚拟场景</p>-->
 <!--        <p class="mouseover_button" style="background-color: #fbb9ab">智能详情匹配</p>-->
-        <p :class="{active:i === isShow}" :key="i" @mouseover="mouseover(i)"  class="mouseover_button" v-for="(item,i) in virtual">{{item.title}}</p>
+        <p :class="{active:i === isShow}" :key="i" @mouseover="mouseover(i)"  class="mouseover_button" v-for="(item,i) in virtual.row">{{item.title}}</p>
       </el-aside>
       <el-main>
 <!--        static.vlivest.com/3e5c8a0c8bd70742c5af00782176f782.png-->
@@ -25,8 +25,8 @@
             <div class="showBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">-->
 
-              <el-carousel :autoplay="false" @change="carouselChange" direction="vertical" indicator-position="none" ref="carousel" style="margin-top: 10px;height: 410px">
-                <el-carousel-item :key="i" style="height: 410px" v-for="(item,i) in virtual" >
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="carousel" style="margin-top: 10px;height: 410px">
+                <el-carousel-item :key="i" style="height: 410px" v-for="(item,i) in virtual.row" >
 <!--                  <img style="background-size: cover; width: 100%" :src="item.img">-->
                   <div class='videoPlayer'>
                     <video-player  :options="{
@@ -53,24 +53,28 @@
           <el-col span="4">
             <div class="phoneBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif">-->
-              <div class='videoPhone'>
-                <video-player  :options="{
-                                     autoplay: true,
-                                     loop: true,
-                                     preload: 'auto',
-                                     aspectRatio: '9:16',
-                                     fluid: true,
-                                     sources:[{
-                                       type : 'video/mp4',
-                                       src : this.phoneVideo,
-                                     }],
-                                     controlBar: false
-                                   }"
-                               :playsinline="true"
-                               class="video-player vjs-custom-skin"
-                               ref="videoPlayer">
-                </video-player>
-              </div>
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="carousel" style="">
+                <el-carousel-item  :key="i" style="" v-for="(item,i) in virtual.col" >
+                  <div class='videoPhone' >
+                    <video-player :options="{
+                                         autoplay: true,
+                                         loop: true,
+                                         preload: 'auto',
+                                         aspectRatio: '9:16',
+                                         fluid: true,
+                                         sources:[{
+                                           type : 'video/mp4',
+                                           src : item.video,
+                                         }],
+                                         controlBar: false
+                                       }"
+                                   :playsinline="true"
+                                   class="video-player vjs-custom-skin"
+                                   ref="videoPlayer">
+                    </video-player>
+                  </div>
+                </el-carousel-item>
+              </el-carousel>
             </div>
           </el-col>
         </el-row>
@@ -229,12 +233,18 @@ export default {
   },
   data(){
     return {
-      virtual:[{title: '虚拟直播', video: 'http://static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4'},
+      virtual:{
+        row : [{title: '虚拟直播', video: 'http://static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4'},
         {title: '虚拟场景', video: 'http://static.vlivest.com/2a9bbd83769bf4db3fda097695e8094c.mp4'},
         {title: '智能详情匹配', video: 'http://static.vlivest.com/040ad337da31ea7bfd5a4c07d5d9bb1e.mp4'}],
+        col : [
+          {video : 'http://static.vlivest.com/3dcdcec5e2dd0edfc2d805ec9c318658.mp4'},
+          {video : 'http://static.vlivest.com/56d5a2a5605031ff5a3d5b929e4f4b3a.mp4'},
+          {video : 'http://static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4'},
+        ]
+      },
 
       // carousel:[{img:require(''), url: ''}],
-      phoneVideo : 'http://static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4',
       isShow: 0,
       carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
         {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
