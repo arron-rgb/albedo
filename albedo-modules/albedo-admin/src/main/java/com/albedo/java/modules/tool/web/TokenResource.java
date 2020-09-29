@@ -1,5 +1,6 @@
 package com.albedo.java.modules.tool.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_ADMIN_ROLE_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.PERSONAL_USER_ROLE_ID;
 
 import java.time.Duration;
@@ -10,13 +11,16 @@ import javax.validation.constraints.NotEmpty;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.sys.domain.Dept;
 import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.DeptService;
+import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.SmsService;
@@ -74,21 +78,31 @@ public class TokenResource {
   }
 
   @PostMapping("sys/user/change")
+  @Transactional(rollbackFor = Exception.class)
   @ApiOperation("个人用户更改为企业用户")
   public Result<String> change(@RequestBody ChangeBody body) {
     String id = SecurityUtil.getUser().getId();
     List<String> roles = SecurityUtil.getRoles();
-    Assert.isFalse(roles.contains(PERSONAL_USER_ROLE_ID), "不含个人用户角色的账号无法升级");
+    Assert.isTrue(roles.contains(PERSONAL_USER_ROLE_ID), "不含个人用户角色的账号无法升级");
     Dept dept = new Dept();
     dept.setAvailable(1);
     dept.setName(body.getCompanyName());
     dept.setParentId("-1");
     boolean save = deptService.save(dept);
+
+    userRoleService.removeRoleByUserId(id);
+    UserRole userRole = new UserRole();
+    userRole.setUserId(id);
+    userRole.setRoleId(BUSINESS_ADMIN_ROLE_ID);
+    save = save && userRole.insert();
     User user = userService.getById(id);
     user.setDeptId(dept.getId());
     save = save && userService.updateById(user);
     return save ? Result.buildOk("更改成功") : Result.buildFail("更改失败");
   }
+
+  @Resource
+  UserRoleService userRoleService;
 
   @Data
   static class ChangeBody {
