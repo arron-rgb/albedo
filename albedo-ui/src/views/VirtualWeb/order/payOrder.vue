@@ -112,7 +112,8 @@
           <el-row>
             <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
 <!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
-              {{this.totalAmount}}</span>元</el-col>
+              {{this.totalAmount}}</span>元
+            </el-col>
           </el-row>
         </el-col>
       </el-row>

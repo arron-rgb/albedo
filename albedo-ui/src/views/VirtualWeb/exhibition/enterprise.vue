@@ -143,7 +143,7 @@
             <p class="tableText">{{i}}</p>
           </tr>
           <tr>
-            <p class="tableText">总价</p>
+            <p class="tableText">价格</p>
           </tr>
         </td>
         <td class="data">
@@ -155,13 +155,39 @@
           </tr>
         </td>
       </table>
+      <el-form  style="margin-left: 90px; margin-top: 10px; margin-bottom: 10px">
+        <el-form-item label="优惠券" prop="verifyCode">
+          <el-row>
+            <el-col span="12">
+              <el-input
+                :length="6"
+                v-model="discountCode">
+              </el-input>
+            </el-col>
+            <el-col span="4">
+              <el-button  @click="verifyDiscount">
+                验证
+              </el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
       <div style="margin: 10px 0 30px 0">
         <span style="font-size: 14px; color: #909399;">
           tips：套餐中”标准版视频制作次数“仅为单人主播，双人主播每单需另支付￥1000元！
         </span>
       </div>
-      <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button @click="beforePay(selectedPlan.title)" type="primary">支  付</el-button>
+      <el-row>
+        <el-col span="12">
+          总计￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
+<!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
+              {{this.totalAmount}}</span>元（已优惠{{this.selectedPlan.price - this.totalAmount}}元）
+        </el-col>
+        <el-col span="12">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button @click="beforePay(selectedPlan.title)" type="primary">支  付</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
 
   </div>
@@ -200,6 +226,9 @@ export default {
       data: [],
       dialogVisible : false,
       selectedPlan : {},
+      discountCode : '',//优惠券码
+      discount : 1,
+      totalAmount : 0,
     }
   },
   created() {
@@ -264,6 +293,7 @@ export default {
           else{
             this.dialogVisible = true;
             this.selectedPlan = JSON.parse(JSON.stringify(item));
+            this.totalAmount = this.selectedPlan.price * this.discount;
           }
         }
         else{
@@ -276,14 +306,19 @@ export default {
         }
       }
     },
+    verifyDiscount(){//验证优惠券码
+
+    },
     addCompany(companyName){
       console.log(companyName);
       return new Promise((resolve, reject) => {//补充企业信息
         accountService.add(companyName).then((res) => {
           // console.log(res)
+          // store.state.user.user.roleName = '企业管理员'
           this.$alert('已将账户升级为企业版，请重新登录！', '提示', {//未登录则需先登录
             confirmButtonText: '确定',
             callback: action => {// 重新登录
+          //     store.state.user.user.roleName = '企业管理员'
               this.$store.dispatch('LogOut').then(() => {
                 this.$router.push({path:'/'});
               })
