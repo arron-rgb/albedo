@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 
+import com.albedo.java.modules.sys.util.SysCacheUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,6 +99,7 @@ public class TokenResource {
     User user = userService.getById(id);
     user.setDeptId(dept.getId());
     save = save && userService.updateById(user);
+	  SysCacheUtil.delBaseUserCaches(user.getDeptId(), user.getUsername());
     return save ? Result.buildOk("更改成功") : Result.buildFail("更改失败");
   }
 

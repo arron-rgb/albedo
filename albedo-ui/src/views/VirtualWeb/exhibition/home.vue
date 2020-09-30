@@ -25,7 +25,7 @@
             <div class="showBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">-->
 
-              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="carousel" style="margin-top: 10px;height: 410px">
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="screenCarousel" style="margin-top: 10px;height: 410px">
                 <el-carousel-item :key="i" style="height: 410px" v-for="(item,i) in virtual.row" >
 <!--                  <img style="background-size: cover; width: 100%" :src="item.img">-->
                   <div class='videoPlayer'>
@@ -53,7 +53,7 @@
           <el-col span="4">
             <div class="phoneBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif">-->
-              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="carousel" style="">
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="phoneCarousel" style="">
                 <el-carousel-item  :key="i" style="" v-for="(item,i) in virtual.col" >
                   <div class='videoPhone' >
                     <video-player :options="{
@@ -280,7 +280,8 @@ export default {
 
   methods: {
     mouseover(key){//button绑定走马灯
-      this.$refs.carousel.setActiveItem(key);
+      this.$refs.screenCarousel.setActiveItem(key);
+      this.$refs.phoneCarousel.setActiveItem(key);
       this.isShow = key;
     },
     carouselChange(key){//走马灯绑定button
