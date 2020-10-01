@@ -1,6 +1,53 @@
 <template>
 <div class="memberCenter">
     <div class="pageTitle">您好，{{data.planName}}会员</div>
+  {{this.dialogVisible}}
+
+  <el-dialog
+    :visible.sync="manageVisible"
+    style=""
+    title="子账户管理"
+
+    width="730px"
+  >
+<!--    {{this.userId}}-->
+    <el-table
+      :data="accountList"
+      :default-sort = "{prop: 'createdDate', order: 'descending'}"
+      stripe="true"
+      style="overflow-y: scroll;height: 500px"
+      v-loading="tableLoading"
+    >
+      <el-table-column
+        label="用户名"
+        prop="username"
+        sortable>
+      </el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="createdDate"
+        sortable>
+      </el-table-column>
+      <el-table-column
+        label="电子邮箱"
+        prop="email"
+        sortable>
+      </el-table-column>
+      <el-table-column
+        label="联系电话"
+        prop="phone"
+        sortable>
+      </el-table-column>
+      <el-table-column
+        label="操作">
+        <template slot-scope="props">
+          <el-button :disabled="userId === props.row.id" :loading="delLoading"  @click="deleteAccount(props.row.id)" slot="reference">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+  </el-dialog>
+
       <el-card class="infoCard" shadow="hover">
 
         <el-row class="infoBar">
@@ -113,7 +160,7 @@
                 {{data.accountAvailable}} / {{data.accountAmount}}
               </el-col>
               <el-col span="8" v-if="this.userType !== '1'">
-                <el-button @click="subAccountDialog = true">新增</el-button>
+                <el-button @click="addVisible = true">新增</el-button>
                 <el-button @click="manage" type="primary">管理</el-button>
               </el-col>
             </el-row>
@@ -152,9 +199,9 @@
 
       </el-card>
 <!--  新增子用户-->
+<!--  el-dialog 绑定 visible 不能加this-->
   <el-dialog
-    :visible.sync="subAccountDialog"
-    style=""
+    :visible.sync="addVisible"
     title="子账户添加"
     width="600px"
   >
@@ -189,18 +236,12 @@
       </el-form-item>
     </el-form>
     <div class="dialog-footer" slot="footer">
-      <el-button @click="" type="text">取消</el-button>
+<!--      <el-button @click="">取消</el-button>-->
       <el-button :loading="loading" @click="saveAccount" type="primary">确认</el-button>
     </div>
   </el-dialog>
 
-  <el-dialog
-    :visible.sync="dialogVisible"
-    style=""
-    title="子账户管理"
-    width="600px"
-  >
-  </el-dialog>
+
 </div>
 
 </template>
@@ -214,22 +255,16 @@ import crudUser from '@/views/sys/user/user-service'
 import crudDept from '@/views/sys/dept/dept-service'
 //import echarts
 export default {
-  name: "menmberCenter",
+  name: "memberCenter",
   data() {
     return {
-      validPhone: (rule, value, callback) => {
-        if (!value) {
-          callback(new Error('请输入电话号码'))
-        } else if (!validate.isvalidPhone(value)) {
-          callback(new Error('请输入正确的11位手机号码'))
-        } else {
-          callback()
-        }
-      },
+      tableLoading :false,
+      manageVisible : false,
+      addVisible : false,
       data: {},
       loading : false,
-      dialogVisable : true,
-      subAccountDialog : false,
+      delLoading : false,
+      accountList : [],
     // {"id":null,"username":"11","email":"willemgavin@foxmail.com",
       // "available":"",
       // "roleIdList":["49dbe45a4e2a06a56730851e0c87f166"],
@@ -241,12 +276,23 @@ export default {
         roleIdList : ['49dbe45a4e2a06a56730851e0c87f166'],
         deptId : '',
         phone : '',
-      }
+      },
+      userId : '',
+      validPhone: (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('请输入电话号码'))
+        } else if (!validate.isvalidPhone(value)) {
+          callback(new Error('请输入正确的11位手机号码'))
+        } else {
+          callback()
+        }
+      },
     }
   },
   mounted() {
     this.getBalance();
-    console.log(this.user);
+    // console.log(this.user);
+    this.userId = this.user.id;
     this.buildStorageCharts();
   },
   computed: {
@@ -365,8 +411,8 @@ export default {
       });
     },
     manage(){//打开管理页面的同时查看最新的list
-      this.dialogVisible = true;
       this.getAccountList();
+      this.manageVisible = true;
     },
     getAccountList(){
       // code: 1
@@ -377,29 +423,35 @@ export default {
       // label: "xx科技"
       // parentId: "-1"
       // message: ""
+      this.tableLoading = true;
       var query = {
         deptIds : this.user.deptId
       }
       return new Promise((resolve, reject) => {//删除子账户
-        crudDept.getDepts(query).then((res) => {
+        crudUser.page(query).then((res) => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.getAccountList();//更新子账户的list
+            this.accountList = res.data.records;
+            this.tableLoading = false;
           }
           resolve(res)
         }).catch((err) => {
+          this.tableLoading = false;
           reject(err)
         })
       });
     },
     deleteAccount(id){
+      this.delLoading = true;
       var data = [id];
       return new Promise((resolve, reject) => {//删除子账户
         crudUser.del(data).then((res) => {
-          if(res.code === MSG_TYPE_SUCCESS){
-            this.getAccountList();//更新子账户的list
-          }
+          // if(res.code === MSG_TYPE_SUCCESS){
+          //   this.getAccountList();//更新子账户的list
+          // }
+          this.delLoading = false;
           resolve(res)
         }).catch((err) => {
+          this.delLoading = false;
           reject(err)
         })
       });
