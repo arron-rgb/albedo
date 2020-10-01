@@ -93,7 +93,7 @@
     </div>
     <!--套餐展示栏-->
     <div class="price">
-
+<!--        {{this.data}}-->
       <img src="http://static.vlivest.com/495e1465d84fbc724d5f8e621831241d.jpg" style="width: 1200px;margin: 20px auto">
 
 <!--      <div class="price_title">套餐资费</div>-->
@@ -210,18 +210,18 @@ export default {
           "在线制作协议", "在线发票服务","账号存储空间", "制作渲染效率",
           "授权类型", "授权期限", "授权协议"]},
       priceData: [
-        {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
-            "无限", "/", "2h/条","有", "3","有", "有","5G",
-             "高","商用", "30天", "有"]},
-        {title : "升级版", price : "7699", oldPrice : "9599", contain : ["有", "有", "6", "/", "0", "200", "无限",
-            "无限", "/", "2h/条","有", "3","有", "有","8G",
-             "高","商用", "30天", "有"]},
-        {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["有", "有", "12", "1", "1", "无限", "无限",
-            "无限", "30min", "4h/条","有", "5","有", "有","10G",
-             "极高","商用", "60天", "有"]},
-        {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
-            "无限", "60min", "无限","有", "5","有", "有","100G",
-             "极高","商用", "无限", "有"]},
+        // {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
+        //     "无限", "/", "2h/条","有", "3","有", "有","5G",
+        //      "高","商用", "30天", "有"]},
+        // {title : "升级版", price : "7699", oldPrice : "9599", contain : ["有", "有", "6", "/", "0", "200", "无限",
+        //     "无限", "/", "2h/条","有", "3","有", "有","8G",
+        //      "高","商用", "30天", "有"]},
+        // {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["有", "有", "12", "1", "1", "无限", "无限",
+        //     "无限", "30min", "4h/条","有", "5","有", "有","10G",
+        //      "极高","商用", "60天", "有"]},
+        // {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
+        //     "无限", "60min", "无限","有", "5","有", "有","100G",
+        //      "极高","商用", "无限", "有"]},
       ],
       data: [],
       dialogVisible : false,
@@ -248,6 +248,33 @@ export default {
         crudPlan.list().then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
+            var planData = [
+              {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
+                  "无限", "/", "2h/条","有", "3","有", "有","5G",
+                  "高","商用", "30天", "有"]},
+              {title : "升级版", price : "7699", oldPrice : "9599", contain : ["有", "有", "6", "/", "0", "200", "无限",
+                  "无限", "/", "2h/条","有", "3","有", "有","8G",
+                  "高","商用", "30天", "有"]},
+              {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["有", "有", "12", "1", "1", "无限", "无限",
+                  "无限", "30min", "4h/条","有", "5","有", "有","10G",
+                  "极高","商用", "60天", "有"]},
+              {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
+                  "无限", "60min", "无限","有", "5","有", "有","100G",
+                  "极高","商用", "无限", "有"]},
+            ];
+            for(var i = 0; i < 4; i++ ) {
+              if(i !== 3) planData[i].price = res.data[i].price;
+              planData[i].title = res.data[i].name;
+              res.data[i].times > 9999 ? planData[i].contain[2] = '无限' : planData[i].contain[2] = res.data[i].times;
+              res.data[i].customTimes === 0 ? planData[i].contain[3] = '/' : planData[i].contain[3] = res.data[i].customTimes;
+              planData[i].contain[4] = res.data[i].editTime;
+              res.data[i].goodsQuantity > 9999 ? planData[i].contain[5] = '无限' : planData[i].contain[5] = res.data[i].goodsQuantity;
+              res.data[i].audioTime === 0 ? planData[i].contain[8] = '/' : planData[i].contain[8] = res.data[i].audioTime + 'min';
+              planData[i].contain[9] = res.data[i].videoTime + 'h/条';
+              planData[i].contain[11] = res.data[i].childAccount;
+              planData[i].contain[14] = res.data[i].storage + 'G';
+            }
+            this.priceData = planData;
             this.data = res.data
           }
         }).catch(error => {
