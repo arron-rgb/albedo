@@ -15,7 +15,7 @@
       :data="accountList"
       :default-sort = "{prop: 'createdDate', order: 'descending'}"
       stripe="true"
-      style="overflow-y: scroll;height: 500px"
+      style="height: 500px"
       v-loading="tableLoading"
     >
       <el-table-column
@@ -381,7 +381,7 @@ export default {
               }
             },
             {
-              name: '已使用\n' + this.data.accountAvailable * 100/this.data.accountAmount + '%',
+              name: '已使用\n' + (this.data.accountAvailable - this.data.accountAmount) * 100/this.data.accountAmount + '%',
               value: this.data.accountAmount - this.data.accountAvailable,
               label:{
                 normal : {
@@ -402,7 +402,8 @@ export default {
       return new Promise((resolve, reject) => {//保存子账户
         crudUser.save(this.form).then((res) => {
           if(res.code === MSG_TYPE_SUCCESS){//新增的账户默认密码为 ‘123456’
-            this.getAccountList();//更新子账户的list
+            // this.getAccountList();//更新子账户的list
+            this.addVisible = false;
           }
           resolve(res)
         }).catch((err) => {
@@ -446,7 +447,7 @@ export default {
       return new Promise((resolve, reject) => {//删除子账户
         crudUser.del(data).then((res) => {
           // if(res.code === MSG_TYPE_SUCCESS){
-          //   this.getAccountList();//更新子账户的list
+            this.getAccountList();//更新子账户的list
           // }
           this.delLoading = false;
           resolve(res)
