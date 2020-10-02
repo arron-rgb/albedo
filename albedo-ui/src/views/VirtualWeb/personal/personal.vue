@@ -34,7 +34,7 @@
           </el-menu-item>
         </el-menu>
       </el-col>
-      <el-col :span="19" class='showText'>
+      <el-col :span="19" class='showText'  style="overflow-y: auto">
         <router-view></router-view>
       </el-col>
     </el-row>

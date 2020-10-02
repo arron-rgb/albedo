@@ -74,7 +74,7 @@
                   </el-col>
                   <el-col span="12">
                     <a @click="$refs.pass.dialog = true">修改密码</a>
-                    <a @click="$refs.email.dialog = true">修改邮箱</a>
+<!--                    <a @click="$refs.email.dialog = true">修改邮箱</a>-->
                   </el-col>
                 </el-row>
               </li>
