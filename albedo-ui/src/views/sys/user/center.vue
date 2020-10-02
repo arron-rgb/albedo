@@ -103,6 +103,10 @@
                   <el-input v-model="form.phone" style="width: 35%;"/>
                   <span style="color: #C0C0C0;margin-left: 10px;">手机号码不能重复</span>
                 </el-form-item>
+<!--                <el-form-item label="邮箱" prop="email">-->
+<!--                  <el-input v-model="form.email" style="width: 35%;"/>-->
+<!--                  <span style="color: #C0C0C0;margin-left: 10px;">邮箱不能重复</span>-->
+<!--                </el-form-item>-->
                 <el-form-item label="备注" prop="description">
                   <el-input v-model="form.description" style="width: 35%;" type="textarea"/>
                 </el-form-item>
@@ -212,6 +216,9 @@ export default {
         ],
         phone: [
           {required: true, trigger: 'blur', validator: validPhone}
+        ],
+        email: [
+          {required: true, trigger: 'blur', message: '请输入邮箱',}
         ]
       }
     }
@@ -227,6 +234,7 @@ export default {
       id: this.user.id,
       nickname: this.user.nickname,
       description: this.user.description,
+      email : this.user.email,
       phone: this.user.phone
     }
     //是否显示日志
