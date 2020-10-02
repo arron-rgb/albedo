@@ -270,7 +270,7 @@ export default {
               planData[i].contain[4] = res.data[i].editTime;
               res.data[i].goodsQuantity > 9999 ? planData[i].contain[5] = '无限' : planData[i].contain[5] = res.data[i].goodsQuantity;
               res.data[i].audioTime === 0 ? planData[i].contain[8] = '/' : planData[i].contain[8] = res.data[i].audioTime + 'min';
-              planData[i].contain[9] = res.data[i].videoTime + 'h/条';
+              res.data[i].videoTime > 9999 ? planData[i].contain[9] = '无限' : planData[i].contain[9] = res.data[i].videoTime + 'h/条';
               planData[i].contain[11] = res.data[i].childAccount;
               planData[i].contain[14] = res.data[i].storage + 'G';
             }

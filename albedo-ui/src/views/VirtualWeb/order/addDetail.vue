@@ -58,8 +58,8 @@
         </el-col>
         <el-col span="20">
           <el-row>
-            <el-input-number v-model="duration" size="medium"  :min="1" :max="120" label="设置视频时长"></el-input-number>
-             分钟 （允许范围：1-120分钟）
+            <el-input-number :max="this.timeMax" :min="1"  label="设置视频时长" size="medium" v-model="duration"></el-input-number>
+             分钟 （允许范围：1-{{this.timeMax}}分钟）
           </el-row>
         </el-col>
       </el-row>
@@ -127,6 +127,7 @@ export default {
       videoData : null,
       loading : false,
       feedback : '',
+      timeMax : 120,
       playerOptions :	{
         playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
         autoplay: false, //如果true,浏览器准备好时开始回放。
@@ -171,6 +172,8 @@ export default {
       );
     }
     else {
+      if(this.balance.planName === '旗舰版')
+        this.timeMax = 480;
       this.videoData = videoOrder;
       console.log(videoOrder);
       this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
