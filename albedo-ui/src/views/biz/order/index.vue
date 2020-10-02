@@ -19,35 +19,35 @@
       <el-form ref="form" :inline="true" :model="form" label-width="120px" size="small">
         <el-form-item label="用户id" prop="userId" :rules="[{required: true,message: '请输入用户id', trigger: 'blur'},{min: 0,max: 32,message: '长度在 0 到 32 个字符', trigger: 'blur'},]">
               <el-input v-model="form.userId" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="订单状态，见OrderStatus" prop="state" :rules="[{validator:validateDigits},]">
               <el-input v-model="form.state" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="订单类型" prop="type" :rules="[{min: 0,max: 255,message: '长度在 0 到 255 个字符', trigger: 'blur'},]">
               <el-input v-model="form.type" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="负责员工" prop="staffId" :rules="[{min: 0,max: 32,message: '长度在 0 到 32 个字符', trigger: 'blur'},]">
               <el-input v-model="form.staffId" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="视频链接" prop="videoId" :rules="[{min: 0,max: 32,message: '长度在 0 到 32 个字符', trigger: 'blur'},]">
               <el-input v-model="form.videoId" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="表单内容" prop="content" :rules="[]">
               <el-input type="textarea" v-model="form.content"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="备注" prop="description" :rules="[{min: 0,max: 255,message: '长度在 0 到 255 个字符', trigger: 'blur'},]">
               <el-input v-model="form.description" class="input-small"></el-input>
-        
+
         </el-form-item>
         <el-form-item label="订单金额" prop="totalAmount" :rules="[{ validator:validateNumber},]">
               <el-input v-model="form.totalAmount" class="input-small"></el-input>
-        
+
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
