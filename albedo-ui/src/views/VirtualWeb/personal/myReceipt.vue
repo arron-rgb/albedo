@@ -209,7 +209,7 @@
 
 <script>
 import crudInvoice from '@/views/biz/invoice/invoice-service'
-import crudInvoiceRequest from '@/views/biz/invoice-request/invoice-request-service'
+import crudInvoiceRequest from '@/views/biz/t-invoice-request/t-invoice-request-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 export default {
   name: "proDetail",
