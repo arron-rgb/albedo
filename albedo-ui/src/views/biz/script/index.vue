@@ -3,8 +3,10 @@
     <!--工具栏-->
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
-        <el-input class="filter-item input-small" v-model="query.title" clearable size="small" placeholder="输入title搜索"
+        <el-input class="filter-item input-small" clearable placeholder="输入所属分类搜索" size="small" v-model="query.title"
                   @keyup.enter.native="toQuery"/>
+        <el-input @keyup.enter.native="toQuery" class="filter-item input-small" clearable placeholder="输入套词搜索" size="small"
+                  v-model="query.value"/>
         <rrOperation/>
       </div>
       <crudOperation :permission="permission"/>
@@ -19,10 +21,10 @@
       width="800px"
     >
       <el-form ref="form" :inline="true" :model="form" label-width="120px" size="small">
-        <el-form-item label="属性名" prop="title" :rules="[]">
+        <el-form-item :rules="[]" label="所属分类" prop="title">
           <el-input v-model="form.title" class="input-small"></el-input>
         </el-form-item>
-        <el-form-item label="属性值" prop="value" :rules="[]">
+        <el-form-item :rules="[]" label="套词" prop="value">
           <el-input v-model="form.value" class="input-small"></el-input>
         </el-form-item>
       </el-form>
@@ -41,8 +43,8 @@
       @selection-change="crud.selectionChangeHandler"
     >
       <el-table-column type="selection" width="55"/>
-      <el-table-column align="center" label="属性名" :show-overflow-tooltip="true" prop="title"/>
-      <el-table-column align="center" label="属性值" :show-overflow-tooltip="true" prop="value"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="所属分类" prop="title"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="套词" prop="value"/>
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
         <template slot-scope="scope">
           <udOperation :data="scope.row" :permission="permission"/>
