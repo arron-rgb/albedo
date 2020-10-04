@@ -23,7 +23,6 @@ import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeQueryPlus;
 import com.albedo.java.modules.tool.repository.AliPayConfigRepository;
 import com.albedo.java.modules.tool.service.AliPayService;
-import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -49,7 +48,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, AlipayConfig> implements AliPayService {
   private final AliPayConfigRepository alipayRepository;
-  private final AliPayUtils aliPayUtils;
 
   @Override
   @Cacheable(key = "'id:1'")
