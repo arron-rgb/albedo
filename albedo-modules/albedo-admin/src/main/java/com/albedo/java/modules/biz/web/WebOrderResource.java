@@ -98,7 +98,7 @@ public class WebOrderResource extends BaseResource {
   @PostMapping
   public Result<String> save(@Valid @RequestBody Order orderDto) {
     service.saveOrUpdate(orderDto);
-    return Result.buildOk("保存订单成功");
+    return Result.buildOkData(orderDto.getId(), "保存订单成功");
   }
 
   /**
