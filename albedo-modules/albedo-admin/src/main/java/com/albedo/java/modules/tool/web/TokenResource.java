@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 
-import com.albedo.java.modules.sys.util.SysCacheUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;

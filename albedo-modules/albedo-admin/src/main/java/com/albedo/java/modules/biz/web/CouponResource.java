@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
+import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
+
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -47,9 +49,9 @@ public class CouponResource extends BaseResource {
   @ApiOperation(value = "查询单个优惠券")
   @GetMapping("query")
   @PreAuthorize("@pms.hasPermission('biz_coupon_view')")
-  public Result<Coupon> query(@PathVariable String code) {
+  public Result<Coupon> query(String code) {
     log.debug("REST request to get Entity : {}", code);
-    Coupon coupon = service.getOne(Wrappers.<Coupon>query().eq("code", code), false);
+    Coupon coupon = service.getOne(Wrappers.<Coupon>query().eq("code", code).eq("status", STR_YES), false);
     return Result.buildOkData(coupon);
   }
 
@@ -101,7 +103,7 @@ public class CouponResource extends BaseResource {
   public Result<String> save(@Valid @RequestBody CouponDto couponDto) {
     log.debug("REST request to save CouponDto : {}", couponDto);
     couponDto.setCode(getUUID());
-    couponDto.setStatus(CommonConstants.STR_YES);
+    couponDto.setStatus(STR_YES);
     service.saveOrUpdate(couponDto);
     return Result.buildOk("保存优惠券成功");
   }

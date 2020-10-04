@@ -1,8 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
-import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
-import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
+import static com.albedo.java.common.core.constant.CommonConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
@@ -15,11 +14,12 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
+import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.Result;
@@ -45,7 +45,6 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.TtsParams;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
-import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -64,16 +63,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   implements OrderService {
 
   @Resource
-  PurchaseRecordService recordService;
+  CouponService couponService;
   @Resource
-  AliPayUtils aliPayUtils;
+  PurchaseRecordService recordService;
   @Resource
   AliPayService aliPayService;
   @Resource
   BalanceService balanceService;
-  String val = "加速服务";
-  String doubleAnchorCode = "双人主播";
-  String singleAnchorCode = "单人主播";
 
   /**
    * 非配音订单
@@ -90,50 +86,51 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public String place(OrderVo form) {
     if (!Objects.isNull(currentOrder())) {
-      throw new RuntimeMsgException("当前仍有订单未完成，无法创建新订单");
+      throw new RuntimeMsgException(CURRENT_ORDER_EXIST);
     }
-
     Order order = new Order();
-    order.setUserId(SecurityUtil.getUser().getId());
-    order.setLogoUrl(form.getLogoUrl());
-    order.setAdUrl(form.getAdUrl());
+    BeanUtils.copyProperties(form, order);
     order.setState(UNPAID_ORDER);
-    order.setType(form.getType());
-    order.setMethod(form.getMethod());
-    order.setDescription(form.getDescription());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
     order.setTotalAmount(calculatePrice(form));
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
-    return save(order) ? order.getId() : "";
+    boolean flag = save(order);
+    String couponCode = form.getCouponCode();
+    // 非空 验证是否优惠码有效
+    Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
+    Assert.notNull(code, INVALID_COUPON);
+    code.setUserId(SecurityUtil.getUser().getId());
+    code.setOrderId(order.getId());
+    code.setStatus(STR_NO);
+    flag = code.updateById() && flag;
+    return flag ? order.getId() : "";
   }
 
   public String calculatePrice(OrderVo order) {
     String price = calculatePrice(order.getContent().trim());
     if (verifyOrderType(order)) {
       // 给订单价格加上加速服务
-      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE_STR));
       if (map == null) {
         map = new Dict();
         map.setVal("99");
       }
-      price = MoneyUtil.moneyAdd(price, map.getVal());
+      price = new Money(price).addTo(new Money(map.getVal())).getAmount().toPlainString();
     }
     if (!StringUtils.isEmpty(order.getCouponCode())) {
       // 非空 验证是否优惠码有效
       Coupon code =
         couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
-      Assert.notNull(code, "优惠码无效");
+      Assert.notNull(code, INVALID_COUPON);
       String discount = code.getDiscount();
       Money old = new Money(price);
       price = old.multiply(Double.parseDouble(discount)).getAmount().toPlainString();
     }
     return price;
   }
-
-  @Resource
-  CouponService couponService;
 
   private boolean verifyOrderType(OrderVo form) {
     return StringUtils.equals(ACCELERATE, form.getType());
@@ -148,60 +145,67 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(UNPAID_ORDER.equals(order.getState()), ORDER_ERROR);
-    TradePlus plus = null;
+    boolean purchaseFlag = false;
+    TradePlus plus;
     PurchaseRecord record =
       recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
     switch (order.getMethod()) {
       case "ali":
-        plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
-          .totalAmount(order.getTotalAmount()).build();
-        if (record == null) {
-          record = PurchaseRecord.buildOrder(plus, order.getId());
-        } else {
-          record.setOutTradeNo(plus.getOutTradeNo());
-        }
-        recordService.saveOrUpdate(record);
-        return getPurchaseUrl(plus);
+        // 需要支付就break 走后面的公共方法
+        plus = TradePlus.build(order.getTotalAmount(), subject);
+        break;
       case "balance":
         // 扣了次数后，如果不需要额外支付，则将订单设为已支付
         // 减了次数，没支付成功；订单仍然处在未支付的状态
         balanceService.consumeTimes();
-        // 加速订单 返回加速服务付款链接
+        // 加速订单
+        Money money = new Money();
         if (ACCELERATE.equals(order.getType())) {
-          Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
+          purchaseFlag = true;
+          Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE));
           if (map == null) {
             map = new Dict();
             map.setVal("99");
           }
-          plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).outTradeNo(aliPayUtils.getOrderCode())
-            .build();
-          // todo 需要加上record 否则回调查不到记录
+          money.add(new Money(map.getVal()));
         }
-        // 双人加上差价 怎么判断订单是单人还是双人？
-        // todo 需要加上record 否则回调查不到记录
-        if (plus != null) {
-          // 说明是加速订单
-          String totalAmount = plus.getTotalAmount();
-          Dict doubleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", doubleAnchorCode));
-          Dict singleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", singleAnchorCode));
+        String anchorNum = getAnchorNum(order.getContent());
+        // 双人主播
+        if (StringUtils.equals(anchorNum, DOUBLE_ANCHOR)) {
+          purchaseFlag = true;
+          Dict doubleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", DOUBLE_ANCHOR));
+          Dict singleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", SINGLE_ANCHOR));
+          // 加上双人主播的差价
           if (Objects.isNull(doubleAnchor) || Objects.isNull(singleAnchor)) {
-            totalAmount = MoneyUtil.moneyAdd(totalAmount, "1000");
+            money.addTo(new Money("1000"));
           } else {
             String addValue = MoneyUtil.moneySub(doubleAnchor.getVal(), singleAnchor.getVal());
-            totalAmount = MoneyUtil.moneyAdd(totalAmount, addValue);
+            money.addTo(new Money(addValue));
           }
-          plus.setTotalAmount(totalAmount);
-          return getPurchaseUrl(plus);
         }
-        break;
+        // 无需获取支付链接
+        if (!purchaseFlag) {
+          order.setState(NOT_STARTED);
+          baseMapper.updateById(order);
+          return "success";
+        } else {
+          // 需要获取支付链接
+          plus = TradePlus.build(money.getAmount().toPlainString(), subject);
+          break;
+        }
       case "wechat":
-        throw new RuntimeMsgException("暂不支持微信支付");
+        throw new RuntimeMsgException(WECHAT_PAY_ERROR);
       default:
-        throw new RuntimeMsgException("支付方式异常");
+        throw new RuntimeMsgException(PAY_METHOD_ERROR);
     }
-    order.setState(NOT_STARTED);
-    baseMapper.updateById(order);
-    return "success";
+    // 获取支付链接需要 1. 更新record的outTradeNo 2. 插入record
+    if (record == null) {
+      record = PurchaseRecord.buildOrder(plus, order.getId());
+    } else {
+      record.setOutTradeNo(plus.getOutTradeNo());
+    }
+    recordService.saveOrUpdate(record);
+    return getPurchaseUrl(plus);
   }
 
   private String getPurchaseUrl(TradePlus plus) {
@@ -211,7 +215,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Resource
   DictService dictService;
 
-  private String calculatePrice(String content) {
+  private String getAnchorNum(String content) {
     PlusService<Config> plusService;
     try {
       plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {});
@@ -219,53 +223,45 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       throw new RuntimeMsgException(ORDER_PARSE_ERROR);
     }
     Assert.notNull(plusService, ORDER_PARSE_ERROR);
-
     List<Element<Config>> elements = plusService.getData().stream()
       .filter((element -> "主播数量".equals(element.getTitle()))).collect(Collectors.toList());
-
     Assert.isTrue(elements.size() == 1, ANCHOR_NUM_ERROR);
-    int result = elements.stream().mapToInt(ele -> {
-      List<Config> data = ele.getData();
-      if (CollectionUtils.isEmpty(data)) {
-        return 0;
-      }
-      Assert.isTrue(elements.size() == 1, ANCHOR_NUM_ERROR);
-      Config config = data.get(0);
-      Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", config.getValue()));
-      if (price == null) {
-        price = new Dict();
-        String val = defaultPrice(config.getValue());
-        price.setVal(val);
-      }
-      Assert.notNull(price, PRICE_NOT_FOUND);
-      return Integer.parseInt(price.getVal());
-    }).sum();
+    List<Config> anchorNumList = elements.get(0).getData();
+    Assert.isTrue(anchorNumList.size() == 1, ANCHOR_NUM_ERROR);
+    Config config = anchorNumList.get(0);
+    return config.getValue();
+  }
 
-    return String.valueOf(result);
+  private String calculatePrice(String content) {
+    String anchorNum = getAnchorNum(content);
+    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", anchorNum));
+    if (price == null) {
+      price = new Dict();
+      String val = defaultPrice(anchorNum);
+      price.setVal(val);
+    }
+    Assert.notNull(price, PRICE_NOT_FOUND);
+    return String.valueOf(price.getVal());
   }
 
   private String defaultPrice(String type) {
     switch (type) {
-      case "单人主播":
+      case SINGLE_ANCHOR:
         return "1599";
-      case "双人主播":
+      case DOUBLE_ANCHOR:
         return "2599";
       default:
         throw new RuntimeMsgException("订单主播类型状态异常");
     }
-
   }
 
   @Override
   public void consume(String orderId) throws OrderException {
     String staffId = SecurityUtil.getUser().getId();
     List<String> roles = SecurityUtil.getRoles();
-
-    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), UNALLOWED_ACTION);
-
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), CONSUME_NOT_PERMITTED);
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
-
     order.setStaffId(staffId);
     order.setState(IN_PRODUCTION);
     saveOrUpdate(order);
@@ -348,7 +344,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     videoRepository.updateById(video);
     audioOrder.setState(COMPLETED_SUCCESS);
     baseMapper.updateById(audioOrder);
-
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
@@ -358,7 +353,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public Result<String> artificialDubbing(SubOrderVo orderVo) {
-    Assert.notEmpty(orderVo.getTotalAmount(), "价格字段缺失");
+    Assert.notEmpty(orderVo.getTotalAmount(), PRICE_FIELD_NOT_FOUND);
     String content = orderVo.appendContent();
     int length = orderVo.appendContent().length();
     String userId = SecurityUtil.getUser().getId();
@@ -394,13 +389,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         return Result.buildOk("支付成功，请等待工作人员接单");
       }
     }
-
-    Assert.isTrue(MoneyUtil.equals(totalAmount.toString(), orderVo.getTotalAmount()), "订单价格异常");
-    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
-      .totalAmount(totalAmount.toString()).build();
+    Assert.isTrue(MoneyUtil.equals(totalAmount.toString(), orderVo.getTotalAmount()), PRICE_ERROR);
+    TradePlus trade = TradePlus.build(totalAmount.toPlainString(), subject);
     PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
     recordService.save(record);
-
     return Result.buildOkData(aliPayService.toPayAsPc(trade), "请前往支付链接支付，支付后等待工作人员接单即可");
   }
 
@@ -428,8 +420,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public List<Order> belongs() {
     List<String> roles = SecurityUtil.getRoles();
-    String template = "非后台员工无法查看订单内容";
-    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), template);
+    Assert.isTrue(roles.contains(ADMIN_ROLE_ID), VIEW_NOT_PERMITTED);
     return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
   }
 
@@ -439,15 +430,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public boolean callback(String orderId) {
     Order order = baseMapper.selectById(orderId);
-    Assert.notNull(order, "未查询到订单");
-    // 订单状态
-    Assert.notNull(order.getState(), "订单状态异常");
-    // 拒绝非未付款订单
-    Assert.isTrue(UNPAID_ORDER.equals(order.getState()), "订单状态异常");
-    // 拒绝已进入付款后状态订单
-    Assert.isTrue(order.getState() < NOT_STARTED, "订单已支付");
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    Assert.isTrue(Objects.equals(order.getState(), UNPAID_ORDER), ORDER_ERROR);
     order.setState(NOT_STARTED);
-
     PurchaseRecord record = recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery()
       .eq(PurchaseRecord::getType, ORDER_TYPE).eq(PurchaseRecord::getOuterId, orderId));
     Assert.notNull(record, PURCHASE_RECORD_NOT_FOUND);

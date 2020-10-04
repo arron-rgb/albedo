@@ -5,6 +5,10 @@ package com.albedo.java.common.core.constant;
  */
 public interface BusinessConstants {
 
+  String DOUBLE_ANCHOR = "双人主播";
+  String SINGLE_ANCHOR = "单人主播";
+  String ACCELERATE_STR = "加速服务";
+
   /**
    * 用户满意
    */
