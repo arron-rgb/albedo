@@ -7,6 +7,8 @@
                   placeholder="输入企业名称搜索" @keyup.enter.native="toQuery"/>
         <el-input class="filter-item input-small" v-model="query.name" clearable size="small" placeholder="输入姓名搜索"
                   @keyup.enter.native="toQuery"/>
+        <el-input @keyup.enter.native="toQuery" class="filter-item input-small" clearable placeholder="输入联系方式搜索" size="small"
+                  v-model="query.phone"/>
         <rrOperation/>
       </div>
       <crudOperation :permission="permission"/>
