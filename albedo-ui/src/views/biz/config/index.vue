@@ -3,9 +3,9 @@
     <!--工具栏-->
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
-        <el-input class="filter-item input-small" v-model="query.name" clearable size="small" placeholder="输入类型搜索"
+        <el-input class="filter-item input-small" v-model="query.title" clearable size="small" placeholder="输入所属分类搜索"
                   @keyup.enter.native="toQuery"/>
-        <el-input class="filter-item input-small" v-model="query.title" clearable size="small" placeholder="输入表单名称搜索"
+        <el-input class="filter-item input-small" v-model="query.value" clearable size="small" placeholder="输入名称搜索"
                   @keyup.enter.native="toQuery"/>
         <rrOperation/>
       </div>
@@ -23,27 +23,27 @@
       <el-form ref="form" :model="form" label-width="120px" size="small">
 
         <!--前端显示的请选择***的内容-->
-        <el-form-item label="配置项类别" prop="title" :rules="[{required: true,min: 0,max: 30,message: '长度在 0 到 30 个字符', trigger: 'blur'},]">
+        <el-form-item label="所属分类" prop="title" :rules="[{required: true,min: 0,max: 30,message: '长度在 0 到 30 个字符', trigger: 'blur'},]">
           <el-input v-model="form.title" class="input-small"></el-input>
         </el-form-item>
 
         <!--中文服务名称-->
-        <el-form-item label="具体名称" prop="value"
+        <el-form-item label="名称" prop="value"
                       :rules="[{required: true,message: '请输入具体名称', trigger: 'blur'},{min: 0,max: 20,message: '长度在 0 到 20 个字符', trigger: 'blur'},]">
           <el-input v-model="form.value" class="input-small"></el-input>
         </el-form-item>
 
         <!--填写编码-->
         <el-form-item label="详情描述" prop="description" :rules="[{min: 0,max: 100,message: '长度在 0 到 100 个字符', trigger: 'blur'},]">
-          <el-input v-model="form.description" class="input-small"></el-input>
+          <el-input type="textarea" :rows="5" v-model="form.description" class="input-small"></el-input>
         </el-form-item>
 
         <!--增值服务填写plusService，非增值服务无需填写，默认为类型同名字段-->
-        <el-form-item label="增值服务类型" prop="type"
-                      :rules="[{required: true, message: '必选', trigger: 'blur'},]">
-          <el-radio v-model="form.type" label="1">是</el-radio>
-          <el-radio v-model="form.type" label="0">否</el-radio>
-        </el-form-item>
+<!--        <el-form-item label="增值服务类型" prop="type"-->
+<!--                      :rules="[{required: true, message: '必选', trigger: 'blur'},]">-->
+<!--          <el-radio v-model="form.type" label="1">是</el-radio>-->
+<!--          <el-radio v-model="form.type" label="0">否</el-radio>-->
+<!--        </el-form-item>-->
 
         <!--改为上传图片-->
         <el-form-item label="图片链接" prop="url" :rules="[{trigger: 'blur'},]">
@@ -81,14 +81,19 @@
       @selection-change="crud.selectionChangeHandler"
     >
       <el-table-column type="selection" width="55"/>
-      <el-table-column align="center" label="属性名" :show-overflow-tooltip="true" prop="title"/>
-      <el-table-column align="center" label="属性值" :show-overflow-tooltip="true" prop="value"/>
-      <el-table-column align="center" label="是否为增值服务" :show-overflow-tooltip="true" prop="type">
+      <el-table-column align="center" label="所属分类" :show-overflow-tooltip="true" prop="title"/>
+      <el-table-column align="center" label="名称" :show-overflow-tooltip="true" prop="value"/>
+      <el-table-column align="center" label="描述" :show-overflow-tooltip="true" prop="description"/>
+<!--      <el-table-column align="center" label="是否为增值服务" :show-overflow-tooltip="true" prop="type">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ scope.row.type === '0' ? '否' : '是' }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column align="center" label="图片" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <span>{{ scope.row.type === '0' ? '否' : '是' }}</span>
+          <img style="max-height: 100px" v-if="scope.row.url !== null" :src="'http://' + scope.row.url"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="图片" :show-overflow-tooltip="true" prop="url"/>
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
         <template slot-scope="scope">
           <udOperation :data="scope.row" :permission="permission"/>
@@ -115,7 +120,7 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 const defaultForm = {
   value: null,
   name: null,
-  type: null,
+  type: 0,
   url: null,
   title: null,
   description: null,

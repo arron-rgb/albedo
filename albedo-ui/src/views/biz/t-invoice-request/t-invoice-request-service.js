@@ -54,4 +54,5 @@ export function history() {
     method: 'get'
   })
 }
-export default { page, del, save, get, list, requestInvoice, history }
+
+export default { page, del, save, get, list, requestInvoice, history  }

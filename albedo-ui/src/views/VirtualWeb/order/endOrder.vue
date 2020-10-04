@@ -1,5 +1,6 @@
 <template>
   <div>
+<!--    {{this.orderRecord}}-->
     <div class="container">
       <el-card class="box-card" body-style="padding : 0px">
         <div slot="header" class="clearfix">
@@ -30,13 +31,17 @@
           </el-col>
           <el-col span="20">
             <el-row>
-              <span v-if="orderRecord.state === 5">已完成</span>
-              <span v-else>异常</span>
+              <span v-if="orderRecord.state  === 0">未付款</span>
+              <span v-if="orderRecord.state  === 1">未接单</span>
+              <span v-if="orderRecord.state  === 2">制作中</span>
+              <span v-if="orderRecord.state  === 3">配音中</span>
+              <span v-if="orderRecord.state  === 4">配音中</span>
+              <span v-if="orderRecord.state  === 5">已完成</span>
             </el-row>
           </el-col>
         </el-row>
 
-        <el-row class="box">
+        <el-row class="box" v-if="orderRecord.type === '0'">
           <el-col span="4">
             已选需求：
           </el-col>
@@ -47,7 +52,18 @@
           </el-col>
         </el-row>
 
-        <el-row class="box">
+        <el-row class="box" v-else>
+          <el-col span="4">
+            已选需求：
+          </el-col>
+          <el-col span="20">
+            <el-tag class="tag" v-for="(o,index) in orderRecord.description.slice(1,orderRecord.description.length - 1).split(',')" :key="o" :type="typeList[index % 5]">
+              <p style="line-height: 40px; margin: 0">{{o}}<p/>
+            </el-tag>
+          </el-col>
+        </el-row>
+
+        <el-row class="box" v-if="orderRecord.type === '0'">
           <el-col span="4">
             补充需求（选填）：
           </el-col>
@@ -56,7 +72,18 @@
           </el-col>
         </el-row>
 
-        <el-row class="box">
+        <el-row class="box" v-else>
+          <el-col span="4">
+            台词文本：
+          </el-col>
+          <el-col span="20">
+<!--            <el-tag class="tag" v-for="(o,index) in orderRecord.content" :key="o" :type="typeList[index % 5]">-->
+              <p style="line-height: 40px; margin: 0">{{orderRecord.content}}<p/>
+<!--            </el-tag>-->
+          </el-col>
+        </el-row>
+
+        <el-row class="box" v-show="orderRecord.type === '0'">
           <el-col span="4">
             加速服务（30元/次）：
           </el-col>
@@ -86,7 +113,8 @@
             <span v-if="orderRecord.method === 'balance'">套餐余额</span>
           </el-col>
         </el-row>
-        <el-row class="box">
+
+        <el-row class="box"  v-show="orderRecord.type === '0'">
           <el-col span="4">
             产品视频：
           </el-col>

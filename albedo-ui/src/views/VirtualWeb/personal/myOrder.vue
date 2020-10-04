@@ -9,28 +9,34 @@
         :default-sort = "{prop: 'createdDate', order: 'descending'}"
         v-loading="loading"
       >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="视频属性">
-                <el-tag v-for="(item, index) in JSON.parse(props.row.content).data" :type="typeList[index % 5]" :key="item" class="myTags">
-                  <p style="line-height: 40px; margin: 0" v-for="o in item.data">{{o.value}}<p/>
-                </el-tag>
-                <!--              <span>{{ getJSON(props.row.content).data }}</span>-->
-              </el-form-item>
-              <el-form-item label="视频链接">
-                <span v-if="props.row.videoId === null || props.row.videoId === ''">已失效</span>
-                <span v-else>
-                  <el-button @click="showDetail(props.row)">点击下载</el-button>
-                </span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
+<!--        <el-table-column type="expand">-->
+<!--          <template slot-scope="props">-->
+<!--            <el-form label-position="left" inline class="demo-table-expand">-->
+<!--              <el-form-item label="视频属性">-->
+<!--                <el-tag v-for="(item, index) in JSON.parse(props.row.content).data" :type="typeList[index % 5]" :key="item" class="myTags">-->
+<!--                  <p style="line-height: 40px; margin: 0" v-for="o in item.data">{{o.value}}<p/>-->
+<!--                </el-tag>-->
+<!--                &lt;!&ndash;              <span>{{ getJSON(props.row.content).data }}</span>&ndash;&gt;-->
+<!--              </el-form-item>-->
+<!--              <el-form-item label="视频链接">-->
+<!--                <span v-if="props.row.videoId === null || props.row.videoId === ''">已失效</span>-->
+<!--                <span v-else>-->
+<!--                  <el-button @click="showDetail(props.row)">点击下载</el-button>-->
+<!--                </span>-->
+<!--              </el-form-item>-->
+<!--            </el-form>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column
           label="创建时间"
           sortable
           prop="createdDate">
+        </el-table-column>
+        <el-table-column label="订单类型">
+          <template slot-scope="props">
+            <span v-if="props.row.type === '0'">视频订单</span>
+            <span v-if="props.row.type === '2'">语音订单</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="最后修改人"
@@ -56,9 +62,10 @@
         <el-table-column
           label="操作">
           <template slot-scope="props">
-            <el-tooltip class="item" effect="dark" content="查看订单" placement="top">
-              <el-button size="mini" type="primary" v-if="props.row.state !== 5" @click="goTo('/addOrder')">查看</el-button>
-              <el-button size="mini" v-else @click="showDetail(props.row)">查看</el-button>
+            <el-tooltip class="item" effect="dark" content="查看" placement="top">
+              <el-button size="mini" v-if="props.row.type === '2'" @click="showDetail(props.row)">查看详情</el-button>
+              <el-button size="mini" type="danger" plain v-else-if="props.row.state === 5" @click="showDetail(props.row)">查看详情</el-button>
+              <el-button size="mini" type="primary" v-else @click="goTo('/addOrder')">查看进度</el-button>
             </el-tooltip>
           </template>
         </el-table-column>

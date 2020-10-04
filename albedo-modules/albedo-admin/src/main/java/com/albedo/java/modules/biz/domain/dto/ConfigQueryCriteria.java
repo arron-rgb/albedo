@@ -17,4 +17,7 @@ public class ConfigQueryCriteria implements Serializable {
 
   @Query(propName = "value", operator = Query.Operator.like)
   private String value;
+
+  @Query(propName = "title", operator = Query.Operator.like)
+  private String title;
 }
