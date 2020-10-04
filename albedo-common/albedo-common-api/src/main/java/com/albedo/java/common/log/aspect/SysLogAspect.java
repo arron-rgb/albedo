@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.albedo.java.common.core.util.*;
 import com.albedo.java.common.log.enums.LogType;
+import com.albedo.java.common.log.event.SysLogEvent;
 import com.albedo.java.common.log.util.SysLogUtils;
 import com.albedo.java.modules.sys.domain.LogOperate;
 
@@ -127,13 +128,20 @@ public class SysLogAspect {
     String methodName = point.getTarget().getClass().getName() + StringUtil.DOT + signature.getName() + "()";
     // 请求参数处理
     final Map<String, Object> paramMap = new HashMap<>(16);
+
     parseParams(point, paramMap);
+
     LogOperate logOperateVo = SysLogUtils.getSysLog();
     logOperateVo.setTitle(logOperate.value());
     logOperateVo.setMethod(methodName);
     logOperateVo.setParams(Json.toJsonString(paramMap));
     logOperateVo.setOperatorType(logOperate.operatorType().name());
-    log.info(String.valueOf(beforeReqLog));
+    // 请求参数
+    if (!paramMap.isEmpty()) {
+      beforeReqLog.append(" Parameters: {}");
+      beforeReqArgs.add(logOperateVo.getParams());
+    }
+    log.info(beforeReqLog.toString(), beforeReqArgs.toArray());
     // aop 执行后的日志
     StringBuilder afterReqLog = new StringBuilder(200);
     // 日志参数
@@ -142,8 +150,11 @@ public class SysLogAspect {
     Object result = null;
     try {
       result = point.proceed();
+      beforeReqLog.append("Request===> {}: {}");
       beforeReqArgs.add(requestMethod);
       beforeReqArgs.add(requestURI);
+      // 打印返回结构体
+      afterReqLog.append("Response===> {}: {}");
       afterReqArgs.add(requestMethod);
       afterReqArgs.add(requestURI);
       logOperateVo.setLogType(LogType.INFO.name());
@@ -156,9 +167,27 @@ public class SysLogAspect {
       afterReqLog.append(" time ({} ms) Result:{}");
       afterReqArgs.add(tookMs);
       afterReqArgs.add(Json.toJsonString(result));
+      log.info(afterReqLog.toString(), afterReqArgs.toArray());
+      saveLog(tookMs, logOperateVo, logOperate);
     }
-    log.info(String.valueOf(afterReqLog));
+
     return result;
+  }
+
+  /**
+   * @param tookMs
+   * @param logOperateVo
+   * @param logOperate
+   */
+  public void saveLog(Long tookMs, LogOperate logOperateVo,
+    com.albedo.java.common.log.annotation.LogOperate logOperate) {
+    logOperateVo.setTime(tookMs);
+    log.debug("[logOperateVo]:{}", logOperateVo);
+    // 是否需要保存request，参数和值
+    if (logOperate.isSaveRequestData()) {
+      // 发送异步日志事件
+      SpringContextHolder.publishEvent(new SysLogEvent(logOperateVo));
+    }
   }
 
 }

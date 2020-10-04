@@ -34,8 +34,6 @@ import cn.hutool.core.lang.Assert;
 public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanDto, String> implements PlanService {
 
   @Resource
-  AliPayUtils aliPayUtils;
-  @Resource
   AliPayService aliPayService;
   @Resource
   PurchaseRecordService recordService;
@@ -43,7 +41,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   @Override
   public String purchase(String planId) {
     Plan plan = baseMapper.selectById(planId);
-    TradePlus trade = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
+    TradePlus trade = TradePlus.builder().outTradeNo(AliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
       .subject(plan.getName()).build();
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.buildPlan(trade, planId);

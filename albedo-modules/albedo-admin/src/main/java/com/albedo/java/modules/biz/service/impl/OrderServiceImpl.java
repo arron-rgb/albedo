@@ -290,7 +290,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     }
     Assert.notNull(one, BALANCE_NOT_FOUND);
     Long duration = orderVo.getDuration();
-    // todo 套餐余量获取的标准需要考虑到企业、个人的情况
     Balance byUserId = balanceService.getByUserId(user.getId());
     Assert.isTrue(byUserId.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
     video.setDuration(duration);
@@ -376,20 +375,30 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setDescription(String.valueOf(orderVo.getVoiceType()));
     order.setVideoId(orderVo.getOrderId());
     order.setState(UNPAID_ORDER);
-    baseMapper.insert(order);
+    order.insert();
+    // baseMapper.insert(order);
 
     if (balance != null) {
       Integer audioTime = balance.getAudioTime();
       // audioTime为可抵扣的时间 单位为分
-      if (audioTime > minutes) {
+      if (audioTime >= minutes) {
+        // 可抵扣
         balance.setAudioTime(audioTime - minutes);
         balanceService.updateById(balance);
         order.setState(NOT_STARTED);
         baseMapper.updateById(order);
         return Result.buildOk("支付成功，请等待工作人员接单");
+      } else {
+        // 不够抵扣 计算剩余应该支付的价格
+        balance.setAudioTime(0);
+        balanceService.updateById(balance);
+        amount = Double.parseDouble(perMinute) * (minutes - audioTime);
+        Money money = new Money(amount);
+        order.setTotalAmount(money.getAmount().toPlainString());
+        order.updateById();
       }
     }
-    Assert.isTrue(MoneyUtil.equals(totalAmount.toString(), orderVo.getTotalAmount()), PRICE_ERROR);
+    Assert.isTrue(MoneyUtil.equals(totalAmount.toPlainString(), orderVo.getTotalAmount()), PRICE_ERROR);
     TradePlus trade = TradePlus.build(totalAmount.toPlainString(), subject);
     PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
     recordService.save(record);
