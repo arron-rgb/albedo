@@ -364,7 +364,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     }
     double amount = Double.parseDouble(perMinute) * minutes;
     BigDecimal totalAmount = BigDecimal.valueOf(amount);
-    // Money money = new Money(amount);
     Balance balance = balanceService.getByUserId(userId);
 
     // 人工配音的下单方式

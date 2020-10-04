@@ -60,8 +60,6 @@ import springfox.documentation.annotations.ApiIgnore;
 public class AliPayResource {
 
   @Resource
-  AliPayUtils alipayUtils;
-  @Resource
   AliPayService alipayService;
 
   @GetMapping
@@ -100,7 +98,7 @@ public class AliPayResource {
     AlipayConfig alipay = alipayService.find();
     String appId = getParam(request, "app_id");
     Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
-    if (alipayUtils.rsaCheck(request, alipay)) {
+    if (AliPayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
       if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
         return update;
@@ -127,7 +125,7 @@ public class AliPayResource {
     AlipayConfig alipay = alipayService.find(); // app_id: 2021001188668484 seller_id: 2088331270404521
     String appId = getParam(request, "app_id");
     Assert.isTrue(StringUtils.equals(appId, alipay.getAppId()), "failed");
-    if (alipayUtils.rsaCheck(request, alipay)) {
+    if (AliPayUtils.rsaCheck(request, alipay)) {
       String update = update(request);
       if (StringUtils.equals(SUCCESS.toLowerCase(), update)) {
         return update;
