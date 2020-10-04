@@ -43,7 +43,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.lang.Snowflake;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -262,7 +262,8 @@ public class UserResource extends BaseResource {
   }
 
   private String getUUID() {
-    return String.valueOf(Math.abs(Integer.parseInt(String.valueOf(IdUtil.fastSimpleUUID().hashCode()))));
+    long id = SNOWFLAKE.nextId();
+    return String.valueOf(id).substring(3);
   }
 
   @GetMapping("list")
@@ -278,4 +279,5 @@ public class UserResource extends BaseResource {
     return Result.buildOkData(userSet);
   }
 
+  private final static Snowflake SNOWFLAKE = cn.hutool.core.util.IdUtil.getSnowflake(1, 1);
 }

@@ -24,7 +24,7 @@ import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.domain.dto.Param;
 import com.albedo.java.modules.biz.service.InvoiceRequestService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.sys.domain.User;
+import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -63,7 +63,7 @@ public class PurchaseRecordResource extends BaseResource {
     List<PurchaseRecord> list = service.list(Wrappers.<PurchaseRecord>query().eq("status", TRADE_FINISHED)
       .eq("available", "0").eq("user_id", SecurityUtil.getUser().getId()));
     for (PurchaseRecord record : list) {
-      User user = userService.getById(record.getUserId());
+      UserVo user = userService.findUserVoById(record.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
@@ -81,7 +81,7 @@ public class PurchaseRecordResource extends BaseResource {
     List<PurchaseRecord> records = service.list(Wrappers.<PurchaseRecord>query()
       .eq("user_id", SecurityUtil.getUser().getId()).eq("status", TRADE_FINISHED).eq("available", "1"));
     records.forEach(record -> {
-      User user = userService.getById(record.getUserId());
+      UserVo user = userService.findUserVoById(record.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {

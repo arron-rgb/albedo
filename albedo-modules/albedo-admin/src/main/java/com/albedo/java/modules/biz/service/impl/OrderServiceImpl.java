@@ -2,6 +2,7 @@ package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
+import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
@@ -32,6 +33,7 @@ import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
+import com.albedo.java.modules.biz.service.CouponService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.task.Signal;
@@ -51,6 +53,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.math.Money;
 
 /**
  * @author arronshentu
@@ -101,22 +104,36 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setMethod(form.getMethod());
     order.setDescription(form.getDescription());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
-    order.setTotalAmount(calculatePrice(order.getContent().trim()));
+    order.setTotalAmount(calculatePrice(form));
+    Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
+    return save(order) ? order.getId() : "";
+  }
 
-    if (verifyOrderType(form)) {
+  public String calculatePrice(OrderVo order) {
+    String price = calculatePrice(order.getContent().trim());
+    if (verifyOrderType(order)) {
       // 给订单价格加上加速服务
       Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
       if (map == null) {
         map = new Dict();
         map.setVal("99");
       }
-      String updateAmount = MoneyUtil.moneyAdd(order.getTotalAmount(), map.getVal());
-      order.setTotalAmount(updateAmount);
+      price = MoneyUtil.moneyAdd(price, map.getVal());
     }
-
-    Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
-    return save(order) ? order.getId() : "";
+    if (!StringUtils.isEmpty(order.getCouponCode())) {
+      // 非空 验证是否优惠码有效
+      Coupon code =
+        couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
+      Assert.notNull(code, "优惠码无效");
+      String discount = code.getDiscount();
+      Money old = new Money(price);
+      price = old.multiply(Double.parseDouble(discount)).getAmount().toPlainString();
+    }
+    return price;
   }
+
+  @Resource
+  CouponService couponService;
 
   private boolean verifyOrderType(OrderVo form) {
     return StringUtils.equals(ACCELERATE, form.getType());
@@ -132,13 +149,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(UNPAID_ORDER.equals(order.getState()), ORDER_ERROR);
     TradePlus plus = null;
+    PurchaseRecord record =
+      recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
     switch (order.getMethod()) {
       case "ali":
         plus = TradePlus.builder().outTradeNo(aliPayUtils.getOrderCode()).subject(subject)
           .totalAmount(order.getTotalAmount()).build();
-        // ?
-        PurchaseRecord record =
-          recordService.getOne(Wrappers.<PurchaseRecord>lambdaQuery().eq(PurchaseRecord::getOuterId, orderId), false);
         if (record == null) {
           record = PurchaseRecord.buildOrder(plus, order.getId());
         } else {
@@ -151,7 +167,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         // 减了次数，没支付成功；订单仍然处在未支付的状态
         balanceService.consumeTimes();
         // 加速订单 返回加速服务付款链接
-
         if (ACCELERATE.equals(order.getType())) {
           Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", val));
           if (map == null) {
@@ -160,6 +175,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
           }
           plus = TradePlus.builder().subject(subject).totalAmount(map.getVal()).outTradeNo(aliPayUtils.getOrderCode())
             .build();
+          // todo 需要加上record 否则回调查不到记录
         }
         // 双人加上差价 怎么判断订单是单人还是双人？
         // todo 需要加上record 否则回调查不到记录

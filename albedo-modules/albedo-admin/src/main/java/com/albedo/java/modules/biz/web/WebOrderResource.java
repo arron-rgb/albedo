@@ -29,7 +29,7 @@ import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
-import com.albedo.java.modules.sys.domain.dto.UserDto;
+import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -202,7 +202,7 @@ public class WebOrderResource extends BaseResource {
         originUrl = ossSingleton.localPathToUrl(originUrl);
         order.setVideoId(originUrl);
       }
-      UserDto user = userService.findDtoById(order.getUserId());
+      UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
@@ -210,11 +210,6 @@ public class WebOrderResource extends BaseResource {
         }
       }
     }).collect(Collectors.toList());
-  }
-
-  @ApiOperation("员工新增订单")
-  public Result<String> addOrder() {
-    return Result.buildOk("");
   }
 
   @Resource

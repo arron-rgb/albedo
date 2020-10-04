@@ -23,6 +23,7 @@ import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.DeptService;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.sys.util.SysCacheUtil;
 import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.SmsService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -99,7 +100,7 @@ public class TokenResource {
     User user = userService.getById(id);
     user.setDeptId(dept.getId());
     save = save && userService.updateById(user);
-	  SysCacheUtil.delBaseUserCaches(user.getDeptId(), user.getUsername());
+    SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
     return save ? Result.buildOk("更改成功") : Result.buildFail("更改失败");
   }
 
@@ -125,6 +126,7 @@ public class TokenResource {
     String password = body.getPassword();
     user.setPassword(password);
     userService.resetPassword(user);
+    SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
     return Result.buildOk("更改成功，请重新登录");
   }
 
