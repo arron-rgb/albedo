@@ -2,6 +2,8 @@ package com.albedo.java.modules.tool.domain.vo;
 
 import javax.validation.constraints.NotBlank;
 
+import com.albedo.java.modules.tool.util.AliPayUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -59,5 +61,9 @@ public class TradePlus {
      * 系统商编号，该参数作为系统商返佣数据提取的依据，请填写系统商签约协议的PID。似乎是必须
      */
     private String sysServiceProviderId;
+  }
+
+  public static TradePlus build(String amount, String subject) {
+    return builder().subject(subject).totalAmount(amount).outTradeNo(AliPayUtils.getOrderCode()).build();
   }
 }

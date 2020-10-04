@@ -28,6 +28,8 @@ import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * 支付宝工具类
  *
@@ -35,6 +37,7 @@ import com.alipay.api.internal.util.AlipaySignature;
  * @date 2018/09/30 14:04:35
  */
 @Component
+@UtilityClass
 public class AliPayUtils {
 
   /**
