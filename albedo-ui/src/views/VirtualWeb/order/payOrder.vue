@@ -205,6 +205,7 @@ export default {
       times : 0,
       logoUrl : '',
       picUrl : '',
+      videoData : {},
       discountCode : '',//优惠券码
       discount : 1,
       urls : {
@@ -273,6 +274,7 @@ export default {
         this.totalAmount = videoOrder.totalAmount;
         this.description = videoOrder.description;
         this.orderId = videoOrder.id;
+        this.videoData = videoOrder;
       }
     }
     else {//是新的订单，尚未保存
@@ -306,21 +308,22 @@ export default {
     toPay(){
       this.loading = true;
       var content = {data : this.list}
-      var data = {
+      this.videoData = {
         content : JSON.stringify(content),
         method : this.payType,//支付方式
         totalAmount : this.totalAmount,
         type : this.type,
+        description : this.description,//备注
         couponCode : this.discountCode,//优惠券码
         logoUrl : this.urls.logo,//logo图片
         adUrl : this.urls.pic,//贴片图片
       }
-      if(this.orderId !== null){//原有订单直接提交请求
-        this.getToken(this.orderId);
-      }
-      else {
-        return new Promise((resolve, reject) => {//新订单先保存
-          payOrder.save(data).then(res => {//保存订单并获取订单id
+      // if(this.orderId !== null){//原有订单直接提交请求
+      //   this.getToken(this.orderId);
+      // }
+      // else {
+        return new Promise((resolve, reject) => {//订单先保存
+          payOrder.save(this.videoData).then(res => {//保存订单并获取订单id
             if (res.code === MSG_TYPE_SUCCESS) {
               // console.log(res)
               this.$message({
@@ -335,7 +338,7 @@ export default {
             this.loading = false;
           })
         })
-      }
+      // }
     },
     balancePurchase(){//会员次数支付
         var data = {

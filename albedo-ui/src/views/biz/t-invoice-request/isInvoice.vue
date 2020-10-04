@@ -14,12 +14,7 @@
         </el-select>
         <rrOperation />
       </div>
-      <el-row>
-        <el-col span="4">
-          <el-button @click="showIsInvoice">已开票订单</el-button>
-        </el-col>
-      </el-row>
-<!--      <crudOperation :permission="permission" />-->
+      <crudOperation :permission="permission" />
     </div>
 
 <!--    抬头查看-->
@@ -85,12 +80,12 @@
     </el-dialog>
     <!--表格渲染-->
     <el-table
-      :data="noInvoiceData"
+      :data="isInvoiceData"
       @selection-change="crud.selectionChangeHandler"
       @sort-change="crud.sortChange"
       ref="table"
       style="width: 100%;"
-      v-loading="noInvoiceDataLoading"
+      v-loading="isInvoiceDataLoading"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" />
@@ -148,8 +143,8 @@ export default {
       invoiceDialog : false,
       invoiceData : {},
       delFlagOptions: undefined,
-      noInvoiceData : [],
-      noInvoiceDataLoading : false,
+      isInvoiceData : [],
+      isInvoiceDataLoading : false,
 	  validateNumber: (rule, value, callback) => {
 	    validate.isNumber(rule, value, callback)
 	  },
@@ -166,24 +161,24 @@ export default {
     ...mapGetters(["permissions","dicts","user"])
   },
   created() {
-    this.getNoInvoiceRequest();
+    this.getisInvoiceRequest();
     this.delFlagOptions = this.dicts["sys_flag"]
   },
   methods: {
-    getNoInvoiceRequest(){//获取未开票订单
-      this.noInvoiceDataLoading = true;
+    getisInvoiceRequest(){//获取已开票订单
+      this.isInvoiceDataLoading = true;
       var params = {
-        type : 0
+        type : 1
       }
       return new Promise((resolve, reject) => {
         crudTInvoiceRequest.page(params).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.noInvoiceData = res.data;
-            this.noInvoiceDataLoading = false;
+            this.isInvoiceData = res.data;
+            this.isInvoiceDataLoading = false;
           }
           resolve(res);
         }).catch(res => {
-          this.noInvoiceDataLoading = false;
+          this.isInvoiceDataLoading = false;
           reject(res);
         })
       });
