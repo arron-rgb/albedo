@@ -24,7 +24,15 @@ export function del(ids) {
     data: ids
   })
 }
-
+export function verify(code) {
+  return request({
+    url: '/biz/coupon/query',
+    method: 'get',
+    params :{
+      code : code
+    }
+  })
+}
 
 export function get(id) {
   return request({
@@ -33,4 +41,4 @@ export function get(id) {
   })
 }
 
-export default { page, del, save, get }
+export default { page, del, save, get, verify }

@@ -104,6 +104,27 @@
         </el-col>
       </el-row>
 
+      <el-row class="box">
+        <el-col span="4">
+          优惠券：
+        </el-col>
+        <el-col span="20">
+          <el-row>
+            <el-col span="12">
+              <el-input
+                :length="6"
+                v-model="discountCode">
+              </el-input>
+            </el-col>
+            <el-col span="4">
+              <el-button  @click="verifyDiscount">
+                验证
+              </el-button>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+
       <el-row  class="box">
         <el-col span="4">
           合计：
@@ -165,6 +186,7 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
 import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
 import {mapGetters} from "vuex";
+import crudCoupon from "@/views/biz/coupon/coupon-service";
 export default {
   name: "payOrder",
   data(){
@@ -183,6 +205,8 @@ export default {
       times : 0,
       logoUrl : '',
       picUrl : '',
+      discountCode : '',//优惠券码
+      discount : 1,
       urls : {
         logo : '',
         pic : '',
@@ -203,6 +227,8 @@ export default {
           this.totalAmount = val * 99://单人主播且有套餐余量
           this.totalAmount = this.priceList[0] + val * 99;//单人主播且无套餐余量
       }
+      this.totalAmount = this.totalAmount * this.discount;
+      this.totalAmount = this.totalAmount.toFixed(2);
     },
     isBalance : function (val){
       this.isBalance = val;
@@ -219,8 +245,14 @@ export default {
           this.totalAmount = this.type * 99://单人主播且有套餐余量
           this.totalAmount = this.priceList[0] + this.type * 99;//单人主播且无套餐余量
       }
+      this.totalAmount = this.totalAmount * this.discount;
+      this.totalAmount = this.totalAmount.toFixed(2);
+    },
+    discount(val){
+      this.discount = val;
+      this.totalAmount = this.totalAmount * val;
+      this.totalAmount = this.totalAmount.toFixed(2);
     }
-
   },
   created() {
     if(this.$route.query.data === "hadOrder"){//判断是否是已有订单
@@ -279,6 +311,7 @@ export default {
         method : this.payType,//支付方式
         totalAmount : this.totalAmount,
         type : this.type,
+        couponCode : this.discountCode,//优惠券码
         logoUrl : this.urls.logo,//logo图片
         adUrl : this.urls.pic,//贴片图片
       }
@@ -353,6 +386,18 @@ export default {
         cancelButtonClass: '取消',
       }).then(() => {
         this.cancelOrder();
+      });
+    },
+    verifyDiscount(){//验证优惠券码
+      return new Promise((resolve, reject) => {
+        crudCoupon.verify(this.discountCode).then(res => {
+          if(res.code === MSG_TYPE_SUCCESS){
+            this.discount = res.data.discount;
+            resolve(res);
+          }
+        }).catch(res => {
+          reject(res)
+        })
       });
     },
     cancelOrder(){

@@ -164,7 +164,7 @@ export default {
     }) || 0;
     this.balance.audioTime === null ? this.audioTime = 0 : this.audioTime = this.balance.audioTime
     this.time = Math.ceil(this.words / 200);
-    this.price = (this.time - this.audioTime) * 100;
+    this.time > this.audioTime ? this.price = (this.time - this.audioTime) * 100 : this.price = 0;
     //获取配音方式
     this.dubType = storeApi.get({
       name: 'dubType'

@@ -178,12 +178,12 @@
         </span>
       </div>
       <el-row>
-        <el-col span="12">
+        <el-col span="16">
           总计￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">
 <!--              原价<span style=" text-decoration:line-through">{{this.totalAmount + 400}}</span> -->
               {{this.totalAmount}}</span>元（已优惠{{this.selectedPlan.price - this.totalAmount}}元）
         </el-col>
-        <el-col span="12">
+        <el-col span="8">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button @click="beforePay(selectedPlan.title)" type="primary">支  付</el-button>
         </el-col>
@@ -199,6 +199,7 @@ import accountService from "@/views/VirtualWeb/account/account-service";
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
 import store from "@/store";
+import crudCoupon from '@/views/biz/coupon/coupon-service'
 export default {
   name: "exhibition",
   data(){
@@ -239,6 +240,10 @@ export default {
       if(val === false){
         this.selectedPlan = {};
       }
+    },
+    discount(val){
+      this.discount = val;
+      this.totalAmount = this.selectedPlan.price * val;
     }
   },
   methods:{
@@ -334,7 +339,16 @@ export default {
       }
     },
     verifyDiscount(){//验证优惠券码
-
+      return new Promise((resolve, reject) => {
+          crudCoupon.verify(this.discountCode).then(res => {
+            if(res.code === MSG_TYPE_SUCCESS){
+              this.discount = res.data.discount;
+              resolve(res);
+            }
+          }).catch(res => {
+            reject(res)
+          })
+      });
     },
     addCompany(companyName){
       console.log(companyName);
