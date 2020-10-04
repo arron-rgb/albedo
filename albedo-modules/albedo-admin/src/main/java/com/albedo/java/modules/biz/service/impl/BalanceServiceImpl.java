@@ -44,41 +44,6 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   BalanceRecordRepository recordRepository;
 
   @Override
-  public void addTimes(int times, String userId) {
-    Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
-    // 不存在的话直接返回
-    Assert.notNull(balance, ExceptionNames.BALANCE_NOT_FOUND);
-    int update = balance.getTimes() + times;
-    balance.setTimes(update);
-    baseMapper.updateById(balance);
-    BalanceRecord record =
-      BalanceRecord.builder().type(ADD).amount(times).dimension(ORDER_TIMES).userId(userId).build();
-    recordRepository.insert(record);
-
-  }
-
-  @Override
-  public Integer leftTimes() {
-    String userId = SecurityUtil.getUser().getId();
-    String deptId = SecurityUtil.getUser().getDeptId();
-    // 1. 个人用户直接返回
-    if (deptId.equals(PERSONAL_USER_ROLE_ID)) {
-      Balance balance = baseMapper.selectOne(Wrappers.<Balance>query().eq("user_id", userId));
-      if (balance != null) {
-        return balance.getTimes();
-      } else {
-        return null;
-      }
-    }
-    // todo 企业用户返回自己的 or 返回企业下员工总和
-    List<String> userIds = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getId)
-      .collect(Collectors.toList());
-    List<Balance> users = baseMapper.selectList(Wrappers.<Balance>query().in("user_id", userIds));
-    // 整个公司
-    return users.stream().mapToInt(Balance::getTimes).sum();
-  }
-
-  @Override
   public void consumeTimes() throws TimesOverspendException {
     String deptId = SecurityUtil.getUser().getDeptId();
     String userId = SecurityUtil.getUser().getId();
