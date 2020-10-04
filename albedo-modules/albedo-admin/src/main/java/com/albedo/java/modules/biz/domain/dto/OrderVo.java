@@ -38,7 +38,10 @@ public class OrderVo {
    * 订单描述
    */
   String description;
-
+  /**
+   * 优惠码
+   */
+  String couponCode;
   /**
    * 水印
    */
