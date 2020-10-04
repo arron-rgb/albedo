@@ -9,8 +9,9 @@
           <div>
             <div style="text-align: center">
               <div class="el-upload">
-                <img :src="user.avatar ? baseApi + user.avatar : Avatar" title="点击上传头像" class="avatar"
-                     @click="toggleShow">
+                <img :src="Avatar" class="avatar">
+<!--                <img :src="user.avatar ? 'http://' + user.avatar : Avatar" title="点击上传头像" class="avatar"-->
+<!--                     @click="toggleShow">-->
                 <myUpload
                   v-model="show"
                   field="file"
@@ -74,7 +75,7 @@
                   </el-col>
                   <el-col span="12">
                     <a @click="$refs.pass.dialog = true">修改密码</a>
-                    <a @click="$refs.email.dialog = true">修改邮箱</a>
+<!--                    <a @click="$refs.email.dialog = true">修改邮箱</a>-->
                   </el-col>
                 </el-row>
               </li>
@@ -103,6 +104,10 @@
                   <el-input v-model="form.phone" style="width: 35%;"/>
                   <span style="color: #C0C0C0;margin-left: 10px;">手机号码不能重复</span>
                 </el-form-item>
+<!--                <el-form-item label="邮箱" prop="email">-->
+<!--                  <el-input v-model="form.email" style="width: 35%;"/>-->
+<!--                  <span style="color: #C0C0C0;margin-left: 10px;">邮箱不能重复</span>-->
+<!--                </el-form-item>-->
                 <el-form-item label="备注" prop="description">
                   <el-input v-model="form.description" style="width: 35%;" type="textarea"/>
                 </el-form-item>
@@ -212,6 +217,9 @@ export default {
         ],
         phone: [
           {required: true, trigger: 'blur', validator: validPhone}
+        ],
+        email: [
+          {required: true, trigger: 'blur', message: '请输入邮箱',}
         ]
       }
     }
@@ -227,6 +235,7 @@ export default {
       id: this.user.id,
       nickname: this.user.nickname,
       description: this.user.description,
+      email : this.user.email,
       phone: this.user.phone
     }
     //是否显示日志

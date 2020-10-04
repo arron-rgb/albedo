@@ -68,8 +68,13 @@
                 <el-col span="5" style="margin-top: 3px">
                   <span style="font-size: 30px; color: #ff5000">{{this.time}}</span>
                 </el-col>
-                <el-col span="13">
+                <el-col span="3">
                   <span style="line-height: 45px">分钟</span>
+                </el-col>
+                <el-col span="10">
+                  <span style="line-height: 45px; color: #666666">
+                    （套餐余量：
+                    {{this.audioTime}}分钟）</span>
                 </el-col>
               </el-row>
               <el-row style="text-align: left; margin-top: 10px;" v-if="this.dubType === '1'">
@@ -96,6 +101,7 @@
 import storeApi from "@/utils/store";
 import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 import {MSG_TYPE_SUCCESS} from "@/const/common";
+import {mapGetters} from "vuex";
 export default {
   data() {
     return {
@@ -128,7 +134,13 @@ export default {
       backData: null,
       videoOrder: '',
       voiceList:[],
+      audioTime : 0,
     }
+  },
+  computed: {
+    ...mapGetters([
+      'balance',
+    ])
   },
   created() {
     var videoOrder = storeApi.get({
@@ -150,8 +162,9 @@ export default {
     this.words = storeApi.get({
       name: 'words'
     }) || 0;
+    this.balance.audioTime === null ? this.audioTime = 0 : this.audioTime = this.balance.audioTime
     this.time = Math.ceil(this.words / 200);
-    this.price = this.time * 100;
+    this.price = (this.time - this.audioTime) * 100;
     //获取配音方式
     this.dubType = storeApi.get({
       name: 'dubType'
@@ -248,7 +261,22 @@ export default {
                 name: 'duration',
               });
               this.loading = false;
-              window.open(res.data);
+              if(res.data === null){//用套餐余量抵消成功
+                this.$alert("人工配音订单提交成功，请耐心等待！", '提示', {
+                  confirmButtonText: '确定',
+                  callback: action => {
+                    this.goTo('/addOrder');
+                  }
+                });
+                resolve(res);
+              }else{
+                this.$alert("人工配音订单提交成功，即将前往支付页面！", '提示', {
+                  confirmButtonText: '确定',
+                  callback: action => {
+                    window.open(res.data);
+                  }
+                });
+              }
             }
           }
           this.loading = false;

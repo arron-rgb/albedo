@@ -7,7 +7,7 @@
                   @keyup.enter.native="toQuery"/>
         <rrOperation/>
       </div>
-      <crudOperation :permission="permission"/>
+<!--      <crudOperation :permission="permission"/>-->
     </div>
     <!--Form表单-->
     <el-dialog

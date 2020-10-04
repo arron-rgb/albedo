@@ -13,21 +13,68 @@
     <!-- 平台介绍 -->
     <el-container class="body">
       <el-aside style=" background: none" width="300px;">
-        <p class="mouseover_button" style="background-color: rgba(153, 94, 251, 0.3)">虚拟直播</p>
-        <p class="mouseover_button" style="background-color: #c9bafb">虚拟场景</p>
-        <p class="mouseover_button" style="background-color: #fbb9ab">智能详情匹配</p>
+<!--        <p class="mouseover_button"  style="background-color: #99c2fb">虚拟直播</p>-->
+<!--        <p class="mouseover_button" style="background-color: #c9bafb">虚拟场景</p>-->
+<!--        <p class="mouseover_button" style="background-color: #fbb9ab">智能详情匹配</p>-->
+        <p :class="{active:i === isShow}" :key="i" @mouseover="mouseover(i)"  class="mouseover_button" v-for="(item,i) in virtual.row">{{item.title}}</p>
       </el-aside>
       <el-main>
 <!--        static.vlivest.com/3e5c8a0c8bd70742c5af00782176f782.png-->
         <el-row>
           <el-col span="20">
             <div class="showBox">
-              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">
+<!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">-->
+
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="screenCarousel" style="margin-top: 10px;height: 410px">
+                <el-carousel-item :key="i" style="height: 410px" v-for="(item,i) in virtual.row" >
+<!--                  <img style="background-size: cover; width: 100%" :src="item.img">-->
+                  <div class='videoPlayer'>
+                    <video-player  :options="{
+                                     autoplay: true,
+                                     loop: true,
+                                     preload: 'auto',
+                                     aspectRatio: '7:4',
+                                     fluid: true,
+                                     sources:[{
+                                       type : 'video/mp4',
+                                       src : item.video
+                                     }],
+                                     controlBar: false
+                                   }"
+                                   :playsinline="true"
+                                   class="video-player vjs-custom-skin"
+                                   ref="videoPlayer">
+                    </video-player>
+                  </div>
+                </el-carousel-item>
+              </el-carousel>
             </div>
           </el-col>
           <el-col span="4">
             <div class="phoneBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif">-->
+              <el-carousel :autoplay="false" @change="carouselChange" indicator-position="none" ref="phoneCarousel" style="">
+                <el-carousel-item  :key="i" style="" v-for="(item,i) in virtual.col" >
+                  <div class='videoPhone' >
+                    <video-player :options="{
+                                         autoplay: true,
+                                         loop: true,
+                                         preload: 'auto',
+                                         aspectRatio: '9:16',
+                                         fluid: true,
+                                         sources:[{
+                                           type : 'video/mp4',
+                                           src : item.video,
+                                         }],
+                                         controlBar: false
+                                       }"
+                                   :playsinline="true"
+                                   class="video-player vjs-custom-skin"
+                                   ref="videoPlayer">
+                    </video-player>
+                  </div>
+                </el-carousel-item>
+              </el-carousel>
             </div>
           </el-col>
         </el-row>
@@ -186,9 +233,16 @@ export default {
   },
   data(){
     return {
-      virtual:[{title: '虚拟直播', img: require('@/assets/VirtualWeb/timg.jpg')},
-        {title: '虚拟场景', img: require('@/assets/VirtualWeb/timg1.jpg')},
-        {title: '智能详情匹配', img: require('@/assets/VirtualWeb/timg2.jpg')}],
+      virtual:{
+        row : [{title: '虚拟直播', video: 'http://static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4'},
+        {title: '虚拟场景', video: 'http://static.vlivest.com/2a9bbd83769bf4db3fda097695e8094c.mp4'},
+        {title: '智能详情匹配', video: 'http://static.vlivest.com/040ad337da31ea7bfd5a4c07d5d9bb1e.mp4'}],
+        col : [
+          {video : 'http://static.vlivest.com/3dcdcec5e2dd0edfc2d805ec9c318658.mp4'},
+          {video : 'http://static.vlivest.com/56d5a2a5605031ff5a3d5b929e4f4b3a.mp4'},
+          {video : 'http://static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4'},
+        ]
+      },
 
       // carousel:[{img:require(''), url: ''}],
       isShow: 0,
@@ -226,7 +280,8 @@ export default {
 
   methods: {
     mouseover(key){//button绑定走马灯
-      // this.$refs.carousel.setActiveItem(key);
+      this.$refs.screenCarousel.setActiveItem(key);
+      this.$refs.phoneCarousel.setActiveItem(key);
       this.isShow = key;
     },
     carouselChange(key){//走马灯绑定button
@@ -286,6 +341,7 @@ export default {
     //static.vlivest.com/da54c6b8ddccfba88a8352f8c5996cb0.png
     background-image: url("http://static.vlivest.com/da54c6b8ddccfba88a8352f8c5996cb0.png");
     width:210px;
+    z-index: 9;
     height:300px;
     bottom: 0;
     position: absolute;
@@ -309,9 +365,17 @@ export default {
       font-size: 22px;
       font-family: "SourceHanSansCN-Regular","Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
     }
+    .mouseover_button:first-child{
+      background-color: #99c2fb;
+    }
+    .mouseover_button:nth-child(2){
+      background-color: #c9bafb
+  }
+    .mouseover_button:nth-child(3){
+      background-color: #fbb9ab
+    }
     .active {
-      background-color: $bg-orange;
-      color: white;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.5);
     }
 
   }
@@ -489,5 +553,22 @@ export default {
 }
 .learn-more:hover{
   color: #ff5000;
+}
+.videoPlayer {
+  width: 636px;
+  height: 410px;
+  margin-top: 34px;
+  position: relative;
+  display: inline-block;
+  border: 1px solid transparent;
+  //overflow: hidden;
+  //margin-right: 4px;
+}
+.videoPhone{
+  width: 148px;
+  height: 280px;
+  position: absolute;
+  left: 33px;
+  top: 40px;
 }
 </style>
