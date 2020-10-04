@@ -92,6 +92,7 @@
       <el-table-column :show-overflow-tooltip="true" align="center" label="创建的用户id" prop="createdBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票金额" prop="totalAmount" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票记录id" prop="recordIds" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="修改人" prop="lastModifiedBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="抬头">
         <template slot-scope="scope">
           <el-button @click="showInvoice(scope.row.invoiceId)">查看</el-button>
@@ -155,7 +156,7 @@ export default {
      }
   },
   computed: {
-    ...mapGetters(["permissions","dicts"])
+    ...mapGetters(["permissions","dicts","user"])
   },
   created() {
     this.delFlagOptions = this.dicts["sys_flag"]

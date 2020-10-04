@@ -26,4 +26,7 @@ public class ContactInfoQueryCriteria implements Serializable {
 	@Query(operator = Query.Operator.like)
 	private String name;
 
+	@Query(operator = Query.Operator.like)
+	private String phone;
+
 }
