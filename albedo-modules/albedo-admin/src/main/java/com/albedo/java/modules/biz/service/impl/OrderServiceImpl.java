@@ -393,8 +393,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         balance.setAudioTime(0);
         balanceService.updateById(balance);
         amount = Double.parseDouble(perMinute) * (minutes - audioTime);
-        Money money = new Money(amount);
-        order.setTotalAmount(money.getAmount().toPlainString());
+        totalAmount = new BigDecimal(amount);
+        order.setTotalAmount(totalAmount.toPlainString());
         order.updateById();
       }
     }

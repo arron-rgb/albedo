@@ -62,16 +62,7 @@ public class WebOrderResource extends BaseResource {
   @PreAuthorize("@pms.hasPermission('biz_order_view')")
   public Result<Order> get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
-    Order key = service.getById(id);
-    Video video = videoService.getById(key.getVideoId());
-    if (video != null) {
-      key.setVideoId(video.getOriginUrl());
-    }
-    String username = SecurityUtil.getUser().getUsername();
-    if (StringUtils.isNotBlank(username)) {
-      key.setUserId(username);
-    }
-    return Result.buildOkData(key);
+    return Result.buildOkData(service.getById(id));
   }
 
   /**

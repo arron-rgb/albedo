@@ -57,8 +57,8 @@ public class PlanResource extends BaseResource {
   @ApiOperation(value = "获取套餐支付链接")
   @Token
   @PostMapping("/purchase")
-  public Result<String> purchase(String planId, String token) {
-    return Result.buildOk(service.purchase(planId));
+  public Result<String> purchase(String planId, String token, String couponCode) {
+    return Result.buildOk(service.purchase(planId, couponCode));
   }
 
   /**
