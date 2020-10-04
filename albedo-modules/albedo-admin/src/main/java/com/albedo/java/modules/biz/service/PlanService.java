@@ -19,6 +19,8 @@ public interface PlanService extends BaseService<Plan> {
    */
   String purchase(String planId);
 
+  String purchase(String planId, String couponCode);
+
   /**
    * 只负责更新 验证由上层负责
    *

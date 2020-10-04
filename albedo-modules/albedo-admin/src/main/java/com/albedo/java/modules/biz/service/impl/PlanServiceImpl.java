@@ -1,7 +1,12 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.CommonConstants.STR_NO;
+import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
+import static com.albedo.java.common.core.constant.ExceptionNames.INVALID_COUPON;
 import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
+
+import java.math.BigDecimal;
 
 import javax.annotation.Resource;
 
@@ -11,21 +16,23 @@ import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
+import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.domain.Coupon;
 import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.domain.dto.PlanDto;
 import com.albedo.java.modules.biz.repository.PlanRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
+import com.albedo.java.modules.biz.service.CouponService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
-import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.math.Money;
 
 /**
  * @author arronshentu
@@ -34,15 +41,34 @@ import cn.hutool.core.lang.Assert;
 public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanDto, String> implements PlanService {
 
   @Resource
+  CouponService couponService;
+  @Resource
   AliPayService aliPayService;
   @Resource
   PurchaseRecordService recordService;
 
   @Override
   public String purchase(String planId) {
+    return purchase(planId, null);
+  }
+
+  @Override
+  public String purchase(String planId, String couponCode) {
     Plan plan = baseMapper.selectById(planId);
-    TradePlus trade = TradePlus.builder().outTradeNo(AliPayUtils.getOrderCode()).totalAmount(plan.getPrice().toString())
-      .subject(plan.getName()).build();
+    BigDecimal price = plan.getPrice();
+    if (StringUtils.isNotEmpty(couponCode)) {
+      Money money = new Money(price);
+      Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
+      Assert.notNull(code, INVALID_COUPON);
+      String discount = code.getDiscount();
+      money.multiplyBy(Double.parseDouble(discount));
+      price = money.getAmount();
+      code.setUserId(SecurityUtil.getUser().getId());
+      code.setOrderId(plan.getId());
+      code.setStatus(STR_NO);
+      code.updateById();
+    }
+    TradePlus trade = TradePlus.build(price.toPlainString(), plan.getName());
     // 购买记录本地不区分支付状态，需要验证时通过aliPayService去查询
     PurchaseRecord record = PurchaseRecord.buildPlan(trade, planId);
     recordService.save(record);
@@ -128,8 +154,6 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     balance.setGoodsQuantity(goodsQuantity);
   }
 
-  @Resource
-  UserRoleService userRoleService;
   @Resource
   BalanceService balanceService;
 
