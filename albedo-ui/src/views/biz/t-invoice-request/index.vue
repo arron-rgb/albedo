@@ -14,11 +14,6 @@
         </el-select>
         <rrOperation />
       </div>
-      <el-row>
-        <el-col span="4">
-          <el-button @click="showIsInvoice">已开票订单</el-button>
-        </el-col>
-      </el-row>
 <!--      <crudOperation :permission="permission" />-->
     </div>
 
@@ -178,7 +173,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudTInvoiceRequest.page(params).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.noInvoiceData = res.data;
+            this.noInvoiceData = res.data.records;
             this.noInvoiceDataLoading = false;
           }
           resolve(res);
@@ -217,6 +212,7 @@ export default {
       _data.type = 1;
       return new Promise((resolve, reject) => {//提交更改数据请求
         crudTInvoiceRequest.save(_data).then(res => {
+          this.getNoInvoiceRequest;
           resolve(res);
           // if (res.code === MSG_TYPE_SUCCESS) {
           //   this.invoiceData = res.data;

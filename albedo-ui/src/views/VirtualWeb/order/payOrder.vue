@@ -5,7 +5,6 @@
       <div slot="header" class="clearfix">
         <span class="title">需求清单</span>
       </div>
-
       <el-row class="box">
         <el-col span="4">
           已选需求：
@@ -205,7 +204,7 @@ export default {
       times : 0,
       logoUrl : '',
       picUrl : '',
-      videoData : {},
+      videoData : null,
       discountCode : '',//优惠券码
       discount : 1,
       urls : {
@@ -296,6 +295,7 @@ export default {
   computed: {
     ...mapGetters([
       'balance',
+      'user'
     ])
   },
   methods:{
@@ -308,22 +308,35 @@ export default {
     toPay(){
       this.loading = true;
       var content = {data : this.list}
-      this.videoData = {
-        content : JSON.stringify(content),
-        method : this.payType,//支付方式
-        totalAmount : this.totalAmount,
-        type : this.type,
-        description : this.description,//备注
-        couponCode : this.discountCode,//优惠券码
-        logoUrl : this.urls.logo,//logo图片
-        adUrl : this.urls.pic,//贴片图片
+      var data;
+      if(this.videoData === null){
+        data = {
+          content : JSON.stringify(content),
+          method : this.payType,//支付方式
+          totalAmount : this.totalAmount,
+          type : this.type,
+          description : this.description,//备注
+          couponCode : this.discountCode,//优惠券码
+          logoUrl : this.urls.logo,//logo图片
+          adUrl : this.urls.pic,//贴片图片
+          userId : this.user.id,
+        }
+      } else{
+        data = this.videoData;
+        data.method = this.payType;
+        data.totalAmount = this.totalAmount;
+        data.type = this.type;
+        data.description = this.description;
+        data.couponCode = this.discountCode;
+        data.logoUrl = this.urls.logo;
+        data.adUrl = this.urls.pic;
       }
       // if(this.orderId !== null){//原有订单直接提交请求
       //   this.getToken(this.orderId);
       // }
       // else {
         return new Promise((resolve, reject) => {//订单先保存
-          payOrder.save(this.videoData).then(res => {//保存订单并获取订单id
+          crudOrder.save(data).then(res => {//保存订单并获取订单id
             if (res.code === MSG_TYPE_SUCCESS) {
               // console.log(res)
               this.$message({

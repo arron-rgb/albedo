@@ -103,12 +103,12 @@
           {{scope.row.type === 0 ? '未开' : '已开'}}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" v-permission="[permission.edit,permission.del]" width="120px">
-        <template slot-scope="scope">
-          <el-button @click="changeInvoice(scope.row)" type="primary">开票</el-button>
-<!--          <udOperation :data="scope.row" :permission="permission" />-->
-        </template>
-      </el-table-column>
+<!--      <el-table-column fixed="right" label="操作" v-permission="[permission.edit,permission.del]" width="120px">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-button @click="changeInvoice(scope.row)" type="primary">开票</el-button>-->
+<!--&lt;!&ndash;          <udOperation :data="scope.row" :permission="permission" />&ndash;&gt;-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
 	<!--分页组件-->
     <pagination />
@@ -173,7 +173,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudTInvoiceRequest.page(params).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.isInvoiceData = res.data;
+            this.isInvoiceData = res.data.records;
             this.isInvoiceDataLoading = false;
           }
           resolve(res);
