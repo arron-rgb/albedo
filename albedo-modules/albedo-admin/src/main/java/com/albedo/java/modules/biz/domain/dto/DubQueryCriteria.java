@@ -18,6 +18,12 @@ import java.util.*;
 @Data
 public class DubQueryCriteria implements Serializable {
 
+	@Query(propName = "value", operator = Query.Operator.like)
+	private String value;
+
+	@Query(propName = "title", operator = Query.Operator.like)
+	private String title;
+
 	private static final long serialVersionUID = 1L;
 
 }
