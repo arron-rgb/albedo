@@ -34,8 +34,8 @@
         </el-table-column>
         <el-table-column label="订单类型">
           <template slot-scope="props">
-            <span v-if="props.row.type === '0'">视频订单</span>
             <span v-if="props.row.type === '2'">语音订单</span>
+            <span v-else >视频订单</span>
           </template>
         </el-table-column>
         <el-table-column
