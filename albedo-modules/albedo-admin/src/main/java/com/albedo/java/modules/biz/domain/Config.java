@@ -42,4 +42,8 @@ public class Config {
    * 文本描述
    */
   private String description;
+
+
+  private Integer sort;
+
 }

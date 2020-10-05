@@ -81,6 +81,7 @@
       @selection-change="crud.selectionChangeHandler"
     >
       <el-table-column type="selection" width="55"/>
+      <el-table-column align="center" label="ID" :show-overflow-tooltip="true" prop="id"/>
       <el-table-column align="center" label="所属分类" :show-overflow-tooltip="true" prop="title"/>
       <el-table-column align="center" label="名称" :show-overflow-tooltip="true" prop="value"/>
       <el-table-column align="center" label="描述" :show-overflow-tooltip="true" prop="description"/>
@@ -95,7 +96,7 @@
         </template>
       </el-table-column>
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
-        <template slot-scope="scope">
+        <template slot-scope="scope" v-if="scope.row.id > 2 ">
           <udOperation :data="scope.row" :permission="permission"/>
         </template>
       </el-table-column>
@@ -145,6 +146,9 @@ export default {
       permission: {
         edit: 'biz_config_edit',
         del: 'biz_config_del'
+      },
+      otherPermission: {
+        edit: 'biz_config_edit',
       }
     }
   },

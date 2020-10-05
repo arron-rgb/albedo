@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.web;
 import static com.albedo.java.common.core.constant.BusinessConstants.COMMON;
 import static com.albedo.java.common.core.constant.BusinessConstants.PLUS_SERVICE;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.albedo.java.modules.biz.domain.Element;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
@@ -59,7 +61,12 @@ public class ConfigResource {
     List<Config> plusService = repository.selectList(Wrappers.<Config>query().eq("type", PLUS_SERVICE));
     plusService.stream().collect(Collectors.groupingBy(Config::getTitle))
       .forEach((key, value) -> build.getPlusService().addList(value, key));
-    return Result.buildOkData(build);
+
+    plusService.sort(Comparator.comparing(Config::getSort));
+	  build.getData().forEach(data -> data.getData().sort(Comparator.comparing(Config::getSort)));
+	  build.getData().sort(Comparator.comparing(Element::getTitle));
+
+	  return Result.buildOkData(build);
   }
 
   @GetMapping(CommonConstants.URL_ID_REGEX)

@@ -4,6 +4,7 @@
         <el-col span="17">
           <el-collapse accordion class="container-box">
             <div class="pageTitle">请选择您的视频需求</div>
+<!--            {{this.backData}}-->
             <el-collapse-item>
               <template slot="title">{{this.belongType.title}}</template>
               <el-checkbox-group v-model="this.selectBelong" size="small">
@@ -14,7 +15,39 @@
                 </el-checkbox-button>
               </el-checkbox-group>
             </el-collapse-item>
-            <el-collapse-item v-for="item in data" v-if="item.title !== '您的所属类型'" :key="item">
+
+            <el-collapse-item>
+              <template slot="title">您的想要的主播数量</template>
+              <el-radio-group v-model="singleFlag" size="small">
+                <el-radio-button label="1">
+<!--                  <img class="img" v-show="o.url !== null" :src="'http://' + o.url">-->
+                  <div class="button-text">单人主播</div>
+                </el-radio-button>
+                <el-radio-button label="0">
+                  <div class="button-text">双人主播</div>
+                </el-radio-button>
+<!--                <div v-show="o.description !== null" class="button-text" style="line-height: 20px; color: #909399">-->
+<!--                  <span style="color: #ff5000">描述：</span>-->
+<!--                  <span style="font-style: italic;">{{o.description}}</span>-->
+<!--                </div>-->
+              </el-radio-group>
+            </el-collapse-item>
+
+            <el-collapse-item>
+              <template slot="title">{{this.anchorData.title}}</template>
+              <el-radio-group v-model="selectData" @change="videoList(o.title, o)" v-for="o in this.anchorData.data" :key="o" size="small">
+                <el-radio-button :label="o.value">
+                  <img class="img" v-show="o.url !== null" :src="'http://' + o.url">
+                  <div class="button-text">{{o.value}}</div>
+                </el-radio-button>
+                <div v-show="o.description !== null" class="button-text" style="line-height: 20px; color: #909399">
+                  <span style="color: #ff5000">描述：</span>
+                  <span style="font-style: italic;">{{o.description}}</span>
+                </div>
+              </el-radio-group>
+            </el-collapse-item>
+
+            <el-collapse-item v-for="item in data" v-show="!(item.title === '您的所属类型' || item.title === '您喜欢的单人主播' || item.title === '您喜欢的双人主播')" :key="item">
               <template slot="title">{{item.title}}</template>
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
@@ -56,6 +89,8 @@ export default {
   data () {
     return {
       backData : [],
+      singleFlag : '1',//选择的是单人主播
+      anchorData : {},
       data : [],
       selectData : '',
       selectBelong : [],
@@ -67,6 +102,26 @@ export default {
   created() {
     // this.getData();
     this.getCurrentOrder()
+  },
+  watch :{
+    singleFlag(val){
+      this.singleFlag = val;
+      var dataIndex;
+      if(val === '1'){//选择的是单人主播
+        dataIndex = this.data.findIndex( o => o.title === '您喜欢的单人主播');
+        this.anchorData = this.data[dataIndex];
+        dataIndex = this.backData.findIndex( o => o.title === '您喜欢的双人主播');
+        if(dataIndex !== -1)//删除backData中的数据
+          this.backData.splice(dataIndex, 1)
+      }else{
+        dataIndex = this.data.findIndex( o => o.title === '您喜欢的双人主播');
+        this.anchorData = this.data[dataIndex];
+        dataIndex = this.backData.findIndex( o => o.title === '您喜欢的单人主播');
+        if(dataIndex !== -1)//删除backData中的数据
+          this.backData.splice(dataIndex, 1)
+      }
+
+    }
   },
   methods : {
     getCurrentOrder(){//获取当前订单
@@ -135,6 +190,7 @@ export default {
       })
     },
     videoList(title, data) {
+      // console.log(title);
       var dataIndex = this.backData.findIndex(o => o.title === title);
       if (dataIndex === -1) {
         //列表中没有数据
@@ -148,15 +204,19 @@ export default {
       }
     },
     toPay() {
-      //没有选完选项
-      this.backData.push({
-        title : '您的所属类型',
-        data: this.selectBelongType,
-      });
-      if (this.data.length > this.backData.length) {
+      if(this.selectBelongType.length > 0)//有数据才填充
+        this.backData.push({
+          title : '您的所属类型',
+          data: this.selectBelongType,
+        });
+      if (this.data.length - 1 > this.backData.length) {        //没有选完选项
         //找到没有选择的第一个选项
         for (var i = 0; i < this.data.length ; i++) {
           // console.log(this.data[i].title)
+          if(this.singleFlag === '1' && this.data[i].title === '您喜欢的双人主播')
+            continue;
+          if(this.singleFlag === '0' && this.data[i].title === '您喜欢的但人主播')
+            continue;
           var dataIndex = this.backData.findIndex(o => o.title === this.data[i].title);
           // console.log(dataIndex)
           if (dataIndex === -1) {
@@ -167,6 +227,11 @@ export default {
         }
       }
       else{
+        this.backData.push({
+          title : '主播数量',
+          data : [{value : this.singleFlag === '1' ? '单人主播' : '双人主播'}]
+        });
+
         //保存已选的视频选项
         // console.log(this.backData)
         storeApi.set({
@@ -180,6 +245,7 @@ export default {
           content: 1,
           type: 'session'
         });
+
         this.goTo("/payOrder");
       }
     },
@@ -190,9 +256,23 @@ export default {
     },
     getBelongType(){//获得多选框类型
       var dataIndex = this.data.findIndex(o => o.title === '您的所属类型');
-      console.log(dataIndex);
+      // console.log(dataIndex);
       this.belongType = this.data[dataIndex];
+      //设置主播数量
+      dataIndex = this.data.findIndex( o => o.title === '您喜欢的单人主播');
+      this.anchorData = this.data[dataIndex];
     },
+    // getFlag(title){
+    //
+    //   if(title === "您的所属类型"){
+    //     console.log(title);
+    //     return false;
+    //   }
+    //   if(title === "您喜欢的单人主播" && !this.singleFlag)
+    //     return false;
+    //   if(title === "您喜欢的双人主播" && this.singleFlag)
+    //     return false;
+    // },
     changeBelongType(value){//更改多选框数据
       var dataIndex = this.selectBelongType.findIndex(o => o.value === value);
       if(dataIndex === -1){
@@ -202,7 +282,7 @@ export default {
         this.selectBelong.push(value);
       }
       else{
-        console.log('删除');
+        // console.log('删除');
         this.selectBelongType.splice(dataIndex, 1);
         this.selectBelong.slice(dataIndex, 1)
       }
