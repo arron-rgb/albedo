@@ -46,4 +46,22 @@ export function list() {
     method: 'get'
   })
 }
-export default { page, del, save, get, current, list }
+
+export function consume(id){//员工接单
+  return request({
+    url: '/biz/order/consume',
+    method: 'get',
+    params : {
+      orderId : id
+    }
+  })
+}
+
+export function uploadAudio(data){//保存上传的音频
+  return request({
+    url: '/biz/order/audio/upload',
+    method: 'post',
+    data : data,
+  })
+}
+export default { page, del, save, get, current, list, consume, uploadAudio }

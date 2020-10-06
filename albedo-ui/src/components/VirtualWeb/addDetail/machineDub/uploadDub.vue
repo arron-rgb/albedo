@@ -21,7 +21,7 @@
                 drag>
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                    <div class="el-upload__tip" slot="tip">格式支持：mp3,wav,pcm,m4,mp4,wma,且不超过2GB</div>
+                    <div class="el-upload__tip" slot="tip">格式支持：mp3,且不超过200MB</div>
                 </el-upload>
             </div>
         </div>

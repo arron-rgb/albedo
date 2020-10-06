@@ -196,11 +196,11 @@ export default {
         //列表中没有数据
         this.backData.push({
           title : title,
-          data : [{name : data.name, value : data.value}]
+          data : [{title : data.title, value : data.value, url : data.url}]
         })
       } else {
         //修改数据
-        this.backData[dataIndex].data = [{name : data.name, value : data.value}];
+        this.backData[dataIndex].data = [{title : data.title, value : data.value, url : data.url}];
       }
     },
     toPay() {

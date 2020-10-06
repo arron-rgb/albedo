@@ -5,7 +5,7 @@
       <div v-if="crud.props.searchToggle">
               <rrOperation />
       </div>
-      <crudOperation :permission="permission" />
+<!--      <crudOperation :permission="permission" />-->
     </div>
 	<!--Form表单-->
     <el-dialog
@@ -61,20 +61,44 @@
       v-loading="crud.loading"
       :data="crud.data"
       style="width: 100%;"
+      :row-class-name="tableRowClassName"
+      :default-sort = "{prop: 'lastModifiedDate', order: 'descending'}"
       @sort-change="crud.sortChange"
       @selection-change="crud.selectionChangeHandler"
     >
-      <el-table-column type="selection" width="55" />
+<!--      <el-table-column type="selection" width="55" />-->
+      <el-table-column
+        align="center" label="更新时间"
+        :show-overflow-tooltip="true"
+        prop="lastModifiedDate"
+        sortable
+      />
       <el-table-column align="center" label="用户id" :show-overflow-tooltip="true" prop="userId" />
-      <el-table-column align="center" label="订单状态，见OrderStatus" :show-overflow-tooltip="true" prop="state" />
-      <el-table-column align="center" label="订单类型" :show-overflow-tooltip="true" prop="type" />
+      <el-table-column align="center" label="订单状态" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <span v-if="scope.row.state === 0">未付款</span>
+          <span style="color: #ff5000"  v-if="scope.row.state === 1">未接单</span>
+          <span style="color: orange"  v-if="scope.row.state === 2">制作中</span>
+          <span style="color: deepskyblue" v-if="scope.row.state === 3">待完善</span>
+          <span style="color: pink" v-if="scope.row.state === 4">配音中</span>
+          <span style="color: lightgreen" v-if="scope.row.state === 5">已完成</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="订单类型" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <span v-if="scope.row.type === '0'">视频订单</span>
+          <span v-if="scope.row.type === '1'">视频订单（加速）</span>
+          <span v-if="scope.row.type === '2'">配音订单</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="负责员工" :show-overflow-tooltip="true" prop="staffId" />
-      <el-table-column align="center" label="视频链接" :show-overflow-tooltip="true" prop="videoId" />
-      <el-table-column align="center" label="表单内容" :show-overflow-tooltip="true" prop="content" />
+<!--      <el-table-column align="center" label="视频链接" :show-overflow-tooltip="true" prop="videoId" />-->
+<!--      <el-table-column align="center" label="表单内容" :show-overflow-tooltip="true" prop="content" />-->
       <el-table-column align="center" label="订单金额" :show-overflow-tooltip="true" prop="totalAmount" />
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
         <template slot-scope="scope">
-          <udOperation :data="scope.row" :permission="permission" />
+<!--          <udOperation :data="scope.row" :permission="permission" />-->
+          <el-button @click="orderDetail(scope.row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -92,6 +116,7 @@ import crudOperation from '@crud/CRUD.operation'
 import pagination from '@crud/Pagination'
 import validate from '@/utils/validate'
 import { mapGetters } from 'vuex'
+import storeApi from "@/utils/store";
 
 const defaultForm = {
   userId: null,
@@ -133,7 +158,36 @@ export default {
     this.delFlagOptions = this.dicts["sys_flag"]
   },
   methods: {
-
+    tableRowClassName({row, rowIndex}) {
+      if (row.type === '1') {//加速订单
+        return 'warning-row';
+      } else if (row.type === '2') {//语音订单
+        return 'success-row';
+      }
+      return '';
+    },
+    orderDetail(order){
+      storeApi.set({
+        name: 'orderData',
+        content: order,
+        type: 'session'
+      });
+      this.goTo('/order/detail')
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {data: data}});
+    },
   }
 };
 </script>
+<style>
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
+}
+</style>
