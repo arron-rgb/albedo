@@ -111,7 +111,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     baseMapper.insert(video);
     if (StringUtils.isEmpty(order.getVideoId())) {
       order.setVideoId(video.getId());
-    }
+      order.updateById();
+	}
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
     // 本地：./upload/bucketName/文件名

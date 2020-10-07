@@ -5,35 +5,35 @@
           上传配音
       </div> -->
       <el-upload
-        :auto-upload="false"
+        class="upload-demo"
+        ref="upload"
+        action="#"
+        :show-file-list="false"
         :before-upload="beforeUpload"
+        :auto-upload="false"
         :multiple="false"
         :on-change="onUploadChange"
-        :show-file-list="false"
-        action="#"
-        class="upload-demo"
-        drag
-        ref="upload">
+        drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">格式支持：mp3,且不超过200MB</div>
       </el-upload>
     </div>
-    <aplayer :music="{
+    <aplayer style="margin:  auto" v-if="this.url !== ''"
+             :music="{
                   title: this.name,
                   artist: '请试听',
                   src: this.url,
                   theme: '#ff5000'
-                }" style="margin:  auto"
-             v-if="this.url !== ''"
+                }"
     />
-    <el-button :loading="loading" @click="next" style="margin-top: 20px"  type="primary">提交音频</el-button>
+    <el-button type="primary" style="margin-top: 20px" :loading="loading"  @click="next">提交音频</el-button>
 
     <!--遮罩层-->
     <div class="loading" v-if="loading" >
       <h4 class="tips">{{tips}}</h4>
       <!--进度条-->
-      <el-progress :percentage="percentage" :show-text="true" class="progress" color="#ff5000" type="line"></el-progress>
+      <el-progress type="line" :percentage="percentage" color="#ff5000" class="progress" :show-text="true"></el-progress>
     </div>
     <!--上传完成提示对话框-->
 <!--    <el-dialog-->
@@ -87,7 +87,7 @@ export default {
         }
       });
     }else{
-      this.videoId = orderData.videoId;
+      this.videoId = orderData.id;
     }
   },
   methods :{

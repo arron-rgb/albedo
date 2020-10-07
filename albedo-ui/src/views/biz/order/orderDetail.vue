@@ -145,7 +145,7 @@
 import storeApi from "@/utils/store";
 import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
-import myaudio from '@/components/VirtualWeb/file/audioUpdate'
+import myaudio from '@/components/VirtualWeb/file/audioUpload'
 import MyOrder from "@/views/VirtualWeb/personal/myOrder";
 
 
