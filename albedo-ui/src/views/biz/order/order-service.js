@@ -61,7 +61,7 @@ export function uploadAudio(data){//保存上传的音频
   return request({
     url: '/biz/order/audio/upload',
     method: 'post',
-    data : data,
+    params : data,
   })
 }
 export default { page, del, save, get, current, list, consume, uploadAudio }

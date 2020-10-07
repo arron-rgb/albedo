@@ -40,39 +40,9 @@
         <el-button @click="takeOrder(orderData.id)" :loading="loading" type="primary" style="width: 150px">接单</el-button>
       </el-row>
 
-      <el-row class="box" style="text-align: center" v-if="orderData.state === 2">
-        <div class="uploadContainer">
-          <div class="uploadCard">
-            <!-- <div class="uploadTitle">
-                上传配音
-            </div> -->
-            {{this.audio}}<br />
-            <el-upload
-              class="upload-demo"
-              ref="upload"
-              action="#"
-              :show-file-list="false"
-              :http-request="uploadAud"
-              :auto-upload="false"
-              :multiple="false"
-              :on-change="onUploadChange"
-              drag>
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">格式支持：mp3,且不超过200MB</div>
-            </el-upload>
-          </div>
-        </div>
-<!--        <aplayer style="width: 800px; margin:  auto" v-if="this.url !== ''"-->
-<!--                 :music="{-->
-<!--                  title: this.name,-->
-<!--                  artist: '请试听',-->
-<!--                  src: this.url,-->
-<!--                  theme: '#ff5000'-->
-<!--                }"-->
-<!--        />-->
-        <el-button type="primary" :loading="loading"  @click="next">提交音频</el-button>
-      </el-row>
+<!--      <el-row class="box" style="text-align: center" v-if="orderData.state === 2">-->
+      <myaudio v-if="orderData.state === 2"></myaudio>
+<!--      </el-row>-->
     </el-card>
 
     <el-card class="box-card" body-style="padding : 0px" v-else>
@@ -175,13 +145,15 @@
 import storeApi from "@/utils/store";
 import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
-import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
-import aplayer from 'vue-aplayer'
+import myaudio from '@/components/VirtualWeb/file/audioUpdate'
+import MyOrder from "@/views/VirtualWeb/personal/myOrder";
+
 
 export default {
   name: "orderDetail",
   components: {
-    aplayer
+    MyOrder,
+    myaudio
   },
   data(){
     return {
@@ -189,8 +161,6 @@ export default {
       loading : false,
       tagList : ["", "success", "info", "warning", "danger"],
       voiceData : [],
-      audio : {url : '',
-      name : '',},
       playerOptions : {
         playbackRates: [0.7, 1.0, 1.5, 2.0], //播放速度
         autoplay: false, //如果true,浏览器准备好时开始回放。
@@ -238,19 +208,6 @@ export default {
     }
   },
   methods : {
-    next() {//上传音频
-      this.$set(this.loading, null, true);
-      // 检查是否上传了音频
-      // console.log(this.url);
-      if(this.url === null || this.url === undefined || this.url === ''){
-        this.$message.error('请先上传音频！');
-        this.loading = false;
-        return ;
-      }
-      // 调用上传方法
-      this.$refs.upload.submit();
-      this.loading = false;
-    },
     takeOrder(orderId){//接订单
       this.loading = true;
       return new Promise((resolve, reject) => {
@@ -271,71 +228,9 @@ export default {
         })
       })
     },
-    onUploadChange(file) {//检查文件是否合法
-      console.log(file);
-      this.$set(this.name,  file.name);
-      const isIMAGE = (file.raw.type === 'audio/mpeg');
-      const isLt1M = file.size / 1024 / 1024 < 200;
-
-      if (!isIMAGE) {
-        this.$message.error('只能上传mp3格式的音频！');
-        return;
-      }
-      if (!isLt1M) {
-        this.$message.error('上传文件大小不能超过200MB！');
-        return;
-      }
-
-      var _this = this;
-
-      var reader = new FileReader();
-      reader.readAsDataURL(file.raw)
-      reader.onload = function (e) {
-        //this.result为图片的base64
-        // console.log(e.target.result)
-        //将图片路径赋值给url
-
-        _this.url = e.target.result;
-      }
-
-    },
-    uploadAud(file) {//上传文件
-      var _this = this
-      return new Promise((resolve, reject) => {
-        dubOperate.uploadFile(file).then(res => {
-          if (res.code === MSG_TYPE_SUCCESS) {
-            //音频上传成功，二次保存订单
-            // console.log(res.data.url);
-            this.saveAudio(res.data.url);
-          }
-        }).catch(error => {
-          this.loading = false;
-          reject(error)
-        })
-      });
-    },
     getVoiceData(data){//获得配音音色数据
       var temp = data.substr(1,data.length - 2);
       this.voiceData = temp.split(',');
-    },
-    saveAudio(url){
-      var data = {
-        orderId : this.orderData.id,//订单id
-        audioUrl: url //音频url
-      }
-      return new Promise((resolve, reject) => {
-        crudOrder.uploadAudio(data).then( res => {
-          resolve();
-          this.$alert('音频保存成功，辛苦了！', '提示',{
-            confirmButtonText: '确定',
-            callback: action => {
-              this.goTo('/order/order')
-            }
-          });
-        }).catch(error => {
-          reject(error);
-        })
-      })
     },
     goTo(url, data){
       //带参数跳转
@@ -384,9 +279,7 @@ export default {
   text-align: center;
   border-top: 1px solid #dcdfe6;
 }
-.videoPlayer{
-  /*height: 200px;*/
-}
+
 .tag{
   min-width: 100px;
   line-height: 40px;
