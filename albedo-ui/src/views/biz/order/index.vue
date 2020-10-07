@@ -3,9 +3,22 @@
     <!--工具栏-->
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
+        <el-input class="filter-item input-small" v-model="query.staffId" clearable size="small" placeholder="输入员工id搜索"
+                  @keyup.enter.native="toQuery"/>
+        <el-date-picker
+          v-model="query.lastModifiedDate"
+          :default-time="['00:00:00','23:59:59']"
+          class="date-item"
+          end-placeholder="结束日期"
+          range-separator=":"
+          size="small"
+          start-placeholder="开始日期"
+          type="daterange"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        />
               <rrOperation />
       </div>
-<!--      <crudOperation :permission="permission" />-->
+      <crudOperation :permission="permission" />
     </div>
 	<!--Form表单-->
     <el-dialog
