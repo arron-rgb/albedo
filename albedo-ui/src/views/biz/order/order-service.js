@@ -64,4 +64,18 @@ export function uploadAudio(data){//保存上传的音频
     params : data,
   })
 }
-export default { page, del, save, get, current, list, consume, uploadAudio }
+
+export function todo(){//保存上传的音频
+  return request({
+    url: '/biz/order/todo/list',
+    method: 'get',
+  })
+}
+
+export function belong(){//保存上传的音频
+  return request({
+    url: '/biz/order/list/belong',
+    method: 'get',
+  })
+}
+export default { page, del, save, get, current, list, consume, uploadAudio, todo, belong }

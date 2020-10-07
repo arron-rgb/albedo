@@ -55,6 +55,9 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   // 是否登录成功
   if (store.getters.loginSuccess) {
+
+    //已登录且要去员工页面
+
     // 已登录且要跳转的页面是登录页
     if (to.path === '/login') {
       next({ path: '/' })

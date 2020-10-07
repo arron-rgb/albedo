@@ -3,9 +3,9 @@
     <div class="footerContainer">
       <div class="footerLeft">
         <div class='linkList'>
-          <el-link :underline='false' type='info' href='javascript;'>联系我们</el-link>
-          <el-link :underline='false' type='info' href='javascript;'>使用协议</el-link>
-          <el-link :underline='false' type='info' href='javascript;'>信息中心</el-link>
+          <el-link :underline='false' @click="goTo('contactUs')" type='info'>联系我们</el-link>
+          <el-link :underline='false' @click="" type='info'>使用协议</el-link>
+          <el-link :underline='false' @click="goTo('/user/center')" type='info'>员工入口</el-link>
 
         </div>
         <span>Copyright © 2019-2020 杭州葳锐信息科技有限公司版权所有</span>
@@ -31,6 +31,13 @@ export default {
 
     }
 
+  },
+  methods :{
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 
 }

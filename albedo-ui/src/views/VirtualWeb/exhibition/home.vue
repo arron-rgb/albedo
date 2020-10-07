@@ -436,7 +436,8 @@ export default {
       display:flex;
       justify-content: center;
       align-items: center;
-      margin:50px 0 0 0;
+      margin:  auto;
+      margin-top: 50px;
       width:1200px;
       height:100%;
       & ::v-deep .el-col.el-col-6{
