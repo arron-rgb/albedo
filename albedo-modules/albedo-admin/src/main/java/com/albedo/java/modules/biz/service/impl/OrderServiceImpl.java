@@ -262,6 +262,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.isTrue(roles.contains(ADMIN_ROLE_ID), CONSUME_NOT_PERMITTED);
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
+    Assert.isTrue(NOT_STARTED.equals(order.getState()), "订单状态异常");
+    Assert.isTrue(StringUtils.isEmpty(order.getStaffId()), "该视频已被认领");
     order.setStaffId(staffId);
     order.setState(IN_PRODUCTION);
     saveOrUpdate(order);
@@ -269,7 +271,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public List<Order> availableOrder() {
-    return baseMapper.selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED));
+    return baseMapper
+      .selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED).eq(Order::getStaffId, ""));
   }
 
   @Resource
