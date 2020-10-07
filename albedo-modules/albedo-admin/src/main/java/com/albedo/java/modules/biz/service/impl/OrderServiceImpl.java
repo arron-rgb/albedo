@@ -332,7 +332,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   public void uploadAudio(String orderId, String audioUrl) {
     Order audioOrder = baseMapper.selectById(orderId);
     Assert.notNull(audioOrder, ORDER_NOT_FOUND);
-    Assert.isTrue(Objects.equals(audioOrder.getType(), DUBBING));
+    Assert.isTrue(Objects.equals(audioOrder.getType(), DUBBING), "订单类型不匹配");
     String videoOrderId = audioOrder.getVideoId();
     Order videoOrder = baseMapper.selectById(videoOrderId);
     Assert.notNull(videoOrder, ORDER_NOT_FOUND);
@@ -365,17 +365,20 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     double amount = Double.parseDouble(perMinute) * minutes;
     BigDecimal totalAmount = BigDecimal.valueOf(amount);
     Balance balance = balanceService.getByUserId(userId);
-
+    String orderId = orderVo.getOrderId();
+    Order order = getOne(Wrappers.<Order>lambdaQuery().eq(Order::getVideoId, orderId), false);
+    if (order == null) {
+      order = new Order();
+    }
     // 人工配音的下单方式
-    Order order = new Order();
     order.setTotalAmount(totalAmount.toString());
     order.setType(DUBBING);
     order.setUserId(userId);
     order.setContent(content);
     order.setDescription(String.valueOf(orderVo.getVoiceType()));
-    order.setVideoId(orderVo.getOrderId());
+    order.setVideoId(orderId);
     order.setState(UNPAID_ORDER);
-    order.insert();
+    order.insertOrUpdate();
     // baseMapper.insert(order);
 
     if (balance != null) {
