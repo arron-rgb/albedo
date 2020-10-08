@@ -2,10 +2,13 @@ package com.albedo.java.modules.biz.web;
 
 import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import cn.hutool.core.lang.Snowflake;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * 优惠券Controller 优惠券
@@ -106,6 +110,31 @@ public class CouponResource extends BaseResource {
     couponDto.setStatus(STR_YES);
     service.saveOrUpdate(couponDto);
     return Result.buildOk("保存优惠券成功");
+  }
+
+  @PreAuthorize("@pms.hasPermission('biz_coupon_edit')")
+  @LogOperate(value = "优惠券生成")
+  @ApiOperation(value = "批量生成优惠券")
+  @PostMapping("generate")
+  public Result<List<Coupon>> generate(@RequestBody Body body) {
+    List<Coupon> coupons = new ArrayList<>(body.getNum());
+    for (int integer = 0; integer < body.getNum(); integer++) {
+      Coupon couponDto = new Coupon();
+      couponDto.setDiscount(body.getDiscount());
+      couponDto.setCode(getUUID());
+      couponDto.setStatus(STR_YES);
+      coupons.add(couponDto);
+      service.saveOrUpdate(couponDto);
+    }
+    return Result.buildOkData(coupons, "保存优惠券成功");
+  }
+
+  @Data
+  static class Body {
+    @Size(max = 32)
+    private String discount;
+
+    private Integer num;
   }
 
   /**

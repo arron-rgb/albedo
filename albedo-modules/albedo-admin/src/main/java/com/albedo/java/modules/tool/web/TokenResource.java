@@ -5,6 +5,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.PERSONAL_US
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.util.Result;
+import com.albedo.java.common.core.vo.SelectResult;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.sys.domain.Dept;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.UserRole;
 import com.albedo.java.modules.sys.service.DeptService;
+import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.sys.service.UserRoleService;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.sys.util.SysCacheUtil;
@@ -128,6 +131,15 @@ public class TokenResource {
     SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
     return Result.buildOk("更改成功，请重新登录");
   }
+
+  @GetMapping("dict")
+  public Result<Map<String, List<SelectResult>>> getData(String codes) {
+    Map<String, List<SelectResult>> res = dictService.findCodes(codes);
+    return Result.buildOkData(res);
+  }
+
+  @Resource
+  DictService dictService;
 
   @Data
   public static class ResetBody {

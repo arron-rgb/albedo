@@ -272,7 +272,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public List<Order> availableOrder() {
     return baseMapper
-      .selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED).eq(Order::getStaffId, ""));
+      .selectList(Wrappers.<Order>lambdaQuery().eq(Order::getState, NOT_STARTED).isNull(Order::getStaffId));
   }
 
   @Resource
