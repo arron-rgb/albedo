@@ -168,6 +168,8 @@ export default {
     ...mapGetters(["permissions","dicts"])
   },
   created() {
+    // this.query.staffId = 1;
+    // this.crud.toQuery;
     this.delFlagOptions = this.dicts["sys_flag"]
   },
   methods: {

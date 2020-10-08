@@ -224,6 +224,8 @@
 import myVideo from "@/components/VirtualWeb/video";
 import crudContactInfo from '@/views/biz/contact-info/contact-info-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
+import store from "@/store";
+import storeApi from "@/utils/store";
 
 
 export default {
@@ -231,6 +233,8 @@ export default {
   components : {
     myVideo,
   },
+  // static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4,static.vlivest.com/2a9bbd83769bf4db3fda097695e8094c.mp4,static.vlivest.com/040ad337da31ea7bfd5a4c07d5d9bb1e.mp4
+  // static.vlivest.com/3dcdcec5e2dd0edfc2d805ec9c318658.mp4,static.vlivest.com/56d5a2a5605031ff5a3d5b929e4f4b3a.mp4,static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4
   data(){
     return {
       virtual:{
@@ -277,8 +281,25 @@ export default {
 
     }
   },
-
+  created() {
+    // this.getMediaData();
+  },
   methods: {
+    getMediaData(){
+      // console.log(store.getters.dicts.source)
+
+      var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+      var dataIndex, i;
+      dataIndex = list.findIndex(o => o.label === '横屏视频');
+      var temp = list[dataIndex].value.split(',');
+      for(i = 0 ; i < this.virtual.row.length; i++)
+        this.virtual.row[i].video = 'http://' + temp[i];
+      // dataIndex = list.findIndex(o => o.label === '竖屏视频');
+      // temp = list[dataIndex].value.split(',');
+      // for(i = 0 ; i < this.virtual.col.length; i++)
+      //   this.virtual.col[i].video = 'http://' + temp[i];
+      console.log(temp);
+    },
     mouseover(key){//button绑定走马灯
       this.$refs.screenCarousel.setActiveItem(key);
       this.$refs.phoneCarousel.setActiveItem(key);

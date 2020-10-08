@@ -9,6 +9,9 @@
 <script>
 import myHeader from '@/components/VirtualWeb/header'
 import myFooter from '@/components/VirtualWeb/footer'
+import data from "@/api/data";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
+import storeApi from "@/utils/store";
 
 export default {
   name: 'App',
@@ -22,9 +25,43 @@ export default {
     }
   },
   mounted(){
+    // this.getStaticsData();
     //动态设置内容高度 让footer始终居底   header+footer的高度是100
     this.Height = document.documentElement.clientHeight - 300;
     window.onresize = ()=> {this.Height = document.documentElement.clientHeight -300};
+  },
+  methods : {
+    getStaticsData(){
+      return new Promise( (resolve, reject) => {
+        data.staticsData('source').then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res.data);
+            storeApi.set({
+              name: 'staticData',
+              content: res.data.source,
+              type: 'session'
+            });
+            resolve()
+          }
+        }).catch(error => {
+          reject(error)
+        })
+
+        data.staticsData('biz').then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res.data);
+            storeApi.set({
+              name: 'priceData',
+              content: res.data.biz,
+              type: 'session'
+            });
+            resolve()
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    }
   }
 }
 </script>

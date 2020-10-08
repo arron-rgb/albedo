@@ -55,9 +55,28 @@
         <el-form-item :rules="[{ required: true, trigger: 'blur', message: '请输入字典名称'}]" label="字典名称" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
+
+
+
+<!--        <el-form-item v-if="this.form.parentId === '38cd3f8f064c9b59bbfc25be1065330d'" label="选择文件" prop="val" >-->
+<!--          <el-input v-model="form.val" disabled/>-->
+<!--          <el-upload-->
+<!--            ref="uploadFiles"-->
+<!--            action="/a/file/upload"-->
+<!--            list-type="picture-card"-->
+<!--            :auto-upload="false"-->
+<!--            :on-remove="handleRemove"-->
+<!--            :on-success="handleSuccess"-->
+<!--          >-->
+<!--            <i class="el-icon-plus"></i>-->
+<!--          </el-upload>-->
+<!--          <el-button @click="submitFile">点击上传</el-button>-->
+<!--        </el-form-item>-->
+
         <el-form-item label="字典值" prop="val">
           <el-input v-model="form.val" />
         </el-form-item>
+
         <el-form-item :rules="[{ required: true, trigger: 'blur', message: '请输入字典名称'}]" label="字典编码" prop="code">
           <el-input v-model="form.code" />
         </el-form-item>
@@ -146,8 +165,9 @@ import CRUD, { crud, form, header, presenter } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
-import { NO, YES } from '@/const/common'
+import {MSG_TYPE_SUCCESS, NO, YES} from '@/const/common'
 import { mapGetters } from 'vuex'
+import dubOperate from "@/components/VirtualWeb/addDetail/machineDub/dub-service";
 
 const defaultForm = { id: null, name: null, val: null, code: null, available: null, parentId: -1, description: null }
 export default {
@@ -160,6 +180,7 @@ export default {
   data() {
     return {
       dictTreeData: [],
+      imageUrl : null,
       permission: {
         edit: 'sys_dict_edit',
         lock: 'sys_dict_lock',
@@ -177,6 +198,59 @@ export default {
     this.flagOptions = this.dicts['sys_flag']
   },
   methods: {
+    handleSuccess(response, file, fileList){
+      // console.log(response, file, fileList);
+      var fileUrls = [];
+      for(var i = 0; i < fileList.length; i++){
+        fileUrls.push(fileList[i].response.data.url);
+      }
+      this.form.val = fileUrls.toString();
+    },
+    handleRemove(file, fileList) {
+      // console.log(file, fileList);
+    },
+    submitFile(){
+      this.$refs.uploadFiles.submit();
+    },
+    onUploadChange(file){
+      // console.log(file);
+      const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
+      const  isLt1M = file.size / 1024 / 1024 < 1;
+
+      if(!isIMAGE){
+        this.$message.error('只能上传jpg/png图片！');
+        return  false;
+      }
+      if(!isLt1M){
+        this.$message.error('上传文件大小不能超过1MB！');
+        return  false;
+      }
+
+      var _this = this;
+
+      var reader = new FileReader();
+      reader.readAsDataURL(file.raw)
+
+      reader.onload = function (e){
+        //this.result为图片的base64
+        // console.log(this.result)
+        //将图片路径赋值给url
+        _this.imageUrl = e.target.result;
+      }
+      this.uploadImg(file);
+    },
+    uploadImg(file){
+      return new Promise((resolve, reject) => {
+        dubOperate.uploadFile(file).then(res => {
+          if (res.code === MSG_TYPE_SUCCESS) {
+            this.form.url = res.data.url;
+          }
+        }).catch(error => {
+          this.loading = false;
+          reject(error)
+        })
+      });
+    },
     // 新增与编辑前做的操作
     [CRUD.HOOK.afterToCU](crud, form) {
       // 获取所有字典
@@ -223,4 +297,29 @@ export default {
 </script>
 
 <style scoped>
+.avatar-uploader{
+  border: 1px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 178px;
+  height: 178px;
+}
+.avatar-uploader:hover {
+  border-color: #ff5000 !important;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>

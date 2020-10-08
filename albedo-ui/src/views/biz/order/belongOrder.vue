@@ -15,7 +15,7 @@
       :row-class-name="tableRowClassName"
       ref="table"
       style="width: 100%;"
-      v-loading=""
+      v-loading="loading"
     >
       <!--      <el-table-column type="selection" width="55" />-->
       <el-table-column
@@ -54,7 +54,6 @@
       </el-table-column>
     </el-table>
     <!--分页组件-->
-    <pagination />
   </div>
 </template>
 
@@ -90,6 +89,7 @@ export default {
   data() {
     return {
       data : [],
+      allData :[],
       loading : false,
       delFlagOptions: undefined,
     }

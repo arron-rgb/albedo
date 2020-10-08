@@ -18,6 +18,9 @@ public class OrderQueryCriteria implements Serializable {
 	@Query(propName = "staff_id", operator = Query.Operator.like)
 	private String staffId;
 
+	@Query(propName = "state", operator = Query.Operator.like)
+	private String state;
+
 	@Query(propName = "last_modified_date", operator = Query.Operator.between)
 	private List<Date> lastModifiedDate;
 }

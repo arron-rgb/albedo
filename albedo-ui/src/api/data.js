@@ -15,3 +15,15 @@ export function download(url, params) {
     responseType: 'blob'
   })
 }
+
+export function staticsData(codes) {
+  return request({
+    url: '/sys/dict/codes',
+    method: 'get',
+    params : {
+      codes : codes
+    }
+  })
+}
+
+export default { initData, download, staticsData }

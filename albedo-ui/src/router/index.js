@@ -55,7 +55,7 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   // 是否登录成功
   if (store.getters.loginSuccess) {
-
+    // console.log(store.getters.dicts.source);
     //已登录且要去员工页面
 
     // 已登录且要跳转的页面是登录页
@@ -64,6 +64,7 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       if (validate.checkNull(store.getters.user)) { // 判断当前用户是否已拉取完user_info信息
+        // 登录时未拉取 菜单，在此处拉取
         store.dispatch('GetUser').then(res => { // 拉取user_info
           store.dispatch('GetDicts').then(res => {
             // 动态路由，拉取菜单
@@ -80,7 +81,9 @@ router.beforeEach((to, from, next) => {
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
         })
-        // 登录时未拉取 菜单，在此处拉取
+
+
+
       } else {
         next()
       }
@@ -110,3 +113,4 @@ export const loadMenus = (next, to) => {
 router.afterEach(() => {
   NProgress.done() // finish progress bar
 })
+
