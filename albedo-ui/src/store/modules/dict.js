@@ -1,6 +1,5 @@
 import loginService from '@/api/login'
 import { MSG_TYPE_SUCCESS } from '@/const/common'
-import data from "@/api/data";
 
 const dict = {
   state: {
