@@ -58,22 +58,22 @@
 
 
 
-<!--        <el-form-item v-if="this.form.parentId === '38cd3f8f064c9b59bbfc25be1065330d'" label="选择文件" prop="val" >-->
-<!--          <el-input v-model="form.val" disabled/>-->
-<!--          <el-upload-->
-<!--            ref="uploadFiles"-->
-<!--            action="/a/file/upload"-->
-<!--            list-type="picture-card"-->
-<!--            :auto-upload="false"-->
-<!--            :on-remove="handleRemove"-->
-<!--            :on-success="handleSuccess"-->
-<!--          >-->
-<!--            <i class="el-icon-plus"></i>-->
-<!--          </el-upload>-->
-<!--          <el-button @click="submitFile">点击上传</el-button>-->
-<!--        </el-form-item>-->
+        <el-form-item v-if="this.form.parentId === '38cd3f8f064c9b59bbfc25be1065330d'" label="选择文件" prop="val" >
+          <el-input v-model="form.val" disabled/>
+          <el-upload
+            ref="uploadFiles"
+            action="/a/file/upload"
+            list-type="picture-card"
+            :auto-upload="false"
+            :on-remove="handleRemove"
+            :on-success="handleSuccess"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-button @click="submitFile">点击上传</el-button>
+        </el-form-item>
 
-        <el-form-item label="字典值" prop="val">
+        <el-form-item v-else label="字典值" prop="val">
           <el-input v-model="form.val" />
         </el-form-item>
 

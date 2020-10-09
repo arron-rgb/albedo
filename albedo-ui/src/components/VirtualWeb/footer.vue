@@ -4,8 +4,8 @@
       <div class="footerLeft">
         <div class='linkList'>
           <el-link :underline='false' @click="goTo('contactUs')" type='info'>联系我们</el-link>
-          <el-link :underline='false' @click="" type='info'>使用协议</el-link>
-          <el-link :underline='false' @click="goTo('/user/center')" type='info'>员工入口</el-link>
+          <el-link :underline='false' @click="goTo('agreement')" type='info'>使用协议</el-link>
+          <el-link :underline='false' @click="toBackend" type='info'>员工入口</el-link>
 
         </div>
         <span>Copyright © 2019-2020 杭州葳锐信息科技有限公司版权所有</span>
@@ -23,6 +23,9 @@
 
 </template>
 <script>
+import storeApi from "@/utils/store";
+import store from "@/store";
+
 export default {
   data(){
     return {
@@ -32,7 +35,32 @@ export default {
     }
 
   },
+  created() {
+    var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === '底部二维码');
+    this.QRCode = 'http://' + list[dataIndex].value;
+
+  },
   methods :{
+    toBackend(){
+      if(store.getters.loginSuccess) {//已登录
+        if (store.state.user.user.roleNames === '个人用户' || store.state.user.user.roleNames === '企业管理员' || store.state.user.user.roleNames === '企业普通用户') {
+          this.$alert('该入口仅员工账户可进！！', '提示', {
+            confirmButtonText: '确定'
+          });
+        } else {
+          this.goTo('/user/center')
+        }
+      }
+      else{
+        this.$alert('请先登录！', '提示', {//未登录则需先登录
+          confirmButtonText: '确定',
+          callback: action => {
+            this.goTo('/login');
+          }
+        });
+      }
+    },
     goTo(url, data){
       //带参数跳转
       // console.log(data)

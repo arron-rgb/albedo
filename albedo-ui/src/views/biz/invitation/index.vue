@@ -1,15 +1,19 @@
 <template>
   <div>
-    <el-row>
+    <el-row style="color: #909399; line-height: 30px; padding: 10px 0; text-align: center">
       <el-col span="4">
         您的邀请码：
       </el-col>
-      <el-col span="20" style="text-align: left">
+      <el-col span="8" style="text-align: c">
         {{this.invitationCode}}
       </el-col>
+      <el-col span="4">
+        邀请总数：
+      </el-col>
+      <el-col span="8" style="text-align: left">
+        {{this.invitationList.length}}
+      </el-col>
     </el-row>
-
-    {{this.invitationList}}
 
     <el-table
       ref="table"
@@ -17,9 +21,11 @@
       :data="invitationList"
       style="width: 100%;"
     >
-      <el-table-column align="center" label="ID" :show-overflow-tooltip="true" prop="id"/>
-      <el-table-column align="center" label="所属分类" :show-overflow-tooltip="true" prop="title"/>
-
+      <el-table-column align="center" label="注册时间" :show-overflow-tooltip="true" prop="createdDate"/>
+      <el-table-column align="center" label="用户ID" :show-overflow-tooltip="true" prop="id"/>
+      <el-table-column align="center" label="用户名" :show-overflow-tooltip="true" prop="username"/>
+      <el-table-column align="center" label="联系方式" :show-overflow-tooltip="true" prop="phone"/>
+      <el-table-column align="center" label="邮箱" :show-overflow-tooltip="true" prop="email"/>
     </el-table>
   </div>
 </template>

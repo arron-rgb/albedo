@@ -36,7 +36,7 @@
         </el-input>
       </el-form-item>
       <el-button @click="save" style="width: 120px" type="primary" >提交</el-button>
-      <el-button @click="this.step = 1" style="width: 120px" type="primary" >下一步</el-button>
+<!--      <el-button @click="this.step = 1" style="width: 120px" type="primary" >下一步</el-button>-->
     </el-form>
 
 <!--    <el-form :model="changeForm" :rules="changeFormRules" label-width="80px" v-else>-->

@@ -52,6 +52,7 @@ application:
       - ${application.adminPath}/biz/plan/list
       - ${application.adminPath}/tool/aliPay/notify
       - ${application.adminPath}/account/*
+      - ${application.adminPath}/dict
       - /cdn/*
       - /fonts/*
 

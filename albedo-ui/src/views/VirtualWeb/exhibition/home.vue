@@ -282,11 +282,10 @@ export default {
     }
   },
   created() {
-    // this.getMediaData();
+    this.getMediaData();
   },
   methods: {
     getMediaData(){
-      // console.log(store.getters.dicts.source)
 
       var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
       var dataIndex, i;
@@ -294,11 +293,19 @@ export default {
       var temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.row.length; i++)
         this.virtual.row[i].video = 'http://' + temp[i];
-      // dataIndex = list.findIndex(o => o.label === '竖屏视频');
-      // temp = list[dataIndex].value.split(',');
-      // for(i = 0 ; i < this.virtual.col.length; i++)
-      //   this.virtual.col[i].video = 'http://' + temp[i];
-      console.log(temp);
+
+      dataIndex = list.findIndex(o => o.label === '竖屏视频');
+      temp = list[dataIndex].value.split(',');
+      for(i = 0 ; i < this.virtual.col.length; i++)
+        this.virtual.col[i].video = 'http://' + temp[i];
+
+      dataIndex = list.findIndex(o => o.label === '主页轮播图');
+      temp = list[dataIndex].value.split(',');
+      for(i = 0 ; i < this.virtual.col.length; i++)
+        this.carousel[i].img = 'http://' + temp[i];
+
+
+      console.log(this.virtual.col[0].video);
     },
     mouseover(key){//button绑定走马灯
       this.$refs.screenCarousel.setActiveItem(key);

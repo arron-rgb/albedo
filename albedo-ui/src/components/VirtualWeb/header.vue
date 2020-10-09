@@ -49,6 +49,8 @@
   </div>
 </template>
 <script>
+import storeApi from "@/utils/store";
+
 export default {
   name: 'banner',
   props: {
@@ -58,6 +60,12 @@ export default {
     return{
       logo_src: 'http://static.vlivest.com/dfc7b86a7d1f3be3b8b7ea580f0936c6.png',
     }
+  },
+  created() {
+    var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === 'logo图片');
+    this.logo_src = 'http://' + list[dataIndex].value;
+
   },
   methods: {
     goTo(url, data){

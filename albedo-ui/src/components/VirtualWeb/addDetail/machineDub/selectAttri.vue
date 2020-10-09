@@ -158,13 +158,16 @@ export default {
     } else {
       this.videoOrder = videoOrder;
     }
+
+    var list = storeApi.get({ name: 'priceData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === '人工配音');
     // 向上取整
     this.words = storeApi.get({
       name: 'words'
     }) || 0;
     this.balance.audioTime === null ? this.audioTime = 0 : this.audioTime = this.balance.audioTime
     this.time = Math.ceil(this.words / 200);
-    this.time > this.audioTime ? this.price = (this.time - this.audioTime) * 100 : this.price = 0;
+    this.time > this.audioTime ? this.price = (this.time - this.audioTime) * list[dataIndex].value : this.price = 0;
     //获取配音方式
     this.dubType = storeApi.get({
       name: 'dubType'

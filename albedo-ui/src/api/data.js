@@ -18,7 +18,7 @@ export function download(url, params) {
 
 export function staticsData(codes) {
   return request({
-    url: '/dict/codes',
+    url: '/dict',
     method: 'get',
     params: {
       codes: codes

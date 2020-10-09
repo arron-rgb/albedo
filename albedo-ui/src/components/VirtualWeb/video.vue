@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import storeApi from "@/utils/store";
+
 export default {
   name: "video",
   data(){
@@ -45,6 +47,12 @@ export default {
       },
 
     }
+  },
+  created() {
+    var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === '主页案例视频');
+    this.playerOptions.sources[0].src = 'http://' + list[dataIndex].value;
+
   },
   methods: {
     // 是否显示视频文字

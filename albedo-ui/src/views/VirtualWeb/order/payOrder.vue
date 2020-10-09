@@ -71,7 +71,7 @@
 
       <el-row class="box">
         <el-col span="4">
-          加速服务（99元/次）：
+          加速服务（{{this.priceList[3]}}元/次）：
         </el-col>
         <el-col span="20">
           <el-row>
@@ -199,7 +199,7 @@ export default {
       isBalance : '0', //是否使用套餐
       data : '',
       loading : false,
-      priceList : [1599, 2599, 1000],//单人主播价格、双人主播价格、双人主播用套餐差价
+      priceList : [1599, 2599, 1000, 99],//单人主播价格、双人主播价格、双人主播用套餐差价, 加速卡价格
       orderId : null,
       times : 0,
       logoUrl : '',
@@ -219,13 +219,13 @@ export default {
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
         this.isBalance === '1' ?
-          this.totalAmount = this.priceList[2] + val * 99://双人主播且有套餐余量
-          this.totalAmount = this.priceList[1] + val * 99; //双人主播且无套餐余量
+          this.totalAmount = this.priceList[2] + val * this.priceList[3]://双人主播且有套餐余量
+          this.totalAmount = this.priceList[1] + val * this.priceList[3]; //双人主播且无套餐余量
       }
       else{
         this.isBalance === '1'?
           this.totalAmount = val * 99://单人主播且有套餐余量
-          this.totalAmount = this.priceList[0] + val * 99;//单人主播且无套餐余量
+          this.totalAmount = this.priceList[0] + val * this.priceList[3];//单人主播且无套餐余量
       }
       this.totalAmount = this.totalAmount * this.discount;
       this.totalAmount = this.totalAmount.toFixed(2);
@@ -237,13 +237,13 @@ export default {
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
         this.isBalance === '1' ?
-          this.totalAmount = this.priceList[2] + this.type * 99://双人主播且有套餐余量
-          this.totalAmount = this.priceList[1] + this.type * 99; //双人主播且无套餐余量
+          this.totalAmount = this.priceList[2] + this.type * this.priceList[3]://双人主播且有套餐余量
+          this.totalAmount = this.priceList[1] + this.type * this.priceList[3]; //双人主播且无套餐余量
       }
       else{
         this.isBalance === '1'?
           this.totalAmount = this.type * 99://单人主播且有套餐余量
-          this.totalAmount = this.priceList[0] + this.type * 99;//单人主播且无套餐余量
+          this.totalAmount = this.priceList[0] + this.type * this.priceList[3];//单人主播且无套餐余量
       }
       this.totalAmount = this.totalAmount * this.discount;
       this.totalAmount = this.totalAmount.toFixed(2);
@@ -255,6 +255,7 @@ export default {
     }
   },
   created() {
+    var list;
     if(this.$route.query.data === "hadOrder"){//判断是否是已有订单
       var videoOrder = storeApi.get({
         name: 'videoOrder'
@@ -277,7 +278,7 @@ export default {
       }
     }
     else {//是新的订单，尚未保存
-      var list = storeApi.get({
+      list = storeApi.get({
         name: 'videoConfig'
       }) || null;
       if (list === null || list === undefined) {
@@ -291,6 +292,17 @@ export default {
         this.getBalance();
       }
     }
+
+    list = storeApi.get({ name: 'priceData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === '单人主播');
+    this.priceList[0] = list[dataIndex].value;
+    dataIndex = list.findIndex(o => o.label === '双人主播');
+    this.priceList[1] = list[dataIndex].value;
+    dataIndex = list.findIndex(o => o.label === '双人主播差价');
+    this.priceList[2] = list[dataIndex].value;
+    dataIndex = list.findIndex(o => o.label === '加速卡');
+    this.priceList[3] = list[dataIndex].value;
+
   },
   computed: {
     ...mapGetters([

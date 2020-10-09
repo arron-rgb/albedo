@@ -25,7 +25,7 @@ export default {
     }
   },
   mounted(){
-    // this.getStaticsData();
+    this.getStaticsData();
     //动态设置内容高度 让footer始终居底   header+footer的高度是100
     this.Height = document.documentElement.clientHeight - 300;
     window.onresize = ()=> {this.Height = document.documentElement.clientHeight -300};

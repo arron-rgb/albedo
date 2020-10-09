@@ -200,6 +200,7 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 import loginService from "@/api/login";
 import store from "@/store";
 import crudCoupon from '@/views/biz/coupon/coupon-service'
+import storeApi from "@/utils/store";
 export default {
   name: "exhibition",
   data(){
@@ -234,6 +235,9 @@ export default {
   },
   created() {
     this.getData();
+    var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+    var dataIndex = list.findIndex(o => o.label === '企业页面横幅');
+    this.backgroundImg = 'http://' + list[dataIndex].value;
   },
   watch:{
     dialogVisible(val){//清空selectedPlan 否则发生复制错误
@@ -351,7 +355,7 @@ export default {
       });
     },
     addCompany(companyName){
-      console.log(companyName);
+      // console.log(companyName);
       return new Promise((resolve, reject) => {//补充企业信息
         accountService.add(companyName).then((res) => {
           // console.log(res)
