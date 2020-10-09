@@ -26,7 +26,7 @@ export default {
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex;
     dataIndex = list.findIndex(o => o.label === '使用协议');
-    this.agreement = 'http://' + list[dataIndex].value;
+    this.agreement = 'https://' + list[dataIndex].value;
 
   },
   methods: {
