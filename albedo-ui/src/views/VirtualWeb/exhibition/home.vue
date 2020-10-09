@@ -298,8 +298,15 @@ export default {
   },
   created() {
     this.getMediaData();
+
   },
   methods: {
+    checkData(){
+      if(this.showPage === 0)
+      {
+        setTimeout(function(){ this.checkData() }, 500);
+      }
+    },
     getMediaData(){
 
       var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
