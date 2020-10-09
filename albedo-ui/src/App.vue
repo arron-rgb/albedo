@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-if="show = 1">
     <my-header></my-header>
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}"><router-view /></div>
     <my-footer></my-footer>
@@ -21,7 +21,8 @@ export default {
   },
   data() {
     return {
-      Height: 0
+      Height: 0,
+      show: 0
     }
   },
   mounted(){
@@ -60,6 +61,7 @@ export default {
         }).catch(error => {
           reject(error)
         })
+        this.show = 1;
       })
     }
   }

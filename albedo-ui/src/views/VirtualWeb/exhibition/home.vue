@@ -1,5 +1,5 @@
 <template>
-  <div class='home'>
+  <div class='home' v-if="this.showPage = 1">
 
     <!-- 轮播图 -->
     <div class="block">
@@ -260,10 +260,15 @@ export default {
 
       // carousel:[{img:require(''), url: ''}],
       isShow: 0,
-      carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
-        {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
-        {img:'http://static.vlivest.com/65b46aacbcddea99e6b13f45087ffdaf.jpg',url:''},
-        ],
+      showPage : 0,
+      carousel:[{img:'',url:''},
+        {img:'',url:''},
+        {img:'',url:''},
+      ],
+      // carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
+      //   {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
+      //   {img:'http://static.vlivest.com/65b46aacbcddea99e6b13f45087ffdaf.jpg',url:''},
+      //   ],
 
 
       form: {
@@ -314,8 +319,7 @@ export default {
       for(i = 0 ; i < this.virtual.col.length; i++)
         this.carousel[i].img = 'https://' + temp[i];
 
-
-      console.log(this.virtual.col[0].video);
+      this.showPage = 1;
     },
     mouseover(key){//button绑定走马灯
       this.$refs.screenCarousel.setActiveItem(key);
