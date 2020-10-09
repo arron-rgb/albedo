@@ -312,7 +312,7 @@ export default {
       dataIndex = list.findIndex(o => o.label === '主页轮播图');
       temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.col.length; i++)
-        this.carousel[i].img = 'http://' + temp[i];
+        this.carousel[i].img = 'https://' + temp[i];
 
 
       console.log(this.virtual.col[0].video);

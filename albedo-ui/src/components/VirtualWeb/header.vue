@@ -64,7 +64,7 @@ export default {
   created() {
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === 'logo图片');
-    this.logo_src = 'http://' + list[dataIndex].value;
+    this.logo_src = 'https://' + list[dataIndex].value;
 
   },
   methods: {
