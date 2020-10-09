@@ -307,17 +307,17 @@ export default {
       dataIndex = list.findIndex(o => o.label === '横屏视频');
       var temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.row.length; i++)
-        this.virtual.row[i].video = 'http://' + temp[i];
+        this.virtual.row[i].video = 'https://' + temp[i];
 
       dataIndex = list.findIndex(o => o.label === '竖屏视频');
       temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.col.length; i++)
-        this.virtual.col[i].video = 'http://' + temp[i];
+        this.virtual.col[i].video = 'https://' + temp[i];
 
       dataIndex = list.findIndex(o => o.label === '主页轮播图');
       temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.col.length; i++)
-        this.carousel[i].img = 'http://' + temp[i];
+        this.carousel[i].img = 'https://' + temp[i];
 
       this.showPage = 1;
     },
