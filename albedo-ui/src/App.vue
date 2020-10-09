@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-if="show = 1">
+  <div id="app" v-if="show === 1">
     <my-header></my-header>
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}"><router-view /></div>
     <my-footer></my-footer>

@@ -38,7 +38,7 @@ export default {
   created() {
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === '底部二维码');
-    this.QRCode = 'https://' + list[dataIndex].value;
+    this.QRCode = 'http://' + list[dataIndex].value;
 
   },
   methods :{
