@@ -17,6 +17,8 @@
     </div>
 </template>
 <script>
+import storeApi from "@/utils/store";
+
 export default {
       data(){
         return{
@@ -45,7 +47,13 @@ export default {
             //   "电子邮件： veirui@foxmail.com",
             //   "电 话： 0571-28878118"]
         }
-    }
+    },
+  created() {
+    var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+    var dataIndex;
+    dataIndex = list.findIndex(o => o.label === '联系我们图片');
+    this.msgBox[4].data = 'http://' + list[dataIndex].value;
+  },
 
 }
 </script>

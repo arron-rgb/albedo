@@ -20,6 +20,7 @@ const whiteList = [
   '/siteGuide',
   '/problems',
   '/contactUs',
+  '/agreement',
 
   //delete later
   //

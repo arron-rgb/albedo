@@ -92,12 +92,12 @@ export const constantRouterMap = [
         component: (resolve) => require(['@/views/VirtualWeb/helpCenter/siteGuide'], resolve),
         hidden: true
       },
-      // {
-      //   path: '/taobaoGuide',
-      //   meta: { showHeader: true },
-      //   component: (resolve) => require(['@/views/VirtualWeb/helpCenter/taobaoGuide'], resolve),
-      //   hidden: true
-      // },
+      {
+        path: '/agreement',
+        meta: { showHeader: true },
+        component: (resolve) => require(['@/views/VirtualWeb/helpCenter/agreement'], resolve),
+        hidden: true
+      },
       {
         path: '/problems',
         meta: { showHeader: true },

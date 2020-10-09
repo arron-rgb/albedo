@@ -8,16 +8,19 @@
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose">
-        <el-submenu>
-            <template slot="title">快速入门</template>
+<!--        <el-submenu>-->
+<!--            <template slot="title">快速入门</template>-->
             <el-menu-item index="siteGuide">网站指南</el-menu-item>
 <!--            <el-menu-item index="taobaoGuide">淘宝直播指南</el-menu-item>-->
-        </el-submenu>
+<!--        </el-submenu>-->
         <el-menu-item index="problems">
           <span slot="title">常见问题</span>
         </el-menu-item>
         <el-menu-item index="contactUs">
           <span slot="title">联系我们</span>
+        </el-menu-item>
+        <el-menu-item index="agreement">
+          <span slot="title">使用协议</span>
         </el-menu-item>
       </el-menu>
     </el-col>
