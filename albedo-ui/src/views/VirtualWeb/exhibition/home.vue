@@ -1,5 +1,5 @@
 <template>
-  <div class='home'>
+  <div class='home' v-if="this.showPage === 1">
 
     <!-- 轮播图 -->
     <div class="block">
@@ -238,22 +238,37 @@ export default {
   data(){
     return {
       virtual:{
-        row : [{title: '虚拟直播', video: 'http://static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4'},
-        {title: '虚拟场景', video: 'http://static.vlivest.com/2a9bbd83769bf4db3fda097695e8094c.mp4'},
-        {title: '智能详情匹配', video: 'http://static.vlivest.com/040ad337da31ea7bfd5a4c07d5d9bb1e.mp4'}],
+        row : [{title: '虚拟直播', video: ''},
+          {title: '虚拟场景', video: ''},
+          {title: '智能详情匹配', video: ''}],
         col : [
-          {video : 'http://static.vlivest.com/3dcdcec5e2dd0edfc2d805ec9c318658.mp4'},
-          {video : 'http://static.vlivest.com/56d5a2a5605031ff5a3d5b929e4f4b3a.mp4'},
-          {video : 'http://static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4'},
+          {video : ''},
+          {video : ''},
+          {video : ''},
         ]
       },
+      // virtual:{
+      //   row : [{title: '虚拟直播', video: 'http://static.vlivest.com/b9b0e49effe711563a2b8b45ec9163c0.mp4'},
+      //   {title: '虚拟场景', video: 'http://static.vlivest.com/2a9bbd83769bf4db3fda097695e8094c.mp4'},
+      //   {title: '智能详情匹配', video: 'http://static.vlivest.com/040ad337da31ea7bfd5a4c07d5d9bb1e.mp4'}],
+      //   col : [
+      //     {video : 'http://static.vlivest.com/3dcdcec5e2dd0edfc2d805ec9c318658.mp4'},
+      //     {video : 'http://static.vlivest.com/56d5a2a5605031ff5a3d5b929e4f4b3a.mp4'},
+      //     {video : 'http://static.vlivest.com/61149a6056458a0e1d809075a5bfa592.mp4'},
+      //   ]
+      // },
 
       // carousel:[{img:require(''), url: ''}],
       isShow: 0,
-      carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
-        {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
-        {img:'http://static.vlivest.com/65b46aacbcddea99e6b13f45087ffdaf.jpg',url:''},
-        ],
+      showPage : 0,
+      carousel:[{img:'',url:''},
+        {img:'',url:''},
+        {img:'',url:''},
+      ],
+      // carousel:[{img:'http://static.vlivest.com/bbdbb869ccba312109263a9fccaba0d9.jpg',url:''},
+      //   {img:'http://static.vlivest.com/81ac2ed1bf92d632d0a8854a4f1fc5f5.jpg',url:''},
+      //   {img:'http://static.vlivest.com/65b46aacbcddea99e6b13f45087ffdaf.jpg',url:''},
+      //   ],
 
 
       form: {
@@ -282,9 +297,16 @@ export default {
     }
   },
   created() {
+    this.checkData();
     this.getMediaData();
   },
   methods: {
+    checkData(){
+      if(this.showPage === 0)
+      {
+        setTimeout(function(){ this.checkData() }, 500);
+      }
+    },
     getMediaData(){
 
       var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
@@ -292,20 +314,19 @@ export default {
       dataIndex = list.findIndex(o => o.label === '横屏视频');
       var temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.row.length; i++)
-        this.virtual.row[i].video = 'http://' + temp[i];
+        this.virtual.row[i].video = 'https://' + temp[i];
 
       dataIndex = list.findIndex(o => o.label === '竖屏视频');
       temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.col.length; i++)
-        this.virtual.col[i].video = 'http://' + temp[i];
+        this.virtual.col[i].video = 'https://' + temp[i];
 
       dataIndex = list.findIndex(o => o.label === '主页轮播图');
       temp = list[dataIndex].value.split(',');
       for(i = 0 ; i < this.virtual.col.length; i++)
-        this.carousel[i].img = 'http://' + temp[i];
+        this.carousel[i].img = 'https://' + temp[i];
 
-
-      console.log(this.virtual.col[0].video);
+      this.showPage = 1;
     },
     mouseover(key){//button绑定走马灯
       this.$refs.screenCarousel.setActiveItem(key);

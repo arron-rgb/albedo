@@ -58,7 +58,7 @@ export default {
   data()
   {
     return{
-      logo_src: 'http://static.vlivest.com/dfc7b86a7d1f3be3b8b7ea580f0936c6.png',
+      logo_src: 'https://static.vlivest.com/dfc7b86a7d1f3be3b8b7ea580f0936c6.png',
     }
   },
   created() {

@@ -237,7 +237,7 @@ export default {
     this.getData();
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === '企业页面横幅');
-    this.backgroundImg = 'http://' + list[dataIndex].value;
+    this.backgroundImg = 'https://' + list[dataIndex].value;
   },
   watch:{
     dialogVisible(val){//清空selectedPlan 否则发生复制错误

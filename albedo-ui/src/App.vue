@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-if="show === 1">
     <my-header></my-header>
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}"><router-view /></div>
     <my-footer></my-footer>
@@ -21,11 +21,46 @@ export default {
   },
   data() {
     return {
-      Height: 0
+      Height: 0,
+      show: 0
     }
   },
+  beforeCreate() {
+    return new Promise( (resolve, reject) => {
+      data.staticsData('source').then(res => {
+        if (res.code === MSG_TYPE_SUCCESS) {
+          // console.log(res.data);
+          storeApi.set({
+            name: 'staticData',
+            content: res.data.source,
+            type: 'session'
+          });
+          resolve()
+        }
+      }).catch(error => {
+        reject(error)
+      })
+
+      data.staticsData('biz').then(res => {
+        if (res.code === MSG_TYPE_SUCCESS) {
+          // console.log(res.data);
+          storeApi.set({
+            name: 'priceData',
+            content: res.data.biz,
+            type: 'session'
+          });
+          resolve()
+        }
+      }).catch(error => {
+        reject(error)
+      })
+      this.show = 1;
+      setTimeout({},500);
+    })
+
+  },
   mounted(){
-    this.getStaticsData();
+    // this.getStaticsData();
     //动态设置内容高度 让footer始终居底   header+footer的高度是100
     this.Height = document.documentElement.clientHeight - 300;
     window.onresize = ()=> {this.Height = document.documentElement.clientHeight -300};
@@ -60,6 +95,7 @@ export default {
         }).catch(error => {
           reject(error)
         })
+        this.show = 1;
       })
     }
   }
