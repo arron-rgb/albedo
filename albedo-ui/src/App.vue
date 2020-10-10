@@ -28,10 +28,12 @@ export default {
     }
   },
   beforeCreate() {
+    var source;
     return new Promise((resolve, reject) => {
       data.staticsData('source').then(res => {
         if (res.code === MSG_TYPE_SUCCESS) {
           // console.log(res.data);
+          source = res.data.source;
           storeApi.set({
             name: 'staticData',
             content: res.data.source,
@@ -56,8 +58,9 @@ export default {
       }).catch(error => {
         reject(error)
       })
+      while (source === undefined || source ===null)
+        setTimeout({}, 1000);
       this.show = 1;
-      setTimeout({}, 1000);
     })
 
   },
