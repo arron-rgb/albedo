@@ -57,7 +57,7 @@ export default {
         reject(error)
       })
       this.show = 1;
-      setTimeout({}, 500);
+      setTimeout({}, 1000);
     })
 
   },
