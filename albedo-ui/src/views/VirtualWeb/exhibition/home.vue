@@ -311,8 +311,6 @@ export default {
 
       var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
 
-      while (list === undefined || list === null)
-        setTimeout({}, 1000);
       var dataIndex, i;
       dataIndex = list.findIndex(o => o.label === '横屏视频');
       var temp = list[dataIndex].value.split(',');
