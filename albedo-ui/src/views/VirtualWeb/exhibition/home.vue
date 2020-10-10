@@ -1,5 +1,5 @@
 <template>
-  <div class='home' v-if="this.showPage === 1">
+  <div class='home'>
 
     <!-- 轮播图 -->
     <div class="block">
