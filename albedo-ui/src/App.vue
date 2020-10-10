@@ -1,7 +1,9 @@
 <template>
-  <div id="app" v-if="show === 1">
+  <div id="app">
     <my-header></my-header>
-    <div id="v-content" v-bind:style="{minHeight: Height+'px'}"><router-view /></div>
+    <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
+      <router-view/>
+    </div>
     <my-footer></my-footer>
   </div>
 </template>
@@ -26,7 +28,7 @@ export default {
     }
   },
   beforeCreate() {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       data.staticsData('source').then(res => {
         if (res.code === MSG_TYPE_SUCCESS) {
           // console.log(res.data);
@@ -55,19 +57,21 @@ export default {
         reject(error)
       })
       this.show = 1;
-      setTimeout({},500);
+      setTimeout({}, 500);
     })
 
   },
-  mounted(){
+  mounted() {
     // this.getStaticsData();
     //动态设置内容高度 让footer始终居底   header+footer的高度是100
     this.Height = document.documentElement.clientHeight - 300;
-    window.onresize = ()=> {this.Height = document.documentElement.clientHeight -300};
+    window.onresize = () => {
+      this.Height = document.documentElement.clientHeight - 300
+    };
   },
-  methods : {
-    getStaticsData(){
-      return new Promise( (resolve, reject) => {
+  methods: {
+    getStaticsData() {
+      return new Promise((resolve, reject) => {
         data.staticsData('source').then(res => {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res.data);
@@ -109,7 +113,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
-body{
+
+body {
   margin: 0;
 }
 </style>
