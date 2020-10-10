@@ -296,7 +296,7 @@ export default {
 
     }
   },
-  beforeCreate() {
+  mounted() {
     this.getMediaData();
   },
   methods: {
