@@ -58,8 +58,7 @@ export default {
       }).catch(error => {
         reject(error)
       })
-      while (source === undefined || source ===null)
-        setTimeout({}, 1000);
+        setTimeout({}, 500);
       this.show = 1;
     })
 
