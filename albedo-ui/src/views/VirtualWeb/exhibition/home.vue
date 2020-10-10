@@ -296,8 +296,7 @@ export default {
 
     }
   },
-  created() {
-    this.checkData();
+  beforeCreate() {
     this.getMediaData();
   },
   methods: {
