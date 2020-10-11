@@ -233,12 +233,14 @@ public class UserResource extends BaseResource {
   @AnonymousAccess
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
-  public Result<String> register(@Valid @RequestBody RegisterUserData registerUserData) {
-    Assert.isTrue(StringUtils.equals(registerUserData.getPassword(), registerUserData.getRePassword()), "两次密码输入不一致");
-    String key = "register" + registerUserData.getPhone();
-    String value = registerUserData.getVerifyCode();
-    Assert.isTrue(smsService.validated(key, value), "验证码无效");
-    userService.register(registerUserData);
+  public Result<String> register(@Valid @RequestBody RegisterUserData userData) {
+    Assert.isTrue(StringUtils.equals(userData.getPassword(), userData.getRePassword()), "两次密码输入不一致");
+
+    String key = "register" + userData.getPhone();
+    String value = userData.getVerifyCode();
+    cn.hutool.core.lang.Assert.isTrue(smsService.validated(key, value), "验证码无效");
+
+    userService.register(userData);
     return Result.buildOk("注册成功");
   }
 

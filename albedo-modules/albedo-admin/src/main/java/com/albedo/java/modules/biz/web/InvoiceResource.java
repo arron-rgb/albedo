@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.constant.CommonConstants;
@@ -45,7 +44,6 @@ public class InvoiceResource extends BaseResource {
    */
   @GetMapping(CommonConstants.URL_ID_REGEX)
   @ApiOperation("抬头查看")
-  @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
   public Result get(@PathVariable String id) {
     log.debug("REST request to get Entity : {}", id);
     return Result.buildOkData(service.getOneDto(id));
@@ -58,7 +56,6 @@ public class InvoiceResource extends BaseResource {
    *
    * @return the Result with status 200 (OK) and with body all invoice
    */
-  @PreAuthorize("@pms.hasPermission('biz_invoice_view')")
   @GetMapping("list")
   @LogOperate(value = "发票抬头查询")
   @ApiOperation(value = "发票抬头查询")
@@ -80,7 +77,6 @@ public class InvoiceResource extends BaseResource {
    * @param invoiceDto
    *          the HTTP invoice
    */
-  @PreAuthorize("@pms.hasPermission('biz_invoice_edit')")
   @LogOperate(value = "发票抬头编辑")
   @ApiOperation(value = "发票抬头编辑")
   @PostMapping
@@ -98,7 +94,6 @@ public class InvoiceResource extends BaseResource {
    *          the id of the invoice to delete
    * @return the Result with status 200 (OK)
    */
-  @PreAuthorize("@pms.hasPermission('biz_invoice_del')")
   @LogOperate(value = "发票抬头删除")
   @ApiOperation(value = "发票抬头删除")
   @DeleteMapping
