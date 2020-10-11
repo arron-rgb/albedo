@@ -20,7 +20,7 @@
       </el-aside>
       <el-main>
 <!--        static.vlivest.com/3e5c8a0c8bd70742c5af00782176f782.png-->
-        <el-row v-if="this.showPage === 1">
+        <el-row>
           <el-col span="20">
             <div class="showBox">
 <!--              <img src="http://static.vlivest.com/436ec166195aa58d40552e684e5d46cd.gif" style=" width:635px; margin-top: 35px">-->
@@ -296,9 +296,12 @@ export default {
 
     }
   },
+  mounted() {
+    this.getMediaData();
+  },
   created() {
     // this.checkData();
-    this.getMediaData();
+    // this.getMediaData();
   },
   methods: {
     checkData(){
