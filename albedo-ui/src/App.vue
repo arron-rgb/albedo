@@ -2,7 +2,7 @@
   <div id="app">
     <my-header></my-header>
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
-      <router-view/>
+      <router-view v-if="this.show === 1"/>
     </div>
     <my-footer></my-footer>
   </div>
@@ -39,6 +39,7 @@ export default {
             content: res.data.source,
             type: 'session'
           });
+          this.show = 1;
           resolve()
         }
       }).catch(error => {
@@ -58,8 +59,8 @@ export default {
       }).catch(error => {
         reject(error)
       })
-        setTimeout({}, 500);
-      this.show = 1;
+       // setTimeout({}, 500);
+    //  this.show = 1;
     })
 
   },
