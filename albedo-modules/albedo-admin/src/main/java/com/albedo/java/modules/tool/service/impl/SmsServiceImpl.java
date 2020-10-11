@@ -12,6 +12,8 @@ import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.tool.domain.SmsEnum;
 import com.albedo.java.modules.tool.service.SmsService;
 import com.albedo.java.modules.tool.util.SmsSingleton;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.exceptions.ClientException;
 
 import cn.hutool.core.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -46,13 +48,13 @@ public class SmsServiceImpl implements SmsService {
       redisTemplate.opsForValue().set(redisKey, oldCode.toString(), CAPTCHA_EXPIRES_TIME, SECONDS);
       log.info("oldCode{}", oldCode.toString());
     }
-    // JSONObject param = new JSONObject();
-    // param.put("code", oldCode);
-    // try {
-    // smsSingleton.sendSms(phone, param, type);
-    // } catch (ClientException e) {
-    // throw new RuntimeException("发送短信失败");
-    // }
+    JSONObject param = new JSONObject();
+    param.put("code", oldCode);
+    try {
+      smsSingleton.sendSms(phone, param, type);
+    } catch (ClientException e) {
+      throw new RuntimeException("发送短信失败");
+    }
   }
 
   @Resource
