@@ -297,7 +297,7 @@ export default {
     }
   },
   created() {
-    this.checkData();
+    // this.checkData();
     this.getMediaData();
   },
   methods: {
