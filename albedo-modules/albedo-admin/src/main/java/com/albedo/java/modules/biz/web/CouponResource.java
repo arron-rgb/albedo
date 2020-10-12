@@ -52,7 +52,6 @@ public class CouponResource extends BaseResource {
    */
   @ApiOperation(value = "查询单个优惠券")
   @GetMapping("query")
-  @PreAuthorize("@pms.hasPermission('biz_coupon_view')")
   public Result<Coupon> query(String code) {
     log.debug("REST request to get Entity : {}", code);
     Coupon coupon = service.getOne(Wrappers.<Coupon>query().eq("code", code).eq("status", STR_YES), false);
@@ -65,7 +64,6 @@ public class CouponResource extends BaseResource {
    */
   @ApiOperation(value = "获取单个优惠券")
   @GetMapping(CommonConstants.URL_ID_REGEX)
-  @PreAuthorize("@pms.hasPermission('biz_coupon_view')")
   public Result<CouponDto> get(@PathVariable String id) {
     return Result.buildOkData(service.getOneDto(id));
   }

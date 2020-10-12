@@ -87,6 +87,7 @@ application:
       - ${application.adminPath}/tool/aliPay/notify
       - ${application.adminPath}/account/*
       - ${application.adminPath}/dict
+      - ${application.adminPath}/biz/coupon/query
       - /cdn/*
       - /fonts/*
 
