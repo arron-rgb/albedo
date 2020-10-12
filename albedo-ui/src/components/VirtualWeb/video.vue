@@ -34,7 +34,7 @@ export default {
           src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm" //url地址
 
         }],
-        poster: require("@/assets/VirtualWeb/NormalUser/img/videoCover.jpg"), //你的封面地址
+        //poster: require("@/assets/VirtualWeb/NormalUser/img/videoCover.jpg"), //你的封面地址
         // width: document.documentElement.clientWidth,
         notSupportedMessage: '此视频暂无法播放，请稍后再试',
         //允许覆盖Video.js无法播放媒体源时显示的默认信息。
@@ -51,7 +51,8 @@ export default {
   created() {
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === '主页案例视频');
-    this.playerOptions.sources[0].src = 'http://' + list[dataIndex].value;
+    console.log(list[dataIndex].value);
+    this.playerOptions.sources[0].src = 'https://' + list[dataIndex].value;
 
   },
   methods: {

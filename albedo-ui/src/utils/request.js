@@ -24,9 +24,9 @@ export const errorCode = {
 const service = axios.create({
   baseURL: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_BASE_URL : '/', // api 的 base_url
   timeout: Config.timeout // 请求超时时间
-})
+    })
 
-// request拦截器
+    // request拦截器
 service.interceptors.request.use(
   config => {
     config.url = Config.api + config.url
