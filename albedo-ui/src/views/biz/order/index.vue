@@ -79,7 +79,7 @@
       @sort-change="crud.sortChange"
       @selection-change="crud.selectionChangeHandler"
     >
-<!--      <el-table-column type="selection" width="55" />-->
+      <el-table-column type="selection" width="55" />
       <el-table-column
         align="center" label="更新时间"
         :show-overflow-tooltip="true"

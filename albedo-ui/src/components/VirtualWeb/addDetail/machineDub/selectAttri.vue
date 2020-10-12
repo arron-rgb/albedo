@@ -23,17 +23,25 @@
                         </div>
                     </div>
                 </div>
+
+
 <!--              机器配音音色-->
               <div class="selectBar" v-if="this.dubType === '2'">
+<!--                <div class="selectBar">-->
                 <div class="attriType" v-for="(list,index) in machineAttri" :key="index">
                   <div class="listType">{{list.listType}}</div>
-                  <div class="attriList">
-                    <el-button style="border:1px solid #ebeef5" v-for="(attri,id) in list.list" :key="id" @click="voiceList = [{data : attri.value, id : attri.id}]"
-                               :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
-                      {{attri.value}}
-                    </el-button>
+                  <div class="attriList"  v-for="(attri,id) in list.list" :key="id" @click="selectVoice(attri)">
+                    <el-tooltip content="点击试听" placement="top">
+                      <el-button style="border:1px solid #ebeef5" @click="voiceList = [{data : attri.value, id : attri.id}]"
+                                 :class="{active:attriType[index].active===id,'select-button':attriType[index].active!==id}">
+                        {{attri.value}}
+                        <i class="el-icon-bell"></i>
+                      </el-button>
+                    </el-tooltip>
+<!--                    <m-audio class="voiceButton" src="" :text="attri.value"></m-audio>-->
                   </div>
                 </div>
+                  <audio v-show="false" ref="audio" src=""></audio>
               </div>
             </div>
             <div class="showSelected">
@@ -102,6 +110,7 @@ import storeApi from "@/utils/store";
 import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import {mapGetters} from "vuex";
+
 export default {
   data() {
     return {
@@ -114,16 +123,16 @@ export default {
       ],
       machineAttri: [
         {
-          listType: '男声', list: [{value: '亲和男声', id: 1},
-            {value: '成熟男声', id: 2},
-            {value: '情感男声', id: 6}]
+          listType: '男声', list: [{value: '亲和男声', id: 1, url : 'https://static.vlivest.com/62febeeccb87923bb19c05a7be414b17.mp3'},
+            {value: '成熟男声', id: 2, url : 'https://static.vlivest.com/55f920f6c54c050b845fedf6494dc4b6.mp3'},
+            {value: '情感男声', id: 6, url : 'https://static.vlivest.com/d61207dc8c0ee22c74574df566522f6a.mp3'}]
         },
         {
-          listType: '女声', list: [{value: '亲和女声（默认）', id: 0},
-            {value: '温暖女声', id: 4},
-            {value: '情感女声', id: 5},
-            {value: '客服女声', id: 7},
-            {value: '通用女声', id: 1002},]
+          listType: '女声', list: [{value: '亲和女声', id: 0, url : 'https://static.vlivest.com/d0823e8060ef9d1b3cbf46e16ff835d5.mp3'},
+            {value: '温暖女声', id: 4, url : 'https://static.vlivest.com/779937e6199c4d2ad95354e7d486184a.mp3'},
+            {value: '情感女声', id: 5, url : 'https://static.vlivest.com/fe449a95a29ddf9899ec0b0817c92334.mp3'},
+            {value: '客服女声', id: 7, url : 'https://static.vlivest.com/0dc7e7127c5030a4c0da0d72479e693a.mp3'},
+            {value: '通用女声', id: 1002, url : 'https://static.vlivest.com/67de020cd1ae9ddb3930974f8547acfe.mp3'},]
         }
       ],
       typeList: ["", "success", "info", "warning", "danger"],
@@ -153,7 +162,7 @@ export default {
       this.$alert('请先选择视频基础需求', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        // this.goTo('/addOrder')
       );
     } else {
       this.videoOrder = videoOrder;
@@ -199,6 +208,12 @@ export default {
     //     this.$router.replace('paymentPage')
     //     this.$store.commit('NEXT')
     // },
+    selectVoice(attri){
+      console.log(attri);
+      this.voiceList = [{data : attri.value, id : attri.id}];
+      this.$refs.audio.src =  attri.url;
+      this.$refs.audio.play();
+    },
     payDub() {
       if (this.dubType === '1') {//人工配音订单
         if (this.voiceList.length < 4) {
@@ -429,5 +444,13 @@ export default {
   min-height: 40px;
   margin: 10px;
 }
-
+.voiceButton{
+  border-radius: 10px;
+  height: 40px;
+  margin: 3px;
+}
+.voiceButton:checked{
+  border: #ff5000;
+  color: #ff5000;
+}
 </style>
