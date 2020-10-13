@@ -24,6 +24,7 @@ import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.SpringContextHolder;
+import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.service.UserDetail;
 import com.albedo.java.common.security.util.SecurityUtil;
@@ -99,14 +100,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
     boolean flag = save(order);
     String couponCode = form.getCouponCode();
-    // 非空 验证是否优惠码有效
-    Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
-    Assert.notNull(code, INVALID_COUPON);
-    code.setUserId(SecurityUtil.getUser().getId());
-    code.setOrderId(order.getId());
-    code.setStatus(STR_NO);
-    flag = code.updateById() && flag;
-    return flag ? order.getId() : "";
+
+    if (StringUtil.isNotEmpty(couponCode)) {
+      // 非空 验证是否优惠码有效
+      Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
+      Assert.notNull(code, INVALID_COUPON);
+      code.setUserId(SecurityUtil.getUser().getId());
+      code.setOrderId(order.getId());
+      code.setStatus(STR_NO);
+      flag = code.updateById() && flag;
+    }
+    Assert.isTrue(flag, "下单失败");
+    return order.getId();
   }
 
   public String calculatePrice(OrderVo order) {
