@@ -123,16 +123,16 @@ export default {
       ],
       machineAttri: [
         {
-          listType: '男声', list: [{value: '亲和男声', id: 1, url : 'https://static.vlivest.com/62febeeccb87923bb19c05a7be414b17.mp3'},
-            {value: '成熟男声', id: 2, url : 'https://static.vlivest.com/55f920f6c54c050b845fedf6494dc4b6.mp3'},
-            {value: '情感男声', id: 6, url : 'https://static.vlivest.com/d61207dc8c0ee22c74574df566522f6a.mp3'}]
+          listType: '男声', list: [{value: '亲和男声', id: 1, url : 'https://static.vlivest.com/e8ff2ce3d906f4fb6d912134bbd1a9b7.mp3'},
+            {value: '成熟男声', id: 2, url : 'https://static.vlivest.com/d5403c16008e0f85e7f1fea0ebfeb41e.mp3'},
+            {value: '情感男声', id: 6, url : 'https://static.vlivest.com/9658768c83869c4c8df83571dcdc02d7.mp3'}]
         },
         {
-          listType: '女声', list: [{value: '亲和女声', id: 0, url : 'https://static.vlivest.com/d0823e8060ef9d1b3cbf46e16ff835d5.mp3'},
-            {value: '温暖女声', id: 4, url : 'https://static.vlivest.com/779937e6199c4d2ad95354e7d486184a.mp3'},
+          listType: '女声', list: [{value: '亲和女声', id: 0, url : 'https://static.vlivest.com/664e6a26b95d70a01e258d5b7179aca5.mp3'},
+            {value: '温暖女声', id: 4, url : 'https://static.vlivest.com/c4e19299b5582b9c680d6374c0afd563.mp3'},
             {value: '情感女声', id: 5, url : 'https://static.vlivest.com/fe449a95a29ddf9899ec0b0817c92334.mp3'},
-            {value: '客服女声', id: 7, url : 'https://static.vlivest.com/0dc7e7127c5030a4c0da0d72479e693a.mp3'},
-            {value: '通用女声', id: 1002, url : 'https://static.vlivest.com/67de020cd1ae9ddb3930974f8547acfe.mp3'},]
+            {value: '客服女声', id: 7, url : 'https://static.vlivest.com/a2358c7afbcbb73c62b24d3bd4a64744.mp3'},
+            {value: '通用女声', id: 1002, url : 'https://static.vlivest.com/5d0a9791aae1f56931463024c25c969a.mp3'},]
         }
       ],
       typeList: ["", "success", "info", "warning", "danger"],
