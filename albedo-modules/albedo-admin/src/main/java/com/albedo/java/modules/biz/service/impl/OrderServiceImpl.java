@@ -99,6 +99,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       BeanUtils.copyProperties(form, order);
     }
     order.setState(UNPAID_ORDER);
+    order.setUserId(SecurityUtil.getUser().getId());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
     order.setTotalAmount(calculatePrice(form));
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
