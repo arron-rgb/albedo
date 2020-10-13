@@ -118,7 +118,7 @@
         </el-col>
       </el-row>
 
-      <el-row class="box" v-if="orderData.videoId !== null">
+      <el-row class="box" v-if="orderData.videoId !== null && orderData.state > 2">
         <el-col span="4">
           产品视频
         </el-col>
@@ -134,6 +134,10 @@
       <el-row class="box" v-if="orderData.state === 2 || orderData.state === 4">
         <video-upload></video-upload>
       </el-row>
+
+      <el-row class="box" style="text-align: center" v-if="orderData.state === 2 || orderData.state === 4">
+        <el-button :loading="updateLoading" @click="update">更新订单</el-button>
+      </el-row>
     </el-card>
   </div>
 </template>
@@ -144,6 +148,7 @@ import crudOrder from '@/views/biz/order/order-service'
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import audioUpload from '@/components/VirtualWeb/file/audioUpload'
 import videoUpload from '@/components/VirtualWeb/file/videoUpload'
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 import myVideo from '@/components/VirtualWeb/file/video'
 import MyOrder from "@/views/VirtualWeb/personal/myOrder";
 
@@ -160,6 +165,7 @@ export default {
     return {
       orderData : {},
       loading : false,
+      updateLoading : false,
       tagList : ["", "success", "info", "warning", "danger"],
       voiceData : [],
     }
@@ -207,6 +213,34 @@ export default {
     getVoiceData(data){//获得配音音色数据
       var temp = data.substr(1,data.length - 2);
       this.voiceData = temp.split(',');
+    },
+    updateOrder(){
+      this.updateLoading = true;
+      return new Promise((resolve, reject) => {
+        payOrder.update(this.orderData.id).then( res =>{
+          if(res.code === MSG_TYPE_SUCCESS){
+            this.$alert('订单更新成功，辛苦了！', '提示',{
+              confirmButtonText: '确定',
+              callback: action => {
+                this.goTo('/order/order')
+              }
+            });
+          }
+          resolve(res);
+        }).catch(err =>{
+          reject(err)
+        })
+        this.updateLoading = false;
+      })
+
+    },
+    update(){//更新订单状态
+      this.$alert('请确保视频已上传！', '提示',{
+        confirmButtonText: '确定',
+        callback: action => {
+          this.updateOrder();
+        }
+      });
     },
     goTo(url, data){
       //带参数跳转

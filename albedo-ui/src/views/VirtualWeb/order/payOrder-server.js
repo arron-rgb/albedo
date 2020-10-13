@@ -20,6 +20,16 @@ export function edit(data) {
   })
 }
 
+export function update(orderId) {//用户更新视频
+  return request({
+    url: '/biz/order/update',
+    method: 'get',
+    params :{
+      orderId : orderId
+    }
+  })
+}
+
 export function purchase(data) {
   return new Promise((resolve, reject) => {
     axios.post(
@@ -73,4 +83,4 @@ export function isAccept(data){
     }
   })
 }
-export default { save, purchase, placeSecond, balance, edit, isAccept }
+export default { save, purchase, placeSecond, balance, edit, isAccept, update }
