@@ -5,6 +5,7 @@
       :data="{ orderId : this.videoId}"
       :file-list="fileList"
       :on-change="onUploadChange"
+      :on-success="uploadSussess"
       action="/a/biz/order/upload"
       class="upload-demo"
       drag
@@ -68,6 +69,17 @@ export default {
         this.$message.error('上传文件大小不能超过4GB！');
         return;
       }
+    },
+    uploadSuccess(key){
+      this.$alert('视频上传成功，辛苦了！', '提示',{
+        confirmButtonText: '确定',
+        callback: action => {
+          this.goTo('/order/order')
+        }
+      });
+    },
+    goTo(path){
+      this.$router.push({path: path});
     }
   }
 }

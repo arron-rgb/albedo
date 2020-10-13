@@ -348,7 +348,7 @@ export default {
       // }
       // else {
         return new Promise((resolve, reject) => {//订单先保存
-          crudOrder.save(data).then(res => {//保存订单并获取订单id
+          payOrder.save(data).then(res => {//保存订单并获取订单id
             if (res.code === MSG_TYPE_SUCCESS) {
               // console.log(res)
               this.$message({
