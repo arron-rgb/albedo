@@ -89,11 +89,15 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   @Transactional(rollbackFor = Exception.class)
   public String place(OrderVo form) {
+    Order order;
     if (!Objects.isNull(currentOrder())) {
-      throw new RuntimeMsgException(CURRENT_ORDER_EXIST);
+      order = currentOrder();
+      Assert.isTrue(StringUtils.isEmpty(form.getCouponCode()), "订单已使用优惠码");
+      // form.setCouponCode("");
+    } else {
+      order = new Order();
+      BeanUtils.copyProperties(form, order);
     }
-    Order order = new Order();
-    BeanUtils.copyProperties(form, order);
     order.setState(UNPAID_ORDER);
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
     order.setTotalAmount(calculatePrice(form));
@@ -103,12 +107,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
     if (StringUtil.isNotEmpty(couponCode)) {
       // 非空 验证是否优惠码有效
-      Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
-      Assert.notNull(code, INVALID_COUPON);
-      code.setUserId(SecurityUtil.getUser().getId());
-      code.setOrderId(order.getId());
-      code.setStatus(STR_NO);
-      flag = code.updateById() && flag;
+      Coupon coupon = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
+      Assert.notNull(coupon, INVALID_COUPON);
+      coupon.setUserId(SecurityUtil.getUser().getId());
+      coupon.setOrderId(order.getId());
+      coupon.setStatus(STR_NO);
+      flag = coupon.updateById() && flag;
     }
     Assert.isTrue(flag, "下单失败");
     return order.getId();

@@ -131,7 +131,11 @@ public class UserOrderResource extends BaseResource {
   @ApiOperation(value = "用户下单")
   @PostMapping(value = "/place")
   public Result<String> place(@RequestBody OrderVo orderVo) {
-    return Result.buildOkData(service.place(orderVo), "下单成功");
+    String orderId = service.place(orderVo);
+    if (StringUtils.isNotEmpty(orderId)) {
+      return Result.buildOkData(orderId, "下单成功");
+    }
+    return Result.buildFail("下单失败");
   }
 
   @ApiOperation(value = "用户上传二次订单")
