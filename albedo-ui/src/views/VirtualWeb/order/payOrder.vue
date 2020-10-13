@@ -195,7 +195,7 @@ export default {
       description : '',
       type : '1',//加速服务，0 不加速， 1加速
       payType : 'ali', //0 支付宝支付， 1微信支付
-      totalAmount : 1698,
+      totalAmount : 0,
       isBalance : '0', //是否使用套餐
       data : '',
       loading : false,
@@ -219,13 +219,13 @@ export default {
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
         this.isBalance === '1' ?
-          this.totalAmount = this.priceList[2] + val * this.priceList[3]://双人主播且有套餐余量
-          this.totalAmount = this.priceList[1] + val * this.priceList[3]; //双人主播且无套餐余量
+          this.totalAmount = parseInt(this.priceList[2]) + val * parseInt(this.priceList[3])://双人主播且有套餐余量
+          this.totalAmount = parseInt(this.priceList[1]) + val * parseInt(this.priceList[3]); //双人主播且无套餐余量
       }
       else{
         this.isBalance === '1'?
           this.totalAmount = val * 99://单人主播且有套餐余量
-          this.totalAmount = this.priceList[0] + val * this.priceList[3];//单人主播且无套餐余量
+          this.totalAmount = parseInt(this.priceList[0]) + val * parseInt(this.priceList[3]);//单人主播且无套餐余量
       }
       this.totalAmount = this.totalAmount * this.discount;
       this.totalAmount = this.totalAmount.toFixed(2);
@@ -292,17 +292,25 @@ export default {
         this.getBalance();
       }
     }
-
-    list = storeApi.get({ name: 'priceData' });//获得所有的静态资源list
+  },
+  mounted() {
+    var list = storeApi.get({ name: 'priceData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === '单人主播');
-    this.priceList[0] = list[dataIndex].value;
+    this.priceList[0] = parseInt(list[dataIndex].value);
     dataIndex = list.findIndex(o => o.label === '双人主播');
-    this.priceList[1] = list[dataIndex].value;
+    this.priceList[1] = parseInt(list[dataIndex].value);
     dataIndex = list.findIndex(o => o.label === '双人主播差价');
-    this.priceList[2] = list[dataIndex].value;
+    this.priceList[2] = parseInt(list[dataIndex].value);
     dataIndex = list.findIndex(o => o.label === '加速卡');
-    this.priceList[3] = list[dataIndex].value;
-
+    this.priceList[3] = parseInt(list[dataIndex].value);
+    dataIndex = this.list.findIndex( o => o.title === '主播数量')
+    if(this.list[dataIndex].data[0].value === '双人主播'){
+      this.totalAmount = this.priceList[1] + this.priceList[3];
+    }
+    else{
+      this.totalAmount = this.priceList[0] + this.priceList[3];
+    }
+    this.totalAmount = this.totalAmount.toFixed(2);
   },
   computed: {
     ...mapGetters([
@@ -318,6 +326,7 @@ export default {
       this.$router.push({path:url, query : {data: data}});
     },
     toPay(){
+      //console.log('保存订单')
       this.loading = true;
       var content = {data : this.list}
       var data;
@@ -347,8 +356,9 @@ export default {
       //   this.getToken(this.orderId);
       // }
       // else {
+      console.log('保存订单')
         return new Promise((resolve, reject) => {//订单先保存
-          crudOrder.save(data).then(res => {//保存订单并获取订单id
+          payOrder.save(data).then(res => {//保存订单并获取订单id
             if (res.code === MSG_TYPE_SUCCESS) {
               // console.log(res)
               this.$message({
