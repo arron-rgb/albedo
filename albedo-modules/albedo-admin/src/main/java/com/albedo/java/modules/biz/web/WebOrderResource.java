@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.web;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
+import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
 import java.io.File;
 import java.util.List;
@@ -22,7 +23,6 @@ import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
-import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
@@ -34,6 +34,7 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import cn.hutool.core.lang.Assert;
 import io.micrometer.core.instrument.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -155,12 +156,17 @@ public class WebOrderResource extends BaseResource {
     return Result.buildOkData("上传成功");
   }
 
+  @Resource
+  OrderService orderService;
+
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
   public Result<String> uploadVideo(MultipartFile file, String orderId) {
     try {
-      String uploadPath =
-        ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(SecurityUtil.getUser().getId());
+      Order order = orderService.getById(orderId);
+      Assert.notNull(order, ORDER_NOT_FOUND);
+      String userId = order.getUserId();
+      String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
       String tempPath = FileUploadUtil.upload(uploadPath, file);
       videoService.uploadVideo(orderId, tempPath);
     } catch (Exception e) {
