@@ -127,6 +127,7 @@ public class OssSingleton {
    */
   public void create(String bucketName, int storageSize) {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+    createBucketRequest.setCannedACL(CannedAccessControlList.PublicRead);
     createBucketRequest.setStorageClass(StorageClass.Standard);
     client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
     client.createBucket(createBucketRequest);
@@ -200,7 +201,7 @@ public class OssSingleton {
   String prefix = "static.vlivest.com/";
 
   public String urlToLocalPath(String url) {
-    String localPath = url.replaceFirst(prefix, "/Users/arronshentu/Downloads/");
+    String localPath = url.replaceFirst(prefix, "/root/upload/");
     String objectName = url.replaceFirst(prefix, "");
     File file = new File(localPath);
     if (!file.exists()) {

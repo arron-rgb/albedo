@@ -183,7 +183,6 @@ public class WebOrderResource extends BaseResource {
       Order order = service.getById(orderId);
       order.setState(PRODUCTION_COMPLETED);
       service.updateById(order);
-
     } catch (Exception e) {
       e.printStackTrace();
       return Result.buildFail("保存失败");
