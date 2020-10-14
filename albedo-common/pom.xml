@@ -18,6 +18,5 @@
 		<module>albedo-common-core</module>
 		<module>albedo-common-module</module>
 		<module>albedo-common-api</module>
-		<module>albedo-common-gen</module>
 	</modules>
 </project>

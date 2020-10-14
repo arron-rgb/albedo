@@ -4,7 +4,7 @@
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
       <router-view v-if="this.show === 1"/>
     </div>
-    <my-footer></my-footer>
+    <!--    <my-footer></my-footer>-->
   </div>
 </template>
 
@@ -59,8 +59,8 @@ export default {
       }).catch(error => {
         reject(error)
       })
-       // setTimeout({}, 500);
-    //  this.show = 1;
+      // setTimeout({}, 500);
+      //  this.show = 1;
     })
 
   },

@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +18,12 @@ import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.constant.SecurityConstants;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.StringUtil;
-import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.common.web.resource.BaseResource;
-import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordChangeVo;
 import com.albedo.java.modules.sys.domain.vo.account.PasswordRestVo;
 import com.albedo.java.modules.sys.service.UserService;
-import com.albedo.java.modules.tool.service.EmailService;
 import com.google.code.kaptcha.Producer;
 
 import cn.hutool.core.io.IoUtil;
@@ -54,7 +49,6 @@ public class AccountResource extends BaseResource {
   private final UserService userService;
   private final Producer producer;
   private final ApplicationProperties applicationProperties;
-  private final EmailService emailService;
 
   /**
    * {@code GET  /authenticate} : check if the user is authenticated, and return its login.
@@ -98,22 +92,9 @@ public class AccountResource extends BaseResource {
     return Result.buildOk("头像修改成功");
   }
 
-  @LogOperate("修改邮箱")
-  @ApiOperation("修改邮箱")
-  @PostMapping(value = "/account/change-email/{code}")
-  public ResponseEntity<Object> updateEmail(@PathVariable String code, @RequestBody UserEmailDto userEmailDto) {
-    // 密码解密
-    RSA rsa = new RSA(applicationProperties.getRsa().getPrivateKey(), applicationProperties.getRsa().getPublicKey());
-    String password = new String(rsa.decrypt(userEmailDto.getPassword(), KeyType.PrivateKey));
-    userEmailDto.setPassword(password);
-    emailService.validated(CommonConstants.EMAIL_RESET_EMAIL_CODE + userEmailDto.getEmail(), code);
-    userService.updateEmail(SecurityUtil.getUser().getUsername(), userEmailDto);
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
   @GetMapping(path = "/code/{randomStr}")
   @ApiOperation(value = "获取验证码")
-  public void valicode(@PathVariable String randomStr, HttpServletResponse response) throws IOException {
+  public void validate(@PathVariable String randomStr, HttpServletResponse response) throws IOException {
     Assert.isTrue(StringUtil.isNotEmpty(randomStr), "机器码不能为空");
     response.setHeader("Cache-Control", "no-store, no-cache");
     response.setHeader("Transfer-Encoding", "JPG");
@@ -142,19 +123,6 @@ public class AccountResource extends BaseResource {
   public Result resetPassword(@RequestBody @Valid PasswordRestVo passwordRestVo) {
     userService.resetPassword(passwordRestVo);
     return Result.buildOk("发送成功");
-  }
-
-  @GetMapping("/validate")
-  public Result<String> validate(@RequestParam String phone, @RequestParam String code, @RequestParam String key) {
-    String redisKey = key + phone;
-    Object oldCode = RedisUtil.getCacheString(redisKey);
-    if (oldCode == null) {
-      return Result.buildFail("验证码无效");
-    }
-    if (code.equals(oldCode)) {
-      return Result.buildOk("成功");
-    }
-    return Result.buildFail("验证码无效");
   }
 
 }
