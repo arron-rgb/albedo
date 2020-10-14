@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
@@ -91,7 +90,6 @@ public class AliPayResource {
   PurchaseRecordService recordService;
 
   @ApiIgnore
-  @AnonymousAccess
   @GetMapping("/return")
   @ApiOperation("异步通知接口")
   public String returnUrl(HttpServletRequest request) {
@@ -118,7 +116,6 @@ public class AliPayResource {
    * @return
    */
   @ApiIgnore
-  @AnonymousAccess // 2088331270404521
   @PostMapping("/notify")
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {

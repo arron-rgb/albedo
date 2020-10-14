@@ -2,18 +2,15 @@ logging:
   level:
     ROOT: INFO
     com.albedo.java: DEBUG
+    c.a.j.m.s.r: TRACE
 server:
   port: 8061
   servlet:
     session:
       timeout: 30m
-
 spring:
   profiles:
     active: dev
-    include:
-      - swagger
-  #      - jwt
   redis:
     password:
     host: localhost
@@ -44,9 +41,6 @@ application:
         token-validity-in-seconds-for-remember-me: 2592000
     authorize-permit-all:
       - /management/health
-      - /v2/api-docs/**
-      - /swagger-resources/configuration/ui
-      - /swagger-ui.html
       - ${application.adminPath}/code/**
       - ${application.adminPath}/sys/user/register
       - ${application.adminPath}/biz/plan/list
@@ -60,3 +54,6 @@ application:
 path:
   ffmpeg: /usr/local/bin/ffmpeg
   ffprobe: /usr/local/bin/ffprobe
+mybatis-plus:
+  configuration:
+    log-impl:

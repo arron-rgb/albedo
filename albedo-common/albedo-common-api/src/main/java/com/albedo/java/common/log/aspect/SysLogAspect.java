@@ -141,7 +141,7 @@ public class SysLogAspect {
       beforeReqLog.append(" Parameters: {}");
       beforeReqArgs.add(logOperateVo.getParams());
     }
-    log.info(beforeReqLog.toString(), beforeReqArgs.toArray());
+    // log.info(beforeReqLog.toString(), beforeReqArgs.toArray());
     // aop 执行后的日志
     StringBuilder afterReqLog = new StringBuilder(200);
     // 日志参数
@@ -182,7 +182,7 @@ public class SysLogAspect {
   public void saveLog(Long tookMs, LogOperate logOperateVo,
     com.albedo.java.common.log.annotation.LogOperate logOperate) {
     logOperateVo.setTime(tookMs);
-    log.debug("[logOperateVo]:{}", logOperateVo);
+    // log.debug("[logOperateVo]:{}", logOperateVo);
     // 是否需要保存request，参数和值
     if (logOperate.isSaveRequestData()) {
       // 发送异步日志事件

@@ -17,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.albedo.java.common.core.annotation.AnonymousAccess;
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.util.BeanUtil;
 import com.albedo.java.common.core.util.Result;
@@ -230,7 +229,6 @@ public class UserResource extends BaseResource {
     util.exportExcel(Lists.newArrayList(), "Sheet1", response);
   }
 
-  @AnonymousAccess
   @PostMapping(value = "/register")
   @LogOperate(value = "注册账号")
   public Result<String> register(@Valid @RequestBody RegisterUserData userData) {
