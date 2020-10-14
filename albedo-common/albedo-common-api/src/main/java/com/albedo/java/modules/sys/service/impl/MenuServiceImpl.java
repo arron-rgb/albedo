@@ -26,7 +26,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
@@ -38,7 +37,6 @@ import com.albedo.java.common.core.util.tree.TreeUtil;
 import com.albedo.java.common.persistence.service.impl.TreeServiceImpl;
 import com.albedo.java.modules.sys.domain.Menu;
 import com.albedo.java.modules.sys.domain.RoleMenu;
-import com.albedo.java.modules.sys.domain.dto.GenSchemeDto;
 import com.albedo.java.modules.sys.domain.dto.MenuDto;
 import com.albedo.java.modules.sys.domain.dto.MenuSortDto;
 import com.albedo.java.modules.sys.domain.vo.MenuTree;
@@ -51,7 +49,6 @@ import com.albedo.java.modules.sys.util.SysCacheUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 
-import cn.hutool.core.util.CharUtil;
 import lombok.AllArgsConstructor;
 
 /**
@@ -204,65 +201,6 @@ public class MenuServiceImpl extends TreeServiceImpl<MenuRepository, Menu, MenuD
       SysCacheUtil.delMenuCaches(menuDto.getId());
     }
 
-  }
-
-  @Override
-  public boolean saveByGenScheme(GenSchemeDto schemeDto) {
-
-    String moduleName = schemeDto.getSchemeName(), parentMenuId = schemeDto.getParentMenuId(), url = schemeDto.getUrl();
-    String permission =
-      StringUtil.toCamelCase(StringUtil.lowerFirst(url), CharUtil.DASHED).replace(StringUtil.SLASH, "_").substring(1),
-      permissionLike = permission.substring(0, permission.length() - 1);
-    List<Menu> currentMenuList = repository.selectList(
-      Wrappers.<Menu>query().lambda().eq(Menu::getName, moduleName).or().likeLeft(Menu::getPermission, permissionLike));
-    for (Menu currentMenu : currentMenuList) {
-      if (currentMenu != null) {
-        List<String> idList = repository
-          .selectList(Wrappers.<Menu>query().lambda().likeLeft(Menu::getPermission, permissionLike)
-            .or(i -> i.eq(Menu::getId, currentMenu.getId()).or().eq(Menu::getParentId, currentMenu.getId())))
-          .stream().map(Menu::getId).collect(Collectors.toList());
-        roleMenuRepository.delete(Wrappers.<RoleMenu>query().lambda().in(RoleMenu::getMenuId, idList));
-        repository.deleteBatchIds(idList);
-      }
-    }
-    Menu parentMenu = repository.selectById(parentMenuId);
-    Assert.isTrue(parentMenu != null, StringUtil.toAppendStr("根据模块id[", parentMenuId, "无法查询到模块信息]"));
-
-    Menu module = new Menu();
-
-    module.setName(moduleName);
-    module.setParentId(parentMenu.getId());
-    module.setType(Menu.TYPE_MENU);
-    module.setIcon("icon-right-square");
-    module.setPath(StringUtil.toRevertCamelCase(StringUtil.lowerFirst(schemeDto.getClassName()), CharUtil.DASHED));
-    module.setComponent(url.substring(1) + "index");
-    save(module);
-
-    Menu moduleView = new Menu();
-    moduleView.setParent(module);
-    moduleView.setName(moduleName + "查看");
-    moduleView.setPermission(permission + "view");
-    moduleView.setParentId(module.getId());
-    moduleView.setType(Menu.TYPE_BUTTON);
-    moduleView.setSort(20);
-    save(moduleView);
-    Menu moduleEdit = new Menu();
-    moduleEdit.setParent(module);
-    moduleEdit.setName(moduleName + "编辑");
-    moduleEdit.setPermission(permission + "edit");
-    moduleEdit.setParentId(module.getId());
-    moduleEdit.setType(Menu.TYPE_BUTTON);
-    moduleEdit.setSort(40);
-    save(moduleEdit);
-    Menu moduleDelete = new Menu();
-    moduleDelete.setParent(module);
-    moduleDelete.setName(moduleName + "删除");
-    moduleDelete.setPermission(permission + "del");
-    moduleDelete.setParentId(module.getId());
-    moduleDelete.setType(Menu.TYPE_BUTTON);
-    moduleDelete.setSort(80);
-    save(moduleDelete);
-    return true;
   }
 
   @Override
