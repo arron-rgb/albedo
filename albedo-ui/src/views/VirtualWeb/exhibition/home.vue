@@ -347,7 +347,7 @@ export default {
           alert(111)
           this.submitContact()
         } else {
-          console.log('error submit!!');
+          // console.log('error submit!!');
           return false;
         }
       });

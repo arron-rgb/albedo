@@ -4,7 +4,7 @@
     <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
       <router-view v-if="this.show === 1"/>
     </div>
-    <!--    <my-footer></my-footer>-->
+        <my-footer></my-footer>
   </div>
 </template>
 

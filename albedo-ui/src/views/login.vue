@@ -194,8 +194,8 @@ export default {
         newCompanyName: ''
       },
       loginForm: {
-        username: 'admin',
-        password: '111111',
+        username: '',
+        password: '',
         rememberMe: false,
         code: '',
         randomStr: ''

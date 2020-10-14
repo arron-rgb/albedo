@@ -51,7 +51,7 @@ export default {
   created() {
     var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
     var dataIndex = list.findIndex(o => o.label === '主页案例视频');
-    console.log(list[dataIndex].value);
+    // console.log(list[dataIndex].value);
     this.playerOptions.sources[0].src = 'https://' + list[dataIndex].value;
 
   },

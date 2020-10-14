@@ -9,13 +9,13 @@ export default {
   components: {},
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      // lineChartData: lineChartData.newVisitis
     }
   },
   methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
-    }
+    // handleSetLineChartData(type) {
+    //   this.lineChartData = lineChartData[type]
+    // }
   }
 }
 </script>
