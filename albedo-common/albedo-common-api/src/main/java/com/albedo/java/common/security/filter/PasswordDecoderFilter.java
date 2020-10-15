@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -38,6 +39,7 @@ import com.albedo.java.common.security.filter.warpper.ParameterRequestWrapper;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.repository.UserRepository;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.google.common.base.Stopwatch;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
@@ -83,6 +85,7 @@ public class PasswordDecoderFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
       return;
     }
+    Stopwatch stopwatch = Stopwatch.createStarted();
     String queryParam = request.getQueryString();
     Map<String, String> paramMap = HttpUtil.decodeParamMap(queryParam, CharsetUtil.CHARSET_UTF_8);
     String username = request.getParameter("username");
@@ -101,6 +104,8 @@ public class PasswordDecoderFilter extends OncePerRequestFilter {
       paramMap.put(PASSWORD, password.trim());
     }
     ParameterRequestWrapper requestWrapper = new ParameterRequestWrapper(request, paramMap);
+    stopwatch.stop();
+    log.info("解密过程执行时间{}s", stopwatch.elapsed(TimeUnit.SECONDS));
     filterChain.doFilter(requestWrapper, response);
   }
 }
