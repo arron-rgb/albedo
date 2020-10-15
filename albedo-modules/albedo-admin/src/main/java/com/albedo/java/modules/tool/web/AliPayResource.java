@@ -46,7 +46,7 @@ import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import springfox.documentation.annotations.ApiIgnore;
+// import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author somewhere
@@ -89,7 +89,7 @@ public class AliPayResource {
   @Resource
   PurchaseRecordService recordService;
 
-  @ApiIgnore
+ // @ApiIgnore
   @GetMapping("/return")
   @ApiOperation("异步通知接口")
   public String returnUrl(HttpServletRequest request) {
@@ -115,7 +115,7 @@ public class AliPayResource {
    * @param request
    * @return
    */
-  @ApiIgnore
+ // @ApiIgnore
   @PostMapping("/notify")
   @ApiOperation("异步通知接口")
   public String notify(HttpServletRequest request) {

@@ -18,7 +18,7 @@
 
       <el-row class="box" v-if="!orderId">
         <el-col span="4">
-          Logo水印（选填）：
+          Logo（选填）：
         </el-col>
         <el-col span="20">
           <el-upload
@@ -40,7 +40,7 @@
 
       <el-row class="box" v-if="!orderId">
         <el-col span="4">
-          贴片水印（选填）：
+          贴片（选填）：
         </el-col>
         <el-col span="20">
           <el-upload
