@@ -13,6 +13,7 @@ public class AddressUtil {
   public static final String IP_URL = "http://ip.taobao.com/service/getIpInfo.php";
 
   public static String getRealAddressByIp(String ip) {
+    log.info("华为提交测试");
     return ip;
   }
 }
