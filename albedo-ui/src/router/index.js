@@ -14,6 +14,7 @@ const whiteList = [
   '/findPassword',
   '/',
   '/proService',
+  '/train',
 
 
   '/contact',

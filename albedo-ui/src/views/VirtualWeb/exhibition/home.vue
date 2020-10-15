@@ -5,11 +5,12 @@
     <div class="block">
       <el-carousel height="340px">
         <el-carousel-item v-for="(item,index) in carousel" :key="index">
-          <a :href='item.url'><img class='banner' :src="item.img" alt=""></a>
+          <a @click='goTo(item.url)'><img class='banner' :src="item.img" alt=""></a>
         </el-carousel-item>
       </el-carousel>
     </div>
 
+<!--    {{this.carousel}}-->
     <!-- 平台介绍 -->
     <el-container class="body">
       <el-aside style=" background: none" width="300px;">
@@ -300,19 +301,13 @@ export default {
     this.getMediaData();
   },
   created() {
-    // this.checkData();
-    // this.getMediaData();
   },
   methods: {
-    checkData(){
-      if(this.showPage === 0)
-      {
-        setTimeout(function(){ this.checkData() }, 500);
-      }
-    },
     getMediaData(){
 
       var list = storeApi.get({ name: 'staticData' });//获得所有的静态资源list
+
+      // console.log(list);
 
       var dataIndex, i;
       dataIndex = list.findIndex(o => o.label === '横屏视频');
@@ -325,10 +320,19 @@ export default {
       for(i = 0 ; i < this.virtual.col.length; i++)
         this.virtual.col[i].video = 'https://' + temp[i];
 
-      dataIndex = list.findIndex(o => o.label === '主页轮播图');
-      temp = list[dataIndex].value.split(',');
-      for(i = 0 ; i < this.virtual.col.length; i++)
-        this.carousel[i].img = 'https://' + temp[i];
+      dataIndex = list.findIndex(o => o.label === '主页轮播图1');
+      this.carousel[0].img = 'https://' + list[dataIndex].value;
+      dataIndex = list.findIndex(o => o.label === '主页轮播图2');
+      this.carousel[1].img = 'https://' + list[dataIndex].value;
+      dataIndex = list.findIndex(o => o.label === '主页轮播图3');
+      this.carousel[2].img = 'https://' + list[dataIndex].value;
+
+      dataIndex = list.findIndex(o => o.label === '主页轮播图1链接');
+      this.carousel[0].url = list[dataIndex].value;
+      dataIndex = list.findIndex(o => o.label === '主页轮播图2链接');
+      this.carousel[1].url = list[dataIndex].value;
+      dataIndex = list.findIndex(o => o.label === '主页轮播图3链接');
+      this.carousel[2].url = list[dataIndex].value;
 
       this.showPage = 1;
     },

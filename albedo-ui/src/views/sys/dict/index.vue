@@ -58,7 +58,10 @@
 
 
 
-        <el-form-item v-if="this.form.parentId === '38cd3f8f064c9b59bbfc25be1065330d'" label="选择文件" prop="val" >
+        <el-form-item
+          v-if="this.form.parentId === '38cd3f8f064c9b59bbfc25be1065330d' && form.code !== 'carouselUrl1' && form.code !== 'carouselUrl2' && form.code !== 'carouselUrl3'"
+          label="选择文件"
+          prop="val" >
           <el-input v-model="form.val" disabled/>
           <el-upload
             ref="uploadFiles"
