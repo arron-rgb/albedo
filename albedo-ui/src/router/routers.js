@@ -79,7 +79,12 @@ export const constantRouterMap = [
     component: (resolve) => require(['@/views/VirtualWeb/exhibition/enterprise'], resolve),
     hidden: true
   },
-
+  {
+    path: '/train',
+    meta: { title: '真人代播', noCache: true, showHeader: true },
+    component: (resolve) => require(['@/views/VirtualWeb/exhibition/train'], resolve),
+    hidden: true
+  },
   {
     path: '/contact',
     meta: { title: '帮助中心', noCache: true, showHeader: true },
