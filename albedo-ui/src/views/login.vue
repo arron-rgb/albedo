@@ -56,9 +56,9 @@
           <el-link :underline="false" @click="goTo('/findPassword')" class="forgetPsd">忘记密码</el-link>
         </el-col>
       </el-row>
-<!--      <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">-->
-<!--        记住我-->
-<!--      </el-checkbox>-->
+      <!--      <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">-->
+      <!--        记住我-->
+      <!--      </el-checkbox>-->
       <el-form-item>
         <el-button
           :loading="loading"
@@ -102,9 +102,9 @@
         <el-form-item label="企业/店铺名称" prop='newCompanyName' v-if="registerForm.userType==='business'">
           <el-input v-model="registerForm.newCompanyName" placeholder="请输入企业/店铺名称"></el-input>
         </el-form-item>
-<!--        <el-form-item v-if="registerForm.userType==='business'" label="所属企业/店铺名称">-->
-<!--          <el-input v-model="registerForm.ownedCompanyName" placeholder="请输入所属企业/店铺名称"></el-input>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item v-if="registerForm.userType==='business'" label="所属企业/店铺名称">-->
+        <!--          <el-input v-model="registerForm.ownedCompanyName" placeholder="请输入所属企业/店铺名称"></el-input>-->
+        <!--        </el-form-item>-->
         <el-form-item prop='username' label="用户名">
           <el-input v-model="registerForm.username" auto-complete="off" placeholder="账号" type="text">
           </el-input>
@@ -123,13 +123,13 @@
         <el-form-item label="验证码" prop="verifyCode">
           <el-col span="14">
             <el-input
-             :length="6"
+              :length="6"
               v-model="registerForm.verifyCode">
             </el-input>
           </el-col>
           <el-col span="10">
-            <el-button  :disabled="disabled"  @click="sendcode" style="width: 100%">
-             {{btntxt}}
+            <el-button :disabled="disabled" @click="sendcode" style="width: 100%">
+              {{ btntxt }}
             </el-button>
           </el-col>
 
@@ -156,9 +156,6 @@
 import commonUtil from '../utils/common'
 import defaultSettings from '@/settings'
 import loginService from "@/api/login";
-import payOrder from "@/views/VirtualWeb/order/payOrder-server";
-import {MSG_TYPE_SUCCESS} from "@/const/common";
-import {setUserInfo} from "@/store/modules/user";
 
 export default {
   name: 'Login',
@@ -179,9 +176,9 @@ export default {
       codeLength: 4,
       cookiePass: '',
       passwordType: 'password',
-      btntxt : '获取验证码',
-      time : 60,
-      disabled : false,
+      btntxt: '获取验证码',
+      time: 60,
+      disabled: false,
       registerForm: {
         userType: 'personal',
         username: '',
@@ -194,8 +191,8 @@ export default {
         newCompanyName: ''
       },
       loginForm: {
-        username: 'admin',
-        password: '111111',
+        username: '',
+        password: '',
         rememberMe: false,
         code: '',
         randomStr: ''
@@ -210,8 +207,8 @@ export default {
         username: [{required: true, trigger: 'blur', message: '用户名不能为空'}],
         password: [{required: true, trigger: 'blur', message: '密码不能为空'}],
         rePassword: [{required: true, trigger: 'blur', message: '密码不能为空'}, {validator: validateConfirmPass}],
-        phone: [{required: true, length : 11, trigger: 'blur', message: '请输入11位手机号'}],
-        verifyCode: [{required: true, length : 6, trigger: 'blur', message: '请输入6位验证码'}]
+        phone: [{required: true, length: 11, trigger: 'blur', message: '请输入11位手机号'}],
+        verifyCode: [{required: true, length: 6, trigger: 'blur', message: '请输入6位验证码'}]
       },
       loading: false,
       redirect: undefined
@@ -227,10 +224,10 @@ export default {
   },
   created() {
     this.refreshCode()
-    if(this.$route.query.func === 'toRegister'){
+    if (this.$route.query.func === 'toRegister') {
       this.centerDialogVisible = true
     }
-    if(this.$route.query.func === 'createBusiness'){
+    if (this.$route.query.func === 'createBusiness') {
       this.centerDialogVisible = true
       this.registerForm.userType = 'business'
     }
@@ -285,9 +282,9 @@ export default {
       });
     },
     //验证手机号码部分
-    sendcode(){
+    sendcode() {
 
-      if(this.registerForm.phone === ''){
+      if (this.registerForm.phone === '') {
         this.$alert('请输入手机号码！', '提示', {
           confirmButtonText: '确定',
         });
@@ -295,7 +292,7 @@ export default {
       }
 
       this.time = 60;
-      this.disabled=true;
+      this.disabled = true;
       this.timer();
 
       return new Promise((resolve, reject) => {//获取验证码
@@ -306,22 +303,22 @@ export default {
         })
       });
     },
-    timer:function () {
+    timer: function () {
       if (this.time > 0) {
         this.time--;
 //                 console.log(this.time);
-        this.btntxt=this.time+"s,后获取";
+        this.btntxt = this.time + "s,后获取";
         setTimeout(this.timer, 1000);
-      } else{
-        this.time=0;
-        this.btntxt="获取验证码";
-        this.disabled=false;
+      } else {
+        this.time = 0;
+        this.btntxt = "获取验证码";
+        this.disabled = false;
       }
     },
-    goTo(url, data){
+    goTo(url, data) {
       //带参数跳转
       // console.log(data)
-      this.$router.push({path:url, query : {func: data}});
+      this.$router.push({path: url, query: {func: data}});
     },
   }
 }
@@ -351,7 +348,8 @@ export default {
   width: 385px;
   padding: 25px 25px 5px 25px;
   margin-top: 30px;
-  box-shadow:0 2px 12px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
   .el-input {
     height: 38px;
 
@@ -385,7 +383,7 @@ export default {
   }
 }
 
-.forgetPsd:hover{
+.forgetPsd:hover {
   color: #ff5000 !important;
 }
 </style>
