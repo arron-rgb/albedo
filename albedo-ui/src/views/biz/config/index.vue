@@ -50,19 +50,30 @@
           <el-input ref="url"  disabled v-model="form.url" class="input-small"></el-input>
 <!--          {{form}}-->
           <el-upload
-            ref="upload"
-            class="avatar-uploader"
-            action="#"
-            :http-request="uploadImg"
-            accept="image/jpeg,image/png"
-            :show-file-list="false"
-            :auto-upload="true"
-            :multiple="false"
-            :on-change="onUploadChange"
+            ref="uploadFiles"
+            action="/a/file/upload"
+            list-type="picture-card"
+            :auto-upload="false"
+            :on-remove="handleRemove"
+            :on-success="handleSuccess"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <i class="el-icon-plus"></i>
           </el-upload>
+          <el-button @click="submitFile">点击上传</el-button>
+<!--          <el-upload-->
+<!--            ref="upload"-->
+<!--            class="avatar-uploader"-->
+<!--            action="#"-->
+<!--            :http-request="uploadImg"-->
+<!--            accept="image/jpeg,image/png"-->
+<!--            :show-file-list="false"-->
+<!--            :auto-upload="true"-->
+<!--            :multiple="false"-->
+<!--            :on-change="onUploadChange"-->
+<!--          >-->
+<!--            <img v-if="imageUrl" :src="imageUrl" class="avatar">-->
+<!--            <i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
+<!--          </el-upload>-->
         </el-form-item>
 
       </el-form>
@@ -158,45 +169,59 @@ export default {
   created() {
   },
   methods: {
-    onUploadChange(file){
-      // console.log(file);
-      const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
-      const  isLt1M = file.size / 1024 / 1024 < 1;
-
-      if(!isIMAGE){
-        this.$message.error('只能上传jpg/png图片！');
-        return  false;
-      }
-      if(!isLt1M){
-        this.$message.error('上传文件大小不能超过1MB！');
-        return  false;
-      }
-
-      var _this = this;
-
-      var reader = new FileReader();
-      reader.readAsDataURL(file.raw)
-
-      reader.onload = function (e){
-        //this.result为图片的base64
-        // console.log(this.result)
-        //将图片路径赋值给url
-        _this.imageUrl = e.target.result;
-      }
-      this.uploadImg(file);
+    submitFile(){
+      this.$refs.uploadFiles.submit();
     },
-    uploadImg(file){
-      return new Promise((resolve, reject) => {
-        dubOperate.uploadFile(file).then(res => {
-          if (res.code === MSG_TYPE_SUCCESS) {
-            this.form.url = res.data.url;
-          }
-        }).catch(error => {
-          this.loading = false;
-          reject(error)
-        })
-      });
+    handleSuccess(response, file, fileList){
+      // console.log(response, file, fileList);
+      // var fileUrls = [];
+      // for(var i = 0; i < fileList.length; i++){
+      //   fileUrls.push(fileList[i].response.data.url);
+      // }
+      this.form.url = response.data.url;
     },
+    handleRemove(file, fileList) {
+      // console.log(file, fileList);
+    },
+    // onUploadChange(file){
+    //   // console.log(file);
+    //   const  isIMAGE = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
+    //   const  isLt1M = file.size / 1024 / 1024 < 1;
+    //
+    //   if(!isIMAGE){
+    //     this.$message.error('只能上传jpg/png图片！');
+    //     return  false;
+    //   }
+    //   if(!isLt1M){
+    //     this.$message.error('上传文件大小不能超过1MB！');
+    //     return  false;
+    //   }
+    //
+    //   var _this = this;
+    //
+    //   var reader = new FileReader();
+    //   reader.readAsDataURL(file.raw)
+    //
+    //   reader.onload = function (e){
+    //     //this.result为图片的base64
+    //     // console.log(this.result)
+    //     //将图片路径赋值给url
+    //     _this.imageUrl = e.target.result;
+    //   }
+    //   this.uploadImg(file);
+    // },
+    // uploadImg(file){
+    //   return new Promise((resolve, reject) => {
+    //     dubOperate.uploadFile(file).then(res => {
+    //       if (res.code === MSG_TYPE_SUCCESS) {
+    //         this.form.url = res.data.url;
+    //       }
+    //     }).catch(error => {
+    //       this.loading = false;
+    //       reject(error)
+    //     })
+    //   });
+    // },
   }
 };
 </script>

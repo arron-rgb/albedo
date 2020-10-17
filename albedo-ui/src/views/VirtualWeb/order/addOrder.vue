@@ -51,7 +51,7 @@
               <template slot="title">{{item.title}}</template>
               <el-radio-group v-model="selectData" @change="videoList(item.title, o)" v-for="o in item.data" :key="o" size="small">
                 <el-radio-button :label="o.value">
-                  <img class="img" v-show="o.url !== null" :src="'http://' + o.url">
+                  <img class="img" v-show="o.url !== null" :src="'https://' + o.url">
                   <div class="button-text">{{o.value}}</div>
                 </el-radio-button>
                 <div v-show="o.description !== null" class="button-text" style="line-height: 20px; color: #909399">
@@ -75,6 +75,15 @@
               {{item.data[0].value}}
             </el-tag>
           </el-card>
+          <el-card style="height: 600px">
+<!--            {{this.selectedAnchor}} <br/>-->
+<!--            {{this.selectedBackground}}-->
+            <h3 style="color: #909399" v-if="this.selectedAnchor === '' && this.selectedBackground === ''">请先选择主播和直播间风格</h3>
+            <div class="picShow" v-else >
+              <el-image style="position: absolute; z-index: 1; left: 0" :src="'https://' + this.selectedBackground.url" />
+              <el-image style="position: absolute; z-index: 2; left: 0" :src="'https://' + this.selectedAnchor.url" />
+            </div>
+          </el-card>
         </el-col>
       </el-row>
     </div>
@@ -91,6 +100,8 @@ export default {
       backData : [],
       singleFlag : '1',//选择的是单人主播
       anchorData : {},
+      selectedAnchor : '',//选择的主播
+      selectedBackground : '',//选择的背景
       data : [],
       selectData : '',
       selectBelong : [],
@@ -191,6 +202,11 @@ export default {
     },
     videoList(title, data) {
       // console.log(title);
+      if(title === '您喜欢的单人主播' || title === '您喜欢的双人主播')
+        this.selectedAnchor = data;
+      if(title === '您喜欢的直播间风格')
+        this.selectedBackground = data;
+
       var dataIndex = this.backData.findIndex(o => o.title === title);
       if (dataIndex === -1) {
         //列表中没有数据
@@ -329,8 +345,8 @@ export default {
 }
 
 .box-card{
-  height: 500px;
-  overflow-y: scroll;
+  min-height: 300px;
+  //overflow-y: scroll;
 }
 .myTags{
   min-width: 80px;
@@ -349,5 +365,8 @@ export default {
 }
 .text-button:hover{
   color: #ff5000;
+}
+.picShow{
+  position: relative;
 }
 </style>
