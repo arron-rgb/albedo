@@ -13,7 +13,7 @@
   </div>
 
   <!-- 反馈信息 -->
-  <div class="descriBlock" v-if="this.balance.editTimes !== null && this.balance.editTimes > 0">
+  <div class="descriBlock" v-if="$store.state.user.user.roleNames !== '个人用户' && this.balance.editTimes > 0">
     <div class="startBar">
       <el-row  class="box">
         <el-col span="4">
