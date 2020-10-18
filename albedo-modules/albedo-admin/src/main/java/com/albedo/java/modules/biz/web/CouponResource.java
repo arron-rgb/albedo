@@ -99,33 +99,22 @@ public class CouponResource extends BaseResource {
    *          the HTTP coupon
    */
   @PreAuthorize("@pms.hasPermission('biz_coupon_edit')")
-  @LogOperate(value = "优惠券编辑")
-  @ApiOperation(value = "编辑优惠券")
+  @LogOperate(value = "批量生成优惠券")
+  @ApiOperation(value = "批量生成优惠券")
   @PostMapping
-  public Result<String> save(@Valid @RequestBody CouponDto couponDto) {
-    log.debug("REST request to save CouponDto : {}", couponDto);
-    couponDto.setCode(getUUID());
-    couponDto.setStatus(STR_YES);
-    service.saveOrUpdate(couponDto);
-    return Result.buildOk("保存优惠券成功");
+  public Result<List<Coupon>> save(@Valid @RequestBody CouponDto couponDto) {
+	  List<Coupon> coupons = new ArrayList<>(couponDto.getNum());
+	  for (int integer = 0; integer < couponDto.getNum(); integer++) {
+		  Coupon coupon = new Coupon();
+		  coupon.setDiscount(couponDto.getDiscount());
+		  coupon.setCode(getUUID());
+		  coupon.setStatus(STR_YES);
+		  coupons.add(coupon);
+		  service.saveOrUpdate(coupon);
+	  }
+	  return Result.buildOkData(coupons, "保存优惠券成功");
   }
 
-  @PreAuthorize("@pms.hasPermission('biz_coupon_edit')")
-  @LogOperate(value = "优惠券生成")
-  @ApiOperation(value = "批量生成优惠券")
-  @PostMapping("generate")
-  public Result<List<Coupon>> generate(@RequestBody Body body) {
-    List<Coupon> coupons = new ArrayList<>(body.getNum());
-    for (int integer = 0; integer < body.getNum(); integer++) {
-      Coupon couponDto = new Coupon();
-      couponDto.setDiscount(body.getDiscount());
-      couponDto.setCode(getUUID());
-      couponDto.setStatus(STR_YES);
-      coupons.add(couponDto);
-      service.saveOrUpdate(couponDto);
-    }
-    return Result.buildOkData(coupons, "保存优惠券成功");
-  }
 
   @Data
   static class Body {

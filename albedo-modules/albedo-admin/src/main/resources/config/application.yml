@@ -92,5 +92,5 @@ application:
       - /fonts/*
 
 path:
-  ffmpeg: /usr/bin/ffmpeg
-  ffprobe: /usr/bin/ffprobe
+  ffmpeg: /usr/local/bin/ffmpeg
+  ffprobe: /usr/local/bin/ffprobe

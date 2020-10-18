@@ -453,6 +453,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     user.setPassword(passwordEncoder.encode(userData.getPassword()));
     user.setPhone(userData.getPhone());
     user.setDeptId(deptId);
+    user.setInviteCode(userData.getInvitationCode());
     baseMapper.insert(user);
     return user.getId();
   }

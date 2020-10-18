@@ -33,15 +33,16 @@ public class CouponDto extends DataDto<String> {
   public static final String F_USERID = "userId";
 
   /** code 优惠码编号 */
-  @Size(max = 32)
+//  @Size(max = 32)
   private String code;
   /** status 使用状态 */
-  @Size(max = 200)
+//  @Size(max = 200)
   private String status;
   /** userId 使用者 */
   @Size(max = 32)
   private String discount;
   @Size(max = 32)
   private String userId;
+  private Integer num;
 
 }

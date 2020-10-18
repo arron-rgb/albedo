@@ -25,7 +25,7 @@ public class RegisterUserData {
   /**
    * 邀请码
    */
-  private int invitationCode;
+  private String invitationCode;
   /**
    * 所属企业名称
    */
