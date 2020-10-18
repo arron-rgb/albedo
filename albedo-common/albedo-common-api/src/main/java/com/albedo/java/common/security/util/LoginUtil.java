@@ -18,7 +18,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.albedo.java.common.core.constant.CommonConstants;
 import com.albedo.java.common.core.exception.ValidateCodeException;
-import com.albedo.java.common.core.util.AddressUtil;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.WebUtil;
 import com.albedo.java.common.security.service.UserDetail;
@@ -107,7 +106,7 @@ public class LoginUtil {
     online.setLastAccessTime(new Date(session.getLastAccessedTime()));
     online.setExpireTime((long)session.getMaxInactiveInterval());
     online.setIpAddress(WebUtil.getIp(request));
-    online.setIpLocation(AddressUtil.getRealAddressByIp(online.getIpAddress()));
+    online.setIpLocation(online.getIpAddress());
     online.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
     UserAgent userAgent = UserAgentUtil.parse(online.getUserAgent());
     online.setBrowser(userAgent.getBrowser().getName());

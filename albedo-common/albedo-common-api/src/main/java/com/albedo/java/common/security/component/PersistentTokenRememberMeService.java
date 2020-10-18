@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
-import com.albedo.java.common.core.util.AddressUtil;
 import com.albedo.java.common.core.util.WebUtil;
 import com.albedo.java.common.security.util.RandomUtil;
 import com.albedo.java.modules.sys.domain.PersistentToken;
@@ -132,7 +131,7 @@ public class PersistentTokenRememberMeService extends AbstractRememberMeServices
       t.setTokenValue(RandomUtil.generateTokenData());
       t.setTokenDate(LocalDateTime.now());
       t.setIpAddress(WebUtil.getIp(request));
-      t.setLoginLocation(AddressUtil.getRealAddressByIp(t.getIpAddress()));
+      t.setLoginLocation(t.getIpAddress());
       t.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
       UserAgent userAgent = UserAgentUtil.parse(t.getUserAgent());
       t.setBrowser(userAgent.getBrowser().getName());

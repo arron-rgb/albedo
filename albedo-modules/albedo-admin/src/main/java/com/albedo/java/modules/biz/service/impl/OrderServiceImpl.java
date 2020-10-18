@@ -353,9 +353,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
     video.setAudioUrl(audioUrl);
-    videoRepository.updateById(video);
+    video.updateById();
     audioOrder.setState(COMPLETED_SUCCESS);
-    baseMapper.updateById(audioOrder);
+    audioOrder.updateById();
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
@@ -392,7 +392,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setVideoId(orderId);
     order.setState(UNPAID_ORDER);
     order.insertOrUpdate();
-    // baseMapper.insert(order);
 
     if (balance != null) {
       Integer audioTime = balance.getAudioTime();

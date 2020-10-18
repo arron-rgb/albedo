@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.albedo.java.common.core.util.AddressUtil;
 import com.albedo.java.common.core.util.RequestHolder;
 import com.albedo.java.common.core.util.WebUtil;
 import com.albedo.java.modules.sys.domain.LogOperate;
@@ -49,7 +48,7 @@ public class SysLogUtils {
     logOperate.setCreatedDate(LocalDateTime.now());
     logOperate.setUsername(getUsername());
     logOperate.setIpAddress(WebUtil.getIp(request));
-    logOperate.setIpLocation(AddressUtil.getRealAddressByIp(logOperate.getIpAddress()));
+    logOperate.setIpLocation(logOperate.getIpAddress());
     logOperate.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
     UserAgent userAgent = UserAgentUtil.parse(logOperate.getUserAgent());
     logOperate.setBrowser(userAgent.getBrowser().getName());
