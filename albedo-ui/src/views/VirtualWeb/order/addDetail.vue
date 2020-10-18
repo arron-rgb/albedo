@@ -176,8 +176,8 @@ export default {
         this.timeMax = 480;
       this.videoData = videoOrder;
       console.log(videoOrder);
-      this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
-       console.log(this.playerOptions.sources[0].src);
+      this.playerOptions.sources[0].src = 'https://' + videoOrder.videoId;
+       // console.log(this.playerOptions.sources[0].src);
     }
     // console.log(videoOrder.videoId);
   },
