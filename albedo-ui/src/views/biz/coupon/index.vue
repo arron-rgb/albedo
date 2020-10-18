@@ -24,6 +24,9 @@
         <el-form-item label="折扣" prop="discount">
           <el-input v-model="form.discount" class="input-small"></el-input>
         </el-form-item>
+        <el-form-item label="优惠券数量" prop="discount">
+          <el-input class="input-small" v-model="form.num"></el-input>
+        </el-form-item>
         <el-form-item label="备注" prop="description"
                       :rules="[{min: 0,max: 255,message: '长度在 0 到 255 个字符', trigger: 'blur'},]">
           <el-input v-model="form.description" class="input-small"></el-input>
