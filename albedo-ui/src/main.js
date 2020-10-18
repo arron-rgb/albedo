@@ -24,7 +24,7 @@ import router from './router/routers'
 
 import './assets/icons' // icon
 import './router/index' // permission control
-import 'echarts-gl'
+// import 'echarts-gl'
 //音频控件
 import Aplayer from 'vue-aplayer'
 Vue.use(VueHighlightJS)
