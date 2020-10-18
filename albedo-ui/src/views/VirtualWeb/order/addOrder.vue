@@ -80,8 +80,8 @@
 <!--            {{this.selectedBackground}}-->
             <h3 style="color: #909399" v-if="this.selectedAnchor === '' && this.selectedBackground === ''">请先选择主播和直播间风格</h3>
             <div class="picShow" v-else >
-              <el-image style="position: absolute; z-index: 1; left: 0" :src="'https://' + this.selectedBackground.url" />
-              <el-image style="position: absolute; z-index: 2; left: 0" :src="'https://' + this.selectedAnchor.url" />
+              <el-image :src="'https://' + this.selectedBackground.url" style="position: absolute; z-index: 1; left: 0" v-if="this.selectedBackground !== ''" />
+              <el-image :src="'https://' + this.selectedAnchor.url" style="position: absolute; z-index: 2; left: 0" v-if="this.selectedAnchor !== ''" />
             </div>
           </el-card>
         </el-col>
