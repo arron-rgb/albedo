@@ -109,9 +109,9 @@
               <el-button @click="toPurchase(item)" round style="margin-bottom: 5px" >立即抢购</el-button>
             </th>
           </tr>
-          <td class="col">
-            <tr v-for="(i) in list.contain" :key="i">
-              <p style="width: 239px; line-height: 46px; font-size: 16px; font-weight: bold">{{i}}</p>
+          <td class="col" style="padding: 0; margin: 0">
+            <tr  v-for="(i) in list.contain" :key="i">
+              <p style="width: 239px; padding:40px 0 20px 0; margin:5px 0 0 0; height: 73px;text-align: center; font-size: 16px; font-weight: bold">{{i}}</p>
             </tr>
           </td>
           <td class="data" v-for="(item) in priceData" :key="item">
@@ -206,11 +206,11 @@ export default {
   data(){
     return{
       backgroundImg : 'http://static.vlivest.com/3822a330caec55b9c5ac9538ae36d871.png',
-      list:        {title :"功能权限", contain : ["调用虚拟人物", "调用虚拟场景","标准版视频制作次数",
-          "定制版视频制作次数", "人物/场景修改次数", "上传商品数量",
-          "调用话术模板","系统智能配音", "人工专属配音", "视频时长上限","专属商务服务", "子账号数量",
-          "在线制作协议", "在线发票服务","账号存储空间", "制作渲染效率",
-          "授权类型", "授权期限", "授权协议"]},
+      list:        {title :"功能权限", contain : ["调用虚拟人物", "调用虚拟场景","标准版视频制作次数（平台现有人物场景）",
+          "定制版视频制作次数（专属定制人物场景）", "人物/场景修改次数", "上传商品数量",
+          "调用话术模板","系统智能配音时长", "人工专属配音时长", "视频时长上限","专属商务服务", "子账号数量",
+          "在线发票服务","账号存储空间", "制作渲染效率",
+           "授权使用期限"]},
       priceData: [
         // {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
         //     "无限", "/", "2h/条","有", "3","有", "有","5G",
@@ -258,18 +258,18 @@ export default {
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
             var planData = [
-              {title : "标准版", price : "4299", oldPrice : "5299", contain : ["有", "有", "3", "/", "0", "100", "无限",
-                  "无限", "/", "2h/条","有", "3","有", "有","5G",
-                  "高","商用", "30天", "有"]},
-              {title : "升级版", price : "7699", oldPrice : "9599", contain : ["有", "有", "6", "/", "0", "200", "无限",
-                  "无限", "/", "2h/条","有", "3","有", "有","8G",
-                  "高","商用", "30天", "有"]},
-              {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["有", "有", "12", "1", "1", "无限", "无限",
-                  "无限", "30min", "4h/条","有", "5","有", "有","10G",
-                  "极高","商用", "60天", "有"]},
-              {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["有", "有", "无限", "1", "3", "无限", "无限",
-                  "无限", "60min", "无限","有", "5","有", "有","100G",
-                  "极高","商用", "无限", "有"]},
+              {title : "标准版", price : "4299", oldPrice : "5299", contain : ["3个", "3个", "3", "/", "0", "100", "无限",
+                  "无限", "/", "2h/条","有", "3", "有","5G",
+                  "高", "30天",]},
+              {title : "升级版", price : "7699", oldPrice : "9599", contain : ["6个", "6个", "6", "/", "0", "200", "无限",
+                  "无限", "/", "2h/条","有", "3", "有","8G",
+                  "高", "30天"]},
+              {title : "旗舰版", price : "14399", oldPrice : "17999", contain : ["12个", "12个", "12", "1", "1", "无限", "无限",
+                  "无限", "30min", "4h/条","有", "5", "有","10G",
+                  "极高", "60天"]},
+              {title : "大客户专属定制版", price : "咨询客服", oldPrice : "", contain : ["全部人物", "全部人物", "无限", "1", "3", "无限", "无限",
+                  "无限", "60min", "无限","有", "5", "有","100G",
+                  "极高", "无限"]},
             ];
             for(var i = 0; i < 4; i++ ) {
               if(i !== 3) planData[i].price = res.data[i].price;
@@ -440,16 +440,16 @@ export default {
   width: 1200px;
   margin: auto;
 }
-.exhibition_title{
-  padding-top: 100px;
-  font-size: 40px;
-  line-height: 46px;
-}
-.exhibition_desc{
-  padding-top: 16px;
-  font-size: 24px;
-  line-height: 27px;
-}
+/*.exhibition_title{*/
+/*  padding-top: 100px;*/
+/*  font-size: 40px;*/
+/*  line-height: 46px;*/
+/*}*/
+/*.exhibition_desc{*/
+/*  padding-top: 16px;*/
+/*  font-size: 24px;*/
+/*  line-height: 27px;*/
+/*}*/
 .exhibition_link{
   position: absolute;
   top: 200px;
@@ -482,15 +482,15 @@ export default {
   cursor: pointer;
   margin-left: 32px;
 }
-.exhibition_phone{
-  position: absolute;
-  width: 1200px;
-  margin: auto;
-  margin-top: 18px;
-  font-size: 14px;
-  line-height: 20px;
-  color: rgba(255, 255, 255, 0.7);
-}
+/*.exhibition_phone{*/
+/*  position: absolute;*/
+/*  width: 1200px;*/
+/*  margin: auto;*/
+/*  margin-top: 18px;*/
+/*  font-size: 14px;*/
+/*  line-height: 20px;*/
+/*  color: rgba(255, 255, 255, 0.7);*/
+/*}*/
 
 .container_background{
   margin: 30px 0;
@@ -498,49 +498,49 @@ export default {
   /*padding: 72px 0 82px;*/
   /*background-color: #f8fafd;*/
 }
-.container{
-  width: 1200px;
-  margin: 0 auto;
-  padding: 0 136px 0 113px;
-  box-sizing: border-box;
-}
-.container_title{
-  font-size: 36px;
-  font-weight: bold;
-  line-height: 41px;
-  padding: 10px 0;
-}
-.container_text{
-  font-size: 18px;
-  line-height: 15px;
-  margin-top: 20px;
-  text-align: left;
-}
-.container_img{
-  width: 100%;
-}
+/*.container{*/
+/*  width: 1200px;*/
+/*  margin: 0 auto;*/
+/*  padding: 0 136px 0 113px;*/
+/*  box-sizing: border-box;*/
+/*}*/
+/*.container_title{*/
+/*  font-size: 36px;*/
+/*  font-weight: bold;*/
+/*  line-height: 41px;*/
+/*  padding: 10px 0;*/
+/*}*/
+/*.container_text{*/
+/*  font-size: 18px;*/
+/*  line-height: 15px;*/
+/*  margin-top: 20px;*/
+/*  text-align: left;*/
+/*}*/
+/*.container_img{*/
+/*  width: 100%;*/
+/*}*/
 
-.exhibition_block{
-  margin: 50px;
-  width: 500px;
-  height: 300px;
-  color: white;
-  background-color: rgba(255, 80, 0, 0.7);
-  border-radius: 10px;
-  padding: 30px 50px;
-  box-shadow: 10px 16px 16px 0 rgba(137, 151, 181, 0.11);
-}
+/*.exhibition_block{*/
+/*  margin: 50px;*/
+/*  width: 500px;*/
+/*  height: 300px;*/
+/*  color: white;*/
+/*  background-color: rgba(255, 80, 0, 0.7);*/
+/*  border-radius: 10px;*/
+/*  padding: 30px 50px;*/
+/*  box-shadow: 10px 16px 16px 0 rgba(137, 151, 181, 0.11);*/
+/*}*/
 
-.exhibition_block2{
-  margin: 50px;
-  width: 500px;
-  height: 300px;
-  color: rgba(255, 80, 0, 0.8);
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 10px 16px 16px 0 rgba(137, 151, 181, 0.11);
-  padding: 30px 50px;
-}
+/*.exhibition_block2{*/
+/*  margin: 50px;*/
+/*  width: 500px;*/
+/*  height: 300px;*/
+/*  color: rgba(255, 80, 0, 0.8);*/
+/*  background-color: white;*/
+/*  border-radius: 10px;*/
+/*  box-shadow: 10px 16px 16px 0 rgba(137, 151, 181, 0.11);*/
+/*  padding: 30px 50px;*/
+/*}*/
 
 
 .price{
@@ -549,13 +549,13 @@ export default {
   width: 1300px;
   margin: auto;
 }
-.price_title{
-  text-align: center;
-  font-size: 28px;
-  color: #0D203E;
-  line-height: 40px;
-  padding: 10px 0 40px 0;
-}
+/*.price_title{*/
+/*  text-align: center;*/
+/*  font-size: 28px;*/
+/*  color: #0D203E;*/
+/*  line-height: 40px;*/
+/*  padding: 10px 0 40px 0;*/
+/*}*/
 .box-card{
   margin: auto;
   /*float: left;*/
@@ -563,12 +563,13 @@ export default {
   background-color:#FFF;
   border-radius: 4px;
   color: #303133;
-  height: 1617px;
+  height: 1395px;
   transition: .3s;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
 
 .col{
+  height: 1200px;
   background: rgba(255,80,0,0.1);
 }
 table th{
@@ -578,16 +579,17 @@ table th{
 {
   background: #f7fafc;
 }
-.price-num{
-  line-height: 30px;
-  font-size: 14px;
-  font-weight: lighter;
-  color: #ff5000;
-}
+/*.price-num{*/
+/*  line-height: 30px;*/
+/*  font-size: 14px;*/
+/*  font-weight: lighter;*/
+/*  color: #ff5000;*/
+/*}*/
 
 .tableText{
   width: 280px;
   line-height: 30px;
   font-size: 16px;
 }
+
 </style>
