@@ -118,7 +118,7 @@
         </el-col>
       </el-row>
 
-      <el-row class="box" v-if="orderData.videoId !== null && orderData.state > 2">
+      <el-row class="box" v-if="orderData.state > 2">
         <el-col span="4">
           产品视频
         </el-col>
@@ -184,7 +184,7 @@ export default {
       });
     }else{
       this.orderData = orderData;
-      if(orderData.videoId !== null && orderData.state > 2)
+      if(orderData.state > 2)
         this.getVideo(orderData.id)
       if(orderData.type === '2') {
         this.getVoiceData(orderData.description);
