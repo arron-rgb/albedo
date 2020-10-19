@@ -101,7 +101,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setState(UNPAID_ORDER);
     order.setUserId(SecurityUtil.getUser().getId());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
-    order.setTotalAmount(calculatePrice(form));
+    if (!StringUtils.equals(form.getMethod(), "balance")) {
+      order.setTotalAmount(calculatePrice(form));
+    } else {
+      order.setTotalAmount("0");
+      form.setTotalAmount("0");
+    }
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
     boolean flag = save(order);
     String couponCode = form.getCouponCode();
