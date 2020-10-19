@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
  */
 
 @RestController
-@RequestMapping(value = "${application.admin-path}/biz/")
+@RequestMapping(value = "${application.admin-path}/biz/video")
 @AllArgsConstructor
 public class VideoResource extends BaseResource {
 
@@ -44,4 +44,5 @@ public class VideoResource extends BaseResource {
     return Result.buildOk("删除视频成功");
   }
 
+  // a/biz/
 }
