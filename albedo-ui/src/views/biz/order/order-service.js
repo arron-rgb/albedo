@@ -78,4 +78,22 @@ export function belong(){//保存上传的音频
     method: 'get',
   })
 }
-export default { page, del, save, get, current, list, consume, uploadAudio, todo, belong }
+
+export function getVideoList(orderId){//获取该订单的videolist
+  return request({
+    url: '/biz/video',
+    method: 'get',
+    params:{
+      orderId : orderId
+    }
+  })
+}
+
+export function delVideo(videoId){//获取该订单的videolist
+  return request({
+    url: '/biz/video',
+    method: 'delete',
+    data : videoId
+  })
+}
+export default { page, del, save, get, current, list, consume, uploadAudio, todo, belong, getVideoList, delVideo }
