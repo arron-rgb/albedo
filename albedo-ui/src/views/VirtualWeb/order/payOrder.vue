@@ -236,7 +236,7 @@ export default {
     },
     isBalance : function (val){
       this.isBalance = val;
-      if(val === 1)
+      if(val === '1')
         this.payType = 'balance';
       var dataIndex = this.list.findIndex( o => o.title === '主播数量')
       if(this.list[dataIndex].data[0].value === '双人主播'){
@@ -360,23 +360,23 @@ export default {
       //   this.getToken(this.orderId);
       // }
       // else {
-      console.log('保存订单')
-        return new Promise((resolve, reject) => {//订单先保存
-          payOrder.save(data).then(res => {//保存订单并获取订单id
-            if (res.code === MSG_TYPE_SUCCESS) {
-              // console.log(res)
-              this.$message({
-                message: '订单提交成功，即将跳转支付页面',
-                type: 'success'
-              });
-              this.getToken(res.data);
-            }
-            this.loading = false;
-          }).catch(error => {
-            reject(error)
-            this.loading = false;
-          })
+      // console.log(data)
+      return new Promise((resolve, reject) => {//订单先保存
+        payOrder.save(data).then(res => {//保存订单并获取订单id
+          if (res.code === MSG_TYPE_SUCCESS) {
+            // console.log(res)
+            this.$message({
+              message: '订单提交成功，即将跳转支付页面',
+              type: 'success'
+            });
+            this.getToken(res.data);
+          }
+          this.loading = false;
+        }).catch(error => {
+          reject(error)
+          this.loading = false;
         })
+      })
       // }
     },
     balancePurchase(){//会员次数支付

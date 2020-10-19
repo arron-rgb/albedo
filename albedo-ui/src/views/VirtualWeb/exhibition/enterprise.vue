@@ -134,21 +134,21 @@
       <table rules=none style="overflow-y: scroll;">
         <tr style="font-size: 16px">
           <th style="line-height: 60px;">套餐名称</th>
-          <th >
+          <th>
             {{this.selectedPlan.title}}
           </th>
         </tr>
-        <td class="data">
-          <tr :key="i" v-for="(i) in list.contain">
-            <p class="tableText">{{i}}</p>
+        <td class="data" style="padding: 0">
+          <tr :key="i" style="margin: auto; height: 54px;" v-for="(i) in list.contain">
+            <p style="margin: 20px 0">{{i}}</p>
           </tr>
           <tr>
             <p class="tableText">价格</p>
           </tr>
         </td>
         <td class="data">
-          <tr :key="o" v-for="(o) in selectedPlan.contain">
-            <p class="tableText">{{o}}</p>
+          <tr :key="o" style="margin: auto; height: 54px;" v-for="(o) in selectedPlan.contain">
+            <p style="margin: 20px 0">{{o}}</p>
           </tr>
           <tr>
             <p class="tableText">{{ selectedPlan.price }}</p>

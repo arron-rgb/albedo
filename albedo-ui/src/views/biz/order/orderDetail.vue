@@ -123,7 +123,7 @@
           产品视频
         </el-col>
         <el-col span="20">
-          <my-video></my-video>
+          <my-video :video-data="videoList"></my-video>
         </el-col>
       </el-row>
 
@@ -168,6 +168,7 @@ export default {
       updateLoading : false,
       tagList : ["", "success", "info", "warning", "danger"],
       voiceData : [],
+      videoList : []
     }
   },
   created() {
@@ -207,6 +208,18 @@ export default {
         }).catch(res => {
           reject(res);
           this.loading = false;
+        })
+      })
+    },
+    getVideo(orderId){//获取订单视频list
+      return new Promise((resolve, reject) => {
+        crudOrder.consume(orderId).then(res => {
+          if(res.code === MSG_TYPE_SUCCESS){
+            this.videoList = res.data;
+          }
+          resolve(res);
+        }).catch(res => {
+          reject(res);
         })
       })
     },
