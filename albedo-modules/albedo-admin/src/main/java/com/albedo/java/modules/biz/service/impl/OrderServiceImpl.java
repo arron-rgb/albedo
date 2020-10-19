@@ -348,6 +348,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public void uploadAudio(String orderId, String audioUrl) {
+    // todo audioUrl统一改成本地链接
     Order audioOrder = baseMapper.selectById(orderId);
     Assert.notNull(audioOrder, ORDER_NOT_FOUND);
     Assert.isTrue(Objects.equals(audioOrder.getType(), DUBBING), "订单类型不匹配");
