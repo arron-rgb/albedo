@@ -131,11 +131,11 @@
           <el-button @click="takeOrder(orderData.id)" :loading="loading" type="primary" style="width: 150px">接单</el-button>
       </el-row>
 
-      <el-row class="box" v-if="orderData.state === 2 || orderData.state === 4">
+      <el-row class="box" v-if="orderData.state > 1">
         <video-upload></video-upload>
       </el-row>
 
-      <el-row class="box" style="text-align: center" v-if="orderData.state === 2 || orderData.state === 4">
+      <el-row class="box" style="text-align: center" v-if="orderData.state > 1">
         <el-button :loading="updateLoading" @click="update">更新订单</el-button>
       </el-row>
     </el-card>

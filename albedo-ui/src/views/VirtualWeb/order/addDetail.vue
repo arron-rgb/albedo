@@ -13,7 +13,7 @@
   </div>
 
   <!-- 反馈信息 -->
-  <div class="descriBlock" v-if="this.balance.editTimes > 0">
+  <div class="descriBlock" v-if="$store.state.user.user.roleNames !== '个人用户' && this.balance.editTimes > 0">
     <div class="startBar">
       <el-row  class="box">
         <el-col span="4">
@@ -176,8 +176,8 @@ export default {
         this.timeMax = 480;
       this.videoData = videoOrder;
       console.log(videoOrder);
-      this.playerOptions.sources[0].src = 'http://' + videoOrder.videoId;
-       console.log(this.playerOptions.sources[0].src);
+      this.playerOptions.sources[0].src = 'https://' + videoOrder.videoId;
+       // console.log(this.playerOptions.sources[0].src);
     }
     // console.log(videoOrder.videoId);
   },

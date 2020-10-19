@@ -22,10 +22,10 @@
     >
       <el-form ref="form" :inline="true" :model="form" label-width="120px" size="small">
         <el-form-item label="折扣" prop="discount">
-          <el-input v-model="form.discount" class="input-small"></el-input>
+          <el-input-number :max="1" :min="0" :precision="2" class="input-small" step="0.01" v-model="form.discount"></el-input-number>
         </el-form-item>
         <el-form-item label="优惠券数量" prop="discount">
-          <el-input class="input-small" v-model="form.num"></el-input>
+          <el-input :rules="[{min: 0,max: 255,message: '长度在 0 到 255 个字符', trigger: 'blur'},]" class="input-small" v-model="form.num"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="description"
                       :rules="[{min: 0,max: 255,message: '长度在 0 到 255 个字符', trigger: 'blur'},]">
@@ -57,7 +57,7 @@
       <el-table-column align="center" label="折扣" :show-overflow-tooltip="true" prop="discount"/>
       <el-table-column align="center" label="使用的订单id" :show-overflow-tooltip="true" prop="orderId"/>
       <el-table-column align="center" label="使用者" :show-overflow-tooltip="true" prop="userId"/>
-      <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
+      <el-table-column fixed="right" label="操作" v-permission="[permission.del]" width="120px">
         <template slot-scope="scope">
           <udOperation :data="scope.row" :permission="permission"/>
         </template>
@@ -103,7 +103,6 @@ export default {
         validate.isDigits(rule, value, callback)
       },
       permission: {
-        edit: 'biz_coupon_edit',
         del: 'biz_coupon_del'
       }
     }
