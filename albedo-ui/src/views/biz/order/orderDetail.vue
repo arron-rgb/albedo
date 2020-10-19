@@ -123,7 +123,7 @@
           产品视频
         </el-col>
         <el-col span="20">
-          <my-video :key="item" :video-data="item" v-for="item in videoList"></my-video>
+          <my-video :key="item" :video-data="item" style="float: left; margin: 10px" v-for="item in videoList"></my-video>
         </el-col>
       </el-row>
 
@@ -184,6 +184,8 @@ export default {
       });
     }else{
       this.orderData = orderData;
+      if(orderData.videoId !== null && orderData.state > 2)
+        this.getVideo(orderData.id)
       if(orderData.type === '2') {
         this.getVoiceData(orderData.description);
         // this.typeList = ["", "success", "info", "warning", "danger"];
@@ -215,7 +217,7 @@ export default {
       return new Promise((resolve, reject) => {
         crudOrder.getVideoList(orderId).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
-            this.videoList = res.data;
+            this.videoList = res.data.records;
           }
           resolve(res);
         }).catch(res => {

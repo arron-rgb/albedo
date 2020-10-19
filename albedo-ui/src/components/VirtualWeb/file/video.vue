@@ -63,7 +63,8 @@ export default {
       this.orderData = orderData;
       this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
     }
-    this.playerOptions.sources[0].src = 'https://' + this.videoData.originalUrl
+    // console.log(this.videoData);
+    this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
   },
   methods : {
     delVideo(){
