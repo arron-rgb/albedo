@@ -11,6 +11,8 @@
 
 <script>
 import storeApi from "@/utils/store";
+import crudOrder from "@/views/biz/order/order-service";
+import {MSG_TYPE_SUCCESS} from "@/const/common";
 
 export default {
   name: "video",
@@ -61,12 +63,20 @@ export default {
       this.orderData = orderData;
       this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
     }
+    this.playerOptions.sources[0].src = 'https://' + this.videoData.originalUrl
   },
   methods : {
     delVideo(){
       this.loading = true;
+      var data = [this.videoData.id]
       return new Promise((resolve, reject) => {
-
+        crudOrder.delVideo(data).then(res => {
+          resolve(res);
+          this.loading = false
+        }).catch(res => {
+          this.loading = false
+          reject(res);
+        })
       })
     }
   }

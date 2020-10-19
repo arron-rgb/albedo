@@ -123,7 +123,7 @@
           产品视频
         </el-col>
         <el-col span="20">
-          <my-video :video-data="videoList"></my-video>
+          <my-video :key="item" :video-data="item" v-for="item in videoList"></my-video>
         </el-col>
       </el-row>
 
@@ -213,7 +213,7 @@ export default {
     },
     getVideo(orderId){//获取订单视频list
       return new Promise((resolve, reject) => {
-        crudOrder.consume(orderId).then(res => {
+        crudOrder.getVideoList(orderId).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
             this.videoList = res.data;
           }
