@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
 
@@ -110,6 +111,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     video.setName(tempFile.getName());
     baseMapper.insert(video);
     if (StringUtils.isEmpty(order.getVideoId())) {
+    	order.setState(PRODUCTION_COMPLETED);
       order.setVideoId(video.getId());
       order.updateById();
 	}
