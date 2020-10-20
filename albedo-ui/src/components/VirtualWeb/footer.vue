@@ -1,24 +1,33 @@
 <template>
   <div class='footer'>
-    <div class="footerContainer">
-      <div class="footerLeft">
-        <div class='linkList'>
-          <el-link :underline='false' @click="goTo('contactUs')" type='info'>联系我们</el-link>
-          <el-link :underline='false' @click="goTo('agreement')" type='info'>使用协议</el-link>
-          <el-link :underline='false' @click="toBackend" type='info'>员工入口</el-link>
 
+    <div class="footerContainer">
+      <div class="footerBox">
+        <div class="footerLeft">
+          <el-row class='linkList' >
+            <el-link :underline='false' @click="goTo('contactUs')" type='info'>联系我们</el-link>
+            <el-link :underline='false' @click="goTo('agreement')" type='info'>使用协议</el-link>
+            <el-link :underline='false' @click="toBackend" type='info'>员工入口</el-link>
+
+          </el-row>
+          <el-row style="text-align: left;">
+            <span style="margin-left: 105px">Copyright © 2019-2020 杭州葳锐信息科技有限公司版权所有</span>
+          </el-row>
         </div>
-        <span>Copyright © 2019-2020 杭州葳锐信息科技有限公司版权所有</span>
-      </div>
-      <div class="footerRight">
-        <img class='QRCode' :src="QRCode" alt="" >
-        <span>微信扫一扫 - 联系我们</span>
+        <div class="footerRight">
+          <img class='QRCode' :src="QRCode" alt="">
+          <span>微信扫一扫 - 联系我们</span>
+        </div>
       </div>
     </div>
-    <span class="authority">
-      <img class='policeIcon' :src="policeIcon" alt="">
-            <span>浙ICP备2020031611号</span>
-    </span>
+
+    <div class="footerBox">
+      <div class="authority">
+
+        <img class='policeIcon' :src="policeIcon" alt="">
+        <span>浙ICP备2020031611号</span>
+      </div>
+    </div>
   </div>
 
 </template>
@@ -74,7 +83,7 @@ export default {
 //@import  '@/common/reset.css';
 //@import '@/common/style.scss';
 .footer{
-  width:100%;
+  width: 100%;
   height:240px;
   font-size: 13px;
   color:#7d7d7d;
@@ -85,23 +94,34 @@ export default {
   // background-color: $light-orange;
   /* letter-spacing: 1px; */
 }
+.footerBox{
+  width: 1200px !important;
+  margin: auto;
+  text-align: center;
+  align-items: center;
+}
 .footerContainer{
   // background-color: $light-orange;
   width:100%;
+  margin: auto;
   height:100%;
   padding: 10px 40px;
-  display:flex;
-  justify-content: space-around;
-  align-items: center;
+  //display:flex;
+  //justify-content: space-around;
+  //align-items: center;
   border-top:1px  solid #ccc;
   border-bottom:1px  solid #ccc
 
 }
 .footerLeft{
-  display:flex;
-  justify-content: space-around;
-  flex-direction: column;
-  align-items: flex-start;
+  float: left;
+  //padding: 30px;
+  //display:flex;
+  width: 600px;
+  margin-right: 200px;
+  //justify-content: space-around;
+  //flex-direction: column;
+  //align-items: flex-start;
 
 }
 .linkList{
@@ -109,7 +129,7 @@ export default {
   display:flex;
   justify-content: space-between;
   align-items: center;
-  margin:20px 0;
+  margin:50px 0 30px 0;
 
 }
 .footerRight{
@@ -123,9 +143,9 @@ export default {
   height:120px;
 }
 .authority{
-  margin:20px 0;
-  display:flex;
-  justify-content: space-between;
+  margin:20px auto;
+  //display:flex;
+  //justify-content: space-between;
   align-items: center;
 
 }

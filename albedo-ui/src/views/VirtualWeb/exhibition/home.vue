@@ -449,6 +449,7 @@ export default {
   .descriBlock{
     //width:100%;
     min-width: 1200px;
+    margin: auto;
     width: 100%;
     padding:100px 0;
     justify-content: space-around;
