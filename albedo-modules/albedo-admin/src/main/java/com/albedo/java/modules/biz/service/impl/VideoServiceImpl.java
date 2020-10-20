@@ -1,6 +1,5 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.BUSINESS_COMMON_ROLE_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
@@ -9,7 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Resource;
@@ -35,12 +33,10 @@ import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEventType;
-import com.aliyun.oss.internal.OSSUtils;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.IdUtil;
 
 /**
  * @author arronshentu
@@ -67,11 +63,11 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   public boolean storageState(Double byteSize, String userId) {
     // 以下语义类似 1为已使用空间 2为剩余量 3如何获取购买套餐记录使其与使用量/剩余量绑定
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    initBalance(balance, userId);
+    balance = initBalance(balance, userId);
     return byteSize.compareTo(balance.getStorage()) > 0;
   }
 
-  private void initBalance(Balance balance, String userId) {
+  private Balance initBalance(Balance balance, String userId) {
     if (Objects.isNull(balance)) {
       Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
       plan.setCustomTimes(0);
@@ -80,7 +76,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       balance = planService.copyPlan(userId, plan);
       // 给账号初始化套餐信息
       balance.insert();
+      return balance;
     }
+    return balance;
   }
 
   /**
@@ -104,13 +102,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     String userId = order.getUserId();
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
-    initBalance(balance, userId);
+    balance = initBalance(balance, userId);
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
     if (!ossSingleton.doesBucketExist(bucketName)) {
-      createBucket(bucketName);
+      createBucket(userId);
     }
     if (storage < 0) {
       try {
@@ -231,30 +229,20 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
    */
-  private String createBucket(String userId) {
+  private void createBucket(String userId) {
     // userId应该是通过订单获取，视频由工作人员上传的
-    List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
+    // List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
     // 如果为付费用户，则找管理员；管理员为其余两种情况均无需变动userId
-    if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
-      userId = userService.getAdminIdByDeptId(userId);
-    }
-    // 没bucket的话 storage也不会被调用
+    // if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
+    // userId = userService.getAdminIdByDeptId(userId);
+    // }
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     Double storageSize = balance.getStorage();
-
-    String bucketName = userId;
-    if (!OSSUtils.validateBucketName(bucketName)) {
-      bucketName = IdUtil.fastUUID();
-    }
-
-    if (!ossSingleton.doesBucketExist(bucketName)) {
-      // buck命名失败时使用uuid 并更新uuid为qqOpenId
-      ossSingleton.create(bucketName, storageSize.intValue());
-      User user = userService.getById(userId);
-      user.setQqOpenId(bucketName);
-      userService.updateById(user);
-    }
-    return bucketName;
+    // buck命名失败时使用uuid 并更新uuid为qqOpenId
+    ossSingleton.create(userId, storageSize.intValue());
+    User user = userService.getById(userId);
+    user.setQqOpenId(userId);
+    userService.updateById(user);
   }
 
 }

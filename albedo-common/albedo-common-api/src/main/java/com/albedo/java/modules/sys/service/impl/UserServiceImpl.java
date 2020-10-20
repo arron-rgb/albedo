@@ -512,14 +512,18 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     User user = baseMapper.selectById(userId);
     Assert.notNull(user, "系统中不存在该用户");
     String bucketName = user.getQqOpenId();
-    if (!OSSUtils.validateBucketName(userId) && StringUtils.isNotEmpty(bucketName)) {
-      return bucketName;
-    } else {
-      bucketName = IdUtil.fastUUID();
-      user.setQqOpenId(bucketName);
-      baseMapper.updateById(user);
+    // userId有效则用userId
+    if (OSSUtils.validateBucketName(userId)) {
       return bucketName;
     }
+    // 无效用qqOpenId
+    // 为空则初始化一个
+    if (StringUtils.isEmpty(bucketName)) {
+      bucketName = IdUtil.fastSimpleUUID();
+      user.setQqOpenId(bucketName);
+      user.updateById();
+    }
+    return bucketName;
   }
 
   @Override

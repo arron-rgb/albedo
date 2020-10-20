@@ -129,8 +129,8 @@ public class OssSingleton {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
     createBucketRequest.setCannedACL(CannedAccessControlList.PublicRead);
     createBucketRequest.setStorageClass(StorageClass.Standard);
-    client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
     client.createBucket(createBucketRequest);
+    client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
   }
 
   public void removeFile(String bucketName, String objectName) {
@@ -210,4 +210,12 @@ public class OssSingleton {
     log.info("objectName: {}", objectName);
     return localPath;
   }
+
+  public String getUrl(String filePath) {
+    String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 2);
+    String originUrl = filePath.replace(parent + "/", "");
+    originUrl = originUrl.replace("/", ".oss-cn-hangzhou.aliyuncs.com/");
+    return originUrl;
+  }
+
 }
