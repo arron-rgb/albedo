@@ -8,10 +8,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -170,8 +172,14 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Order order = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Video video = baseMapper.selectById(order.getVideoId());
-    Assert.notNull(video, VIDEO_NOT_FOUND);
-    return video;
+    if (!Objects.isNull(video)) {
+      return video;
+    }
+    List<Video> videos = list(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orderId));
+    if (CollectionUtils.isNotEmpty(videos)) {
+      return videos.get(0);
+    }
+    return null;
   }
 
   /**

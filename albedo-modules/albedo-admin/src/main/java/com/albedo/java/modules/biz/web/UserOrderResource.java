@@ -66,16 +66,6 @@ public class UserOrderResource extends BaseResource {
     if (Objects.isNull(order)) {
       return Result.buildOkData(order);
     }
-
-    Video video = videoService.getById(order.getVideoId());
-    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
-      String originUrl = video.getOriginUrl();
-      originUrl = ossSingleton.getUrl(originUrl);
-      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        originUrl = ossSingleton.getUrl(video.getOutputUrl());
-      }
-      order.setVideoId(originUrl);
-    }
     UserVo user = userService.findUserVoById(order.getUserId());
     if (user != null) {
       String username = user.getUsername();
@@ -83,7 +73,23 @@ public class UserOrderResource extends BaseResource {
         order.setUserId(username);
       }
     }
-
+    // videoId为空直接返回
+    if (StringUtils.isEmpty(order.getVideoId())) {
+      return Result.buildOkData(order);
+    }
+    // 把videoId更新为url
+    Video video = videoService.getById(order.getVideoId());
+    if (video == null) {
+      video = videoService.getOneByOrderId(order.getId());
+    }
+    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
+      String originUrl = video.getOriginUrl();
+      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
+        originUrl = video.getOutputUrl();
+      }
+      originUrl = ossSingleton.getUrl(originUrl);
+      order.setVideoId(originUrl);
+    }
     return Result.buildOkData(order);
   }
 
