@@ -272,6 +272,7 @@ export default {
         );
       }
       else {
+
         this.getBalance();
         this.list = JSON.parse(videoOrder.content).data;
         this.type = videoOrder.type;
@@ -365,11 +366,23 @@ export default {
         payOrder.save(data).then(res => {//保存订单并获取订单id
           if (res.code === MSG_TYPE_SUCCESS) {
             // console.log(res)
-            this.$message({
-              message: '订单提交成功，即将跳转支付页面',
-              type: 'success'
-            });
-            this.getToken(res.data);
+            if(data.method === 'balance'){
+              this.$message({
+                message: '订单提交成功!',
+                type: 'success'
+              });
+              storeApi.clear({
+                name: 'videoOrder'
+              });
+              this.goTo('/addOrder');
+            }
+            else{
+              this.$message({
+                message: '订单提交成功，即将跳转支付页面',
+                type: 'success'
+              });
+              this.getToken(res.data);
+            }
           }
           this.loading = false;
         }).catch(error => {
@@ -379,24 +392,24 @@ export default {
       })
       // }
     },
-    balancePurchase(){//会员次数支付
-        var data = {
-          method: this.payType,
-          orderId: this.orderId
-        }
-        return new Promise((resolve, reject) => {
-          payOrder.edit(data).then(res => {//修改订单支付方式成功
-            if (res.code === MSG_TYPE_SUCCESS) {
-              // console.log(res);
-              this.getToken(this.orderId);
-            }
-            this.loading = false;
-          }).catch(error => {
-            reject(error)
-            this.loading = false;
-          })
-        })
-    },
+    // balancePurchase(){//会员次数支付
+    //     var data = {
+    //       method: this.payType,
+    //       orderId: this.orderId
+    //     }
+    //     return new Promise((resolve, reject) => {
+    //       payOrder.edit(data).then(res => {//修改订单支付方式成功
+    //         if (res.code === MSG_TYPE_SUCCESS) {
+    //           // console.log(res);
+    //           this.getToken(this.orderId);
+    //         }
+    //         this.loading = false;
+    //       }).catch(error => {
+    //         reject(error)
+    //         this.loading = false;
+    //       })
+    //     })
+    // },
     getToken(key){//获取token
       return new Promise((resolve, reject) => {
         loginService.token().then((res) => {
@@ -466,7 +479,7 @@ export default {
       })
     },
     getBalance(){
-      this.times = this.balance.times;
+      this.balance === null ? this.times = 0 : this.times = parseInt(this.balance.times);
     },
     uploadImg(file, type){//上传图片
       var _this = this
