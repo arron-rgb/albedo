@@ -82,7 +82,7 @@
             >
               <el-row>
                 <el-col span="6">
-                  <img class="commodityImg" :src="'http://' + item.urls">
+                  <img :src="'https://' + item.urls" class="commodityImg">
                 </el-col>
                 <el-col style="padding-left: 10px" span="18">
                   <el-row>
