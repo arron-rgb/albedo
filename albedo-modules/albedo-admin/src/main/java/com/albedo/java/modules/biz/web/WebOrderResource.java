@@ -4,6 +4,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -161,18 +162,14 @@ public class WebOrderResource extends BaseResource {
 
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
-  public Result<String> uploadVideo(MultipartFile file, String orderId) {
-    try {
-      Order order = orderService.getById(orderId);
-      Assert.notNull(order, ORDER_NOT_FOUND);
-      String userId = order.getUserId();
-      String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
-      String tempPath = FileUploadUtil.upload(uploadPath, file);
-      videoService.uploadVideo(orderId, tempPath);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Result.buildFail("保存失败");
-    }
+  public Result<String> uploadVideo(MultipartFile file, String orderId) throws IOException {
+    // todo 异常处理
+    Order order = orderService.getById(orderId);
+    Assert.notNull(order, ORDER_NOT_FOUND);
+    String userId = order.getUserId();
+    String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
+    String tempPath = FileUploadUtil.upload(uploadPath, file);
+    videoService.uploadVideo(orderId, tempPath);
     return Result.buildOkData("上传成功");
   }
 
