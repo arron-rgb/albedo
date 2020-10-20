@@ -179,6 +179,7 @@ public class WebOrderResource extends BaseResource {
     try {
       Order order = service.getById(orderId);
       order.setState(PRODUCTION_COMPLETED);
+      Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
       service.updateById(order);
     } catch (Exception e) {
       e.printStackTrace();

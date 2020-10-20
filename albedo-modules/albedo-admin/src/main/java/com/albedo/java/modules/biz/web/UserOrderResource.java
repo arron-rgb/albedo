@@ -4,7 +4,6 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.BALANCE_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,12 +70,9 @@ public class UserOrderResource extends BaseResource {
     Video video = videoService.getById(order.getVideoId());
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
       String originUrl = video.getOriginUrl();
-      originUrl = ossSingleton.localPathToUrl(originUrl);
+      originUrl = ossSingleton.getUrl(originUrl);
       if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        File file = new File(video.getOutputUrl());
-        String userId = SecurityUtil.getUser().getId();
-        String bucketName = userService.getBucketName(userId);
-        originUrl = ossSingleton.localPathToUrl(bucketName, file.getName());
+        originUrl = ossSingleton.getUrl(video.getOutputUrl());
       }
       order.setVideoId(originUrl);
     }
