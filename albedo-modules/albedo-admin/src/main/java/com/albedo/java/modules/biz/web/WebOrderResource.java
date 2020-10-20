@@ -180,6 +180,8 @@ public class WebOrderResource extends BaseResource {
       Order order = service.getById(orderId);
       order.setState(PRODUCTION_COMPLETED);
       Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
+      Video video = videoService.getById(order.getVideoId());
+      Assert.notNull(video, "未查询到视频信息，请稍后重试或联系工作人员");
       service.updateById(order);
     } catch (Exception e) {
       e.printStackTrace();

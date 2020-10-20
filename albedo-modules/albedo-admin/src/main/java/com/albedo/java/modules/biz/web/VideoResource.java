@@ -54,7 +54,6 @@ public class VideoResource extends BaseResource {
   @ApiOperation(value = "删除视频")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> ids) {
-    service.removeByIds(ids);
     // 找到对应的订单
     Set<String> orders = service.listByIds(ids).stream().map(Video::getOrderId).collect(Collectors.toSet());
     Assert.isTrue(orders.size() == 1, "视频对应的订单数量异常");
@@ -72,6 +71,7 @@ public class VideoResource extends BaseResource {
       }
       order.updateById();
     }
+    service.removeByIds(ids);
     return Result.buildOk("删除视频成功");
   }
 
