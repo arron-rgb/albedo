@@ -432,7 +432,7 @@ export default {
           storeApi.clear({
             name: 'videoOrder'
           });
-          this.goTo('/addOrder');
+          this.goTo('/');
         })
     },
     cancel(){//取消订单

@@ -74,12 +74,18 @@ export default {
         crudOrder.delVideo(data).then(res => {
           resolve(res);
           this.loading = false
+          this.goTo('/order/detail')
         }).catch(res => {
           this.loading = false
           reject(res);
         })
       })
-    }
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 }
 </script>
