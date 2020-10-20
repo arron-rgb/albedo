@@ -3,6 +3,7 @@ package com.albedo.java.modules.biz.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import lombok.*;
 
@@ -12,10 +13,10 @@ import lombok.*;
 @Data
 @Builder
 @TableName("t_balance")
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Balance {
+public class Balance extends Model<Balance> {
 
   @TableId
   private String userId;

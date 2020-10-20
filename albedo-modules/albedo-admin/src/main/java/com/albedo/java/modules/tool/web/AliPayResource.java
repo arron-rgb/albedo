@@ -24,7 +24,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,19 +58,6 @@ public class AliPayResource {
 
   @Resource
   AliPayService alipayService;
-
-  @GetMapping
-  public Result<AlipayConfig> get() {
-    return Result.buildOkData(alipayService.find());
-  }
-
-  @LogOperate("配置支付宝")
-  @ApiOperation("配置支付宝")
-  @PutMapping
-  public Result<Object> updateConfig(@Validated @RequestBody AlipayConfig alipayConfig) {
-    alipayService.config(alipayConfig);
-    return new Result<>(HttpStatus.OK);
-  }
 
   @LogOperate("支付宝PC网页支付")
   @ApiOperation("PC网页支付")

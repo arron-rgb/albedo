@@ -1,5 +1,6 @@
 package com.albedo.java.modules.sys.web;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.ADMIN_IDS;
 import static com.albedo.java.common.core.constant.BusinessConstants.PERSONAL_USER_ROLE_ID;
 import static com.albedo.java.common.core.constant.CommonConstants.ADMIN_ROLE_ID;
 
@@ -172,12 +173,16 @@ public class UserResource extends BaseResource {
     }
     String id = SecurityUtil.getUser().getId();
     List<String> roles = SecurityUtil.getRoles();
-    Assert.isFalse(roles.contains(PERSONAL_USER_ROLE_ID), "个人账号无法绑定子账号，请升级为企业账号");
-    Balance balance = balanceService.getByUserId(id);
-    Integer childAccount = balance.getChildAccount();
-    Assert.isTrue(childAccount >= 1, "子账号数量已超出套餐允许数量");
-    balance.setChildAccount(childAccount - 1);
-    balanceService.updateById(balance);
+    // 超管随便添加
+    boolean isAdmin = roles.stream().anyMatch(ADMIN_IDS::contains);
+    if (!isAdmin) {
+      Assert.isFalse(roles.contains(PERSONAL_USER_ROLE_ID), "个人账号无法绑定子账号，请升级为企业账号");
+      Balance balance = balanceService.getByUserId(id);
+      Integer childAccount = balance.getChildAccount();
+      Assert.isTrue(childAccount >= 1, "子账号数量已超出套餐允许数量");
+      balance.setChildAccount(childAccount - 1);
+      balanceService.updateById(balance);
+    }
     userService.saveOrUpdate(userDto);
     return Result.buildOk(add ? "新增成功，默认密码：123456" : "修改成功");
   }

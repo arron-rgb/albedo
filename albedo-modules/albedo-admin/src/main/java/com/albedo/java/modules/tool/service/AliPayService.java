@@ -35,15 +35,6 @@ public interface AliPayService extends BaseService<AlipayConfig> {
   AlipayConfig find();
 
   /**
-   * 更新配置
-   *
-   * @param alipayConfig
-   *          支付宝配置
-   * @return AlipayConfig
-   */
-  AlipayConfig config(AlipayConfig alipayConfig);
-
-  /**
    * @param trade
    *          订单信息
    * @return 支付链接

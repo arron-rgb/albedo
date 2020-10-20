@@ -37,11 +37,7 @@ public class VideoResource extends BaseResource {
   public Result<PageModel<Video>> getPage(PageModel<Video> pm, VideoQueryCriteria dubQueryCriteria) {
     QueryWrapper<Video> wrapper = QueryWrapperUtil.getWrapper(pm, dubQueryCriteria);
     PageModel<Video> page = service.page(pm, wrapper);
-    page.getRecords().forEach(record -> {
-      String url = record.getOriginUrl().replace("F:\\workplace\\virtual-live-web\\null\\upload\\", "");
-      url = url.replace("\\", ".oss-cn-hangzhou.aliyuncs.com/");
-      record.setOriginUrl(url);
-    });
+    page.getRecords().forEach(record -> record.setOriginUrl(ossSingleton.getUrl(record.getOriginUrl())));
     return Result.buildOkData(page);
   }
 
@@ -55,7 +51,5 @@ public class VideoResource extends BaseResource {
     service.removeByIds(ids);
     return Result.buildOk("删除视频成功");
   }
-
-  // a/biz/video
 
 }

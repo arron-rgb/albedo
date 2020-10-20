@@ -4,10 +4,10 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.BALANCE_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
@@ -63,16 +63,16 @@ public class UserOrderResource extends BaseResource {
     // 1. 当前用户的订单
     // 2. 未处于结单状态
     Order order = service.currentOrder();
-    Assert.notNull(order, "未查询到正在进行的订单");
+    if (Objects.isNull(order)) {
+      return Result.buildOkData(order);
+    }
+
     Video video = videoService.getById(order.getVideoId());
     if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
       String originUrl = video.getOriginUrl();
-      originUrl = ossSingleton.localPathToUrl(originUrl);
+      originUrl = ossSingleton.getUrl(originUrl);
       if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        File file = new File(video.getOutputUrl());
-        String userId = SecurityUtil.getUser().getId();
-        String bucketName = userService.getBucketName(userId);
-        originUrl = ossSingleton.localPathToUrl(bucketName, file.getName());
+        originUrl = ossSingleton.getUrl(video.getOutputUrl());
       }
       order.setVideoId(originUrl);
     }
