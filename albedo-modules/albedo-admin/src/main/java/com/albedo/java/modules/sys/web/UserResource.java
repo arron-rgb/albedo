@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.albedo.java.common.core.constant.CommonConstants;
-import com.albedo.java.common.core.util.BeanUtil;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.core.vo.PageModel;
@@ -116,12 +115,15 @@ public class UserResource extends BaseResource {
    */
   @LogOperate(value = "用户管理编辑")
   @PostMapping("/info")
-  public Result saveInfo(@Valid @RequestBody UserInfoDto userInfoDto) {
+  public Result<String> saveInfo(@Valid @RequestBody UserInfoDto userInfoDto) {
     log.debug("REST request to save userDto : {}", userInfoDto);
-    UserDto userDto = BeanUtil.copyPropertiesByClass(userInfoDto, UserDto.class);
-    userDto.setId(SecurityUtil.getUser().getId());
-    userDto.setUsername(SecurityUtil.getUser().getUsername());
-    userService.saveOrUpdate(userDto);
+    String id = userInfoDto.getId();
+    User user = userService.getById(id);
+    Assert.notNull(user, "未查询到该用户");
+    user.setNickname(userInfoDto.getNickname());
+    user.setPhone(userInfoDto.getPhone());
+    user.setDescription(userInfoDto.getDescription());
+    user.updateById();
     return Result.buildOk("更新成功");
   }
 
@@ -275,7 +277,8 @@ public class UserResource extends BaseResource {
     User user = userService.getById(id);
     Assert.notEmpty(user.getInviteCode(), "邀请码为空，无法查询");
     List<User> results = userService.list(Wrappers.<User>query().eq("invite_code", user.getInviteCode()));
-    Set<User> userSet = results.stream().filter(ele -> StringUtils.equals(ele.getId(), id)).collect(Collectors.toSet());
+    Set<User> userSet =
+      results.stream().filter(ele -> !StringUtils.equals(ele.getId(), id)).collect(Collectors.toSet());
     return Result.buildOkData(userSet);
   }
 

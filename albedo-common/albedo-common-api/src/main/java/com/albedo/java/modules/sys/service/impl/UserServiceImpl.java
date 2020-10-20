@@ -454,6 +454,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
     user.setPhone(userData.getPhone());
     user.setDeptId(deptId);
     user.setInviteCode(userData.getInvitationCode());
+    // todo 无效邀请码
     baseMapper.insert(user);
     return user.getId();
   }
