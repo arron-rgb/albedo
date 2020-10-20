@@ -176,18 +176,13 @@ public class WebOrderResource extends BaseResource {
   @ApiOperation(value = "员工更新订单状态")
   @GetMapping(value = "/update")
   public Result<String> update(String orderId) {
-    try {
-      Order order = service.getById(orderId);
-      order.setState(PRODUCTION_COMPLETED);
-      Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
-      Video video = videoService.getById(order.getVideoId());
-      Assert.notNull(video, "未查询到视频信息，请稍后重试或联系工作人员");
-      service.updateById(order);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Result.buildFail("保存失败");
-    }
-    return Result.buildOkData("保存成功");
+    Order order = service.getById(orderId);
+    order.setState(PRODUCTION_COMPLETED);
+    Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
+    Video video = videoService.getById(order.getVideoId());
+    Assert.notNull(video, "未查询到视频信息，请稍后重试或联系工作人员");
+    service.updateById(order);
+    return Result.buildOkData("更新成功");
   }
 
   private List<Order> updateInfo(List<Order> orders) {
