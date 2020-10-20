@@ -237,7 +237,7 @@ export default {
             this.$alert('订单更新成功，辛苦了！', '提示',{
               confirmButtonText: '确定',
               callback: action => {
-                this.goTo('/order/order')
+                this.goTo('/order/belong')
               }
             });
           }
