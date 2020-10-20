@@ -1,9 +1,15 @@
 package com.albedo.java.common.core.constant;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author arronshentu
  */
 public interface BusinessConstants {
+
+  List<String> ADMIN_IDS = new ArrayList<>(Arrays.asList("3570f348af7214a976e5d6bfbdd97df1", "1", "2"));
 
   String DOUBLE_ANCHOR = "双人主播";
   String SINGLE_ANCHOR = "单人主播";

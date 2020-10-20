@@ -510,6 +510,7 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   @Override
   public String getBucketName(String userId) {
     User user = baseMapper.selectById(userId);
+    Assert.notNull(user, "系统中不存在该用户");
     String bucketName = user.getQqOpenId();
     if (!OSSUtils.validateBucketName(userId) && StringUtils.isNotEmpty(bucketName)) {
       return bucketName;

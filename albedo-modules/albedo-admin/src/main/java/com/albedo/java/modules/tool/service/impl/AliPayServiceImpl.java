@@ -7,11 +7,10 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
@@ -47,21 +46,19 @@ import lombok.AllArgsConstructor;
 @CacheConfig(cacheNames = CacheNameConstants.ALIPAY_DETAILS)
 @AllArgsConstructor
 public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, AlipayConfig> implements AliPayService {
-  private final AliPayConfigRepository alipayRepository;
+  @Resource
+  AliPayConfigRepository alipayRepository;
+
+  @Resource
+  ApplicationProperties properties;
 
   @Override
   @Cacheable(key = "'id:1'")
   public AlipayConfig find() {
     AlipayConfig alipayConfig = alipayRepository.selectById(1L);
-    return alipayConfig == null ? new AlipayConfig() : alipayConfig;
-  }
-
-  @Override
-  @CachePut(key = "'id:1'")
-  @Transactional(rollbackFor = Exception.class)
-  public AlipayConfig config(AlipayConfig alipayConfig) {
-    alipayConfig.setId(1L);
-    saveOrUpdate(alipayConfig);
+    if (properties.getAlipayKey() != null) {
+      alipayConfig = alipayRepository.selectById(properties.getAlipayKey());
+    }
     return alipayConfig;
   }
 

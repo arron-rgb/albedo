@@ -1,6 +1,7 @@
 package com.albedo.java.modules.biz.service;
 
 import com.albedo.java.common.persistence.service.BaseService;
+import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Plan;
 
 /**
@@ -32,4 +33,7 @@ public interface PlanService extends BaseService<Plan> {
    */
   boolean callback(String outTradeNo);
 
+  Balance copyPlan(String userId, Plan plan);
+
+  void addBalance(Balance balance, Plan plan);
 }

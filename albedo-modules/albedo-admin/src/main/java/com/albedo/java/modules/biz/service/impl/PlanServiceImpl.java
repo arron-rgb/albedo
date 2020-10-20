@@ -112,19 +112,26 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
         Integer full = plan.getStorage();
         balance.setStorage(full - usedStorage);
       } else {
-        balance = new Balance();
-        // 写入新余量
-        BeanUtils.copyProperties(plan, balance);
-        balance.setPlanType(plan.getName());
-        balance.setPlanId(plan.getId());
-        balance.setStorage(plan.getStorage().doubleValue());
-        balance.setUserId(userId);
+        balance = copyPlan(userId, plan);
       }
       return balanceService.saveOrUpdate(balance);
     }
     return false;
   }
 
+  @Override
+  public Balance copyPlan(String userId, Plan plan) {
+    Balance balance = new Balance();
+    // 写入新余量
+    BeanUtils.copyProperties(plan, balance);
+    balance.setPlanType(plan.getName());
+    balance.setPlanId(plan.getId());
+    balance.setStorage(plan.getStorage().doubleValue());
+    balance.setUserId(userId);
+    return balance;
+  }
+
+  @Override
   public void addBalance(Balance balance, Plan plan) {
     Integer editTime = plan.getEditTime();
     Integer times = plan.getTimes();

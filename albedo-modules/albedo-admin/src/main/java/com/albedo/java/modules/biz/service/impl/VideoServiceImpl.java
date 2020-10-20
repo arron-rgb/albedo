@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -21,11 +22,13 @@ import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
+import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.VideoDto;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
+import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.domain.User;
@@ -47,6 +50,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   implements VideoService {
 
   @Resource
+  PlanService planService;
+  @Resource
   OrderService orderService;
 
   @Resource
@@ -62,8 +67,20 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   public boolean storageState(Double byteSize, String userId) {
     // 以下语义类似 1为已使用空间 2为剩余量 3如何获取购买套餐记录使其与使用量/剩余量绑定
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    Assert.notNull(balance, EMPTY_STORAGE);
+    initBalance(balance, userId);
     return byteSize.compareTo(balance.getStorage()) > 0;
+  }
+
+  private void initBalance(Balance balance, String userId) {
+    if (Objects.isNull(balance)) {
+      Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
+      plan.setCustomTimes(0);
+      plan.setChildAccount(0);
+      plan.setVideoTime(0);
+      balance = planService.copyPlan(userId, plan);
+      // 给账号初始化套餐信息
+      balance.insert();
+    }
   }
 
   /**
@@ -87,7 +104,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     String userId = order.getUserId();
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     // 更新使用状况 单位以GB为基准
-    Assert.notNull(balance, EMPTY_STORAGE);
+    initBalance(balance, userId);
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
@@ -111,10 +128,10 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     video.setName(tempFile.getName());
     baseMapper.insert(video);
     if (StringUtils.isEmpty(order.getVideoId())) {
-    	order.setState(PRODUCTION_COMPLETED);
+      order.setState(PRODUCTION_COMPLETED);
       order.setVideoId(video.getId());
       order.updateById();
-	}
+    }
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
     // 本地：./upload/bucketName/文件名

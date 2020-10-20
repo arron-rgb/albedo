@@ -47,6 +47,7 @@ public class ApplicationProperties {
   private Security security = new Security();
   private Http http = new Http();
   private Rsa rsa = new Rsa();
+  private String alipayKey = "1";
   private CorsConfiguration cors = new CorsConfiguration();
 
   public String getAdminPath(String url) {
@@ -66,10 +67,10 @@ public class ApplicationProperties {
         put(TENCENT_SECRET, "pSotkLfiUDgurkbCYxxwc2AHPHsCRglc");
       }
     };
-//    params.forEach((key, value) -> {
-//      value = System.getenv(key);
-//      params.put(key, value);
-//    });
+    // params.forEach((key, value) -> {
+    // value = System.getenv(key);
+    // params.put(key, value);
+    // });
 
   }
 
@@ -151,18 +152,18 @@ public class ApplicationProperties {
       this.version = Version.V_1_1;
     }
 
-    public enum Version
-    {
+    public enum Version {
       V_1_1, V_2_0;
 
-    Version() {}
+      Version() {}
+    }
+
+    @Data
+    public static class Cache {
+      private int timeToLiveInDays = 1461;
+
+      public Cache() {}
+
+    }
   }
-
-  @Data
-  public static class Cache {
-    private int timeToLiveInDays = 1461;
-
-    public Cache() {}
-
-  }
-}}
+}

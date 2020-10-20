@@ -301,12 +301,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     UserDetail user = SecurityUtil.getUser();
-    Balance one = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, user.getId()));
+    // todo 检查这段代码的含义
+    Balance balance = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, user.getId()));
     String adminId = userService.getAdminIdByDeptId(user.getDeptId());
-    if (one == null) {
-      one = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
+    if (balance == null) {
+      balance = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
     }
-    Assert.notNull(one, BALANCE_NOT_FOUND);
+    Assert.notNull(balance, BALANCE_NOT_FOUND);
     Long duration = orderVo.getDuration();
     Balance byUserId = balanceService.getByUserId(user.getId());
     Assert.isTrue(byUserId.getVideoTime().longValue() < duration, "视频时长超出套餐允许");

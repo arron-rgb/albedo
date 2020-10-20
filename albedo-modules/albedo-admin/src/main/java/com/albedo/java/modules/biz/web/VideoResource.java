@@ -56,6 +56,4 @@ public class VideoResource extends BaseResource {
     return Result.buildOk("删除视频成功");
   }
 
-  // a/biz/video
-
 }

@@ -90,6 +90,7 @@ application:
       - ${application.adminPath}/biz/coupon/query
       - /cdn/*
       - /fonts/*
+  alipayKey: 4
 
 path:
   ffmpeg: /usr/local/bin/ffmpeg

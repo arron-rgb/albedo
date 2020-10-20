@@ -17,9 +17,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: gavin
-    password: g1126ang
-    url: jdbc:mysql://47.100.1.162:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 924c80a71a83d95d
+    url: jdbc:mysql://47.113.92.245:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 
 
 # ===================================================================、
@@ -50,6 +50,7 @@ application:
       - ${application.adminPath}/biz/coupon/query
       - /cdn/*
       - /fonts/*
+  alipayKey: 4
 
 path:
   ffmpeg: /usr/local/bin/ffmpeg
