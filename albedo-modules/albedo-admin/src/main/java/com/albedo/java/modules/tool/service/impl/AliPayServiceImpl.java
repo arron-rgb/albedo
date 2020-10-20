@@ -15,6 +15,7 @@ import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.exception.BadRequestException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.jackson.JavaTimeModule;
+import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
@@ -56,7 +57,7 @@ public class AliPayServiceImpl extends BaseServiceImpl<AliPayConfigRepository, A
   @Cacheable(key = "'id:1'")
   public AlipayConfig find() {
     AlipayConfig alipayConfig = alipayRepository.selectById(1L);
-    if (properties.getAlipayKey() != null) {
+    if (SpringContextHolder.isDevelopment()) {
       alipayConfig = alipayRepository.selectById(properties.getAlipayKey());
     }
     return alipayConfig;
