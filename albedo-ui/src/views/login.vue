@@ -138,6 +138,14 @@
           <el-input v-model="registerForm.invitationCode" placeholder="请输入邀请码"></el-input>
         </el-form-item>
       </el-form>
+
+      <el-row style="text-align: center; margin: 20px 0 ;">
+        <el-checkbox v-model="checked">我同意</el-checkbox>
+        <el-link :underline="false" @click="goTo('/agreement')" type="primary">《虚拟工坊用户使用协议》</el-link>
+        和
+        <el-link :underline="false" @click="goTo('/privacy')" type="primary">《虚拟工坊隐私政策》</el-link>
+      </el-row>
+
       <div style="text-align: center">
         <el-button type="primary" @click="handleRegister()">注 册</el-button>
         <el-button @click="centerDialogVisible = false">取 消</el-button>
@@ -174,6 +182,7 @@ export default {
       centerDialogVisible: false,
       codeUrl: '',
       codeLength: 4,
+      checked : false,
       cookiePass: '',
       passwordType: 'password',
       btntxt: '获取验证码',
@@ -270,16 +279,22 @@ export default {
       })
     },
     handleRegister() {
-      this.$refs.registerForm.validate(valid => {
-        if (valid) {
-          this.$store.dispatch('Register', this.registerForm).then(() => {
-            // console.log(this.registerForm);
-            // this.$router.push({path: this.redirect || '/'})
-            this.centerDialogVisible = false;
-          }).catch((e) => {
-          })
-        }
-      });
+      if(!this.checked){
+        this.$alert('请先同意《虚拟工坊用户使用协议》和《虚拟工坊隐私政策》', {
+          confirmButtonText: '确定',
+        })
+      }else{
+        this.$refs.registerForm.validate(valid => {
+          if (valid) {
+            this.$store.dispatch('Register', this.registerForm).then(() => {
+              // console.log(this.registerForm);
+              // this.$router.push({path: this.redirect || '/'})
+              this.centerDialogVisible = false;
+            }).catch((e) => {
+            })
+          }
+        });
+      }
     },
     //验证手机号码部分
     sendcode() {

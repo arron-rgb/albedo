@@ -104,6 +104,12 @@ export const constantRouterMap = [
         hidden: true
       },
       {
+        path: '/privacy',
+        meta: { showHeader: true },
+        component: (resolve) => require(['@/views/VirtualWeb/helpCenter/privacy'], resolve),
+        hidden: true
+      },
+      {
         path: '/problems',
         meta: { showHeader: true },
         component: (resolve) => require(['@/views/VirtualWeb/helpCenter/problems'], resolve),

@@ -167,10 +167,10 @@
       </el-row>
 
 
-      <el-row>
-        <el-checkbox v-model="checked">我同意</el-checkbox>
-        <el-link :underline="false" @click="goTo('/agreement')" type="primary">《虚拟工坊用户使用协议》</el-link>
-      </el-row>
+<!--      <el-row>-->
+<!--        <el-checkbox v-model="checked">我同意</el-checkbox>-->
+<!--        <el-link :underline="false" @click="goTo('/agreement')" type="primary">《虚拟工坊用户使用协议》</el-link>-->
+<!--      </el-row>-->
       <el-row style="margin: 50px 0">
         <el-button :loading="loading" style="width: 150px" type="primary" @click="beforePay">前往支付</el-button>
         <el-button :loading="loading" style="width: 150px" v-if="this.orderId !== null" @click="cancel()">取消订单</el-button>
@@ -207,7 +207,7 @@ export default {
       times : 0,
       logoUrl : '',
       picUrl : '',
-      checked : false,
+      // checked : false,
       videoData : null,
       discountCode : '',//优惠券码
       discount : 1,
@@ -531,12 +531,12 @@ export default {
 
     },
     beforePay(){
-      if(!this.checked){
-        this.$alert('请先同意《虚拟工坊用户使用协议》', {
-          confirmButtonText: '确定',
-        })
-      }
-      else if(this.logoUrl !== ''){
+      // if(!this.checked){
+      //   this.$alert('请先同意《虚拟工坊用户使用协议》', {
+      //     confirmButtonText: '确定',
+      //   })
+      // }
+      if(this.logoUrl !== ''){
         this.$refs.logoUpload.submit();
       }
       else if(this.picUrl !== ''){

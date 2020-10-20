@@ -19,9 +19,15 @@
         <el-menu-item index="contactUs">
           <span slot="title">联系我们</span>
         </el-menu-item>
-        <el-menu-item index="agreement">
-          <span slot="title">使用协议</span>
-        </el-menu-item>
+        <el-submenu>
+          <template slot="title">协议/政策</template>
+          <el-menu-item index="agreement">
+            <span slot="title">使用协议</span>
+          </el-menu-item>
+          <el-menu-item index="privacy">
+            <span slot="title">隐私政策</span>
+          </el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-col>
     <el-col :span="16" class='showText'>
