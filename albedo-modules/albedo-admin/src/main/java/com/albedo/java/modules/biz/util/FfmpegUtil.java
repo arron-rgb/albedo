@@ -108,12 +108,13 @@ public class FfmpegUtil {
    */
   public static String concatMedia(List<String> mediaPaths) {
     // ffmpeg -i "concat:test1.mp3|test2.mp3" -acodec copy output.mp3
-    String concat = "concat:%s";
+    String concat = "\"concat:%s";
     StringBuilder builder = new StringBuilder();
     for (String path : mediaPaths) {
       builder.append(path).append("|");
     }
     builder.deleteCharAt(builder.length() - 1);
+    builder.append("\"");
     return String.format(concat, builder.toString());
   }
 
