@@ -32,21 +32,6 @@ public class VideoTaskExecutor {
   public VideoTaskExecutor() {}
 
   /**
-   * @param event
-   *          含有video的信息
-   */
-  @Async
-  @EventListener(VideoUploadTask.class)
-  public void uploadVideoToOss(VideoUploadTask event) {
-    String videoPath = event.video.getOriginUrl();
-    File file = new File(videoPath);
-    if (!file.exists() || file.isDirectory()) {
-      return;
-    }
-    ossSingleton.uploadFile(file, event.getBucketName());
-  }
-
-  /**
    * 将音频与视频合成
    * 合成完毕后 1. 将视频上传至oss 2. 更新video表字段 3. 更新订单表字段
    *
@@ -63,7 +48,6 @@ public class VideoTaskExecutor {
     Assert.notEmpty(audioUrl, AUDIO_NOT_FOUND);
     audioUrl = ossSingleton.urlToLocalPath(audioUrl);
     String outputUrl = ffmpegUtil.newConcatAudio(audioUrl, videos);
-    event.setStatus("end");
     // 更新video表
     File file = new File(outputUrl);
     String bucketName = userService.getBucketName(video.getUserId());

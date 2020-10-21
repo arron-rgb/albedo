@@ -163,7 +163,6 @@ public class WebOrderResource extends BaseResource {
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
   public Result<String> uploadVideo(MultipartFile file, String orderId) throws IOException {
-    // todo 异常处理
     Order order = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     String userId = order.getUserId();

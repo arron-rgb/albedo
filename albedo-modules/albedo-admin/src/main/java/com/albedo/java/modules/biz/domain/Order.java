@@ -58,6 +58,11 @@ public class Order extends IdEntity<Invoice> {
    */
   private String logoUrl;
   /**
+   * 人工、机器、自行
+   */
+  private String dubType;
+  private String dubText;
+  /**
    * 贴片
    */
   private String adUrl;

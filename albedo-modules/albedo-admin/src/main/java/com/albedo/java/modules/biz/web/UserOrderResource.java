@@ -152,6 +152,9 @@ public class UserOrderResource extends BaseResource {
     Video video = service.updateForm(orderVo);
     String orderId = orderVo.getOrderId();
     Order order = service.getById(orderId);
+    order.setDubType(String.valueOf(orderVo.getType()));
+    order.setDubText(orderVo.getContentText());
+    order.updateById();
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
     Assert.notNull(orderVo.getType(), "请选择配音方式");

@@ -26,7 +26,6 @@ import com.albedo.java.common.persistence.service.DataService;
 import com.albedo.java.modules.sys.domain.RegisterUserData;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
-import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.dto.UserQueryCriteria;
 import com.albedo.java.modules.sys.domain.vo.UserExcelVo;
 import com.albedo.java.modules.sys.domain.vo.UserInfo;
@@ -164,16 +163,6 @@ public interface UserService extends DataService<User, UserDto, String> {
    * @updateTime 2020/5/31 17:35
    */
   List<User> findListByRoleId(String roleId);
-
-  /**
-   * updateEmail
-   *
-   * @param username
-   * @param userEmailDto
-   * @author somewhere
-   * @updateTime 2020/5/31 17:36
-   */
-  void updateEmail(String username, UserEmailDto userEmailDto);
 
   /**
    * updateAvatar

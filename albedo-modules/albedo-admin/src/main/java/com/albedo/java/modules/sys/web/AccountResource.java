@@ -4,12 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,8 +84,12 @@ public class AccountResource extends BaseResource {
     passwordChangeVo.setConfirmPassword(confirmPass);
     passwordChangeVo.setOldPassword(oldPass);
     userService.changePassword(SecurityUtil.getUser().getUsername(), passwordChangeVo);
+    redisTemplate.delete("user_details::findVoByUsername:" + SecurityUtil.getUser().getUsername());
     return Result.buildOk("密码修改成功，请重新登录");
   }
+
+  @Resource
+  RedisTemplate<String, String> redisTemplate;
 
   @ApiOperation("修改头像")
   @PostMapping(value = "/account/change-avatar")

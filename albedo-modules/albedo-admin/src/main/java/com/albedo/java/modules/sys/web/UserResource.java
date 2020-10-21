@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,7 +89,7 @@ public class UserResource extends BaseResource {
   @GetMapping(value = "/download")
   @PreAuthorize("@pms.hasPermission('sys_user_view')")
   public void download(UserQueryCriteria userQueryCriteria, HttpServletResponse response) {
-    ExcelUtil<UserVo> util = new ExcelUtil(UserVo.class);
+    ExcelUtil<UserVo> util = new ExcelUtil<>(UserVo.class);
     util.exportExcel(userService.findPage(userQueryCriteria, SecurityUtil.getDataScope()), "用户数据", response);
   }
 
@@ -124,9 +125,13 @@ public class UserResource extends BaseResource {
     user.setNickname(userInfoDto.getNickname());
     user.setPhone(userInfoDto.getPhone());
     user.setDescription(userInfoDto.getDescription());
-    user.updateById();
+    userService.saveOrUpdate(user);
+    redisTemplate.delete("user_details::findVoByUsername:" + user.getUsername());
     return Result.buildOk("更新成功");
   }
+
+  @Resource
+  RedisTemplate<String, String> redisTemplate;
 
   /**
    * 获取指定用户全部信息

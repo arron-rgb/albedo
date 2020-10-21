@@ -43,7 +43,6 @@ import com.albedo.java.common.util.ExcelUtil;
 import com.albedo.java.common.util.RedisUtil;
 import com.albedo.java.modules.sys.domain.*;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
-import com.albedo.java.modules.sys.domain.dto.UserEmailDto;
 import com.albedo.java.modules.sys.domain.dto.UserQueryCriteria;
 import com.albedo.java.modules.sys.domain.vo.MenuVo;
 import com.albedo.java.modules.sys.domain.vo.UserExcelVo;
@@ -361,16 +360,6 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
   @Override
   public List<User> findListByRoleId(String roleId) {
     return repository.findListByRoleId(roleId);
-  }
-
-  @Override
-  public void updateEmail(String username, UserEmailDto userEmailDto) {
-    User user = repository.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, username));
-    Assert.notNull(user, "无法获取用户信息" + username);
-    Assert.isTrue(passwordEncoder.matches(userEmailDto.getPassword(), user.getPassword()), "输入密码有误");
-    user.setEmail(userEmailDto.getEmail());
-    SysCacheUtil.delBaseUserCaches(user.getId(), user.getUsername());
-    repository.updateById(user);
   }
 
   @Override

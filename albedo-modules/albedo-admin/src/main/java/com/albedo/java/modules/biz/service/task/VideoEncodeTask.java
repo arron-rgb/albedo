@@ -1,21 +1,19 @@
 package com.albedo.java.modules.biz.service.task;
 
-import com.albedo.java.modules.biz.domain.Video;
+import org.springframework.context.ApplicationEvent;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.albedo.java.modules.biz.domain.Video;
 
 /**
  * @author arronshentu
  */
-public class VideoEncodeTask extends VideoTask {
+public class VideoEncodeTask extends ApplicationEvent {
 
-  @Getter
-  @Setter
-  private boolean gpuFlag = false;
+  Video video;
 
   public VideoEncodeTask(Video video) {
     super(video);
+    this.video = video;
   }
 
 }

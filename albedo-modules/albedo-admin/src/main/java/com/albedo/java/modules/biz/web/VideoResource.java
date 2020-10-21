@@ -77,4 +77,11 @@ public class VideoResource extends BaseResource {
 
   @Resource
   OrderService orderService;
+
+  @GetMapping("refresh")
+  public Result<String> refresh(String videoId) {
+    service.addAudio(videoId);
+    return Result.buildOk("触发成功");
+  }
+
 }

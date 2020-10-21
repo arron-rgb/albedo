@@ -14,7 +14,6 @@ import java.util.Objects;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +32,10 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
-import com.aliyun.oss.event.ProgressEventType;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 
 /**
@@ -143,14 +142,12 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 1. 检查本地是否存在该video对应的视频
    * 2. 如果存在直接渲染，不存在则通过oss拉取视频
    * 3. 渲染时需要保证radio和audio都存在
-   * 4. orderId中type为1的启用gpu加速
    *
    * 在checkIfFileExist中通知执行渲染任务
    *
    * @param videoId
    *          需要合成的videoId
    */
-  @Async
   @Override
   public void addAudio(String videoId) {
     Video video = baseMapper.selectById(videoId);
@@ -193,28 +190,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   private void checkIfFileExist(Video video) {
     String bucketName = userService.getBucketName(video.getUserId());
     String name = video.getName();
-    File file = new File(concatFilePath("upload", bucketName, name));
-    if (file.exists()) {
+    File videoFile = new File(concatFilePath("upload", bucketName, name));
+    if (FileUtil.exist(videoFile) && !FileUtil.isEmpty(videoFile)) {
       SpringContextHolder.publishEvent(new VideoEncodeTask(video));
     } else {
       // 下载完成后再执行addAudio的逻辑
-      ossSingleton.downloadFile(bucketName, name, (progressEvent) -> {
-        ProgressEventType eventType = progressEvent.getEventType();
-        switch (eventType) {
-          case TRANSFER_STARTED_EVENT:
-            log.info("开始下载");
-            break;
-          case TRANSFER_COMPLETED_EVENT:
-            VideoEncodeTask event = new VideoEncodeTask(video);
-            SpringContextHolder.publishEvent(event);
-            break;
-          case TRANSFER_FAILED_EVENT:
-            log.info("失败");
-            break;
-          default:
-            break;
-        }
-      });
+      FileUtil.touch(videoFile);
+      ossSingleton.downloadFile(bucketName, name, videoFile.getAbsolutePath());
     }
   }
 
