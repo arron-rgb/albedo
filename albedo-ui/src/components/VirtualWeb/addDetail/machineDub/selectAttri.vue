@@ -99,7 +99,7 @@
                 </el-col>
               </el-row>
               <el-row style="margin-top: 30px">
-                <el-button :loading="loading" type="primary" style="width: 300px" @click="payDub">前往支付</el-button>
+                <el-button :loading="loading" type="primary" style="width: 300px" @click="payDub">{{this.dubType === '1' ? '前往支付' : '提交'}}</el-button>
               </el-row>
             </div>
         </div>

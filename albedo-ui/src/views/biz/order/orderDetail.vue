@@ -136,7 +136,7 @@
       </el-row>
 
       <el-row class="box" style="text-align: center" v-if="orderData.state > 1">
-        <el-button :loading="updateLoading" @click="update">更新订单</el-button>
+        <el-button :loading="updateLoading" @click="updateOrder">更新订单</el-button>
       </el-row>
     </el-card>
   </div>
@@ -249,14 +249,14 @@ export default {
       })
 
     },
-    update(){//更新订单状态
-      this.$alert('请确保视频已上传！', '提示',{
-        confirmButtonText: '确定',
-        callback: action => {
-          this.updateOrder();
-        }
-      });
-    },
+    // update(){//更新订单状态
+    //   this.$alert('请确保视频已上传！', '提示',{
+    //     confirmButtonText: '确定',
+    //     callback: action => {
+    //       this.updateOrder();
+    //     }
+    //   });
+    // },
     goTo(url, data){
       //带参数跳转
       // console.log(data)
