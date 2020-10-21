@@ -4,6 +4,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -126,15 +127,36 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   @Override
   public Balance getByUserId(String userId) {
-    Balance one = getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, userId));
-    if (one == null) {
-      UserDto oneDto = userService.getOneDto(userId);
-      if (oneDto != null && !PUBLIC_DEPT_ID.equals(oneDto.getDeptId())) {
-        String adminId = userService.getAdminIdByDeptId(oneDto.getDeptId());
-        return getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
+    Balance balance = getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, userId));
+    if (balance == null) {
+      // 初始化本人的套餐信息
+      initBalance(balance, userId);
+      UserDto user = userService.getOneDto(userId);
+      if (user != null && !PUBLIC_DEPT_ID.equals(user.getDeptId())) {
+        String adminId = userService.getAdminIdByDeptId(user.getDeptId());
+        Balance adminBalance = getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
+        if (adminBalance != null) {
+          return adminBalance;
+        }
       }
     }
-    return one;
+    return balance;
+  }
+
+  @Override
+  public Balance initBalance(Balance balance, String userId) {
+    if (Objects.isNull(balance)) {
+      Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
+      plan.setCustomTimes(0);
+      plan.setChildAccount(0);
+      plan.setVideoTime(2);
+      balance = planService.copyPlan(userId, plan);
+      // 给账号初始化套餐信息
+
+      balance.insert();
+      return balance;
+    }
+    return balance;
   }
 
   @Resource

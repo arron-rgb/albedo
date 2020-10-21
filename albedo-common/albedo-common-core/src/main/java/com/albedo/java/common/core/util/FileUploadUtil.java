@@ -42,10 +42,6 @@ public class FileUploadUtil {
     return defaultBaseDir;
   }
 
-  public static void setDefaultBaseDir(String defaultBaseDir) {
-    FileUploadUtil.defaultBaseDir = defaultBaseDir;
-  }
-
   /**
    * 以默认配置进行文件上传
    *
@@ -130,12 +126,6 @@ public class FileUploadUtil {
     return desc;
   }
 
-  private static String getPathFileName(String uploadDir, String fileName) throws IOException {
-    int dirLastIndex = uploadDir.lastIndexOf(StringUtil.SLASH) + 1;
-    String currentDir = StringUtil.subSuf(uploadDir, dirLastIndex);
-    return "/asset-file/" + currentDir + StringUtil.SLASH + fileName;
-  }
-
   /**
    * 编码文件名
    */
@@ -200,12 +190,4 @@ public class FileUploadUtil {
     return extension;
   }
 
-  public static String getExtension(@NonNull File file) {
-    return FileUtil.extName(file.getName());
-  }
-
-  public static String changeFilePath(String filePath) {
-    File file = new File(filePath);
-    return file.getParent();
-  }
 }

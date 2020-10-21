@@ -190,8 +190,9 @@ public class WebOrderResource extends BaseResource {
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
         String originUrl = video.getOriginUrl();
-        originUrl = ossSingleton.localPathToUrl(originUrl);
-        order.setVideoId(originUrl);
+        if (StringUtils.isNotEmpty(originUrl)) {
+          order.setVideoId(originUrl);
+        }
       }
       UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {

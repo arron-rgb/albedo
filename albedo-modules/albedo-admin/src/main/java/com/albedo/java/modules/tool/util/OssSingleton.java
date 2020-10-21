@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.util.FileUtil;
-import com.albedo.java.common.core.util.StringUtil;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -61,6 +60,7 @@ public class OssSingleton {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
     metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+
     uploadFile(file, objectName, metadata, "vlivest");
   }
 
@@ -72,6 +72,7 @@ public class OssSingleton {
   public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     putObjectRequest.setMetadata(metadata);
+    log.info("开始上传文件{}至{}-{}", file.getAbsolutePath(), bucketName, objectName);
     client.putObject(putObjectRequest);
   }
 
@@ -143,6 +144,7 @@ public class OssSingleton {
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath) {
+    log.info("下载{}-{}至{}", bucketName, objectName, filePath);
     return downloadFile(bucketName, objectName, filePath, null);
   }
 
@@ -179,17 +181,6 @@ public class OssSingleton {
     return replace(file.getAbsolutePath(), file.getParent());
   }
 
-  public String localPathToUrl(String filePath) {
-    File file = new File(filePath);
-    String fileParent = file.getParent();
-    if (StringUtil.isEmpty(fileParent)) {
-      return "文件状态异常";
-    }
-    String fileName = getFileName(file);
-    String bucketName = replace(fileParent, file.getParentFile().getParent());
-    return localPathToUrl(bucketName, fileName);
-  }
-
   public void removeOldestFile(String bucketName) {
     ObjectListing objectListing = client.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
@@ -197,25 +188,26 @@ public class OssSingleton {
     remove(bucketName, objectSummaries.get(0).getKey());
   }
 
-  // static.vlivest.com/8a8171830ee64954e8c3cbae03fbd75e.mp3
-  String prefix = "static.vlivest.com/";
-
-  public String urlToLocalPath(String url) {
-    String localPath = url.replaceFirst(prefix, "/root/upload/");
-    String objectName = url.replaceFirst(prefix, "");
-    File file = new File(localPath);
-    if (!file.exists()) {
-      // downloadFile("vlivest", objectName, localPath);
-    }
-    log.info("objectName: {}", objectName);
-    return localPath;
-  }
-
   public String getUrl(String filePath) {
     String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 2);
     String originUrl = filePath.replace(parent + "/", "");
     originUrl = originUrl.replace("/", ".oss-cn-hangzhou.aliyuncs.com/");
     return originUrl;
+  }
+
+  public String getUrl(String filePath, String bucketName) {
+    String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 1);
+    String originUrl = filePath.replace(parent + "/", "");
+    originUrl = originUrl.replace("/", "vlivest.oss-cn-hangzhou.aliyuncs.com/");
+    return originUrl;
+  }
+
+  public String getPath(String url) {
+    // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-hangzhou.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
+    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    String bucket = split[0];
+    String object = split[1];
+    return bucket + File.separator + object;
   }
 
 }

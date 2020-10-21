@@ -36,4 +36,6 @@ public interface BalanceService extends BaseService<Balance> {
    * @return 套餐余量
    */
   Balance getByUserId(String userId);
+
+  Balance initBalance(Balance balance, String userId);
 }

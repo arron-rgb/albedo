@@ -21,13 +21,11 @@ import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.dto.VideoDto;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
-import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.service.UserService;
@@ -46,40 +44,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   implements VideoService {
 
   @Resource
-  PlanService planService;
-  @Resource
   OrderService orderService;
-
   @Resource
   UserService userService;
-
   @Resource
   OssSingleton ossSingleton;
-
   @Resource
   BalanceService balanceService;
-
-  @Override
-  public boolean storageState(Double byteSize, String userId) {
-    // 以下语义类似 1为已使用空间 2为剩余量 3如何获取购买套餐记录使其与使用量/剩余量绑定
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    balance = initBalance(balance, userId);
-    return byteSize.compareTo(balance.getStorage()) > 0;
-  }
-
-  private Balance initBalance(Balance balance, String userId) {
-    if (Objects.isNull(balance)) {
-      Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
-      plan.setCustomTimes(0);
-      plan.setChildAccount(0);
-      plan.setVideoTime(0);
-      balance = planService.copyPlan(userId, plan);
-      // 给账号初始化套餐信息
-      balance.insert();
-      return balance;
-    }
-    return balance;
-  }
 
   /**
    * 上传视频，可执行多次
@@ -100,9 +71,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Order order = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     String userId = order.getUserId();
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
+    Balance balance = balanceService.getByUserId(userId);
     // 更新使用状况 单位以GB为基准
-    balance = initBalance(balance, userId);
     File tempFile = new File(tempPath);
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
@@ -122,7 +92,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     InputStream inputStream = new FileInputStream(tempFile);
     // 只要上传视频就插入新的记录
     Video video = Video.builder().userId(userId).orderId(orderId).build();
-    video.setOriginUrl(tempPath);
+    video.setOriginUrl(ossSingleton.getUrl(tempPath));
     video.setName(tempFile.getName());
     baseMapper.insert(video);
     if (StringUtils.isEmpty(order.getVideoId())) {

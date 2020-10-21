@@ -23,7 +23,6 @@ import com.albedo.java.common.core.annotation.ExcelField;
 import com.albedo.java.common.core.annotation.ExcelField.ColumnType;
 import com.albedo.java.common.core.annotation.ExcelField.Type;
 import com.albedo.java.common.core.annotation.ExcelFields;
-import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.ClassUtil;
 import com.albedo.java.common.core.util.ObjectUtil;
@@ -644,21 +643,6 @@ public class ExcelUtil<T> {
     filename = UUID.randomUUID().toString() + "_"
       + URLEncoder.createDefault().encode(filename, CharsetUtil.CHARSET_UTF_8) + ".xlsx";
     return filename;
-  }
-
-  /**
-   * 获取下载路径
-   *
-   * @param filename
-   *          文件名称
-   */
-  public String getAbsoluteFile(String filename) {
-    String downloadPath = ApplicationConfig.getDownloadPath() + filename;
-    File desc = new File(downloadPath);
-    if (!desc.getParentFile().exists()) {
-      desc.getParentFile().mkdirs();
-    }
-    return downloadPath;
   }
 
   /**

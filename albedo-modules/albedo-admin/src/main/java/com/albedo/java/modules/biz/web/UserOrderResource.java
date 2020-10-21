@@ -87,7 +87,6 @@ public class UserOrderResource extends BaseResource {
       if (StringUtils.isNotEmpty(video.getOutputUrl())) {
         originUrl = video.getOutputUrl();
       }
-      originUrl = ossSingleton.getUrl(originUrl);
       order.setVideoId(originUrl);
     }
     return Result.buildOkData(order);
@@ -106,9 +105,8 @@ public class UserOrderResource extends BaseResource {
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
         String originUrl = video.getOriginUrl();
-        originUrl = ossSingleton.localPathToUrl(originUrl);
         if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-          originUrl = ossSingleton.localPathToUrl(video.getOutputUrl());
+          originUrl = video.getOutputUrl();
         }
         order.setVideoId(originUrl);
       }

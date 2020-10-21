@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.util;
 
+import static cn.hutool.core.io.FileUtil.move;
+import static cn.hutool.core.io.FileUtil.newFile;
 import static com.albedo.java.common.core.util.FileUtil.generateFilePath;
 
 import java.io.BufferedWriter;
@@ -86,16 +88,23 @@ public class FfmpegUtil {
     String extName = FileUtil.extName(mediaPath);
     String outputPath = generateFilePath(extName);
     builder.addOutput(outputPath).setVideoCodec(COPY).addExtraArgs("-an").done();
-    log.info("导出静音视频至{}", outputPath);
     run(builder);
+    move(newFile(outputPath), newFile(mediaPath), true);
+    log.info("移动静音视频{}至{}", outputPath, mediaPath);
     return outputPath;
   }
 
-  public String newConcatAudio(String audioUrl, List<Video> videos) {
+  /**
+   * 总步骤：音频与视频拼接
+   *
+   * @param audioUrl
+   * @param videos
+   * @return
+   */
+  public String concatAudio(String audioUrl, List<Video> videos) {
     String tempOutput = shuffleList(videos);
-
     String outputPath = loopOrCut(audioUrl, tempOutput);
-    deleteFile(tempOutput);
+    FileUtil.del(tempOutput);
     return outputPath;
   }
 
@@ -128,14 +137,6 @@ public class FfmpegUtil {
     job.run();
   }
 
-  public void deleteFile(String path) {
-    File file = new File(path);
-    // 路径为文件且不为空则进行删除
-    if (file.isFile() && file.exists()) {
-      file.delete();
-    }
-  }
-
   /**
    * 1. 打乱顺序
    * 2. 拼接小片段成一级循环
@@ -145,13 +146,19 @@ public class FfmpegUtil {
    */
   public String shuffleList(List<Video> videoList) {
     Assert.notEmpty(videoList, "");
+    videoList.forEach(video -> {
+      delAudio(video.getOriginUrl());
+    });
+    if (videoList.size() == 1) {
+      return videoList.get(0).getOriginUrl();
+    }
     Collections.shuffle(videoList);
     List<String> videoPaths = videoList.stream().map(Video::getOriginUrl).collect(Collectors.toList());
     String extName = FileUtil.extName(videoPaths.get(0));
     String videoOutputPath = generateFilePath(extName);
     FFmpegBuilder builder = new FFmpegBuilder();
     builder.addInput(concatMedia(videoPaths));
-    builder.addOutput(videoOutputPath).setVideoCodec(COPY).setStrict(FFmpegBuilder.Strict.EXPERIMENTAL).done();
+    builder.addOutput(videoOutputPath).setVideoCodec(COPY).addExtraArgs("-strict", "-2").done();
     run(builder);
     return videoOutputPath;
   }
@@ -198,8 +205,8 @@ public class FfmpegUtil {
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS)
       .setVideoCodec("libx264").setAudioBitRate(16000L).setAudioCodec("aac").setVideoCodec(COPY).done();
     run(builder);
-    deleteFile(tempTxt);
-    deleteFile(tempOutput);
+    FileUtil.del(tempTxt);
+    FileUtil.del(tempOutput);
     return videoOutputPath;
   }
 

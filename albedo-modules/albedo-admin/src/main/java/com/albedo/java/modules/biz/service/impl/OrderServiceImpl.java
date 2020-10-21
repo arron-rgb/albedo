@@ -46,12 +46,14 @@ import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.TtsParams;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.albedo.java.modules.tool.util.TtsSingleton;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.math.Money;
 
@@ -63,6 +65,8 @@ import cn.hutool.core.math.Money;
 public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, OrderDto, String>
   implements OrderService {
 
+  @Resource
+  UserService userService;
   @Resource
   CouponService couponService;
   @Resource
@@ -292,7 +296,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Resource
-  UserService userService;
+  OssSingleton ossSingleton;
 
   @Override
   public Video updateForm(SubOrderVo orderVo) {
@@ -302,16 +306,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
     UserDetail user = SecurityUtil.getUser();
-    // todo 检查这段代码的含义
-    Balance balance = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, user.getId()));
-    String adminId = userService.getAdminIdByDeptId(user.getDeptId());
-    if (balance == null) {
-      balance = balanceService.getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, adminId));
-    }
-    Assert.notNull(balance, BALANCE_NOT_FOUND);
     Long duration = orderVo.getDuration();
-    Balance byUserId = balanceService.getByUserId(user.getId());
-    Assert.isTrue(byUserId.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
+    Balance balance = balanceService.getByUserId(user.getId());
+    Assert.isTrue(balance.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
     video.setDuration(duration);
     videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
@@ -343,14 +340,14 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     video.setAudioText(orderVo.appendContent());
-    video.setAudioUrl(filePath);
+    ossSingleton.uploadFile(new File(filePath), FileUtil.getName(filePath));
+    video.setAudioUrl(ossSingleton.getUrl(filePath, "vlivest"));
     videoRepository.updateById(video);
     SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
   @Override
   public void uploadAudio(String orderId, String audioUrl) {
-    // todo audioUrl统一改成本地链接
     Order audioOrder = baseMapper.selectById(orderId);
     Assert.notNull(audioOrder, ORDER_NOT_FOUND);
     Assert.isTrue(Objects.equals(audioOrder.getType(), DUBBING), "订单类型不匹配");
@@ -440,7 +437,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     // 更新视频中的音频信息
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
-    video.setAudioUrl(file.getAbsolutePath());
+
+    String userId = order.getUserId();
+    String bucketName = userService.getBucketName(userId);
+    ossSingleton.uploadFile(file, FileUtil.getName(file), bucketName);
+    video.setAudioUrl(ossSingleton.getUrl(file.getAbsolutePath(), bucketName));
+
     video.setAudioText(text);
     videoRepository.updateById(video);
     return file.getAbsolutePath();

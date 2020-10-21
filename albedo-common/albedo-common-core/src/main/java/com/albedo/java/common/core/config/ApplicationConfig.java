@@ -34,9 +34,7 @@ public class ApplicationConfig {
   /**
    * 将构造函数私有化，不能new实例
    */
-  private ApplicationConfig() {
-
-  }
+  private ApplicationConfig() {}
 
   public static Object getProperty(Map<?, ?> map, Object qualifiedKey) {
     if (map != null && !map.isEmpty() && qualifiedKey != null) {
@@ -82,55 +80,26 @@ public class ApplicationConfig {
     if (props == null) {
       props = Maps.newHashMap();
     }
-
     PathMatchingResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
     InputStream is = resourceLoader.getResources("classpath*:/config/application.yml")[0].getInputStream();
-    // in
-    // the
-    // classpath
-    // props.load(is);
     props = new Yaml().load(is);
-    // dumpSystemConfig();
-  }
-
-  public static boolean isAddressEnabled() {
-    return Boolean.valueOf(get("application.address-enabled"));
   }
 
   /**
    * 获取文件上传路径
    */
   public static String getStaticFileDirectory() {
-    // static-file-directory:
-    // mac: ~/albedo-file
-    // linux: /home/albedo/file/
-    // win: C:\albedo\file\
 
-    // String os = System.getProperty("os.name").toLowerCase();
-    // boolean win = os.startsWith("win");
-    // boolean mac = os.startsWith("mac");
-    // if (win) {
-    // return get("application.static-file-directory.win");
-    // } else if (mac) {
-    // return get("application.static-file-directory.mac");
-    // }
-    // return get("application.static-file-directory.linux");
+    String os = System.getProperty("os.name").toLowerCase();
+    boolean win = os.startsWith("win");
+    boolean mac = os.startsWith("mac");
+    if (win) {
+      return get("application.static-file-directory.win");
+    } else if (mac) {
+      return get("application.static-file-directory.mac");
+    }
+    return get("application.static-file-directory.linux");
 
-    return System.getenv("PWD");
-  }
-
-  /**
-   * 获取头像上传路径
-   */
-  public static String getAvatarPath() {
-    return getStaticFileDirectory() + "/avatar";
-  }
-
-  /**
-   * 获取下载路径
-   */
-  public static String getDownloadPath() {
-    return getStaticFileDirectory() + "/download";
   }
 
   /**

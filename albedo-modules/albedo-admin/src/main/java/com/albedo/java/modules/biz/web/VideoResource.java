@@ -43,7 +43,6 @@ public class VideoResource extends BaseResource {
   public Result<PageModel<Video>> getPage(PageModel<Video> pm, VideoQueryCriteria dubQueryCriteria) {
     QueryWrapper<Video> wrapper = QueryWrapperUtil.getWrapper(pm, dubQueryCriteria);
     PageModel<Video> page = service.page(pm, wrapper);
-    page.getRecords().forEach(record -> record.setOriginUrl(ossSingleton.getUrl(record.getOriginUrl())));
     return Result.buildOkData(page);
   }
 
