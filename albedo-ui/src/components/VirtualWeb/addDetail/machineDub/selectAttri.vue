@@ -79,7 +79,7 @@
                 <el-col span="3">
                   <span style="line-height: 45px">分钟</span>
                 </el-col>
-                <el-col span="10">
+                <el-col span="10" v-if="this.dubType === '1'">
                   <span style="line-height: 45px; color: #666666">
                     （套餐余量：
                     {{this.audioTime}}分钟）</span>

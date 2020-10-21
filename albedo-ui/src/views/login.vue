@@ -37,7 +37,7 @@
           :minlength="codeLength"
           auto-complete="off"
           placeholder="验证码"
-          style="width: 63%"
+          style="width: 67%"
           @keyup.enter.native="handleLogin"
         >
           <svg-icon slot="prefix" class="el-input__icon input-icon" icon-class="validCode"/>
