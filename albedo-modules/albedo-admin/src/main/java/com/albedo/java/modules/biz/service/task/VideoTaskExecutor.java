@@ -66,10 +66,9 @@ public class VideoTaskExecutor {
     event.setStatus("end");
     // 更新video表
     File file = new File(outputUrl);
-    String userId = video.getUserId();
-    userId = userService.getBucketName(userId);
+    String bucketName = userService.getBucketName(video.getUserId());
     // 上传视频
-    ossSingleton.uploadFile(file, file.getName(), userId);
+    ossSingleton.uploadFile(file, file.getName(), bucketName);
     video.setOutputUrl(file.getAbsolutePath());
     videoService.updateById(video);
     // 更新订单状态

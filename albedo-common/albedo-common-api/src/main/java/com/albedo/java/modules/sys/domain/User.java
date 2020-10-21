@@ -17,6 +17,7 @@
 package com.albedo.java.modules.sys.domain;
 
 import com.albedo.java.common.persistence.domain.IdEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import lombok.EqualsAndHashCode;
@@ -83,7 +84,8 @@ public class User extends IdEntity<User> {
   /**
    * QQ openId
    */
-  private String qqOpenId;
+  @TableField(value = "qq_open_id")
+  private String bucketName;
 
   private String inviteCode;
 

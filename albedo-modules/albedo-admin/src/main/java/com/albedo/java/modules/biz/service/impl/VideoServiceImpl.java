@@ -31,7 +31,6 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
-import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEventType;
@@ -95,7 +94,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * @throws IOException
    */
   @Override
-  @Async
+  // @Async
   @Transactional(rollbackFor = Exception.class)
   public void uploadVideo(String orderId, String tempPath) throws IOException {
     // 更新订单状态
@@ -110,7 +109,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
     if (!ossSingleton.doesBucketExist(bucketName)) {
-      createBucket(userId);
+      createBucket(bucketName, userId);
     }
     if (storage < 0) {
       try {
@@ -220,37 +219,15 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   }
 
   /**
-   * 用作临时存储需要渲染的视频的路径
-   *
-   * @param video
-   * @return
-   */
-  private String getLocalPath(Video video) {
-    String bucketName = video.getUserId();
-    bucketName = userService.getBucketName(bucketName);
-    return concatFilePath("download", bucketName, video.getName());
-  }
-
-  /**
    * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
    * 只能包括小写字母、数字和短划线（-）。
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
    */
-  private void createBucket(String userId) {
-    // userId应该是通过订单获取，视频由工作人员上传的
-    // List<String> roleIds = userService.findUserVoById(userId).getRoleIdList();
-    // 如果为付费用户，则找管理员；管理员为其余两种情况均无需变动userId
-    // if (roleIds.contains(BUSINESS_COMMON_ROLE_ID)) {
-    // userId = userService.getAdminIdByDeptId(userId);
-    // }
+  private void createBucket(String userId, String bucketName) {
     Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
     Double storageSize = balance.getStorage();
-    // buck命名失败时使用uuid 并更新uuid为qqOpenId
-    ossSingleton.create(userId, storageSize.intValue());
-    User user = userService.getById(userId);
-    user.setQqOpenId(userId);
-    userService.updateById(user);
+    ossSingleton.create(bucketName, storageSize.intValue());
   }
 
 }
