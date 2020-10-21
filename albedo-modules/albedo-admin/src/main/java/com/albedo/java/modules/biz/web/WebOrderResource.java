@@ -84,7 +84,8 @@ public class WebOrderResource extends BaseResource {
   public Result<PageModel<Order>> getPage(PageModel<Order> pm, OrderQueryCriteria orderQueryCriteria) {
     QueryWrapper<Order> wrapper = QueryWrapperUtil.getWrapper(pm, orderQueryCriteria);
     PageModel<Order> page = service.page(pm, wrapper);
-    page.setRecords(updateInfo(page.getRecords()));
+    List<Order> orders = updateInfo(page.getRecords());
+    page.setRecords(orders);
     return Result.buildOkData(page);
   }
 
@@ -143,7 +144,7 @@ public class WebOrderResource extends BaseResource {
   @GetMapping("/list/belong")
   public Result<List<Order>> listBelongs() {
     List<Order> belongs = service.belongs();
-    updateInfo(belongs);
+    belongs = updateInfo(belongs);
     return Result.buildOkData(belongs);
   }
 
@@ -197,6 +198,13 @@ public class WebOrderResource extends BaseResource {
         String username = user.getUsername();
         if (StringUtils.isNotBlank(username)) {
           order.setUserId(username);
+        }
+      }
+      user = userService.findUserVoById(order.getStaffId());
+      if (user != null) {
+        String username = user.getUsername();
+        if (StringUtils.isNotBlank(username)) {
+          order.setStaffId(username);
         }
       }
     }).collect(Collectors.toList());
