@@ -92,8 +92,8 @@ application:
       - /fonts/*
   static-file-directory:
     mac: /Users/arronshentu/Downloads
-    linux: /root/upload/
-    win: C:\albedo\file\
+    linux: /root/upload
+    win: C:\albedo\file
 path:
   ffmpeg: /usr/local/bin/ffmpeg
   ffprobe: /usr/local/bin/ffprobe
