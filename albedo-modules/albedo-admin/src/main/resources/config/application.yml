@@ -91,7 +91,7 @@ application:
       - /cdn/*
       - /fonts/*
   static-file-directory:
-    mac: /Users/arronshentu/Downloads
+    mac: /Users/arronshentu/Downloads/albedo/upload
     linux: /root/upload
     win: C:\albedo\file
 path:

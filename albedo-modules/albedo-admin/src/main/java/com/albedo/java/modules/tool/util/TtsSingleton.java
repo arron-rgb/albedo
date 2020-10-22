@@ -83,7 +83,7 @@ public class TtsSingleton {
 
   public File generateAudio(TtsParams params) {
     try {
-      File file = FileUploadUtil.getAbsoluteFile("audio/" + IdUtil.fastUUID() + "." + params.getCodec());
+      File file = FileUploadUtil.getAbsoluteFile("audio/" + IdUtil.fastSimpleUUID() + "." + params.getCodec());
       return generateAudio(params, file.getAbsolutePath());
     } catch (IOException e) {
       e.printStackTrace();
@@ -93,7 +93,7 @@ public class TtsSingleton {
 
   public File generateAudio(TtsParams params, String filePath) {
     try {
-      params.setSessionId(IdUtil.fastUUID());
+      params.setSessionId(IdUtil.fastSimpleUUID());
       params.setModelType("1");
       return generateAudio(params.toString(), filePath);
     } catch (TencentCloudSDKException e) {
@@ -104,7 +104,7 @@ public class TtsSingleton {
 
   public File generateAudio(String content) throws TencentCloudSDKException {
     try {
-      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastUUID() + ".mp3");
+      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastSimpleUUID() + ".mp3");
       return generateAudio(content, file.getAbsolutePath());
     } catch (IOException e) {
       throw new RuntimeMsgException("生成音频时出现错误");

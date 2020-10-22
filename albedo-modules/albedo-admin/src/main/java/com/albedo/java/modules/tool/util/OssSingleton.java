@@ -13,7 +13,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
+import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.FileUtil;
+import com.albedo.java.modules.biz.service.task.VideoTaskExecutor;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -145,18 +147,19 @@ public class OssSingleton {
 
   public File downloadFile(String bucketName, String objectName, String filePath) {
     log.info("下载{}-{}至{}", bucketName, objectName, filePath);
-    return downloadFile(bucketName, objectName, filePath, null);
+    return downloadFile(bucketName, objectName, filePath, new VideoTaskExecutor.GetObjectProgressListener());
   }
 
   public File downloadFile(String bucketName, String objectName, ProgressListener listener) {
-    String filePath = FileUtil.concatFilePath(bucketName, objectName);
+    String filePath = FileUploadUtil.getBucketPath(bucketName, objectName);
     File file = new File(filePath);
     client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath, ProgressListener listener) {
-    File file = new File(filePath);
+    FileUtil.del(filePath);
+    File file = FileUtil.touch(filePath);
     client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
   }

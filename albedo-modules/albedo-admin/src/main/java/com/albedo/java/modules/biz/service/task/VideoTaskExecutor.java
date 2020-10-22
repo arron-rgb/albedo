@@ -86,17 +86,17 @@ public class VideoTaskExecutor {
     log.info("删除音频{}", audioUrl);
   }
 
-  private String checkFileExist(String audioPath) {
-    String downloadPath = FileUploadUtil.getDefaultBaseDir() + File.separator + audioPath;
+  private String checkFileExist(String path) {
+    String downloadPath = FileUploadUtil.getDefaultBaseDir() + File.separator + path;
     if (!FileUtil.exist(new File(downloadPath)) || FileUtil.isEmpty(new File(downloadPath))) {
-      FileUtil.touch(audioPath);
-      String[] split = audioPath.split(File.separator);
+      FileUtil.touch(path);
+      String[] split = path.split(File.separator);
       ossSingleton.downloadFile(split[0], split[1], downloadPath, new GetObjectProgressListener());
     }
     return downloadPath;
   }
 
-  static class GetObjectProgressListener implements ProgressListener {
+  public static class GetObjectProgressListener implements ProgressListener {
     private long bytesRead = 0;
     private long totalBytes = -1;
     private boolean succeed = false;

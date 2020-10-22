@@ -146,9 +146,7 @@ public class FfmpegUtil {
    */
   public String shuffleList(List<Video> videoList) {
     Assert.notEmpty(videoList, "");
-    videoList.forEach(video -> {
-      delAudio(video.getOriginUrl());
-    });
+    videoList.forEach(video -> delAudio(video.getOriginUrl()));
     if (videoList.size() == 1) {
       return videoList.get(0).getOriginUrl();
     }

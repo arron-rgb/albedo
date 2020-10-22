@@ -52,7 +52,7 @@ application:
       - /fonts/*
   alipayKey: 4
   static-file-directory:
-    mac: /Users/arronshentu/Downloads
+    mac: /Users/arronshentu/Downloads/albedo
     linux: /root/upload/
     win: C:\albedo\file\
 path:

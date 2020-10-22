@@ -52,16 +52,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
     return resultSize;
   }
 
-  public static final String PATH = System.getenv("PWD");
   public static final String SEPARATOR = File.separator;
-
-  public static String concatFilePath(String... paths) {
-    StringBuilder result = new StringBuilder(PATH);
-    for (String path : paths) {
-      result.append(SEPARATOR).append(path);
-    }
-    return result.toString();
-  }
 
   public static String concatSimpleFilePath(String... paths) {
     StringBuilder result = new StringBuilder();
@@ -78,7 +69,7 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
    * @return
    */
   public static String generateFilePath(String extName) {
-    String fileName = concatSimpleFilePath("/Users/arronshentu/Downloads", IdUtil.fastSimpleUUID() + "." + extName);
+    String fileName = concatSimpleFilePath(FileUploadUtil.getDefaultBaseDir(), IdUtil.fastSimpleUUID() + "." + extName);
     log.info("generateFilePath: {}", fileName);
     // 传入绝对路径
     File touch = FileUtil.touch(fileName);

@@ -2,7 +2,6 @@ package com.albedo.java.modules.biz.service.impl;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
-import static com.albedo.java.common.core.util.FileUtil.concatFilePath;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +32,6 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 
 /**
@@ -121,7 +119,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Assert.notNull(video, VIDEO_NOT_FOUND);
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
     Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
-    checkIfFileExist(video);
+    SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
   /**
@@ -143,29 +141,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       return videos.get(0);
     }
     return null;
-  }
-
-  /**
-   * 在download中发起下载的请求，
-   * listener中监听结束的信号
-   * 发起合成的请求
-   * 合成中监听结束的信号
-   * 发起上传的请求
-   *
-   * @param video
-   */
-  private void checkIfFileExist(Video video) {
-    // todo 删减
-    String bucketName = userService.getBucketName(video.getUserId());
-    String name = video.getName();
-    File videoFile = new File(concatFilePath("upload", bucketName, name));
-    if (FileUtil.exist(videoFile) && !FileUtil.isEmpty(videoFile)) {
-      SpringContextHolder.publishEvent(new VideoEncodeTask(video));
-    } else {
-      // 下载完成后再执行addAudio的逻辑
-      FileUtil.touch(videoFile);
-      ossSingleton.downloadFile(bucketName, name, videoFile.getAbsolutePath());
-    }
   }
 
   /**
