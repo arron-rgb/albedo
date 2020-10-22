@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
@@ -56,6 +57,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.math.Money;
+import cn.hutool.core.util.IdUtil;
 
 /**
  * @author arronshentu
@@ -426,26 +428,27 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   public String generateAudio(String text, String orderId, String voiceType) {
-    TtsParams build = new TtsParams();
-    build.setVoiceType(voiceType);
-    build.setText(text);
-    build.setCodec("mp3");
-    File file = ttsSingleton.generateAudio(build);
+    TtsParams ttsParam = new TtsParams();
+    ttsParam.setVoiceType(voiceType);
+    ttsParam.setText(text);
+    ttsParam.setCodec("mp3");
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
+    String userId = order.getUserId();
+    String bucketName = userService.getBucketName(userId);
+    String audioPath = FileUploadUtil.getBucketPath(bucketName, IdUtil.fastSimpleUUID() + "." + ttsParam.getCodec());
+    File audio = ttsSingleton.generateAudio(ttsParam, audioPath);
     String videoId = order.getVideoId();
     // 更新视频中的音频信息
     Video video = videoRepository.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
 
-    String userId = order.getUserId();
-    String bucketName = userService.getBucketName(userId);
-    ossSingleton.uploadFile(file, FileUtil.getName(file), bucketName);
-    video.setAudioUrl(ossSingleton.getUrl(file.getAbsolutePath(), bucketName));
+    ossSingleton.uploadFile(audio, FileUtil.getName(audio), bucketName);
+    video.setAudioUrl(ossSingleton.getUrl(audio.getAbsolutePath(), bucketName));
 
     video.setAudioText(text);
     videoRepository.updateById(video);
-    return file.getAbsolutePath();
+    return audio.getAbsolutePath();
   }
 
   @Resource

@@ -190,4 +190,8 @@ public class FileUploadUtil {
     return extension;
   }
 
+  public static String getBucketPath(String bucketName, String objectName) {
+    return getDefaultBaseDir() + File.separator + bucketName + File.separator + objectName;
+  }
+
 }

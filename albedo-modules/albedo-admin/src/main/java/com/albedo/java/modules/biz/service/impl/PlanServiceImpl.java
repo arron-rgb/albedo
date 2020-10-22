@@ -48,11 +48,6 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
   PurchaseRecordService recordService;
 
   @Override
-  public String purchase(String planId) {
-    return purchase(planId, null);
-  }
-
-  @Override
   public String purchase(String planId, String couponCode) {
     Plan plan = baseMapper.selectById(planId);
     BigDecimal price = plan.getPrice();

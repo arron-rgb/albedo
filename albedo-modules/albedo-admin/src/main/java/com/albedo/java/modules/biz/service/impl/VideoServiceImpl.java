@@ -53,8 +53,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   BalanceService balanceService;
 
   /**
-   * 上传视频，可执行多次
-   * 逻辑：
    * 员工上传视频：一条订单可对应多个video
    *
    *
@@ -64,7 +62,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * @throws IOException
    */
   @Override
-  // @Async
   @Transactional(rollbackFor = Exception.class)
   public void uploadVideo(String orderId, String tempPath) throws IOException {
     // 更新订单状态
@@ -158,6 +155,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * @param video
    */
   private void checkIfFileExist(Video video) {
+    // todo 删减
     String bucketName = userService.getBucketName(video.getUserId());
     String name = video.getName();
     File videoFile = new File(concatFilePath("upload", bucketName, name));

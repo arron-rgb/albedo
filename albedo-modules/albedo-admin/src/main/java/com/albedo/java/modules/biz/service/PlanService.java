@@ -18,8 +18,6 @@ public interface PlanService extends BaseService<Plan> {
    * @return
    *         购买链接
    */
-  String purchase(String planId);
-
   String purchase(String planId, String couponCode);
 
   /**
