@@ -1,7 +1,7 @@
 <template>
 <div>
   <h2 style="margin-bottom: 50px">工作人员正在加班制作中，请耐心等候……</h2>
-  <img src="http://www.zf3d.com/bjqasdasd3f5gt454/ewebeditor/shangchuan/2015/12/16/url_image/20151216094648673.gif">
+  <img src="https://static.vlivest.com/b7b09b4ae73b6d3162e6688189ffc2d9.gif">
 </div>
 </template>
 
