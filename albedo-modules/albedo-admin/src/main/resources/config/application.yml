@@ -95,7 +95,8 @@ application:
     linux: /root/upload
     win: C:\albedo\file
 path:
-  ffmpeg: /usr/local/bin/ffmpeg
-    gpu: '-hwaccel cuda'
   ffprobe: /usr/local/bin/ffprobe
+  ffmpeg: /usr/local/bin/ffmpeg
+
+hwflag: '-hwaccel cuda'
 

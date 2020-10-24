@@ -46,7 +46,7 @@ public class FfmpegUtil {
   static FFmpegExecutor executor;
 
   public FfmpegUtil(@Value("${path.ffprobe}") String ffprobePath, @Value("${path.ffmpeg}") String ffmpegPath,
-    @Value("path.ffmpeg.gpu") String gpuParamConfig) {
+    @Value("hwflag") String gpuParamConfig) {
     try {
       ffprobe = new FFprobe(ffprobePath);
       ffmpeg = new FFmpeg(ffmpegPath);
