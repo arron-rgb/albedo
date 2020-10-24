@@ -148,7 +148,8 @@ public class FfmpegUtil {
     String extName = FileUtil.extName(videoPaths.get(0));
     String videoOutputPath = generateFilePath(extName);
     FFmpegBuilder builder = new FFmpegBuilder();
-    builder.addInput(concatMedia(videoPaths));
+    String tempTxtPath = generateTempTxt(videoPaths);
+    builder.addInput(tempTxtPath).addExtraArgs("-f", "concat", "-safe", "0");
     builder.addOutput(videoOutputPath).setVideoCodec(COPY).addExtraArgs("-strict", "-2").done();
     run(builder);
     return videoOutputPath;
