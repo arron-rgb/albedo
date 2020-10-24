@@ -39,16 +39,19 @@ import net.bramp.ffmpeg.progress.ProgressListener;
 @Slf4j
 public class FfmpegUtil {
 
-  static String gpuParam = "-hwaccel cuvid";
+  static String gpuParam;
 
   public static FFprobe ffprobe;
   public static FFmpeg ffmpeg;
   static FFmpegExecutor executor;
 
-  public FfmpegUtil(@Value("${path.ffprobe}") String ffprobePath, @Value("${path.ffmpeg}") String ffmpegPath) {
+  public FfmpegUtil(@Value("${path.ffprobe}") String ffprobePath, @Value("${path.ffmpeg}") String ffmpegPath,
+    @Value("path.ffmpeg.gpu") String gpuParamConfig) {
     try {
       ffprobe = new FFprobe(ffprobePath);
       ffmpeg = new FFmpeg(ffmpegPath);
+      gpuParam = gpuParamConfig;
+
       executor = new FFmpegExecutor(ffmpeg, ffprobe);
     } catch (IOException e) {
       e.printStackTrace();
@@ -161,6 +164,29 @@ public class FfmpegUtil {
     return videoOutputPath;
   }
 
+  public String loopOrCut(String mediaPath, Double priorityDuration) {
+    FFmpegBuilder builder = new FFmpegBuilder();
+    List<String> paths = generateList(mediaPath, priorityDuration);
+    String tempTxt = generateTempTxt(paths);
+    builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
+    String tempExtName = FileUtil.extName(mediaPath);
+    String tempOutput = generateFilePath(tempExtName);
+    builder.addOutput(tempOutput).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec(COPY)
+      .done();
+    run(builder);
+    return tempOutput;
+  }
+
+  private List<String> generateList(String mediaPath, Double priorityDuration) {
+    Double inferiorityDuration = getVideoMetadata(mediaPath).duration;
+    List<String> paths = new LinkedList<>();
+    double times = Math.ceil(priorityDuration / inferiorityDuration);
+    for (int i = 0; i < (int)times; i++) {
+      paths.add(mediaPath);
+    }
+    return paths;
+  }
+
   /**
    * 以优先级高的为标准，对inferior进行切割或循环
    * 使用场景: video与audio的合成
@@ -178,13 +204,7 @@ public class FfmpegUtil {
     String extName = FileUtil.extName(inferior);
     String videoOutputPath = generateFilePath(extName);
     Double priorityDuration = getVideoMetadata(prior).duration;
-    Double inferiorityDuration = getVideoMetadata(inferior).duration;
-    // 不管谁大谁小 都得先循环再切
-    List<String> paths = new LinkedList<>();
-    double times = Math.ceil(priorityDuration / inferiorityDuration);
-    for (int i = 0; i < (int)times; i++) {
-      paths.add(inferior);
-    }
+    List<String> paths = generateList(inferior, priorityDuration);
     // 合成video
     builder = new FFmpegBuilder();
     String tempTxt = generateTempTxt(paths);
@@ -201,7 +221,8 @@ public class FfmpegUtil {
     builder = new FFmpegBuilder().addInput(prior);
     builder.addInput(tempOutput);
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS)
-      .setVideoCodec("libx264").setAudioBitRate(16000L).setAudioCodec("aac").setVideoCodec(COPY).done();
+      .setVideoCodec("libx264").setAudioBitRate(16000L).setAudioCodec("aac").addExtraArgs(gpuParam).setVideoCodec(COPY)
+      .done();
     run(builder);
     FileUtil.del(tempTxt);
     FileUtil.del(tempOutput);
