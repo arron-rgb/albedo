@@ -198,11 +198,12 @@ public class FfmpegUtil {
     List<String> paths = generateList(inferior, priorityDuration);
     // 合成video
     builder = new FFmpegBuilder();
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
     String tempTxt = generateTempTxt(paths);
     builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
     String tempExtName = FileUtil.extName(inferior);
     String tempOutput = generateFilePath(tempExtName);
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda").addOutput(tempOutput).setVideoCodec(COPY).done();
+    builder.addOutput(tempOutput).setVideoCodec(COPY).done();
     // 清除声音
     run(builder);
     if (hasAudio(tempOutput)) {
@@ -210,10 +211,10 @@ public class FfmpegUtil {
     }
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
     builder.addInput(tempOutput);
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
-      .setAudioBitRate(16000L).setAudioCodec("aac").addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda")
-      .setVideoCodec(COPY).done();
+      .setAudioBitRate(16000L).setAudioCodec("aac").setVideoCodec(COPY).done();
     run(builder);
     FileUtil.del(tempTxt);
     FileUtil.del(tempOutput);
