@@ -46,7 +46,7 @@ public class FfmpegUtil {
   static FFmpegExecutor executor;
 
   public FfmpegUtil(@Value("${path.ffprobe}") String ffprobePath, @Value("${path.ffmpeg}") String ffmpegPath,
-    @Value("hwflag") String gpuParamConfig) {
+    @Value("${hwflag}") String gpuParamConfig) {
     try {
       ffprobe = new FFprobe(ffprobePath);
       ffmpeg = new FFmpeg(ffmpegPath);
@@ -130,16 +130,6 @@ public class FfmpegUtil {
     return String.format(concat, builder.toString());
   }
 
-  public static void run(FFmpegBuilder builder) {
-    run(builder, null);
-  }
-
-  public static void run(FFmpegBuilder builder, ProgressListener listener) {
-    FFmpegJob job;
-    job = executor.createJob(builder, listener);
-    job.run();
-  }
-
   /**
    * 1. 打乱顺序
    * 2. 拼接小片段成一级循环
@@ -211,7 +201,7 @@ public class FfmpegUtil {
     builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
     String tempExtName = FileUtil.extName(inferior);
     String tempOutput = generateFilePath(tempExtName);
-    builder.addOutput(tempOutput).setVideoCodec(COPY).done();
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda").addOutput(tempOutput).setVideoCodec(COPY).done();
     // 清除声音
     run(builder);
     if (hasAudio(tempOutput)) {
@@ -220,9 +210,9 @@ public class FfmpegUtil {
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
     builder.addInput(tempOutput);
-    builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS)
-      .setVideoCodec("libx264").setAudioBitRate(16000L).setAudioCodec("aac").addExtraArgs(gpuParam).setVideoCodec(COPY)
-      .done();
+    builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
+      .setAudioBitRate(16000L).setAudioCodec("aac").addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda")
+      .setVideoCodec(COPY).done();
     run(builder);
     FileUtil.del(tempTxt);
     FileUtil.del(tempOutput);
@@ -243,6 +233,16 @@ public class FfmpegUtil {
       log.error("文件不存在");
       return "";
     }
+  }
+
+  public static void run(FFmpegBuilder builder) {
+    run(builder, null);
+  }
+
+  public static void run(FFmpegBuilder builder, ProgressListener listener) {
+    FFmpegJob job;
+    job = executor.createJob(builder, progress -> System.out.println("Progress: " + progress));
+    job.run();
   }
 
 }

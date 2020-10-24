@@ -30,9 +30,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: gavin
-    password: g1126ang
-    url: jdbc:mysql://47.100.1.162:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 924c80a71a83d95d
+    url: jdbc:mysql://localhost:3306/albedo?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
 
 # mybaits-plus配置
 mybatis-plus:
@@ -98,5 +98,5 @@ path:
   ffprobe: /usr/local/bin/ffprobe
   ffmpeg: /usr/local/bin/ffmpeg
 
-hwflag: '-hwaccel cuda'
+hwflag: '-hwaccel videotoolbox'
 
