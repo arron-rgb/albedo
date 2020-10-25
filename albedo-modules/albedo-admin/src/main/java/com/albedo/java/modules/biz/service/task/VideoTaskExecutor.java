@@ -63,6 +63,7 @@ public class VideoTaskExecutor {
     String audioUrl = FileUploadUtil.getDefaultBaseDir() + File.separator + ossSingleton.getPath(video.getAudioUrl());
     Assert.notEmpty(audioUrl, AUDIO_NOT_FOUND);
     String outputUrl = ffmpegUtil.concatAudio(audioUrl, videos);
+    outputUrl = ffmpegUtil.loopOrCut(outputUrl, video.getDuration().doubleValue() * 60);
     String userId = video.getUserId();
     String bucketName = userService.getBucketName(userId);
     String outputPath =
@@ -75,7 +76,7 @@ public class VideoTaskExecutor {
     ossSingleton.uploadFile(file, file.getName(), bucketName);
     video.setOutputUrl(ossSingleton.getUrl(file.getAbsolutePath()));
     log.info("上传视频{}", video.getOutputUrl());
-    videoService.updateById(video);
+    video.updateById();
     // 更新订单状态
     String orderId = video.getOrderId();
     Order order = orderService.getById(orderId);

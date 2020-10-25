@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -310,7 +309,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     UserDetail user = SecurityUtil.getUser();
     Long duration = orderVo.getDuration();
     Balance balance = balanceService.getByUserId(user.getId());
-    Assert.isTrue(balance.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
+    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
     video.setDuration(duration);
     videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
@@ -333,7 +332,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
-  @Async
   @Override
   public void machineDubbing(SubOrderVo orderVo, Video video) {
     List<String> voiceTypes = orderVo.getVoiceType();
@@ -341,10 +339,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String voiceType = voiceTypes.get(0);
     String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
+    String audioUrl = ossSingleton.getUrl(filePath);
     video.setAudioText(orderVo.appendContent());
-    ossSingleton.uploadFile(new File(filePath), FileUtil.getName(filePath));
-    video.setAudioUrl(ossSingleton.getUrl(filePath, "vlivest"));
-    videoRepository.updateById(video);
+    video.setAudioUrl(audioUrl);
+    video.updateById();
     SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
@@ -438,16 +436,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String bucketName = userService.getBucketName(userId);
     String audioPath = FileUploadUtil.getBucketPath(bucketName, IdUtil.fastSimpleUUID() + "." + ttsParam.getCodec());
     File audio = ttsSingleton.generateAudio(ttsParam, audioPath);
-    String videoId = order.getVideoId();
-    // 更新视频中的音频信息
-    Video video = videoRepository.selectById(videoId);
-    Assert.notNull(video, VIDEO_NOT_FOUND);
-
     ossSingleton.uploadFile(audio, FileUtil.getName(audio), bucketName);
-    video.setAudioUrl(ossSingleton.getUrl(audio.getAbsolutePath(), bucketName));
-
-    video.setAudioText(text);
-    videoRepository.updateById(video);
     return audio.getAbsolutePath();
   }
 
