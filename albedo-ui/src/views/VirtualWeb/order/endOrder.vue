@@ -45,10 +45,12 @@
           <el-col span="4">
             已选需求：
           </el-col>
-          <el-col span="20">
-            <el-tag class="tag" v-for="(o,index) in JSON.parse(orderRecord.content).data" :key="o" :type="typeList[index % 5]">
-              <p style="line-height: 40px; margin: 0" v-for="i in o.data">{{i.value}}<p/>
-            </el-tag>
+          <el-col span="20" >
+            <div :key="o" v-for="(o,index) in JSON.parse(orderRecord.content).data" >
+              <el-tag :type="typeList[index % 5]"  class="tag" v-for="i in o.data">
+                <p style="line-height: 40px; margin: 0">{{i.value}}<p/>
+              </el-tag>
+            </div>
           </el-col>
         </el-row>
 
@@ -63,7 +65,7 @@
           </el-col>
         </el-row>
 
-        <el-row class="box" v-if="orderRecord.type === '0'">
+        <el-row class="box" v-if="orderRecord.type === '0' || orderRecord.type === '1'">
           <el-col span="4">
             补充需求（选填）：
           </el-col>
@@ -114,7 +116,7 @@
           </el-col>
         </el-row>
 
-        <el-row class="box"  v-show="orderRecord.type === '0'">
+        <el-row class="box"  v-if="orderRecord.type === '0' || orderRecord.type === '1'">
           <el-col span="4">
             产品视频：
           </el-col>
@@ -218,12 +220,18 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    downVideo () {
+      const a = document.createElement('a')
+      a.setAttribute('download', '虚拟工坊')
+      a.setAttribute('href', this.playerOptions.sources[0].src)
+      a.click()
+    },
     download(){
       let link = document.createElement("a"); //创建a标签
       link.style.display = "none"; //使其隐藏
       link.href = this.playerOptions.sources[0].src; //赋予文件下载地址
       link.setAttribute("download", '虚拟工坊'); //设置下载属性 以及文件名
-      document.body.appendChild(link); //a标签插至页面中
+      // document.body.appendChild(link); //a标签插至页面中
       link.click(); //强制触发a标签事件
     }
   }

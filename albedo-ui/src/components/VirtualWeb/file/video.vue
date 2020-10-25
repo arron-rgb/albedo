@@ -72,8 +72,7 @@ export default {
       var data = [this.videoData.id]
       return new Promise((resolve, reject) => {
         crudOrder.delVideo(data).then(res => {
-          if(res.code === MSG_TYPE_SUCCESS)
-            this.goTo('/order/detail');
+          location.reload();
           resolve(res);
           this.loading = false
         }).catch(res => {
