@@ -41,7 +41,7 @@
           </el-col>
         </el-row>
 
-        <el-row class="box" v-if="orderRecord.type === '0'">
+        <el-row class="box" v-if="orderRecord.type === '0' || orderRecord.type === '1'">
           <el-col span="4">
             已选需求：
           </el-col>
@@ -85,12 +85,12 @@
           </el-col>
         </el-row>
 
-        <el-row class="box" v-show="orderRecord.type === '0'">
+        <el-row class="box" v-show="orderRecord.type === '0' || orderRecord.type === '1'">
           <el-col span="4">
-            加速服务（30元/次）：
+            加速服务：
           </el-col>
           <el-col span="20">
-            {{orderRecord.type === 0 ? '未加速' : '已加速'}}
+            {{orderRecord.type === '0' ? '未加速' : '已加速'}}
           </el-col>
         </el-row>
 
