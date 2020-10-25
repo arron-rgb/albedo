@@ -310,7 +310,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     UserDetail user = SecurityUtil.getUser();
     Long duration = orderVo.getDuration();
     Balance balance = balanceService.getByUserId(user.getId());
-    Assert.isTrue(balance.getVideoTime().longValue() < duration, "视频时长超出套餐允许");
+    Assert.isTrue(balance.getVideoTime().longValue() * 60 < duration, "视频时长超出套餐允许");
     video.setDuration(duration);
     videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
