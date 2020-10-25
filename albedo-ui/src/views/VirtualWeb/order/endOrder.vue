@@ -220,12 +220,18 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    downVideo () {
+      const a = document.createElement('a')
+      a.setAttribute('download', '虚拟工坊')
+      a.setAttribute('href', this.playerOptions.sources[0].src)
+      a.click()
+    },
     download(){
       let link = document.createElement("a"); //创建a标签
       link.style.display = "none"; //使其隐藏
       link.href = this.playerOptions.sources[0].src; //赋予文件下载地址
       link.setAttribute("download", '虚拟工坊'); //设置下载属性 以及文件名
-      document.body.appendChild(link); //a标签插至页面中
+      // document.body.appendChild(link); //a标签插至页面中
       link.click(); //强制触发a标签事件
     }
   }
