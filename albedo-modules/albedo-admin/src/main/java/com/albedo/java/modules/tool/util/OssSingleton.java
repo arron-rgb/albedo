@@ -66,13 +66,18 @@ public class OssSingleton {
     uploadFile(file, objectName, metadata, "vlivest");
   }
 
+  @Async
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentDisposition("attachment");
+    putObjectRequest.setMetadata(metadata);
     client.putObject(putObjectRequest);
   }
 
   public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
+
     putObjectRequest.setMetadata(metadata);
     log.info("开始上传文件{}至{}-{}", file.getAbsolutePath(), bucketName, objectName);
     client.putObject(putObjectRequest);

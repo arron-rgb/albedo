@@ -2,10 +2,8 @@ package com.albedo.java.modules.biz.service;
 
 import java.util.List;
 
-import com.albedo.java.common.core.util.Result;
-import org.springframework.scheduling.annotation.Async;
-
 import com.albedo.java.common.core.exception.OrderException;
+import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
@@ -104,7 +102,6 @@ public interface OrderService extends BaseService<Order> {
    * @param orderVo
    * @param video
    */
-  @Async
   void machineDubbing(SubOrderVo orderVo, Video video);
 
   /**
