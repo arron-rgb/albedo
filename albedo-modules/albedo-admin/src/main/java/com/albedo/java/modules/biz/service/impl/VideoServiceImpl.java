@@ -4,9 +4,7 @@ import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +30,7 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 
 /**
@@ -84,7 +83,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
-    InputStream inputStream = new FileInputStream(tempFile);
     // 只要上传视频就插入新的记录
     Video video = Video.builder().userId(userId).orderId(orderId).build();
     video.setOriginUrl(ossSingleton.getUrl(tempPath));
@@ -99,7 +97,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // video存储规则:
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
-    ossSingleton.uploadFileStream(inputStream, bucketName, video.getName());
+    ossSingleton.uploadFile(FileUtil.file(tempFile), bucketName, video.getName());
     balanceService.updateById(balance);
   }
 
