@@ -66,6 +66,7 @@ public class OssSingleton {
     uploadFile(file, objectName, metadata, "vlivest");
   }
 
+  @Async
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     client.putObject(putObjectRequest);

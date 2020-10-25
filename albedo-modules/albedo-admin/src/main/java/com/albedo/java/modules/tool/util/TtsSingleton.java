@@ -22,6 +22,7 @@ import com.tencentcloudapi.tts.v20190823.models.TextToVoiceRequest;
 import com.tencentcloudapi.tts.v20190823.models.TextToVoiceResponse;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,7 +78,8 @@ public class TtsSingleton {
   public File generateAudio(String params, String filePath) throws TencentCloudSDKException {
     TextToVoiceRequest req = TextToVoiceRequest.fromJsonString(params, TextToVoiceRequest.class);
     TextToVoiceResponse resp = client.TextToVoice(req);
-    File outFile = new File(filePath);
+    File outFile = FileUtil.touch(filePath);
+    log.info("生成音频文件至{}", outFile.getAbsolutePath());
     return decoderBase64File(resp.getAudio(), outFile);
   }
 

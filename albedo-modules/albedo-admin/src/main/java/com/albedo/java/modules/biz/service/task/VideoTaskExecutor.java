@@ -76,7 +76,7 @@ public class VideoTaskExecutor {
     ossSingleton.uploadFile(file, file.getName(), bucketName);
     video.setOutputUrl(ossSingleton.getUrl(file.getAbsolutePath()));
     log.info("上传视频{}", video.getOutputUrl());
-    videoService.updateById(video);
+    video.updateById();
     // 更新订单状态
     String orderId = video.getOrderId();
     Order order = orderService.getById(orderId);
