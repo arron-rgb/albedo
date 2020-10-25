@@ -201,7 +201,7 @@ export default {
             this.$alert('接单成功，请尽快制作哦！', '提示',{
               confirmButtonText: '确定',
               callback: action => {
-                this.goTo('/order/order')
+                this.goTo('/order/belong')
               }
             });
           }

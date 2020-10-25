@@ -150,7 +150,7 @@ public class FfmpegUtil {
     if (videoList.size() == 1) {
       return videoList.get(0).getOriginUrl();
     }
-    Collections.shuffle(videoList);
+    Collections.shuffle(videoList);//乱序videoList
     List<String> videoPaths = videoList.stream().map(Video::getOriginUrl).collect(Collectors.toList());
     String extName = FileUtil.extName(videoPaths.get(0));
     String videoOutputPath = generateFilePath(extName);
@@ -170,8 +170,8 @@ public class FfmpegUtil {
    * 2. 这里是二级循环
    * 3. 清除一级循环的中间文件及拼接的文本文件
    *
-   * @param prior
-   * @param inferior
+   * @param prior  音频
+   * @param inferior  一级循环视频
    */
   public String loopOrCut(String prior, String inferior) {
     FFmpegBuilder builder;
