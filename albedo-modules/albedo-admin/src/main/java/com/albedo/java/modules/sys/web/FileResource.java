@@ -1,7 +1,5 @@
 package com.albedo.java.modules.sys.web;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -20,6 +18,7 @@ import com.albedo.java.common.core.util.Result;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.google.common.collect.Maps;
 
+import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,11 +41,10 @@ public class FileResource {
     String filePath = ApplicationConfig.getUploadPath();
     // 上传并返回新文件绝对路径
     String tempPath = FileUploadUtil.upload(filePath, file);
-    File file1 = new File(tempPath);
-    ossSingleton.uploadFileStream(new FileInputStream(file1), "vlivest", file1.getName());
-    boolean delete = file1.delete();
+    ossSingleton.uploadFile(FileUtil.file(tempPath), FileUtil.getName(tempPath), "vlivest");
+    FileUtil.del(tempPath);
     Map<Object, Object> data = Maps.newHashMap();
-    String url = "static.vlivest.com/" + file1.getName();
+    String url = "static.vlivest.com/" + FileUtil.getName(tempPath);
     data.put("fileName", tempPath);
     data.put("url", url);
     return Result.buildOkData(data);

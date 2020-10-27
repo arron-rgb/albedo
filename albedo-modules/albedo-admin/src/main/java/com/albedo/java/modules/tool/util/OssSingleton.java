@@ -4,7 +4,6 @@ import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -77,15 +76,9 @@ public class OssSingleton {
 
   public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
-
     putObjectRequest.setMetadata(metadata);
     log.info("开始上传文件{}至{}-{}", file.getAbsolutePath(), bucketName, objectName);
     client.putObject(putObjectRequest);
-  }
-
-  @Async
-  public PutObjectResult uploadFileStream(InputStream inputStream, String bucketName, String key) {
-    return client.putObject(bucketName, key, inputStream);
   }
 
   public List<Bucket> listBuckets() {

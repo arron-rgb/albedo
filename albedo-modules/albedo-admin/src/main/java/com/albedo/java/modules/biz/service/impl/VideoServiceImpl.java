@@ -97,7 +97,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // video存储规则:
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
-    ossSingleton.uploadFile(FileUtil.file(tempFile), bucketName, video.getName());
+    ossSingleton.uploadFile(FileUtil.file(tempFile), video.getName(), bucketName);
     balanceService.updateById(balance);
   }
 

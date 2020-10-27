@@ -150,9 +150,9 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
       plan.setCustomTimes(0);
       plan.setChildAccount(0);
       plan.setVideoTime(2);
+      plan.setTimes(0);
       balance = planService.copyPlan(userId, plan);
       // 给账号初始化套餐信息
-
       balance.insert();
       return balance;
     }
