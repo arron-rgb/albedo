@@ -111,7 +111,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setCommodity(amount);
     dto.setPlanName(balance.getPlanType());
     dto.setStorage(balance.getStorage());
-    List<String> users = userService.list(Wrappers.<User>query().ne("user_id", id).eq("dept_id", deptId)).stream()
+    List<String> users = userService.list(Wrappers.<User>query().ne("id", id).eq("dept_id", deptId)).stream()
       .map(User::getUsername).collect(Collectors.toList());
     dto.setAccountIds(users);
     Plan plan = planService.getById(balance.getPlanId());
