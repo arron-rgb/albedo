@@ -111,8 +111,8 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setCommodity(amount);
     dto.setPlanName(balance.getPlanType());
     dto.setStorage(balance.getStorage());
-    List<String> users = userService.list(Wrappers.<User>query().eq("dept_id", deptId)).stream().map(User::getUsername)
-      .collect(Collectors.toList());
+    List<String> users = userService.list(Wrappers.<User>query().ne("user_id", id).eq("dept_id", deptId)).stream()
+      .map(User::getUsername).collect(Collectors.toList());
     dto.setAccountIds(users);
     Plan plan = planService.getById(balance.getPlanId());
     Assert.notNull(plan, "未查询到旧套餐记录");
@@ -148,7 +148,6 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     if (Objects.isNull(balance)) {
       Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
       plan.setCustomTimes(0);
-      plan.setChildAccount(0);
       plan.setVideoTime(2);
       plan.setTimes(0);
       balance = planService.copyPlan(userId, plan);
