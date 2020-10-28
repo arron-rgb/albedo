@@ -1,10 +1,11 @@
 import Vue from 'vue'
 
+import Element from 'element-ui'
+
 import Cookies from 'js-cookie'
 
 import 'normalize.css/normalize.css'
 
-import Element from 'element-ui'
 import VideoPlayer from 'vue-video-player'
 //
 import mavonEditor from 'mavon-editor'
