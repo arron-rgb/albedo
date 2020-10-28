@@ -59,5 +59,6 @@ path:
   ffmpeg: /usr/local/bin/ffmpeg
   ffprobe: /usr/local/bin/ffprobe
 mybatis-plus:
+  mapper-locations: [ "classpath*:/mapper/*/*Mapper.xml" , "classpath:mapper/*.xml" ]
   configuration:
     log-impl:

@@ -173,7 +173,7 @@ public class UserOrderResource extends BaseResource {
     }
     order.setState(NOT_UPDATED);
     service.updateById(order);
-    return Result.buildOk("上传成功");
+    return Result.buildOk("下单成功");
   }
 
   @ApiOperation(value = "更新支付方式")

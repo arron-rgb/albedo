@@ -467,4 +467,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return baseMapper.updateById(order) == 1;
   }
 
+  @Override
+  public Long getDuration(String orderId) {
+    return baseMapper.getDuration(orderId);
+  }
 }

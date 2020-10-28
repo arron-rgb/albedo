@@ -7,7 +7,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.albedo.java.common.async.ExceptionHandlingAsyncTaskExecutor;
+import com.albedo.java.common.core.util.Json;
 
 /**
  * @author somewhere
@@ -53,6 +53,10 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
   @Override
   public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-    return new SimpleAsyncUncaughtExceptionHandler();
+    return (ex, method, params) -> {
+      log.error("Message: {}", ex.getMessage());
+      log.error("Method: {}", method);
+      log.error("Params: {}", Json.toJsonString(params));
+    };
   }
 }

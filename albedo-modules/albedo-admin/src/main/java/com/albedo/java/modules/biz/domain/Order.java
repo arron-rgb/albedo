@@ -66,6 +66,7 @@ public class Order extends IdEntity<Invoice> {
    * 贴片
    */
   private String adUrl;
+  private Long duration;
 
   @TableField(exist = false)
   private String couponCode;

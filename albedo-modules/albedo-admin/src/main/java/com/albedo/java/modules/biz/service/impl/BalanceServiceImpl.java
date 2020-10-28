@@ -29,6 +29,7 @@ import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -102,7 +103,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     String deptId = SecurityUtil.getUser().getDeptId();
     Balance balance = getByUserId(id);
     if (balance == null) {
-      return null;
+      balance = initBalance(balance, id);
     }
     BalanceDto dto = new BalanceDto();
     dto.setTimes(balance.getTimes());
@@ -111,12 +112,21 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     dto.setCommodity(amount);
     dto.setPlanName(balance.getPlanType());
     dto.setStorage(balance.getStorage());
-    List<String> users = userService.list(Wrappers.<User>query().ne("id", id).eq("dept_id", deptId)).stream()
-      .map(User::getUsername).collect(Collectors.toList());
+    QueryWrapper<User> wrapper = Wrappers.query();
+    wrapper.and(innerWrapper -> {
+      innerWrapper.ne("id", id);
+      innerWrapper.eq("dept_id", deptId);
+    });
+    List<String> users = userService.list(wrapper).stream().map(User::getUsername).collect(Collectors.toList());
     dto.setAccountIds(users);
     Plan plan = planService.getById(balance.getPlanId());
     Assert.notNull(plan, "未查询到旧套餐记录");
-    dto.setAccountAmount(plan.getChildAccount());
+    if (balance.getChildAccount() == -1) {
+      dto.setAccountAmount(0);
+      dto.setAccountAvailable(0);
+    } else {
+      dto.setAccountAmount(plan.getChildAccount());
+    }
     dto.setAllowedCommodity(plan.getGoodsQuantity());
     dto.setAllowedStorage(plan.getStorage().doubleValue());
     dto.setAudioTime(balance.getAudioTime());
@@ -145,12 +155,14 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
 
   @Override
   public Balance initBalance(Balance balance, String userId) {
+    // todo 似乎不需要balance参数
     if (Objects.isNull(balance)) {
       Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
       plan.setCustomTimes(0);
       plan.setVideoTime(2);
-      plan.setTimes(0);
       balance = planService.copyPlan(userId, plan);
+      balance.setTimes(0);
+      balance.setChildAccount(-1);
       // 给账号初始化套餐信息
       balance.insert();
       return balance;

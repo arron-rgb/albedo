@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -108,6 +109,22 @@ public class OssSingleton {
     client.deleteObject(bucketName, objectName);
   }
 
+  @Async
+  public void remove(String url) {
+    if (!StringUtils.contains(url, ".oss-cn-hangzhou.aliyuncs.com/")) {
+      log.error("删除{}失败", url);
+      return;
+    }
+    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    String bucket = split[0];
+    String object = split[1];
+    try {
+      remove(bucket, object);
+    } catch (Exception e) {
+      log.error("删除{}-{}失败", bucket, object);
+    }
+  }
+
   public boolean doesBucketExist(String bucketName) {
     return client.doesBucketExist(bucketName);
   }
@@ -132,11 +149,6 @@ public class OssSingleton {
     createBucketRequest.setStorageClass(StorageClass.Standard);
     client.createBucket(createBucketRequest);
     client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
-  }
-
-  public void removeFile(String bucketName, String objectName) {
-    // 删除文件。如需删除文件夹，请将ObjectName设置为对应的文件夹名称。如果文件夹非空，则需要将文件夹下的所有object删除后才能删除该文件夹。
-    client.deleteObject(bucketName, objectName);
   }
 
   public boolean doesObjectExist(String bucketName, String objectName) {

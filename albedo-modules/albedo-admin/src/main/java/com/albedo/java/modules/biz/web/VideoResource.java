@@ -2,6 +2,8 @@ package com.albedo.java.modules.biz.web;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.IN_PRODUCTION;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,8 +23,10 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
+import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -52,25 +56,42 @@ public class VideoResource extends BaseResource {
   @LogOperate(value = "删除视频")
   @ApiOperation(value = "删除视频")
   @DeleteMapping
-  public Result<String> delete(@RequestBody Set<String> ids) {
+  public Result<String> delete(@RequestBody Set<String> deleteIds) {
     // 找到对应的订单
-    Set<String> orders = service.listByIds(ids).stream().map(Video::getOrderId).collect(Collectors.toSet());
+    List<Video> videos = service.listByIds(deleteIds);
+    Set<String> orders = videos.stream().map(Video::getOrderId).collect(Collectors.toSet());
     Assert.isTrue(orders.size() == 1, "视频对应的订单数量异常");
+    videos = service.list(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orders.toArray()[0]));
+    videos = videos.stream().filter(video -> !deleteIds.contains(video.getId())).collect(Collectors.toList());
+    // 循环只执行一次
     for (String orderId : orders) {
+      Long duration = orderService.getDuration(orderId);
       // 找到订单的视频
-      Video video = service.getOneByOrderId(orderId);
       Order order = orderService.getById(orderId);
-      if (video == null) {
+      if (Collections.isEmpty(videos)) {
         // 视频被删光 回滚状态
         order.setVideoId("");
         order.setState(IN_PRODUCTION);
       } else {
+        Video video = videos.get(0);
         // 将videoId设为随机的video
+        // 设置的这条video可能是被删除的video
         order.setVideoId(video.getId());
+        video.setDuration(duration);
+        video.updateById();
       }
       order.updateById();
     }
-    service.removeByIds(ids);
+    deleteIds.forEach(id -> {
+      Video video = service.getById(id);
+      if (Objects.isNull(video)) {
+        return;
+      }
+      ossSingleton.remove(video.getOriginUrl());
+      ossSingleton.remove(video.getOriginUrl());
+      ossSingleton.remove(video.getAudioUrl());
+    });
+    service.removeByIds(deleteIds);
     return Result.buildOk("删除视频成功");
   }
 
