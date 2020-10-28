@@ -34,7 +34,7 @@ public class Balance extends Model<Balance> {
    */
   private Integer editTimes;
   /**
-   * 子账户数量
+   * 剩余可创建的子账户数量
    */
   private Integer childAccount;
   /**

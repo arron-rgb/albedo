@@ -248,7 +248,7 @@ public class UserResource extends BaseResource {
 
     String key = "register" + userData.getPhone();
     String value = userData.getVerifyCode();
-    cn.hutool.core.lang.Assert.isTrue(smsService.validated(key, value), "验证码无效");
+    Assert.isTrue(smsService.validated(key, value), "验证码无效");
 
     userService.register(userData);
     return Result.buildOk("注册成功");

@@ -37,5 +37,5 @@ public interface BalanceService extends BaseService<Balance> {
    */
   Balance getByUserId(String userId);
 
-  Balance initBalance(Balance balance, String userId);
+  Balance initBalance(String userId);
 }

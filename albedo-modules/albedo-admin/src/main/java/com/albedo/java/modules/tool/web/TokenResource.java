@@ -32,6 +32,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
+import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,10 @@ public class TokenResource {
   @GetMapping("account/register")
   @ApiOperation("验证码-注册账号")
   public Result<String> getCode(@RequestParam String phone) {
+    List<User> users = userService.list(Wrappers.<User>lambdaQuery().eq(User::getPhone, phone));
+    if (!Collections.isEmpty(users)) {
+      return Result.buildFail("该手机已绑定其他账号");
+    }
     String key = "register";
     smsService.sendMsg(phone, key, SmsEnum.REGISTER_TEMPLATE_CODE);
     return Result.buildOk("发送成功");
