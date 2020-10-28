@@ -10,4 +10,16 @@
 		limit 1
 	</select>
 
+
+	<select id="getDub" resultType="com.albedo.java.modules.biz.domain.Video">
+		select v.audio_text, v.audio_url
+		from t_order o
+				 left join t_video v on v.order_id = o.id
+		where o.id = #{orderId}
+		  and v.duration is not null
+		  and v.audio_text is not null
+		limit 1
+	</select>
+
+
 </mapper>

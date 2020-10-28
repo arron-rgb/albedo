@@ -66,6 +66,7 @@ public class VideoResource extends BaseResource {
     // 循环只执行一次
     for (String orderId : orders) {
       Long duration = orderService.getDuration(orderId);
+
       // 找到订单的视频
       Order order = orderService.getById(orderId);
       if (Collections.isEmpty(videos)) {
@@ -73,11 +74,13 @@ public class VideoResource extends BaseResource {
         order.setVideoId("");
         order.setState(IN_PRODUCTION);
       } else {
+        Video dub = orderService.getDub(orderId);
         Video video = videos.get(0);
         // 将videoId设为随机的video
-        // 设置的这条video可能是被删除的video
         order.setVideoId(video.getId());
         video.setDuration(duration);
+        video.setAudioText(dub.getAudioText());
+        video.setAudioUrl(dub.getAudioUrl());
         video.updateById();
       }
       order.updateById();

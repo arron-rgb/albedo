@@ -127,4 +127,6 @@ public interface OrderService extends BaseService<Order> {
   void uploadAudio(String orderId, String audioUrl);
 
   Long getDuration(String orderId);
+
+  Video getDub(String orderId);
 }

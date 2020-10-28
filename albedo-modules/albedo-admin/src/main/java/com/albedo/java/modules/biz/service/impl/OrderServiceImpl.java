@@ -471,4 +471,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   public Long getDuration(String orderId) {
     return baseMapper.getDuration(orderId);
   }
+
+  @Override
+  public Video getDub(String orderId) {
+    return baseMapper.getDub(orderId);
+  }
 }
