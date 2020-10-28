@@ -3,12 +3,13 @@ package com.albedo.java.modules.biz.service.impl;
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.CommonConstants.PERSONAL_USER_ROLE_ID;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.albedo.java.common.core.constant.ExceptionNames;
@@ -103,7 +104,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     String deptId = SecurityUtil.getUser().getDeptId();
     Balance balance = getByUserId(id);
     if (balance == null) {
-      balance = initBalance(balance, id);
+      balance = initBalance(id);
     }
     BalanceDto dto = new BalanceDto();
     dto.setTimes(balance.getTimes());
@@ -117,8 +118,14 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
       innerWrapper.ne("id", id);
       innerWrapper.eq("dept_id", deptId);
     });
-    List<String> users = userService.list(wrapper).stream().map(User::getUsername).collect(Collectors.toList());
-    dto.setAccountIds(users);
+    if (StringUtils.equals(deptId, PUBLIC_DEPT_ID)) {
+      dto.setAccountIds(new ArrayList<>());
+      dto.setAccountAvailable(0);
+      dto.setAccountAmount(0);
+    } else {
+      List<String> users = userService.list(wrapper).stream().map(User::getUsername).collect(Collectors.toList());
+      dto.setAccountIds(users);
+    }
     Plan plan = planService.getById(balance.getPlanId());
     Assert.notNull(plan, "未查询到旧套餐记录");
     if (balance.getChildAccount() == -1) {
@@ -140,7 +147,7 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     Balance balance = getOne(Wrappers.<Balance>lambdaQuery().eq(Balance::getUserId, userId));
     if (balance == null) {
       // 初始化本人的套餐信息
-      initBalance(balance, userId);
+      initBalance(userId);
       UserDto user = userService.getOneDto(userId);
       if (user != null && !PUBLIC_DEPT_ID.equals(user.getDeptId())) {
         String adminId = userService.getAdminIdByDeptId(user.getDeptId());
@@ -154,19 +161,15 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
   }
 
   @Override
-  public Balance initBalance(Balance balance, String userId) {
-    // todo 似乎不需要balance参数
-    if (Objects.isNull(balance)) {
-      Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
-      plan.setCustomTimes(0);
-      plan.setVideoTime(2);
-      balance = planService.copyPlan(userId, plan);
-      balance.setTimes(0);
-      balance.setChildAccount(-1);
-      // 给账号初始化套餐信息
-      balance.insert();
-      return balance;
-    }
+  public Balance initBalance(String userId) {
+    Plan plan = planService.getById("6d89ea978f83243c3a137f3d25d9f10e");
+    plan.setCustomTimes(0);
+    plan.setVideoTime(2);
+    Balance balance = planService.copyPlan(userId, plan);
+    balance.setTimes(0);
+    balance.setChildAccount(-1);
+    // 给账号初始化套餐信息
+    balance.insertOrUpdate();
     return balance;
   }
 
