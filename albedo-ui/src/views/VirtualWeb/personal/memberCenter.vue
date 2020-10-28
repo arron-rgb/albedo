@@ -292,6 +292,14 @@ export default {
   mounted() {
     this.getBalance();
     // console.log(this.user);
+    if(this.data.times === 0 || this.data.times === '0'){
+      this.$alert('套餐余量已不足，请及时购买！', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(
+        this.goTo('/enterprise')
+      );
+    }
     this.userId = this.user.id;
     this.buildStorageCharts();
   },
@@ -337,7 +345,7 @@ export default {
               }
             },
             {
-              name: '已使用\n' + this.data.storage * 100/this.data.allowedStorage + '%',
+              name: '已使用\n' + (this.data.allowedStorage - this.data.storage).toFixed(4) * 100/this.data.allowedStorage + '%',
               value: this.data.allowedStorage - this.data.storage,
               label:{
                 normal : {

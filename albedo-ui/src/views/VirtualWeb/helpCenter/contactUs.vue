@@ -32,7 +32,7 @@ export default {
             },
             {
               title : '电子邮件：',
-              data : 'veirui@foxmail.com',
+              data : 'survice@vlivest.com',
             },
             {
               title : '电 话：',
