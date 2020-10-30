@@ -51,6 +51,10 @@ public class OssSingleton {
 
   private OSS client;
 
+  public OSS getClient() {
+    return this.client;
+  }
+
   public void restart() {
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
@@ -97,11 +101,17 @@ public class OssSingleton {
     return objectListing.getObjectSummaries();
   }
 
-  public long getBucketStorage(String bucketName) {
-    return listFiles(bucketName, "").stream().mapToLong(OSSObjectSummary::getSize).sum();
+  /**
+   * 存储单位 GB
+   *
+   * @param bucketName
+   * @return
+   */
+  public double getBucketStorage(String bucketName) {
+    return listFiles(bucketName, "").stream().mapToDouble(OSSObjectSummary::getSize).sum() / 1024 / 1024;
   }
 
-  public long getBucketStorage(String bucketName, String keyPrefix) {
+  public double getBucketStorage(String bucketName, String keyPrefix) {
     return listFiles(bucketName, keyPrefix).stream().mapToLong(OSSObjectSummary::getSize).sum();
   }
 

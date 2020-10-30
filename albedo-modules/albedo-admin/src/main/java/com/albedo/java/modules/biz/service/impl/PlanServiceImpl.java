@@ -27,8 +27,10 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.CouponService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
@@ -149,13 +151,23 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     balance.setPlanType(name);
     balance.setChildAccount(childAccount);
 
-    // todo 原有的存储容量 需要更新一下
-    balance.setStorage(storage.doubleValue());
+    String userId = balance.getUserId();
+    String bucketName = userService.getBucketName(userId);
+    double bucketStorage = ossSingleton.getBucketStorage(bucketName);
+    if (storage < bucketStorage) {
+      ossSingleton.removeOldestFile(bucketName);
+      bucketStorage = ossSingleton.getBucketStorage(bucketName);
+    }
+    balance.setStorage(bucketStorage);
     balance.setVideoTime(videoTime);
     balance.setPlanId(id);
     balance.setGoodsQuantity(goodsQuantity);
   }
 
+  @Resource
+  UserService userService;
+  @Resource
+  OssSingleton ossSingleton;
   @Resource
   BalanceService balanceService;
 

@@ -4,7 +4,6 @@ import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,11 +55,10 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * @param orderId
    *          订单id
    * @param tempPath
-   * @throws IOException
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void uploadVideo(String orderId, String tempPath) throws IOException {
+  public void uploadVideo(String orderId, String tempPath) {
     // 更新订单状态
     Order order = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);

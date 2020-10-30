@@ -10,7 +10,7 @@ public enum SmsEnum {
 
   // LOGIN_TEMPLATE_CODE("SMS_175435174", "vlivest", "code"),
   FORGET_PASSWORD_TEMPLATE_CODE("SMS_200188565", "虚拟工坊", "code"),
-  REGISTER_TEMPLATE_CODE("SMS_200183062", "虚拟工坊", "code");
+  REGISTER_TEMPLATE_CODE("SMS_200183062", "虚拟工坊", "code"), SUCCESS_NOTIFICATION("SMS_205065311", "虚拟工坊", "");
 
   /**
    * 短信模板编码
