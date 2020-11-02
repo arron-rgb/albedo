@@ -73,7 +73,7 @@ public class VideoTaskExecutor {
     // 更新video表
     File file = new File(outputPath);
     // 上传视频
-    ossSingleton.uploadFile(file, file.getName(), bucketName);
+    ossSingleton.uploadFileNonAsync(file, file.getName(), bucketName);
     video.setOutputUrl(ossSingleton.getUrl(file.getAbsolutePath()));
     log.info("上传视频{}", video.getOutputUrl());
     video.updateById();

@@ -79,6 +79,14 @@ public class OssSingleton {
     client.putObject(putObjectRequest);
   }
 
+  public void uploadFileNonAsync(File file, String objectName, String bucketName) {
+    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentDisposition("attachment");
+    putObjectRequest.setMetadata(metadata);
+    client.putObject(putObjectRequest);
+  }
+
   public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     putObjectRequest.setMetadata(metadata);
