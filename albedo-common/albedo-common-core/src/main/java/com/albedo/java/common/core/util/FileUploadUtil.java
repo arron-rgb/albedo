@@ -22,9 +22,9 @@ import lombok.NonNull;
  */
 public class FileUploadUtil {
   /**
-   * 默认大小 50M
+   * 默认大小 1024 MB
    */
-  public static final long DEFAULT_MAX_SIZE = 50 * 1024 * 1024;
+  public static final long DEFAULT_MAX_SIZE = 1024 * 1024 * 1024;
 
   /**
    * 默认的文件名最大长度 100
