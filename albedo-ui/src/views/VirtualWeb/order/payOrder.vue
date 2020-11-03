@@ -16,47 +16,72 @@
         </el-col>
       </el-row>
 
-      <el-row class="box" v-if="!orderId">
+      <el-row class="box">
         <el-col span="4">
           Logo（选填）：
         </el-col>
         <el-col span="20">
+<!--          <el-upload-->
+<!--            ref="logoUpload"-->
+<!--            class="avatar-uploader"-->
+<!--            action="#"-->
+<!--            :http-request="(file) => uploadImg(file, 'logo')"-->
+<!--            accept="image/jpeg,image/png"-->
+<!--            :show-file-list="false"-->
+<!--            :auto-upload="false"-->
+<!--            :multiple="false"-->
+<!--            :on-change="(file) => onUploadChange(file, 'logo')"-->
+<!--          >-->
+<!--            <img v-if="logoUrl" :src="logoUrl" class="avatar">-->
+<!--            <i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
+<!--          </el-upload>-->
           <el-upload
-            ref="logoUpload"
             class="avatar-uploader"
-            action="#"
-            :http-request="(file) => uploadImg(file, 'logo')"
-            accept="image/jpeg,image/png"
-            :show-file-list="false"
+            :on-remove="handleRemove"
+            :on-success="(value) => handleSuccess(value, 'logo')"
             :auto-upload="false"
-            :multiple="false"
+            :show-file-list="false"
             :on-change="(file) => onUploadChange(file, 'logo')"
+            action="/a/file/upload"
+            ref="uploadLogo"
           >
             <img v-if="logoUrl" :src="logoUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <el-button @click="submitFile('logo')">点击上传</el-button>
         </el-col>
       </el-row>
 
-      <el-row class="box" v-if="!orderId">
+      <el-row class="box">
         <el-col span="4">
           贴片（选填）：
         </el-col>
         <el-col span="20">
+<!--          <el-upload-->
+<!--            ref="picUpload"-->
+<!--            class="avatar-uploader"-->
+<!--            action="#"-->
+<!--            :http-request="(file) => uploadImg(file, 'pic')"-->
+<!--            accept="image/jpeg,image/png"-->
+<!--            :show-file-list="false"-->
+<!--            :auto-upload="false"-->
+<!--            :multiple="false"-->
+<!--            :on-change="(file) => onUploadChange(file, 'pic')"-->
+<!--          >-->
           <el-upload
-            ref="picUpload"
             class="avatar-uploader"
-            action="#"
-            :http-request="(file) => uploadImg(file, 'pic')"
-            accept="image/jpeg,image/png"
-            :show-file-list="false"
+            :on-change="(file) => onUploadChange(file, 'ad')"
+            :on-remove="handleRemove"
             :auto-upload="false"
-            :multiple="false"
-            :on-change="(file) => onUploadChange(file, 'pic')"
+            :on-success="(value) => handleSuccess(value, 'ad')"
+            :show-file-list="false"
+            action="/a/file/upload"
+            ref="uploadFiles"
           >
-            <img v-if="picUrl" :src="picUrl" class="avatar">
+            <img :src="this.picUrl" class="avatar" v-if="this.picUrl">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <el-button @click="submitFile('ad')">点击上传</el-button>
         </el-col>
       </el-row>
 
@@ -279,6 +304,8 @@ export default {
         this.totalAmount = videoOrder.totalAmount;
         this.description = videoOrder.description;
         this.orderId = videoOrder.id;
+        videoOrder.adUrl ? this.picUrl = 'https://' + videoOrder.adUrl : this.picUrl = '';
+        videoOrder.logoUrl ? this.logoUrl = 'https://' + videoOrder.logoUrl : 'this.logoUrl';
         this.videoData = videoOrder;
       }
     }
@@ -331,7 +358,7 @@ export default {
       this.$router.push({path:url, query : {data: data}});
     },
     toPay(){
-      //console.log('保存订单')
+      console.log(this.urls)
       this.loading = true;
       var content = {data : this.list}
       var data;
@@ -455,7 +482,7 @@ export default {
         })
       });
     },
-    cancelOrder(){
+    cancelOrder(){//取消订单
       var ids = [this.orderId.toString()]
       return new Promise((resolve, reject) => {
         crudOrder.del(ids).then((res) => {
@@ -478,39 +505,63 @@ export default {
         })
       })
     },
-    getBalance(){
+    getBalance(){//获取套余额
       this.balance === null ? this.times = 0 : this.times = parseInt(this.balance.times);
     },
-    uploadImg(file, type){//上传图片
-      var _this = this
-      return new Promise((resolve, reject) => {
-        dubOperate.uploadFile(file).then(res => {
-          if (res.code === MSG_TYPE_SUCCESS) {
-            if(type === 'logo'){
-              _this.urls.logo = res.data.url
-              if(_this.urls.pic === '' && _this.picUrl !== ''){//贴片图片尚未上传
-                this.$refs.picUpload.submit();
-              }
-              else{
-                _this.toPay();
-              }
-            }
-            else{
-              _this.urls.pic = res.data.url;
-              if(_this.urls.pic === '' && _this.picUrl !== ''){//贴logo图片尚未上传
-                this.$refs.logoUpload.submit();
-              }
-              else{
-                _this.toPay();
-              }
-            }
-
-          }
-        }).catch(error => {
-          this.loading = false;
-          reject(error)
-        })
-      });
+    // uploadImg(file, type){//上传图片
+    //   var _this = this
+    //   return new Promise((resolve, reject) => {
+    //     dubOperate.uploadFile(file).then(res => {
+    //       if (res.code === MSG_TYPE_SUCCESS) {
+    //         if(type === 'logo'){
+    //           _this.urls.logo = res.data.url
+    //           if(_this.urls.pic === '' && _this.picUrl !== ''){//贴片图片尚未上传
+    //             this.$refs.picUpload.submit();
+    //           }
+    //           else{
+    //             _this.toPay();
+    //           }
+    //         }
+    //         else{
+    //           _this.urls.pic = res.data.url;
+    //           if(_this.urls.pic === '' && _this.picUrl !== ''){//贴logo图片尚未上传
+    //             this.$refs.logoUpload.submit();
+    //           }
+    //           else{
+    //             _this.toPay();
+    //           }
+    //         }
+    //
+    //       }
+    //     }).catch(error => {
+    //       this.loading = false;
+    //       reject(error)
+    //     })
+    //   });
+    // },
+    submitFile(type){
+      if(type === 'logo')
+        this.$refs.uploadLogo.submit();
+      else
+        this.$refs.uploadFiles.submit();
+    },
+    handleSuccess(value, type){
+      // console.log(value);
+      // console.log(type);
+      if(value.code === MSG_TYPE_SUCCESS){
+        this.$message.success('上传成功');
+        if(type === 'logo')
+          this.urls.logo =  value.data.url;
+        else
+          this.urls.pic = value.data.url;
+      }
+      else
+        this.$alert('图片上传失败，请稍后重试！', {
+          confirmButtonText: '确定',
+        });
+    },
+    handleRemove(file, fileList) {
+      // console.log(file, fileList);
     },
     onUploadChange(file, type){
       // console.log(file);
@@ -535,7 +586,7 @@ export default {
         //this.result为图片的base64
         // console.log(this.result)
         //将图片路径赋值给url
-        if(type === 'pic')
+        if(type === 'ad')
           _this.picUrl =  e.target.result;
         else
           _this.logoUrl = e.target.result;
@@ -549,14 +600,17 @@ export default {
       //     confirmButtonText: '确定',
       //   })
       // }
-      if(this.logoUrl !== ''){
-        this.$refs.logoUpload.submit();
+      if(this.urls.logo === '' || this.urls.pic === '') {
+        this.$confirm('请确定logo和贴片是否上传！(若未上传请点击“取消”）', "提示",{
+          cancelButtonText: '取消',
+          confirmButtonText: '确定',
+          type: 'warning'
+        }).then((res)=>{
+          this.toPay();//没上传logo 和 贴片，直接保存订单
+        })
       }
-      else if(this.picUrl !== ''){
-        this.$refs.logoUpload.submit();
-      }
-      else
-        this.toPay();//没上传logo 和 贴片，直接保存订单
+
+
     }
   }
 }
