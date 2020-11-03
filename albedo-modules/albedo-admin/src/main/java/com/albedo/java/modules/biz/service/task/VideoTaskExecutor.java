@@ -63,7 +63,7 @@ public class VideoTaskExecutor {
     String audioUrl = FileUploadUtil.getDefaultBaseDir() + File.separator + ossSingleton.getPath(video.getAudioUrl());
     Assert.notEmpty(audioUrl, AUDIO_NOT_FOUND);
     String outputUrl = ffmpegUtil.concatAudio(audioUrl, videos);
-    outputUrl = ffmpegUtil.loopOrCut(outputUrl, video.getDuration().doubleValue() * 60);
+    // outputUrl = ffmpegUtil.loopOrCut(outputUrl, video.getDuration().doubleValue() * 60);
     String userId = video.getUserId();
     String bucketName = userService.getBucketName(userId);
     String outputPath =
