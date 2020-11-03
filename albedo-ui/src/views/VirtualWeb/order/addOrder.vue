@@ -63,18 +63,24 @@
           </el-collapse>
         </el-col>
         <el-col span="7">
-          <el-card class="box-card">
+          <el-card class="box-card" style="border-bottom : none; ">
             <div slot="header" class="clearfix">
               <span>已选需求</span>
-              <a class="text-button" @click="toPay()">前往支付></a>
+<!--              <a class="text-button" @click="toPay()">前往支付></a>-->
             </div>
-            <el-tag v-for="(item, index) in selectBelongType" v-show="selectBelongType.length > 0" :type="typeList[index % 5]" :key="item" class="myTags">
-              {{item.value}}
-            </el-tag>
-            <el-tag v-for="(item, index) in backData" v-show="backData.length > 0" :type="typeList[index % 5]" :key="item" class="myTags">
-              {{item.data[0].value}}
-            </el-tag>
+            <div style="min-height: 150px">
+              <el-tag :key="item" :type="typeList[index % 5]" class="myTags" v-for="(item, index) in selectBelongType" v-show="selectBelongType.length > 0">
+                {{item.value}}
+              </el-tag>
+              <el-tag :key="item" :type="typeList[index % 5]" class="myTags" v-for="(item, index) in backData" v-show="backData.length > 0">
+                {{item.data[0].value}}
+              </el-tag>
+            </div>
+            <el-button @click="toPay()" style="width: 200px;margin-top: 10px" type="primary">前往支付</el-button>
           </el-card>
+<!--          <div style="border-radius:5px;width: 350px;box-shadow: 0 2px 5px 0 rgba(0,0,0,0.1); background-color: white; margin-bottom: 10px">-->
+
+<!--          </div>-->
           <el-card style="height: 600px">
 <!--            {{this.selectedAnchor}} <br/>-->
 <!--            {{this.selectedBackground}}-->

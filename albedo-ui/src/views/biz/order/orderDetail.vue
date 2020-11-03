@@ -67,7 +67,7 @@
               <el-col span="8" >{{o.title}}</el-col>
               <el-col span="8" >{{item.value}}</el-col>
               <el-col span="8" >
-                <img class="img" v-show="item.url !== undefined && item.url !== null" :src="'http://' + item.url">
+                <img :src="'https://' + item.url" class="img" v-show="item.url !== undefined && item.url !== null">
               </el-col>
             </el-row>
           </el-row>
@@ -100,12 +100,14 @@
           附加图片
         </el-col>
         <el-col span="10" v-show="this.orderData.logoUrl !== '' && this.orderData.logoUrl !== null">
-          <el-row>logo图片</el-row><br />
-          <img class="img2" :src="'http://' + this.orderData.logoUrl">
+          <el-row>logo图片</el-row>
+          <el-row><img :src="'https://' + this.orderData.logoUrl" class="img2"></el-row>
+          <el-button @click="download(orderData.logoUrl)">下载<i class="el-icon-download el-icon--right" style="font-size: 18px"></i></el-button>
         </el-col>
         <el-col span="10" v-show="this.orderData.adUrl !== '' && this.orderData.adUrl !== null">
-          <span>贴片图片</span><br />
-          <img class="img2" :src="'http://' + this.orderData.adUrl">
+          <el-row>贴片图片</el-row>
+          <el-row><img :src="'https://' + this.orderData.adUrl" class="img2"></el-row>
+          <el-button @click="download(orderData.adUrl)">下载<i class="el-icon-download el-icon--right" style="font-size: 18px"></i></el-button>
         </el-col>
       </el-row>
 
@@ -262,6 +264,15 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
+    download(url){
+      // console.log(url)
+      let link = document.createElement("a"); //创建a标签
+      link.style.display = "none"; //使其隐藏
+      link.href = 'https://' + url; //赋予文件下载地址
+      link.setAttribute("download", 'pic'); //设置下载属性 以及文件名
+      // document.body.appendChild(link); //a标签插至页面中
+      link.click(); //强制触发a标签事件
+    }
   }
 }
 </script>
