@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
-import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.modules.tool.domain.TtsParams;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
@@ -51,19 +50,6 @@ public class TtsSingleton {
     client = new TtsClient(cred, region, clientProfile);
   }
 
-  public TtsSingleton() {
-    String secretId = "AKIDwe7SXMd2UfZ0ADwZsvFJwINJ9i0DRpDK";
-    String secretKey = "pSotkLfiUDgurkbCYxxwc2AHPHsCRglc";
-    Credential cred = new Credential(secretId, secretKey);
-    HttpProfile httpProfile = new HttpProfile();
-    String endpoint = "tts.tencentcloudapi.com";
-    httpProfile.setEndpoint(endpoint);
-    ClientProfile clientProfile = new ClientProfile();
-    clientProfile.setHttpProfile(httpProfile);
-    String region = "ap-shanghai";
-    client = new TtsClient(cred, region, clientProfile);
-  }
-
   private File decoderBase64File(String base64Str, File tempFile) {
     try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
       byte[] audioByte = Base64.decode(base64Str);
@@ -75,22 +61,12 @@ public class TtsSingleton {
     return tempFile;
   }
 
-  public File generateAudio(String params, String filePath) throws TencentCloudSDKException {
+  private File generateAudio(String params, String filePath) throws TencentCloudSDKException {
     TextToVoiceRequest req = TextToVoiceRequest.fromJsonString(params, TextToVoiceRequest.class);
     TextToVoiceResponse resp = client.TextToVoice(req);
     File outFile = FileUtil.touch(filePath);
     log.info("生成音频文件至{}", outFile.getAbsolutePath());
     return decoderBase64File(resp.getAudio(), outFile);
-  }
-
-  public File generateAudio(TtsParams params) {
-    try {
-      File file = FileUploadUtil.getAbsoluteFile("audio/" + IdUtil.fastSimpleUUID() + "." + params.getCodec());
-      return generateAudio(params, file.getAbsolutePath());
-    } catch (IOException e) {
-      e.printStackTrace();
-      throw new RuntimeMsgException("生成音频时出现错误");
-    }
   }
 
   public File generateAudio(TtsParams params, String filePath) {
@@ -104,12 +80,4 @@ public class TtsSingleton {
     }
   }
 
-  public File generateAudio(String content) throws TencentCloudSDKException {
-    try {
-      File file = FileUploadUtil.getAbsoluteFile(IdUtil.fastSimpleUUID() + ".mp3");
-      return generateAudio(content, file.getAbsolutePath());
-    } catch (IOException e) {
-      throw new RuntimeMsgException("生成音频时出现错误");
-    }
-  }
 }

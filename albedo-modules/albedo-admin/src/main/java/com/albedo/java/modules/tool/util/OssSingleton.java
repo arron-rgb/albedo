@@ -20,7 +20,6 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.event.ProgressListener;
-import com.aliyun.oss.internal.OSSHeaders;
 import com.aliyun.oss.model.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,18 +41,7 @@ public class OssSingleton {
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
-  public OssSingleton() {
-    // export ALIBABA_ID="LTAI4G9GELKL2AM8BxufjLUE"
-    // export ALIBABA_SECRET="usIxuCax2SM5cQ6uDnNBZ1CARpbuhg"
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    client = new OSSClientBuilder().build(endpoint, "LTAI4G9GELKL2AM8BxufjLUE", "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg");
-  }
-
   private OSS client;
-
-  public OSS getClient() {
-    return this.client;
-  }
 
   public void restart() {
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
@@ -62,15 +50,7 @@ public class OssSingleton {
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
-  public void uploadFile(File file, String objectName) {
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-    metadata.setObjectAcl(CannedAccessControlList.PublicRead);
-
-    uploadFile(file, objectName, metadata, "vlivest");
-  }
-
-  @Async
+  // @Async
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     ObjectMetadata metadata = new ObjectMetadata();
@@ -84,13 +64,6 @@ public class OssSingleton {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
     putObjectRequest.setMetadata(metadata);
-    client.putObject(putObjectRequest);
-  }
-
-  public void uploadFile(File file, String objectName, ObjectMetadata metadata, String bucketName) {
-    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
-    putObjectRequest.setMetadata(metadata);
-    log.info("开始上传文件{}至{}-{}", file.getAbsolutePath(), bucketName, objectName);
     client.putObject(putObjectRequest);
   }
 
