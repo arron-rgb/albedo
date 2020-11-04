@@ -128,7 +128,7 @@
         </el-col>
       </el-row>
 
-      <el-row class="box">
+      <el-row class="box" v-if="!orderId">
         <el-col span="4">
           优惠券：
         </el-col>

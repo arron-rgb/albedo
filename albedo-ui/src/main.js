@@ -33,7 +33,8 @@ Vue.use(VueHighlightJS)
 Vue.use(mavonEditor)
 Vue.use(permission)
 Vue.use(Element, {
-  size: Cookies.get('size') || 'small' // set element-ui default size
+  // size: Cookies.get('size') || 'small' // set element-ui default size
+  size: 'small'
 })
 require('video.js/dist/video-js.css')
 require('vue-video-player/src/custom-theme.css')
