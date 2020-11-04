@@ -147,7 +147,7 @@ export default {
           // console.log(res);
           if (res.code === MSG_TYPE_SUCCESS) {
             if(res.data === null || res.data.state === 5){//上一单已完结，可以进行下一单
-              this.$alert('前一订单已制作完成，您可千万“我的”-“我的订单”中查看！', '提示', {
+              this.$alert('前一订单已制作完成，您可前往“我的”-“我的订单”中查看！', '提示', {
                 confirmButtonText: '确定',
               }).then(() => {
                 this.getData();
