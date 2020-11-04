@@ -141,7 +141,7 @@
               </el-input>
             </el-col>
             <el-col span="4">
-              <el-button  @click="verifyDiscount">
+              <el-button :disabled="verifyDisable" @click="verifyDiscount">
                 验证
               </el-button>
             </el-col>
@@ -228,6 +228,7 @@ export default {
       data : '',
       loading : false,
       verifyLoading : false,
+      verifyDisable : false,
       priceList : [1599, 2599, 1000, 99],//单人主播价格、双人主播价格、双人主播用套餐差价, 加速卡价格
       orderId : null,
       times : 0,
@@ -477,6 +478,7 @@ export default {
         crudCoupon.verify(this.discountCode).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
             this.discount = res.data.discount;
+            this.verifyDisable = true;//只能使用一次优惠券码
             resolve(res);
           }
         }).catch(res => {
