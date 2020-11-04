@@ -37,8 +37,8 @@ public class OssSingleton {
     this.applicationProperties = applicationProperties;
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    String internalEndpoint = "http://oss-cn-hangzhou-internal.aliyuncs.com";
+    String endpoint = "http://oss-cn-shenzhen.aliyuncs.com";
+    String internalEndpoint = "http://oss-cn-shenzhen-internal.aliyuncs.com";
     // internalClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
     internalClient = new OSSClientBuilder().build(internalEndpoint, accessKeyId, accessKeySecret);
   }
@@ -88,21 +88,17 @@ public class OssSingleton {
     return listFiles(bucketName, "").stream().mapToDouble(OSSObjectSummary::getSize).sum() / 1024 / 1024;
   }
 
-  public double getBucketStorage(String bucketName, String keyPrefix) {
-    return listFiles(bucketName, keyPrefix).stream().mapToLong(OSSObjectSummary::getSize).sum();
-  }
-
   public void remove(String bucketName, String objectName) {
     internalClient.deleteObject(bucketName, objectName);
   }
 
   @Async
   public void remove(String url) {
-    if (!StringUtils.contains(url, ".oss-cn-hangzhou.aliyuncs.com/")) {
+    if (!StringUtils.contains(url, ".oss-cn-shenzhen.aliyuncs.com/")) {
       log.error("删除{}失败", url);
       return;
     }
-    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");
     String bucket = split[0];
     String object = split[1];
     try {
@@ -172,13 +168,13 @@ public class OssSingleton {
   public String getUrl(String filePath) {
     String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 2);
     String originUrl = filePath.replace(parent + "/", "");
-    originUrl = originUrl.replace("/", ".oss-cn-hangzhou.aliyuncs.com/");
+    originUrl = originUrl.replace("/", ".oss-cn-shenzhen.aliyuncs.com/");
     return originUrl;
   }
 
   public String getPath(String url) {
-    // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-hangzhou.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
-    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-shenzhen.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
+    String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");
     String bucket = split[0];
     String object = split[1];
     return bucket + File.separator + object;
