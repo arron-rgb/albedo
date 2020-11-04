@@ -1,12 +1,155 @@
-a{
-  text-decoration: none;
-  color:#ccc
+/*a{*/
+/*  text-decoration: none;*/
+/*  color:#ccc*/
+/*}*/
+/*li{*/
+/*  list-style-type: none;*/
+/*}*/
+/**{*/
+/*  padding:0;*/
+/*  margin:0;*/
+/*  box-sizing: border-box;*/
+/*}*/
+/*修改el-button默认的样式*/
+  .el-button--primary{
+    background-color: #ff5000;
+    border-color: #ff5000;
+  }
+.el-button--primary:focus{
+  background-color: #ff5000 !important;
+  color: white !important;
+  border-color: #ff5000 !important;
 }
-li{
-  list-style-type: none;
+.el-button--primary:hover{
+  background-color: #ff5000 !important;
+  border-color: #ff5000 !important;
+  color: white !important;
 }
-*{
-  padding:0;
-  margin:0;
-  box-sizing: border-box;
+
+.el-tabs__item:hover{
+  color: #ff5000 !important;
+}
+
+.el-tabs__item.is-active{
+  color: #ff5000 !important;
+}
+.el-tabs__active-bar {
+  background-color: #ff5000 !important;
+}
+
+.el-button:hover{
+  background-color: rgba(255, 80, 0, 0.1);
+  color: #ff5000;
+  border-color: rgba(255, 80, 0, 0.1);
+}
+.el-button:focus{
+  background-color: rgba(255, 80, 0, 0.1);
+  color: #ff5000;
+  border-color: rgba(255, 80, 0, 0.1);
+}
+
+
+/*修改el-radio默认样式*/
+  .el-radio-button{
+    margin: 5px;
+    margin-bottom: 10px;
+  }
+.el-radio-button__inner{
+  border: 1px solid #DCDFE6 !important;
+  border-radius: 4px !important;
+  padding: 2px !important;
+}
+.el-radio-button__inner:hover{
+  background-color: rgba(255, 237, 229, 0.4);
+  color: #ff5000;
+  border-color: #ff5000 !important;
+}
+
+.el-radio-button__orig-radio:checked+.el-radio-button__inner{
+  color: white;
+  background-color: #ff5000;
+  border-color: #ff5000;
+  box-shadow: none;
+}
+
+/*修改el-check-button样式*/
+  .el-checkbox-button{
+    margin: 5px;
+  }
+.el-checkbox-button__inner{
+  border: 1px solid #DCDFE6 !important;
+  border-radius: 4px !important;
+  padding: 2px !important;
+}
+.el-checkbox-button__inner:hover{
+  background-color: rgba(255, 237, 229, 0.4);
+  color: #ff5000;
+  border-color: #ff5000 !important;
+}
+.el-checkbox-button.is-checked .el-checkbox-button__inner{
+  background-color: #ff5000;
+  color: white;
+  border-color: #ff5000;
+  box-shadow: none;
+}
+
+
+.el-radio.is-bordered.is-checked{
+  border-color: #ff5000 !important;
+}
+.el-radio__input.is-checked .el-radio__inner{
+  border-color: #ff5000 !important;
+  background-color: #ff5000 !important;
+}
+/*.el-radio__input.is-checked+.el-radio__label{*/
+/*    color: #ff5000;*/
+/*  .button-icon{*/
+/*    background-color: #ff5000;*/
+/*  }*/
+/*  .button-text{*/
+/*    color: #ff5000 !important;*/
+/*  }*/
+/*}*/
+.el-radio__inner:hover{
+  border-color: #ff5000 !important;
+/*background-color: #ff5000 !important;*/
+}
+
+/*修改步骤条颜色*/
+.el-step__title.is-finish{
+color: #ff5000;
+}
+.el-step__head.is-finish{
+  color: #ff5000;
+  border: #ff5000;
+}
+.el-menu-item:hover{
+  color: #ff5000 !important;
+}
+
+/*.el-input__inner:focus{*/
+/*  border: #ff5000 1px solid !important;*/
+/*}*/
+/*.el-input__inner:hover{*/
+/*  border: #ff5000 1px solid !important;*/
+/*}*/
+/*.el-input-number__increase:hover{*/
+/*  color: #ff5000;*/
+/*}*/
+.el-input-number__decrease:hover{
+  color: #ff5000;
+}
+.el-textarea__inner:focus{
+  border: #ff5000 1px solid !important;
+}
+
+.el-checkbox__input.is-checked+.el-checkbox__label{
+  color: #ff5000;
+}
+.el-checkbox__inner:hover{
+  border-color: #ff5000 !important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner{
+  background-color: #ff5000;
+  border-color: #ff5000;
 }

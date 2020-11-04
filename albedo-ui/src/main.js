@@ -15,6 +15,7 @@ import permission from './components/Permission'
 import './assets/styles/element-variables.scss'
 // global css
 import './assets/styles/index.scss'
+import '@/common/reset.css'
 // 代码高亮
 import VueHighlightJS from 'vue-highlightjs'
 import 'highlight.js/styles/atom-one-dark.css'
