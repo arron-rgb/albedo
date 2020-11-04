@@ -25,7 +25,7 @@
           <el-input v-model="form.title" class="input-small"></el-input>
         </el-form-item>
         <el-form-item :rules="[]" label="套词" prop="value">
-          <el-input v-model="form.value" class="input-small"></el-input>
+          <el-input :rows="8" style="width: 300px" type="textarea" v-model="form.value"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
