@@ -114,7 +114,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       form.setTotalAmount("0");
     }
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
-    boolean flag = save(order);
+    boolean flag = order.insertOrUpdate();
     String couponCode = form.getCouponCode();
 
     if (StringUtil.isNotEmpty(couponCode)) {
