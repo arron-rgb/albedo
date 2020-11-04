@@ -281,7 +281,7 @@ export default {
               res.data[i].audioTime === 0 ? planData[i].contain[8] = '/' : planData[i].contain[8] = res.data[i].audioTime + 'min';
               res.data[i].videoTime > 9999 ? planData[i].contain[9] = '无限' : planData[i].contain[9] = res.data[i].videoTime + 'h/条';
               planData[i].contain[11] = res.data[i].childAccount;
-              planData[i].contain[14] = res.data[i].storage + 'G';
+              planData[i].contain[13] = res.data[i].storage + 'G';
             }
             this.priceData = planData;
             this.data = res.data
