@@ -227,6 +227,7 @@ export default {
       isBalance : '0', //是否使用套餐
       data : '',
       loading : false,
+      verifyLoading : false,
       priceList : [1599, 2599, 1000, 99],//单人主播价格、双人主播价格、双人主播用套餐差价, 加速卡价格
       orderId : null,
       times : 0,
@@ -471,6 +472,7 @@ export default {
       });
     },
     verifyDiscount(){//验证优惠券码
+      this.verifyLoading = true;
       return new Promise((resolve, reject) => {
         crudCoupon.verify(this.discountCode).then(res => {
           if(res.code === MSG_TYPE_SUCCESS){
@@ -480,6 +482,7 @@ export default {
         }).catch(res => {
           reject(res)
         })
+        this.verifyLoading = false;
       });
     },
     cancelOrder(){//取消订单
@@ -606,10 +609,11 @@ export default {
           confirmButtonText: '确定',
           type: 'warning'
         }).then((res)=>{
-          this.toPay();//没上传logo 和 贴片，直接保存订单
+          this.toPay();
         })
       }
-
+      else
+        this.toPay();//没上传logo 和 贴片，直接保存订单
 
     }
   }
