@@ -90,7 +90,7 @@ public class VideoTaskExecutor {
   private String checkFileExist(String path) {
     String downloadPath = FileUploadUtil.getDefaultBaseDir() + File.separator + path;
     if (!FileUtil.exist(new File(downloadPath)) || FileUtil.isEmpty(new File(downloadPath))) {
-      log.info("文件{}不存在", path);
+      log.info("文件{}不存在或为空", path);
       log.info("下载文件至{}", downloadPath);
       FileUtil.touch(path);
       String[] split = path.split(File.separator);

@@ -38,17 +38,13 @@ public class OssSingleton {
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
     String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    String internalEndpoint = "http://oss-cn-hangzhou-internal.aliyuncs.com";
+    // internalClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    internalClient = new OSSClientBuilder().build(internalEndpoint, accessKeyId, accessKeySecret);
   }
 
-  private OSS client;
-
-  public void restart() {
-    String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
-    String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-  }
+  // private OSS internalClient;
+  private final OSS internalClient;
 
   // @Async
   public void uploadFile(File file, String objectName, String bucketName) {
@@ -56,7 +52,7 @@ public class OssSingleton {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
     putObjectRequest.setMetadata(metadata);
-    client.putObject(putObjectRequest);
+    internalClient.putObject(putObjectRequest);
   }
 
   public void uploadFileNonAsync(File file, String objectName, String bucketName) {
@@ -64,12 +60,12 @@ public class OssSingleton {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
     putObjectRequest.setMetadata(metadata);
-    client.putObject(putObjectRequest);
+    internalClient.putObject(putObjectRequest);
   }
 
   public List<Bucket> listBuckets() {
     try {
-      return client.listBuckets();
+      return internalClient.listBuckets();
     } catch (ClientException e) {
       log.error("{}", e.getMessage());
       return new ArrayList<>();
@@ -78,7 +74,7 @@ public class OssSingleton {
 
   public List<OSSObjectSummary> listFiles(String bucketName, String keyPrefix) {
     // 列举文件。 如果不设置KeyPrefix，则列举存储空间下所有的文件。KeyPrefix，则列举包含指定前缀的文件。
-    ObjectListing objectListing = client.listObjects(bucketName, keyPrefix);
+    ObjectListing objectListing = internalClient.listObjects(bucketName, keyPrefix);
     return objectListing.getObjectSummaries();
   }
 
@@ -97,7 +93,7 @@ public class OssSingleton {
   }
 
   public void remove(String bucketName, String objectName) {
-    client.deleteObject(bucketName, objectName);
+    internalClient.deleteObject(bucketName, objectName);
   }
 
   @Async
@@ -117,11 +113,7 @@ public class OssSingleton {
   }
 
   public boolean doesBucketExist(String bucketName) {
-    return client.doesBucketExist(bucketName);
-  }
-
-  public void shutdown() {
-    client.shutdown();
+    return internalClient.doesBucketExist(bucketName);
   }
 
   /**
@@ -138,12 +130,8 @@ public class OssSingleton {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
     createBucketRequest.setCannedACL(CannedAccessControlList.PublicRead);
     createBucketRequest.setStorageClass(StorageClass.Standard);
-    client.createBucket(createBucketRequest);
-    client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
-  }
-
-  public boolean doesObjectExist(String bucketName, String objectName) {
-    return client.doesObjectExist(bucketName, objectName);
+    internalClient.createBucket(createBucketRequest);
+    internalClient.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath) {
@@ -154,27 +142,16 @@ public class OssSingleton {
   public File downloadFile(String bucketName, String objectName, ProgressListener listener) {
     String filePath = FileUploadUtil.getBucketPath(bucketName, objectName);
     File file = new File(filePath);
-    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    internalClient.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath, ProgressListener listener) {
     FileUtil.del(filePath);
+    log.info("下载{}-{}至{}", bucketName, objectName, filePath);
     File file = FileUtil.touch(filePath);
-    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    internalClient.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
-  }
-
-  public String localPathToUrl(String bucketName, String filename) {
-    return concatUrl(bucketName, "oss-cn-hangzhou.aliyuncs.com") + "/" + filename;
-  }
-
-  public String concatUrl(String... paths) {
-    StringBuilder stringBuilder = new StringBuilder();
-    for (String path : paths) {
-      stringBuilder.append(path).append(".");
-    }
-    return stringBuilder.substring(0, stringBuilder.length() - 1);
   }
 
   private String replace(String filePath, String parent) {
@@ -186,7 +163,7 @@ public class OssSingleton {
   }
 
   public void removeOldestFile(String bucketName) {
-    ObjectListing objectListing = client.listObjects(bucketName);
+    ObjectListing objectListing = internalClient.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
     objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));
     remove(bucketName, objectSummaries.get(0).getKey());
@@ -196,13 +173,6 @@ public class OssSingleton {
     String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 2);
     String originUrl = filePath.replace(parent + "/", "");
     originUrl = originUrl.replace("/", ".oss-cn-hangzhou.aliyuncs.com/");
-    return originUrl;
-  }
-
-  public String getUrl(String filePath, String bucketName) {
-    String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 1);
-    String originUrl = filePath.replace(parent + "/", "");
-    originUrl = originUrl.replace("/", "vlivest.oss-cn-hangzhou.aliyuncs.com/");
     return originUrl;
   }
 
