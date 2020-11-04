@@ -73,11 +73,7 @@
           <span v-else>登 录 中...</span>
         </el-button>
         <el-button
-
-          type="primary"
-
-          style="width: 100px;border: 1px solid #ff5000;color: #ff5000;background-color: #fff;"
-
+          style="width: 100px;"
           @click="centerDialogVisible=true"
         >
           <span>注 册</span>
