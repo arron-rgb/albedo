@@ -2,6 +2,7 @@ package com.albedo.java.modules.biz.util;
 
 import static cn.hutool.core.io.FileUtil.move;
 import static cn.hutool.core.io.FileUtil.newFile;
+import static com.albedo.java.common.core.util.FileUploadUtil.getBucketPath;
 import static com.albedo.java.common.core.util.FileUtil.generateFilePath;
 
 import java.io.BufferedWriter;
@@ -22,6 +23,7 @@ import com.albedo.java.modules.biz.domain.Video;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -118,16 +120,16 @@ public class FfmpegUtil {
    *          音频路径list
    * @return
    */
-  public String concatMedia(List<String> mediaPaths) {
-    // ffmpeg -i "concat:test1.mp3|test2.mp3" -acodec copy output.mp3
-    String concat = "\"concat:%s";
-    StringBuilder builder = new StringBuilder();
-    for (String path : mediaPaths) {
-      builder.append(path).append("|");
-    }
-    builder.deleteCharAt(builder.length() - 1);
-    builder.append("\"");
-    return String.format(concat, builder.toString());
+  public String concatMedia(List<String> mediaPaths, String bucket) {
+    String extName = FileUtil.extName(mediaPaths.get(0));
+    String mediaOutputPath = getBucketPath(bucket, IdUtil.fastSimpleUUID() + "." + extName);
+    FFmpegBuilder fFmpegBuilder = new FFmpegBuilder();
+    String tempTxtPath = generateTempTxt(mediaPaths);
+    fFmpegBuilder.addInput(tempTxtPath).addExtraArgs("-f", "concat", "-safe", "0");
+    fFmpegBuilder.addOutput(mediaOutputPath).setAudioCodec(COPY).addExtraArgs("-strict", "-2").done();
+    run(fFmpegBuilder);
+    FileUtil.del(tempTxtPath);
+    return mediaOutputPath;
   }
 
   /**

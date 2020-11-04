@@ -339,10 +339,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     List<String> voiceTypes = orderVo.getVoiceType();
     Assert.notEmpty(voiceTypes, "请选择配音音色");
     String voiceType = voiceTypes.get(0);
-    // todo 把content分片合成
-    // for (String content : orderVo.getContent()) {
-    // String audioPath = generateAudio(content, orderVo.getOrderId(), voiceType);
-    // }
     String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     String audioUrl = ossSingleton.getUrl(filePath);
@@ -448,9 +444,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       audioPaths.add(audioPath);
     });
 
-    String audioPath = ffmpegUtil.concatMedia(audioPaths);
+    String audioPath = ffmpegUtil.concatMedia(audioPaths, bucketName);
     File audio = FileUtil.file(audioPath);
     ossSingleton.uploadFile(audio, FileUtil.getName(audio), bucketName);
+    try {
+      audioPaths.forEach(FileUtil::del);
+    } catch (Exception ignored) {
+    }
     return audio.getAbsolutePath();
   }
 
