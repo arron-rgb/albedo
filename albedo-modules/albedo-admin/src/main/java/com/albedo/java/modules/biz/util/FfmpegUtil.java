@@ -118,7 +118,7 @@ public class FfmpegUtil {
    *          音频路径list
    * @return
    */
-  public static String concatMedia(List<String> mediaPaths) {
+  public String concatMedia(List<String> mediaPaths) {
     // ffmpeg -i "concat:test1.mp3|test2.mp3" -acodec copy output.mp3
     String concat = "\"concat:%s";
     StringBuilder builder = new StringBuilder();

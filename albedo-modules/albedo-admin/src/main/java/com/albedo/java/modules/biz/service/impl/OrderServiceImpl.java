@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.task.Signal;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
+import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -337,7 +339,11 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     List<String> voiceTypes = orderVo.getVoiceType();
     Assert.notEmpty(voiceTypes, "请选择配音音色");
     String voiceType = voiceTypes.get(0);
-    String filePath = generateAudio(orderVo.appendContent(), orderVo.getOrderId(), voiceType);
+    // todo 把content分片合成
+    // for (String content : orderVo.getContent()) {
+    // String audioPath = generateAudio(content, orderVo.getOrderId(), voiceType);
+    // }
+    String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     String audioUrl = ossSingleton.getUrl(filePath);
     video.setAudioText(orderVo.appendContent());
@@ -425,21 +431,31 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return Result.buildOkData(aliPayService.toPayAsPc(trade), "请前往支付链接支付，支付后等待工作人员接单即可");
   }
 
-  public String generateAudio(String text, String orderId, String voiceType) {
-    TtsParams ttsParam = new TtsParams();
-    ttsParam.setVoiceType(voiceType);
-    ttsParam.setText(text);
-    ttsParam.setCodec("mp3");
+  public String generateAudio(List<String> text, String orderId, String voiceType) {
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     String userId = order.getUserId();
     String bucketName = userService.getBucketName(userId);
-    String audioPath = FileUploadUtil.getBucketPath(bucketName, IdUtil.fastSimpleUUID() + "." + ttsParam.getCodec());
-    File audio = ttsSingleton.generateAudio(ttsParam, audioPath);
+
+    List<String> audioPaths = new ArrayList<>();
+    text.forEach(content -> {
+      TtsParams ttsParam = new TtsParams();
+      ttsParam.setVoiceType(voiceType);
+      ttsParam.setText(content);
+      ttsParam.setCodec("mp3");
+      String audioPath = FileUploadUtil.getBucketPath(bucketName, IdUtil.fastSimpleUUID() + "." + ttsParam.getCodec());
+      ttsSingleton.generateAudio(ttsParam, audioPath);
+      audioPaths.add(audioPath);
+    });
+
+    String audioPath = ffmpegUtil.concatMedia(audioPaths);
+    File audio = FileUtil.file(audioPath);
     ossSingleton.uploadFile(audio, FileUtil.getName(audio), bucketName);
     return audio.getAbsolutePath();
   }
 
+  @Resource
+  FfmpegUtil ffmpegUtil;
   @Resource
   TtsSingleton ttsSingleton;
 
