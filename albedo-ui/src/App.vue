@@ -121,6 +121,27 @@ body {
   margin: 0;
 }
 
+.el-tabs__item:hover{
+  color: #ff5000 !important;
+}
+
+.el-tabs__item.is-active{
+  color: #ff5000 !important;
+}
+.el-tabs__active-bar {
+  background-color: #ff5000 !important;
+}
+
+.el-button:hover{
+  background-color: rgba(255, 80, 0, 0.1);
+  color: #ff5000;
+  border-color: rgba(255, 80, 0, 0.1);
+}
+.el-button:focus{
+  background-color: rgba(255, 80, 0, 0.1)!important;
+  color: #ff5000!important;
+  border-color: rgba(255, 80, 0, 0.1)!important;
+}
 
 //修改el-button默认的样式
 .el-button--primary{
@@ -137,29 +158,6 @@ body {
   border-color: #ff5000 !important;
   color: white !important;
 }
-
-.el-tabs__item:hover{
-  color: #ff5000 !important;
-}
-
-.el-tabs__item.is-active{
-  color: #ff5000 !important;
-}
-.el-tabs__active-bar {
-  background-color: #ff5000 !important;
-}
-
-.el-button:hover{
-  background-color: rgba(255, 80, 0, 0.1)!important;
-  color: #ff5000!important;
-  border-color: rgba(255, 80, 0, 0.1)!important;
-}
-.el-button:focus{
-  background-color: rgba(255, 80, 0, 0.1)!important;
-  color: #ff5000!important;
-  border-color: rgba(255, 80, 0, 0.1)!important;
-}
-
 
 //修改el-radio默认样式
 .el-radio-button{

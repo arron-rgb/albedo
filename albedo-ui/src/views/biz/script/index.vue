@@ -50,7 +50,7 @@
       <el-table-column :show-overflow-tooltip="true" align="center" label="所属分类" prop="title"/>
       <el-table-column align="center" label="字数">
         <template slot-scope="scope">
-          {{scope.value.length}}
+          {{scope.value.length()}}
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" align="center" label="套词" prop="value"/>

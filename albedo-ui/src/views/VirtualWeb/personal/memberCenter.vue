@@ -389,7 +389,7 @@ export default {
               }
             },
             {
-              name: '已使用\n' + (this.data.accountAvailable) * 100/this.data.accountAmount + '%',
+              name: '已使用\n' + (this.data.accountAvailable * 100/this.data.accountAmount).toFixed(4) + '%',
               value: this.data.accountAmount - this.data.accountAvailable,
               label:{
                 normal : {
