@@ -316,7 +316,7 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 
 .pageTitle {
   font-size: 20px;

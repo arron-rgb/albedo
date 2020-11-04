@@ -29,7 +29,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .container{
   width: 1200px;
   margin: auto;
