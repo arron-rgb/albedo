@@ -21,7 +21,7 @@
       width="800px"
     >
       <el-form ref="form" :inline="true" :model="form" label-width="120px" size="small">
-        <el-form-item :rules="[]" label="所属分类" prop="title">
+        <el-form-item :rules="[{required: true, min: 1, max: 110, trigger: 'blur', message: '套词内容不能为空且不能超过110字'}]" label="所属分类" prop="title">
           <el-input v-model="form.title" class="input-small"></el-input>
         </el-form-item>
         <el-form-item :rules="[]" label="套词" prop="value">
@@ -50,7 +50,7 @@
       <el-table-column :show-overflow-tooltip="true" align="center" label="所属分类" prop="title"/>
       <el-table-column align="center" label="字数">
         <template slot-scope="scope">
-          {{scope.value.length()}}
+          {{scope.row.value.length}}
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" align="center" label="套词" prop="value"/>

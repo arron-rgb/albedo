@@ -57,13 +57,18 @@
     title="编辑话术"
     :visible.sync="scriptVisible"
     width="600px">
-    <el-input
-      type="textarea"
-      :autosize="{minRows: 5}"
-      maxlength="110"
-      show-word-limit
-      v-model="editScript.data"
-      @input="onInput"></el-input>
+    <el-form>
+      <el-form-item
+        :rules="[{required: true, min: 1, max: 110, trigger: 'blur', message: '套词内容不能为空且不能超过110字'}]">
+      <el-input
+        :autosize="{minRows: 5}"
+        @input="onInput"
+        maxlength="110"
+        show-word-limit
+        type="textarea"
+        v-model="editScript.data"></el-input>
+      </el-form-item>
+    </el-form>
     <el-button type="primary" @click="saveScript">保存</el-button>
   </el-dialog>
 
