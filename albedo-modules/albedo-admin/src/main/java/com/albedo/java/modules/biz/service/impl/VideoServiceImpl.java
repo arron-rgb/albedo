@@ -69,9 +69,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
-    if (!ossSingleton.doesBucketExist(bucketName)) {
-      createBucket(bucketName, userId);
-    }
     if (storage < 0) {
       try {
         ossSingleton.removeOldestFile(bucketName);

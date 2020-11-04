@@ -37,22 +37,25 @@ public class OssSingleton {
     this.applicationProperties = applicationProperties;
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "http://oss-cn-shenzhen.aliyuncs.com";
-    String internalEndpoint = "http://oss-cn-shenzhen-internal.aliyuncs.com";
+    String endpoint = "https://oss-cn-shenzhen-internal.aliyuncs.com";
+    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+  }
+
+  public OssSingleton() {
+    String endpoint = "https://oss-cn-shenzhen.aliyuncs.com";
     // internalClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-    internalClient = new OSSClientBuilder().build(internalEndpoint, accessKeyId, accessKeySecret);
+    client = new OSSClientBuilder().build(endpoint, "LTAI4G9GELKL2AM8BxufjLUE", "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg");
   }
 
   // private OSS internalClient;
-  private final OSS internalClient;
+  private final OSS client;
 
-  // @Async
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
     putObjectRequest.setMetadata(metadata);
-    internalClient.putObject(putObjectRequest);
+    client.putObject(putObjectRequest);
   }
 
   public void uploadFileNonAsync(File file, String objectName, String bucketName) {
@@ -60,12 +63,12 @@ public class OssSingleton {
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
     putObjectRequest.setMetadata(metadata);
-    internalClient.putObject(putObjectRequest);
+    client.putObject(putObjectRequest);
   }
 
   public List<Bucket> listBuckets() {
     try {
-      return internalClient.listBuckets();
+      return client.listBuckets();
     } catch (ClientException e) {
       log.error("{}", e.getMessage());
       return new ArrayList<>();
@@ -74,7 +77,7 @@ public class OssSingleton {
 
   public List<OSSObjectSummary> listFiles(String bucketName, String keyPrefix) {
     // 列举文件。 如果不设置KeyPrefix，则列举存储空间下所有的文件。KeyPrefix，则列举包含指定前缀的文件。
-    ObjectListing objectListing = internalClient.listObjects(bucketName, keyPrefix);
+    ObjectListing objectListing = client.listObjects(bucketName, keyPrefix);
     return objectListing.getObjectSummaries();
   }
 
@@ -89,7 +92,7 @@ public class OssSingleton {
   }
 
   public void remove(String bucketName, String objectName) {
-    internalClient.deleteObject(bucketName, objectName);
+    client.deleteObject(bucketName, objectName);
   }
 
   @Async
@@ -109,7 +112,7 @@ public class OssSingleton {
   }
 
   public boolean doesBucketExist(String bucketName) {
-    return internalClient.doesBucketExist(bucketName);
+    return client.doesBucketExist(bucketName);
   }
 
   /**
@@ -126,8 +129,8 @@ public class OssSingleton {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
     createBucketRequest.setCannedACL(CannedAccessControlList.PublicRead);
     createBucketRequest.setStorageClass(StorageClass.Standard);
-    internalClient.createBucket(createBucketRequest);
-    internalClient.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
+    client.createBucket(createBucketRequest);
+    client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath) {
@@ -138,7 +141,7 @@ public class OssSingleton {
   public File downloadFile(String bucketName, String objectName, ProgressListener listener) {
     String filePath = FileUploadUtil.getBucketPath(bucketName, objectName);
     File file = new File(filePath);
-    internalClient.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
   }
 
@@ -146,7 +149,7 @@ public class OssSingleton {
     FileUtil.del(filePath);
     log.info("下载{}-{}至{}", bucketName, objectName, filePath);
     File file = FileUtil.touch(filePath);
-    internalClient.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
+    client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
   }
 
@@ -159,7 +162,7 @@ public class OssSingleton {
   }
 
   public void removeOldestFile(String bucketName) {
-    ObjectListing objectListing = internalClient.listObjects(bucketName);
+    ObjectListing objectListing = client.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
     objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));
     remove(bucketName, objectSummaries.get(0).getKey());
