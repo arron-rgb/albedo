@@ -124,8 +124,8 @@ body {
 
 //修改el-button默认的样式
 .el-button--primary{
-  background-color: #ff5000;
-  border-color: #ff5000;
+  background-color: #ff5000 !important;
+  border-color: #ff5000!important;
 }
 .el-button--primary:focus{
   background-color: #ff5000 !important;
@@ -150,21 +150,21 @@ body {
 }
 
 .el-button:hover{
-  background-color: rgba(255, 80, 0, 0.1);
-  color: #ff5000;
-  border-color: rgba(255, 80, 0, 0.1);
+  background-color: rgba(255, 80, 0, 0.1)!important;
+  color: #ff5000!important;
+  border-color: rgba(255, 80, 0, 0.1)!important;
 }
 .el-button:focus{
-  background-color: rgba(255, 80, 0, 0.1);
-  color: #ff5000;
-  border-color: rgba(255, 80, 0, 0.1);
+  background-color: rgba(255, 80, 0, 0.1)!important;
+  color: #ff5000!important;
+  border-color: rgba(255, 80, 0, 0.1)!important;
 }
 
 
 //修改el-radio默认样式
 .el-radio-button{
-  margin: 5px;
-  margin-bottom: 10px;
+  margin: 5px!important;
+  margin-bottom: 10px!important;
 }
 .el-radio-button__inner{
   border: 1px solid #DCDFE6 !important;
@@ -172,20 +172,20 @@ body {
   padding: 2px !important;
 }
 .el-radio-button__inner:hover{
-  background-color: rgba(255, 237, 229, 0.4);
-  color: #ff5000;
+  background-color: rgba(255, 237, 229, 0.4)!important;
+  color: #ff5000!important;
   border-color: #ff5000 !important;
 }
 
 .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-  color: white;
-  background-color: #ff5000;
-  border-color: #ff5000;
-  box-shadow: none;
+  color: white !important;
+  background-color: #ff5000 !important;
+  border-color: #ff5000 !important;
+  box-shadow: none !important;
 }
 //修改el-check-button样式
 .el-checkbox-button{
-  margin: 5px;
+  margin: 5px !important;
 }
 .el-checkbox-button__inner{
   border: 1px solid #DCDFE6 !important;
@@ -193,15 +193,15 @@ body {
   padding: 2px !important;
 }
 .el-checkbox-button__inner:hover{
-  background-color: rgba(255, 237, 229, 0.4);
-  color: #ff5000;
+  background-color: rgba(255, 237, 229, 0.4) !important;
+  color: #ff5000 !important;
   border-color: #ff5000 !important;
 }
 .el-checkbox-button.is-checked .el-checkbox-button__inner{
-  background-color: #ff5000;
-  color: white;
-  border-color: #ff5000;
-  box-shadow: none;
+  background-color: #ff5000 !important;
+  color: white !important;
+  border-color: #ff5000 !important;
+  box-shadow: none !important;
 }
 
 
@@ -213,9 +213,9 @@ body {
   background-color: #ff5000 !important;
 }
 .el-radio__input.is-checked+.el-radio__label{
-  color: #ff5000;
+  color: #ff5000 !important;
   .button-icon{
-    background-color: #ff5000;
+    background-color: #ff5000 !important;
   }
   .button-text{
     color: #ff5000 !important;
@@ -227,11 +227,11 @@ body {
 }
 
 .el-step__title.is-finish{//修改步骤条颜色
-  color: #ff5000;
+  color: #ff5000 !important;
 }
 .el-step__head.is-finish{
-  color: #ff5000;
-  border: #ff5000;
+  color: #ff5000 !important;
+  border: #ff5000 !important;
 }
 .el-menu-item:hover{
   color: #ff5000 !important;
@@ -247,20 +247,20 @@ body {
 //  color: #ff5000;
 //}
 .el-input-number__decrease:hover{
-  color: #ff5000;
+  color: #ff5000 !important;
 }
 .el-textarea__inner:focus{
   border: #ff5000 1px solid !important;
 }
 
 .el-checkbox__input.is-checked+.el-checkbox__label{
-  color: #ff5000;
+  color: #ff5000 !important;
 }
 .el-checkbox__inner:hover{
   border-color: #ff5000 !important;
 }
 .el-checkbox__input.is-checked .el-checkbox__inner{
-  background-color: #ff5000;
-  border-color: #ff5000;
+  background-color: #ff5000 !important;
+  border-color: #ff5000 !important;
 }
 </style>

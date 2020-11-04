@@ -25,7 +25,11 @@
           <el-input v-model="form.title" class="input-small"></el-input>
         </el-form-item>
         <el-form-item :rules="[]" label="套词" prop="value">
-          <el-input :rows="8" style="width: 300px" type="textarea" v-model="form.value"></el-input>
+          <el-input :rows="8"
+                    maxlength="110"
+                    show-word-limit
+                    style="width: 300px"
+                    type="textarea" v-model="form.value"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -44,6 +48,11 @@
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column :show-overflow-tooltip="true" align="center" label="所属分类" prop="title"/>
+      <el-table-column align="center" label="字数">
+        <template slot-scope="scope">
+          {{scope.value.length}}
+        </template>
+      </el-table-column>
       <el-table-column :show-overflow-tooltip="true" align="center" label="套词" prop="value"/>
       <el-table-column v-permission="[permission.edit,permission.del]" label="操作" width="120px" fixed="right">
         <template slot-scope="scope">

@@ -60,6 +60,8 @@
     <el-input
       type="textarea"
       :autosize="{minRows: 5}"
+      maxlength="110"
+      show-word-limit
       v-model="editScript.data"
       @input="onInput"></el-input>
     <el-button type="primary" @click="saveScript">保存</el-button>

@@ -24,7 +24,10 @@
           <el-input type="text" v-model="data.name"></el-input>
         </el-form-item>
         <el-form-item label="商品描述">
-          <el-input type="textarea" :rows="5"  v-model="data.description"></el-input>
+          <el-input :rows="5"
+                    maxlength="110"
+                    show-word-limit
+                    type="textarea"  v-model="data.description"></el-input>
         </el-form-item>
       </el-form>
     </el-col>
