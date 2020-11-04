@@ -51,7 +51,7 @@ public class VideoTaskExecutor {
     videos.forEach(innerVideo -> {
       // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-hangzhou.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
       // static.vlivest.com/6f83d88654539343fc153888d8da736a.mp3
-      String originUrl = video.getOriginUrl();
+      String originUrl = innerVideo.getOriginUrl();
       String originPath = checkFileExist(ossSingleton.getPath(originUrl));
       innerVideo.setOriginUrl(originPath);
 
@@ -90,6 +90,8 @@ public class VideoTaskExecutor {
   private String checkFileExist(String path) {
     String downloadPath = FileUploadUtil.getDefaultBaseDir() + File.separator + path;
     if (!FileUtil.exist(new File(downloadPath)) || FileUtil.isEmpty(new File(downloadPath))) {
+      log.info("文件{}不存在", path);
+      log.info("下载文件至{}", downloadPath);
       FileUtil.touch(path);
       String[] split = path.split(File.separator);
       ossSingleton.downloadFile(split[0], split[1], downloadPath, new GetObjectProgressListener());
@@ -117,9 +119,10 @@ public class VideoTaskExecutor {
         case RESPONSE_BYTE_TRANSFER_EVENT:
           this.bytesRead += bytes;
           if (this.totalBytes != -1) {
-            int percent = (int)(this.bytesRead * 100.0 / this.totalBytes);
-            log.info(bytes + " bytes have been read at this time, download progress: " + percent + "%(" + this.bytesRead
-              + "/" + this.totalBytes + ")");
+            // int percent = (int)(this.bytesRead * 100.0 / this.totalBytes);
+            // log.info(bytes + " bytes have been read at this time, download progress: " + percent + "%(" +
+            // this.bytesRead
+            // + "/" + this.totalBytes + ")");
           } else {
             log.info(
               bytes + " bytes have been read at this time, download ratio: unknown" + "(" + this.bytesRead + "/...)");
