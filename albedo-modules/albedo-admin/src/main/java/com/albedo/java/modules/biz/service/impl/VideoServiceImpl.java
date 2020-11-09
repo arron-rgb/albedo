@@ -69,6 +69,9 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      ossSingleton.create(bucketName, balance.getStorage().intValue());
+    }
     if (storage < 0) {
       try {
         ossSingleton.removeOldestFile(bucketName);
@@ -134,18 +137,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
       return videos.get(0);
     }
     return null;
-  }
-
-  /**
-   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
-   * 只能包括小写字母、数字和短划线（-）。
-   * 必须以小写字母或者数字开头和结尾。
-   * 长度必须在3~63字节之间。
-   */
-  private void createBucket(String userId, String bucketName) {
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    Double storageSize = balance.getStorage();
-    ossSingleton.create(bucketName, storageSize.intValue());
   }
 
 }
