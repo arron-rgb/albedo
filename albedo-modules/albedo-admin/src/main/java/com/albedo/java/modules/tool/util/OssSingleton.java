@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,10 @@ public class OssSingleton {
 
   ApplicationProperties applicationProperties;
 
-  public OssSingleton(ApplicationProperties applicationProperties) {
+  public OssSingleton(ApplicationProperties applicationProperties, @Value("${oss.endpoint}") String endpoint) {
     this.applicationProperties = applicationProperties;
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "https://oss-cn-shenzhen-internal.aliyuncs.com";
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
@@ -161,6 +161,7 @@ public class OssSingleton {
     return replace(file.getAbsolutePath(), file.getParent());
   }
 
+  @Async
   public void removeOldestFile(String bucketName) {
     ObjectListing objectListing = client.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();

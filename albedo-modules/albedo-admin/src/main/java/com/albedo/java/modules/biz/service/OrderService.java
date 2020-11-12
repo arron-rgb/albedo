@@ -70,6 +70,8 @@ public interface OrderService extends BaseService<Order> {
    */
   Video updateForm(SubOrderVo orderVo);
 
+  String generateAudio(List<String> text, String orderId, String voiceType);
+
   /**
    * 返回员工名下的订单
    *

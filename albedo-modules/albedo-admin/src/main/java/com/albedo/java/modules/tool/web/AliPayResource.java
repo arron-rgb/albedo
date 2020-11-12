@@ -33,7 +33,6 @@ import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.tool.domain.AlipayConfig;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.domain.vo.TradeVo;
@@ -42,6 +41,7 @@ import com.albedo.java.modules.tool.util.AliPayUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.math.Money;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -128,7 +128,7 @@ public class AliPayResource {
     Assert.isTrue(sellerId.equals(record.getSellerId()), "商户号为空");
     // 付款金额
     String totalAmount = getParam(request, "total_amount");
-    Assert.isTrue(MoneyUtil.equals(totalAmount, record.getTotalAmount().toString()), "金额数量异常");
+    Assert.isTrue(new Money(totalAmount).equals(new Money(record.getTotalAmount().toString())), "金额数量异常");
     // appId
     boolean callback = false;
     record.setStatus(TRADE_FINISHED);

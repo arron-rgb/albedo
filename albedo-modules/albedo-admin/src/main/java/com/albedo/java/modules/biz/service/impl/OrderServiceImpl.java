@@ -27,7 +27,6 @@ import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
-import com.albedo.java.common.security.service.UserDetail;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
@@ -41,7 +40,6 @@ import com.albedo.java.modules.biz.service.PurchaseRecordService;
 import com.albedo.java.modules.biz.service.task.Signal;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
-import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.sys.service.UserService;
@@ -90,7 +88,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public Order currentOrder() {
     return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING)
-      .ne("state", COMPLETED_SUCCESS).orderByAsc("created_date"), false);
+      .ne("state", BusinessConstants.VALID).orderByAsc("created_date"), false);
   }
 
   @Override
@@ -160,7 +158,11 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   private boolean compareOrderPrice(OrderVo form, Order order) {
-    return MoneyUtil.equals(form.getTotalAmount(), order.getTotalAmount());
+    return new Money(form.getTotalAmount()).equals(new Money(order.getTotalAmount()));
+  }
+
+  private boolean compareOrderPrice(String form, String order) {
+    return new Money(form).equals(new Money(order));
   }
 
   @Override
@@ -202,8 +204,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
           if (Objects.isNull(doubleAnchor) || Objects.isNull(singleAnchor)) {
             money.addTo(new Money("1000"));
           } else {
-            String addValue = MoneyUtil.moneySub(doubleAnchor.getVal(), singleAnchor.getVal());
-            money.addTo(new Money(addValue));
+            Money subtract = new Money(doubleAnchor.getVal()).subtract(new Money(singleAnchor.getVal()));
+            money.addTo(subtract);
           }
         }
         // 无需获取支付链接
@@ -303,20 +305,17 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public Video updateForm(SubOrderVo orderVo) {
-    String orderId = orderVo.getOrderId();
-    Order order = baseMapper.selectById(orderId);
-    String videoId = order.getVideoId();
-    Video video = videoRepository.selectById(videoId);
-    Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    UserDetail user = SecurityUtil.getUser();
-    Long duration = orderVo.getDuration();
-    Balance balance = balanceService.getByUserId(user.getId());
-    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
-    video.setDuration(duration);
-    videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
+    String orderId = orderVo.getOrderId();
+    Order order = baseMapper.selectById(orderId);
+    Video video = Video.builder().dubType(orderVo.getType()).audioText(orderVo.getContentText())
+      .userId(order.getUserId()).orderId(orderId).build();
+    Long duration = orderVo.getDuration();
+    Balance balance = balanceService.getByUserId(order.getUserId());
+    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
+    video.insert();
     return video;
   }
 
@@ -330,7 +329,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   public void dubbingBySelf(SubOrderVo orderVo, Video video) {
     Assert.notEmpty(orderVo.getAudioUrl(), "音频链接不得为空，请检查后重试");
     video.setAudioUrl(orderVo.getAudioUrl());
-    videoRepository.updateById(video);
+    video.updateById();
     SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
@@ -342,7 +341,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
     Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     String audioUrl = ossSingleton.getUrl(filePath);
-    video.setAudioText(orderVo.appendContent());
     video.setAudioUrl(audioUrl);
     video.updateById();
     SpringContextHolder.publishEvent(new Signal(video.getId()));
@@ -361,7 +359,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(video, VIDEO_NOT_FOUND);
     video.setAudioUrl(audioUrl);
     video.updateById();
-    audioOrder.setState(COMPLETED_SUCCESS);
+    audioOrder.setState(BusinessConstants.VALID);
     audioOrder.updateById();
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
@@ -420,13 +418,14 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         order.updateById();
       }
     }
-    Assert.isTrue(MoneyUtil.equals(totalAmount.toPlainString(), orderVo.getTotalAmount()), PRICE_ERROR);
+    Assert.isTrue(compareOrderPrice(totalAmount.toPlainString(), orderVo.getTotalAmount()), PRICE_ERROR);
     TradePlus trade = TradePlus.build(totalAmount.toPlainString(), subject);
     PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
     recordService.save(record);
     return Result.buildOkData(aliPayService.toPayAsPc(trade), "请前往支付链接支付，支付后等待工作人员接单即可");
   }
 
+  @Override
   public String generateAudio(List<String> text, String orderId, String voiceType) {
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);

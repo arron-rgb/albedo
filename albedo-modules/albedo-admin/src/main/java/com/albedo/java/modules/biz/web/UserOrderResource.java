@@ -20,11 +20,9 @@ import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
-import com.albedo.java.modules.biz.domain.Balance;
-import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.SubOrderVo;
-import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
@@ -32,8 +30,10 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +53,8 @@ public class UserOrderResource extends BaseResource {
 
   private final OrderService service;
 
+  @Resource
+  MaterialRepository materialRepository;
   @Resource
   VideoService videoService;
 
@@ -78,16 +80,9 @@ public class UserOrderResource extends BaseResource {
       return Result.buildOkData(order);
     }
     // 把videoId更新为url
-    Video video = videoService.getById(order.getVideoId());
-    if (video == null) {
-      video = videoService.getOneByOrderId(order.getId());
-    }
-    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
-      String originUrl = video.getOriginUrl();
-      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        originUrl = video.getOutputUrl();
-      }
-      order.setVideoId(originUrl);
+    List<VideoMaterial> videos = videoService.getMaterials(order.getId());
+    if (CollectionUtil.isNotEmpty(videos)) {
+      order.setVideoId(videos.get(0).getOriginUrl());
     }
     return Result.buildOkData(order);
   }
@@ -102,14 +97,13 @@ public class UserOrderResource extends BaseResource {
   public Result<List<Order>> listOrder() {
     List<Order> orders = service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()));
     orders.forEach(order -> {
-      Video video = videoService.getById(order.getVideoId());
-      if (video != null) {
-        String originUrl = video.getOriginUrl();
-        if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-          originUrl = video.getOutputUrl();
-        }
-        order.setVideoId(originUrl);
+      List<Video> list = videoService.list(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, order.getId()));
+      if (CollectionUtils.isNotEmpty(list)) {
+        list.stream().filter(video -> StringUtils.isNotEmpty(video.getOutputUrl())).findFirst().ifPresent(video -> {
+          order.setVideoId(video.getOutputUrl());
+        });
       }
+      order.setVideoList(list);
       UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
@@ -150,11 +144,8 @@ public class UserOrderResource extends BaseResource {
     Video video = service.updateForm(orderVo);
     String orderId = orderVo.getOrderId();
     Order order = service.getById(orderId);
-    order.setDubType(String.valueOf(orderVo.getType()));
-    order.setDubText(orderVo.getContentText());
-    order.updateById();
     Assert.notNull(order, ORDER_NOT_FOUND);
-    Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
+    // Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
     Assert.notNull(orderVo.getType(), "请选择配音方式");
     switch (orderVo.getType()) {
       case 0:

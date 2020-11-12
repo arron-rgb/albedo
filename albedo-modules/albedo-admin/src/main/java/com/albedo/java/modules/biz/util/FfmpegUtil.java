@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.albedo.java.modules.biz.domain.Video;
-import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
@@ -85,6 +83,9 @@ public class FfmpegUtil {
   private static final String COPY = "copy";
 
   public static String delAudio(String mediaPath) {
+    if (!hasAudio(mediaPath)) {
+      return mediaPath;
+    }
     FFmpegBuilder builder = new FFmpegBuilder();
     log.info("原视频路径{}", mediaPath);
     builder.addInput(mediaPath);
@@ -106,7 +107,7 @@ public class FfmpegUtil {
    * @param videos
    * @return
    */
-  public String concatAudio(String audioUrl, List<Video> videos) {
+  public String concatAudio(String audioUrl, List<VideoMaterial> videos) {
     String tempOutput = shuffleList(videos);
     String outputPath = loopOrCut(audioUrl, tempOutput);
     FileUtil.del(tempOutput);
@@ -139,15 +140,14 @@ public class FfmpegUtil {
    * @param videoList
    * @return
    */
-  public String shuffleList(List<Video> videoList) {
-    Assert.notEmpty(videoList, "");
+  public String shuffleList(List<VideoMaterial> videoList) {
+    // url为本地链接
     log.info("打乱{}个视频，并合成", videoList.size());
-    videoList.forEach(video -> delAudio(video.getOriginUrl()));
+    // videoList.forEach(video -> delAudio(video.getOriginUrl()));
     if (videoList.size() == 1) {
       return videoList.get(0).getOriginUrl();
     }
-    Collections.shuffle(videoList);
-    List<String> videoPaths = videoList.stream().map(Video::getOriginUrl).collect(Collectors.toList());
+    List<String> videoPaths = videoList.stream().map(VideoMaterial::getOriginUrl).collect(Collectors.toList());
     String extName = FileUtil.extName(videoPaths.get(0));
     String videoOutputPath = generateFilePath(extName);
     FFmpegBuilder builder = new FFmpegBuilder();
@@ -203,7 +203,7 @@ public class FfmpegUtil {
     List<String> paths = generateList(inferior, priorityDuration);
     // 合成video
     builder = new FFmpegBuilder();
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
     String tempTxt = generateTempTxt(paths);
     builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
     String tempExtName = FileUtil.extName(inferior);
@@ -216,7 +216,7 @@ public class FfmpegUtil {
     }
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
     builder.addInput(tempOutput);
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
       .setAudioBitRate(16000L).setAudioCodec("aac").setVideoCodec(COPY).done();

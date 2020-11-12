@@ -1,8 +1,7 @@
 package com.albedo.java.modules.biz.service.task;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.COMPLETED_SUCCESS;
-import static com.albedo.java.common.core.constant.ExceptionNames.AUDIO_NOT_FOUND;
-import static com.albedo.java.common.core.constant.ExceptionNames.VIDEO_NOT_FOUND;
+import static com.albedo.java.common.core.constant.BusinessConstants.VALID;
+import static com.albedo.java.common.core.constant.ExceptionNames.EMPTY_AUDIO;
 
 import java.io.File;
 import java.util.List;
@@ -15,6 +14,8 @@ import org.springframework.scheduling.annotation.Async;
 import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
@@ -26,6 +27,7 @@ import com.aliyun.oss.event.ProgressListener;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VideoTaskExecutor {
   public VideoTaskExecutor() {}
+
+  @Resource
+  MaterialRepository materialRepository;
 
   /**
    * 将音频与视频合成
@@ -47,23 +52,23 @@ public class VideoTaskExecutor {
   @EventListener(VideoEncodeTask.class)
   public void concatAudio(VideoEncodeTask event) {
     Video video = event.video;
-    List<Video> videos = videoService.list(Wrappers.<Video>query().eq("order_id", video.getOrderId()));
-    videos.forEach(innerVideo -> {
-      // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-hangzhou.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
-      // static.vlivest.com/6f83d88654539343fc153888d8da736a.mp3
-      String originUrl = innerVideo.getOriginUrl();
-      String originPath = checkFileExist(ossSingleton.getPath(originUrl));
-      innerVideo.setOriginUrl(originPath);
+    String orderId = video.getOrderId();
 
-      String audioUrl = video.getAudioUrl();
-      String audioPath = checkFileExist(ossSingleton.getPath(audioUrl));
-      innerVideo.setAudioUrl(audioPath);
+    List<VideoMaterial> materials =
+      materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+    if (CollectionUtil.isEmpty(materials)) {
+      log.error("订单对应素材为空，需要回滚状态");
+    }
+    materials.forEach(material -> {
+      String url = material.getOriginUrl();
+      material.setOriginUrl(checkFileExist(ossSingleton.getPath(url)));
     });
-    Assert.notEmpty(videos, VIDEO_NOT_FOUND);
+
     String audioUrl = FileUploadUtil.getDefaultBaseDir() + File.separator + ossSingleton.getPath(video.getAudioUrl());
-    Assert.notEmpty(audioUrl, AUDIO_NOT_FOUND);
-    String outputUrl = ffmpegUtil.concatAudio(audioUrl, videos);
-    // outputUrl = ffmpegUtil.loopOrCut(outputUrl, video.getDuration().doubleValue() * 60);
+    Assert.isTrue(FileUtil.isNotEmpty(new File(audioUrl)), EMPTY_AUDIO);
+    String outputUrl = ffmpegUtil.concatAudio(audioUrl, materials);
+    video.setOutputUrl(outputUrl);
+
     String userId = video.getUserId();
     String bucketName = userService.getBucketName(userId);
     String outputPath =
@@ -78,9 +83,8 @@ public class VideoTaskExecutor {
     log.info("上传视频{}", video.getOutputUrl());
     video.updateById();
     // 更新订单状态
-    String orderId = video.getOrderId();
     Order order = orderService.getById(orderId);
-    order.setState(COMPLETED_SUCCESS);
+    order.setState(VALID);
     orderService.updateById(order);
     log.info("更新订单状态为{}", order.getState());
     FileUtil.del(audioUrl);

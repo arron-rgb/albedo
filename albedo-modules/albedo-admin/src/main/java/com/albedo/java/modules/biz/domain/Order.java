@@ -1,5 +1,7 @@
 package com.albedo.java.modules.biz.domain;
 
+import java.util.List;
+
 import com.albedo.java.common.persistence.domain.IdEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -58,16 +60,13 @@ public class Order extends IdEntity<Invoice> {
    */
   private String logoUrl;
   /**
-   * 人工、机器、自行
-   */
-  private String dubType;
-  private String dubText;
-  /**
    * 贴片
    */
   private String adUrl;
-  private Long duration;
 
   @TableField(exist = false)
   private String couponCode;
+
+  @TableField(exist = false)
+  private List<Video> videoList;
 }

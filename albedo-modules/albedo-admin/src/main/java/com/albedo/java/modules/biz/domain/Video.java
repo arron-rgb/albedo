@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 /**
+ * 订单对应的产出视频
+ *
  * @author arronshentu
  */
 @Data
@@ -17,12 +19,10 @@ import lombok.*;
 public class Video extends IdEntity<Video> {
   private String orderId;
   private String userId;
-  private String name;
+  @Deprecated
   private String originUrl;
-  private String logoUrl;
   private String outputUrl;
-  private Long duration;
-  private String adUrl;
   private String audioUrl;
   private String audioText;
+  private Integer dubType;
 }

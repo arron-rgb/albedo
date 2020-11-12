@@ -181,12 +181,13 @@ public class WebOrderResource extends BaseResource {
     Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
     Video video = videoService.getById(order.getVideoId());
     Assert.notNull(video, "未查询到视频信息，请稍后重试或联系工作人员");
-    service.updateById(order);
+    order.updateById();
     return Result.buildOkData("更新成功");
   }
 
   private List<Order> updateInfo(List<Order> orders) {
     return orders.stream().peek((order) -> {
+
       Video video = videoService.getById(order.getVideoId());
       if (video != null) {
         String originUrl = video.getOriginUrl();

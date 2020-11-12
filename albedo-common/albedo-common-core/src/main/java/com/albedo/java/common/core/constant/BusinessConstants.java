@@ -89,9 +89,13 @@ public interface BusinessConstants {
    */
   Integer NOT_UPDATED = 4;
   /**
+   * 有效期内
+   */
+  Integer VALID = 5;
+  /**
    * 结单
    */
-  Integer COMPLETED_SUCCESS = 5;
+  Integer FINISHED = 6;
   /**
    * 支付超时关闭订单
    */

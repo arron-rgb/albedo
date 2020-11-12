@@ -1,6 +1,5 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
@@ -18,7 +17,9 @@ import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 import com.albedo.java.modules.biz.domain.dto.VideoDto;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
@@ -26,7 +27,6 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
-import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.io.FileUtil;
@@ -40,6 +40,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   implements VideoService {
 
   @Resource
+  MaterialRepository materialRepository;
+  @Resource
   OrderService orderService;
   @Resource
   UserService userService;
@@ -49,7 +51,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   BalanceService balanceService;
 
   /**
-   * 员工上传视频：一条订单可对应多个video
+   * 员工上传视频素材：一条订单可对应多个video
    *
    *
    * @param orderId
@@ -74,6 +76,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     if (storage < 0) {
       try {
+        // todo 清除后干啥
         ossSingleton.removeOldestFile(bucketName);
       } catch (Exception ignored) {
         log.error("删除失败");
@@ -82,20 +85,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
     // 只要上传视频就插入新的记录
-    Video video = Video.builder().userId(userId).orderId(orderId).build();
-    video.setOriginUrl(ossSingleton.getUrl(tempPath));
-    video.setName(tempFile.getName());
-    baseMapper.insert(video);
-    if (StringUtils.isEmpty(order.getVideoId())) {
-      order.setState(PRODUCTION_COMPLETED);
-      order.setVideoId(video.getId());
-      order.updateById();
-    }
+    VideoMaterial material = VideoMaterial.builder().orderId(orderId).originUrl(ossSingleton.getUrl(tempPath)).build();
+    material.insert();
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
-    ossSingleton.uploadFile(FileUtil.file(tempFile), video.getName(), bucketName);
+    ossSingleton.uploadFile(FileUtil.file(tempFile), FileUtil.getName(tempPath), bucketName);
     balanceService.updateById(balance);
   }
 
@@ -114,7 +110,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Video video = baseMapper.selectById(videoId);
     Assert.notNull(video, VIDEO_NOT_FOUND);
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
-    Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
@@ -139,4 +134,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     return null;
   }
 
+  @Override
+  public List<VideoMaterial> getMaterials(String orderId) {
+    return materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+  }
 }

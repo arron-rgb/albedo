@@ -97,5 +97,5 @@ path:
   ffprobe: /usr/local/bin/ffprobe
   ffmpeg: /usr/local/bin/ffmpeg
 
-hwflag: '-hwaccel videotoolbox'
-
+oss:
+  endpoint: "https://oss-cn-shenzhen-internal.aliyuncs.com"

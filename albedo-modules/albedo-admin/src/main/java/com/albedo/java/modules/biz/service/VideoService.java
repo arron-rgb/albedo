@@ -1,9 +1,11 @@
 package com.albedo.java.modules.biz.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 
 /**
  * @author arronshentu
@@ -32,4 +34,5 @@ public interface VideoService extends BaseService<Video> {
 
   Video getOneByOrderId(String orderId);
 
+  List<VideoMaterial> getMaterials(String orderId);
 }
