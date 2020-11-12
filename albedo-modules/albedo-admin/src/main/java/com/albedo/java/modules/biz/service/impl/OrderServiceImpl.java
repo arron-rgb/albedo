@@ -97,8 +97,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order;
     if (!Objects.isNull(currentOrder())) {
       order = currentOrder();
-      Assert.isTrue(StringUtil.isNotBlank(order.getCouponCode()) && StringUtils.isNotEmpty(form.getCouponCode()),
-        "订单已使用优惠码");
+      if (StringUtils.isNotEmpty(form.getCouponCode())) {
+        Assert.isTrue(StringUtil.isBlank(order.getCouponCode()), "订单已使用优惠码");
+      }
     } else {
       order = new Order();
       BeanUtils.copyProperties(form, order);
@@ -157,7 +158,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         Money money = new Money();
         purchaseFlag = money.equals(new Money(order.getTotalAmount()));
         // 无需获取支付链接
-        if (!purchaseFlag) {
+        if (purchaseFlag) {
           order.setState(NOT_STARTED);
           baseMapper.updateById(order);
           return "success";
