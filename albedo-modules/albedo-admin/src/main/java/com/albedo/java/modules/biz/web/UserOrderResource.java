@@ -145,23 +145,8 @@ public class UserOrderResource extends BaseResource {
     String orderId = orderVo.getOrderId();
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
-    // Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
     Assert.notNull(orderVo.getType(), "请选择配音方式");
-    switch (orderVo.getType()) {
-      case 0:
-        // 自行上传配音
-        service.dubbingBySelf(orderVo, video);
-        break;
-      case 1:
-        // 人工配音 配音字段的属性及pojo
-        return service.artificialDubbing(orderVo);
-      case 2:
-        // tts配音
-        service.machineDubbing(orderVo, video);
-        break;
-      default:
-        return Result.buildFail("配音类型异常");
-    }
+    service.dub(orderVo, video);
     order.setState(NOT_UPDATED);
     service.updateById(order);
     return Result.buildOk("下单成功");

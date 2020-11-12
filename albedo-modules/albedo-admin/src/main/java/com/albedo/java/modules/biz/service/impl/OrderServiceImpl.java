@@ -5,7 +5,6 @@ import static com.albedo.java.common.core.constant.CommonConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.FileUploadUtil;
-import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
@@ -38,8 +36,8 @@ import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.CouponService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.biz.service.task.Signal;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
+import com.albedo.java.modules.biz.util.DubType;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -314,44 +312,16 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Balance balance = balanceService.getByUserId(order.getUserId());
     Long duration = orderVo.getDuration();
     Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
-    // todo 有效期
     LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
     if (availableDate.isBefore(LocalDateTime.now())) {
       order.setState(FINISHED);
       order.updateById();
-      throw new RuntimeMsgException("");
+      throw new RuntimeMsgException("该订单已超过有效期，请重新下单");
     }
     Video video = Video.builder().dubType(orderVo.getType()).audioText(orderVo.getContentText())
       .userId(order.getUserId()).orderId(orderId).build();
     video.insert();
     return video;
-  }
-
-  /**
-   * 自行上传配音
-   *
-   * @param orderVo
-   * @param video
-   */
-  @Override
-  public void dubbingBySelf(SubOrderVo orderVo, Video video) {
-    Assert.notEmpty(orderVo.getAudioUrl(), "音频链接不得为空，请检查后重试");
-    video.setAudioUrl(orderVo.getAudioUrl());
-    video.updateById();
-    SpringContextHolder.publishEvent(new Signal(video.getId()));
-  }
-
-  @Override
-  public void machineDubbing(SubOrderVo orderVo, Video video) {
-    List<String> voiceTypes = orderVo.getVoiceType();
-    Assert.notEmpty(voiceTypes, "请选择配音音色");
-    String voiceType = voiceTypes.get(0);
-    String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
-    Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
-    String audioUrl = ossSingleton.getUrl(filePath);
-    video.setAudioUrl(audioUrl);
-    video.updateById();
-    SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
   @Override
@@ -375,63 +345,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   String textPerMin = "200";
   String subject = "人工配音";
   String perMinute = "100";
-
-  @Override
-  public Result<String> artificialDubbing(SubOrderVo orderVo) {
-    Assert.notEmpty(orderVo.getTotalAmount(), PRICE_FIELD_NOT_FOUND);
-    String content = orderVo.appendContent();
-    int length = orderVo.appendContent().length();
-    String userId = SecurityUtil.getUser().getId();
-    // 向上取整 几分钟 几分钟再乘以单位价格
-    Integer minutes = Double.valueOf(Math.ceil(length / Double.parseDouble(textPerMin))).intValue();
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位时间价格"));
-    if (price != null) {
-      perMinute = price.getVal();
-    }
-    double amount = Double.parseDouble(perMinute) * minutes;
-    BigDecimal totalAmount = BigDecimal.valueOf(amount);
-    Balance balance = balanceService.getByUserId(userId);
-    String orderId = orderVo.getOrderId();
-    Order order = getOne(Wrappers.<Order>lambdaQuery().eq(Order::getVideoId, orderId), false);
-    if (order == null) {
-      order = new Order();
-    }
-    // 人工配音的下单方式
-    order.setTotalAmount(totalAmount.toString());
-    order.setType(DUBBING);
-    order.setUserId(userId);
-    order.setContent(content);
-    order.setDescription(String.valueOf(orderVo.getVoiceType()));
-    order.setVideoId(orderId);
-    order.setState(UNPAID_ORDER);
-    order.insertOrUpdate();
-
-    if (balance != null) {
-      Integer audioTime = balance.getAudioTime();
-      // audioTime为可抵扣的时间 单位为分
-      if (audioTime >= minutes) {
-        // 可抵扣
-        balance.setAudioTime(audioTime - minutes);
-        balanceService.updateById(balance);
-        order.setState(NOT_STARTED);
-        baseMapper.updateById(order);
-        return Result.buildOk("支付成功，请等待工作人员接单");
-      } else {
-        // 不够抵扣 计算剩余应该支付的价格
-        balance.setAudioTime(0);
-        balanceService.updateById(balance);
-        amount = Double.parseDouble(perMinute) * (minutes - audioTime);
-        totalAmount = new BigDecimal(amount);
-        order.setTotalAmount(totalAmount.toPlainString());
-        order.updateById();
-      }
-    }
-    Assert.isTrue(compareOrderPrice(totalAmount.toPlainString(), orderVo.getTotalAmount()), PRICE_ERROR);
-    TradePlus trade = TradePlus.build(totalAmount.toPlainString(), subject);
-    PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
-    recordService.save(record);
-    return Result.buildOkData(aliPayService.toPayAsPc(trade), "请前往支付链接支付，支付后等待工作人员接单即可");
-  }
 
   @Override
   public String generateAudio(List<String> text, String orderId, String voiceType) {
@@ -491,12 +404,13 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public Long getDuration(String orderId) {
-    return baseMapper.getDuration(orderId);
+  public Video getDub(String orderId) {
+    return baseMapper.getDub(orderId);
   }
 
   @Override
-  public Video getDub(String orderId) {
-    return baseMapper.getDub(orderId);
+  public void dub(SubOrderVo orderVo, Video video) {
+    DubType dubType = new DubType(orderVo, video);;
+    dubType.invoke();
   }
 }
