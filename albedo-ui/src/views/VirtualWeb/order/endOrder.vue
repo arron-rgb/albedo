@@ -1,18 +1,18 @@
 <template>
   <div>
-<!--    {{this.orderRecord}}-->
+<!--    {{this.orderDetail}}-->
     <div class="container">
       <el-card class="box-card" body-style="padding : 0px">
         <div slot="header" class="clearfix">
           <span class="title">订单详情</span>
         </div>
-<!--        {{orderRecord}}-->
+<!--        {{orderDetail}}-->
         <el-row  class="box">
           <el-col span="4">
             创建时间：
           </el-col>
           <el-col span="20">
-            {{orderRecord.createdDate}}
+            {{orderDetail.createdDate}}
           </el-col>
         </el-row>
 
@@ -21,7 +21,7 @@
             创建人：
           </el-col>
           <el-col span="20">
-            {{orderRecord.createdBy}}
+            {{orderDetail.createdBy}}
           </el-col>
         </el-row>
 
@@ -31,22 +31,21 @@
           </el-col>
           <el-col span="20">
             <el-row>
-              <span v-if="orderRecord.state  === 0">未付款</span>
-              <span v-if="orderRecord.state  === 1">未接单</span>
-              <span v-if="orderRecord.state  === 2">制作中</span>
-              <span v-if="orderRecord.state  === 3">配音中</span>
-              <span v-if="orderRecord.state  === 4">配音中</span>
-              <span v-if="orderRecord.state  === 5">已完成</span>
+              <span v-if="orderDetail.state  === 0">未付款</span>
+              <span v-else-if="orderDetail.state  === 1">未接单</span>
+              <span v-else-if="orderDetail.state  === 2">制作中</span>
+              <span v-else-if="orderDetail.state  === 6">已结单</span>
+              <span v-else>可配音</span>
             </el-row>
           </el-col>
         </el-row>
 
-        <el-row class="box" v-if="orderRecord.type === '0' || orderRecord.type === '1'">
+        <el-row class="box" v-if="orderDetail.type === '0' || orderDetail.type === '1'">
           <el-col span="4">
             已选需求：
           </el-col>
           <el-col span="20" >
-            <div :key="o" v-for="(o,index) in JSON.parse(orderRecord.content).data" >
+            <div :key="o" v-for="(o,index) in JSON.parse(orderDetail.content).data" >
               <el-tag :type="typeList[index % 5]"  class="tag" v-for="i in o.data">
                 <p style="line-height: 40px; margin: 0">{{i.value}}<p/>
               </el-tag>
@@ -59,18 +58,18 @@
             已选需求：
           </el-col>
           <el-col span="20">
-            <el-tag class="tag" v-for="(o,index) in orderRecord.description.slice(1,orderRecord.description.length - 1).split(',')" :key="o" :type="typeList[index % 5]">
+            <el-tag :key="o" :type="typeList[index % 5]" class="tag" v-for="(o,index) in orderDetail.description.slice(1,orderDetail.description.length - 1).split(',')">
               <p style="line-height: 40px; margin: 0">{{o}}<p/>
             </el-tag>
           </el-col>
         </el-row>
 
-        <el-row class="box" v-if="orderRecord.type === '0' || orderRecord.type === '1'">
+        <el-row class="box" v-if="orderDetail.type === '0' || orderDetail.type === '1'">
           <el-col span="4">
             补充需求（选填）：
           </el-col>
           <el-col span="20">
-            {{orderRecord.description}}
+            {{orderDetail.description}}
           </el-col>
         </el-row>
 
@@ -79,18 +78,18 @@
             台词文本：
           </el-col>
           <el-col span="20">
-<!--            <el-tag class="tag" v-for="(o,index) in orderRecord.content" :key="o" :type="typeList[index % 5]">-->
-              <p style="line-height: 40px; margin: 0">{{orderRecord.content}}<p/>
+<!--            <el-tag class="tag" v-for="(o,index) in orderDetail.content" :key="o" :type="typeList[index % 5]">-->
+              <p style="line-height: 40px; margin: 0">{{orderDetail.content}}<p/>
 <!--            </el-tag>-->
           </el-col>
         </el-row>
 
-        <el-row class="box" v-show="orderRecord.type === '0' || orderRecord.type === '1'">
+        <el-row class="box" v-show="orderDetail.type === '0' || orderDetail.type === '1'">
           <el-col span="4">
             加速服务：
           </el-col>
           <el-col span="20">
-            {{orderRecord.type === '0' ? '未加速' : '已加速'}}
+            {{orderDetail.type === '0' ? '未加速' : '已加速'}}
           </el-col>
         </el-row>
 
@@ -101,7 +100,7 @@
           </el-col>
           <el-col span="20">
             <el-row>
-              <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">{{orderRecord.totalAmount}}</span>元</el-col>
+              <el-col span="6">￥<span style="font-size: 26px; color: #ff8249; margin: 0 10px">{{orderDetail.totalAmount}}</span>元</el-col>
             </el-row>
           </el-col>
         </el-row>
@@ -110,18 +109,18 @@
             支付方式：
           </el-col>
           <el-col span="20">
-            <span v-if="orderRecord.method === 'ali'">支付宝</span>
-            <span v-if="orderRecord.method === 'wechat'">微信</span>
-            <span v-if="orderRecord.method === 'balance'">套餐余额</span>
+            <span v-if="orderDetail.method === 'ali'">支付宝</span>
+            <span v-if="orderDetail.method === 'wechat'">微信</span>
+            <span v-if="orderDetail.method === 'balance'">套餐余额</span>
           </el-col>
         </el-row>
 
-        <el-row class="box"  v-if="orderRecord.type === '0' || orderRecord.type === '1'">
+        <el-row class="box"  v-if="orderDetail.type === '0' || orderDetail.type === '1'">
           <el-col span="4">
             产品视频：
           </el-col>
           <el-col span="20">
-            <div v-if="this.orderRecord.videoId === ''">视频已失效</div>
+            <div v-if="this.orderDetail.videoId === ''">视频已失效</div>
             <div class='videoPlayer' v-else>
               <video-player  class="video-player vjs-custom-skin"
                              ref="videoPlayer"
@@ -151,7 +150,7 @@ export default {
   name: "endOrder",
   data(){
     return{
-      orderRecord : null,
+      orderDetail : null,
       list : [],
       typeList : ["", "success", "info", "warning", "danger"],
       description : '',
@@ -197,21 +196,21 @@ export default {
 
   },
   created() {
-      var orderRecord = storeApi.get({
-        name: 'orderRecord'
+      var orderDetail = storeApi.get({
+        name: 'orderDetail'
       });
-      if (orderRecord === null || orderRecord === undefined) {
-        this.$alert('请先选择视频基础需求', {
+      if (orderDetail === null || orderDetail === undefined) {
+        this.$alert('请先选择具体视频订单', {
           confirmButtonText: '确定',
         }).then(
-          this.goTo('/addOrder')
+          this.goTo('/myOrder')
         );
       }
       else {
-        this.orderRecord = orderRecord;
-        if(orderRecord.videoId !== '' || orderRecord.videoId !== null )
-          this.playerOptions.sources[0].src = 'http://' + orderRecord.videoId;
-        console.log(this.playerOptions.sources[0].src);
+        this.orderDetail = orderDetail;
+        if(orderDetail.videoId !== '' || orderDetail.videoId !== null )
+          this.playerOptions.sources[0].src = 'https://' + orderDetail.videoId;
+        // console.log(this.playerOptions.sources[0].src);
       }
   },
   methods:{

@@ -146,8 +146,8 @@ export default {
         crudOrder.current().then(res => {
           // console.log(res);
           if (res.code === MSG_TYPE_SUCCESS) {
-            if(res.data === null || res.data.state === 5){//上一单已完结，可以进行下一单
-              this.$alert('前一订单已制作完成，您可前往“我的”-“我的订单”中查看！', '提示', {
+            if(res.data === null || res.data.state >= 3){//上一单视频已完成，可以进行下一单
+              this.$alert('前一订单视频已制作完成，您可前往“我的”-“我的订单”中查看并配音！', '提示', {
                 confirmButtonText: '确定',
               }).then(() => {
                 this.getData();
@@ -166,29 +166,29 @@ export default {
               });
             }
             else if(res.data.state === 1 || res.data.state === 2 ){//已付款尚未制作
-              storeApi.set({
-                name: 'videoOrder',
-                content: res.data,
-                type: 'session'
-              });
+              // storeApi.set({
+              //   name: 'videoOrder',
+              //   content: res.data,
+              //   type: 'session'
+              // });
               this.goTo('/waiting');
             }
-            else if(res.data.state === 4){//已经选好台词尚未加入音频
-              storeApi.set({
-                name: 'videoOrder',
-                content: res.data,
-                type: 'session'
-              });
-              this.goTo('/waiting');
-            }
-            else if(res.data.state === 3){//视频已上传等待配音
-              storeApi.set({
-                name: 'videoOrder',
-                content: res.data,
-                type: 'session'
-              });
-              this.goTo('/addDetail')
-            }
+            // else if(res.data.state >= 3){//已经选好台词尚未加入音频
+            //   storeApi.set({
+            //     name: 'videoOrder',
+            //     content: res.data,
+            //     type: 'session'
+            //   });
+            //   this.goTo('/waiting');
+            // }
+            // else if(res.data.state === 3){//视频已上传等待配音
+            //   storeApi.set({
+            //     name: 'videoOrder',
+            //     content: res.data,
+            //     type: 'session'
+            //   });
+            //   this.goTo('/addDetail')
+            // }
             // this.data = res.data.data
           }
         }).catch(error => {
