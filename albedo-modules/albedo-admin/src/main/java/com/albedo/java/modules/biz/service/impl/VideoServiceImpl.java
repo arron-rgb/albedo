@@ -76,7 +76,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     if (storage < 0) {
       try {
-        // todo 清除后干啥
         ossSingleton.removeOldestFile(bucketName);
       } catch (Exception ignored) {
         log.error("删除失败");

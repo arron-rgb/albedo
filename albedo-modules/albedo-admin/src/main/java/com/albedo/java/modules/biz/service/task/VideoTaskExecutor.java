@@ -9,7 +9,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.modules.biz.domain.Order;
@@ -158,12 +160,15 @@ public class VideoTaskExecutor {
   @Resource
   OssSingleton ossSingleton;
   @Resource
+  RedisTemplate<String, String> redisTemplate;
+  @Resource
   FfmpegUtil ffmpegUtil;
 
-  @Async
-  @EventListener(Signal.class)
-  public void signal(Signal signal) {
-    log.info("触发合成");
-    videoService.addAudio(signal.getVideoId());
+  @Scheduled(fixedDelay = 5000L)
+  public void invoke() {
+    String videoId = redisTemplate.opsForList().rightPop("video_encode");
+    log.info("执行{}的合成", videoId);
+    videoService.addAudio(videoId);
   }
+
 }
