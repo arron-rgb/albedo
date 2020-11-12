@@ -97,12 +97,21 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order;
     if (!Objects.isNull(currentOrder())) {
       order = currentOrder();
-      Assert.isTrue(StringUtil.isNotBlank(order.getCouponCode()) && StringUtils.isEmpty(form.getCouponCode()),
+      Assert.isTrue(StringUtil.isNotBlank(order.getCouponCode()) && StringUtils.isNotEmpty(form.getCouponCode()),
         "订单已使用优惠码");
-      // form.setCouponCode("");
     } else {
       order = new Order();
       BeanUtils.copyProperties(form, order);
+    }
+    String couponCode = form.getCouponCode();
+    // 验证是否优惠码有效
+    if (StringUtil.isNotEmpty(couponCode)) {
+      Coupon coupon = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
+      Assert.notNull(coupon, INVALID_COUPON);
+      coupon.setUserId(SecurityUtil.getUser().getId());
+      coupon.setOrderId(order.getId());
+      coupon.setStatus(STR_NO);
+      coupon.updateById();
     }
     order.setState(UNPAID_ORDER);
     order.setCouponCode(form.getCouponCode());
@@ -111,18 +120,10 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setTotalAmount(calculatePrice(form));
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
     boolean flag = order.insertOrUpdate();
-    String couponCode = form.getCouponCode();
-
-    if (StringUtil.isNotEmpty(couponCode)) {
-      // 非空 验证是否优惠码有效
-      Coupon coupon = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
-      Assert.notNull(coupon, INVALID_COUPON);
-      coupon.setUserId(SecurityUtil.getUser().getId());
-      coupon.setOrderId(order.getId());
-      coupon.setStatus(STR_NO);
-      flag = coupon.updateById() && flag;
-    }
     Assert.isTrue(flag, "下单失败");
+    if ("balance".equals(order.getMethod()) && new Money(order.getTotalAmount()).equals(new Money())) {
+      price(order.getId(), "");
+    }
     return order.getId();
   }
 
@@ -154,26 +155,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         balanceService.consumeTimes();
         // 加速订单
         Money money = new Money();
-        if (ACCELERATE.equals(order.getType())) {
-          purchaseFlag = true;
-          Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE));
-          map = Optional.ofNullable(map).orElse(new Dict("99"));
-          money.add(new Money(map.getVal()));
-        }
-        String anchorNum = getAnchorNum(order.getContent());
-        // 双人主播
-        if (StringUtils.equals(anchorNum, DOUBLE_ANCHOR)) {
-          purchaseFlag = true;
-          Dict doubleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", DOUBLE_ANCHOR));
-          Dict singleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", SINGLE_ANCHOR));
-          // 加上双人主播的差价
-          if (Objects.isNull(doubleAnchor) || Objects.isNull(singleAnchor)) {
-            money.addTo(new Money("1000"));
-          } else {
-            Money subtract = new Money(doubleAnchor.getVal()).subtract(new Money(singleAnchor.getVal()));
-            money.addTo(subtract);
-          }
-        }
+        purchaseFlag = money.equals(new Money(order.getTotalAmount()));
         // 无需获取支付链接
         if (!purchaseFlag) {
           order.setState(NOT_STARTED);
@@ -245,13 +227,11 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
       price.subtractFrom(new Money(defaultPrice(SINGLE_ANCHOR)));
     }
     // 4. 打折
-    if (!StringUtils.isEmpty(order.getCouponCode())) {
-      // 非空 验证是否优惠码有效
-      Coupon code =
-        couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
-      Assert.notNull(code, INVALID_COUPON);
+    if (StringUtils.isNotEmpty(order.getCouponCode())) {
+      Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()));
+      code = Optional.ofNullable(code).orElse(new Coupon("1.0"));
       String discount = code.getDiscount();
-      price.multiply(Double.parseDouble(discount));
+      price.multiplyBy(Double.parseDouble(discount));
     }
     return price.getAmount().toPlainString();
   }
