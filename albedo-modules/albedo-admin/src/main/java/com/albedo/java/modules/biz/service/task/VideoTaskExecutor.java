@@ -167,6 +167,7 @@ public class VideoTaskExecutor {
   @Scheduled(fixedDelay = 5000L)
   public void invoke() {
     String videoId = redisTemplate.opsForList().rightPop("video_encode");
+    log.info("执行{}的合成", videoId);
     videoService.addAudio(videoId);
   }
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -96,7 +97,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order;
     if (!Objects.isNull(currentOrder())) {
       order = currentOrder();
-      Assert.isTrue(StringUtils.isEmpty(form.getCouponCode()), "订单已使用优惠码");
+      Assert.isTrue(StringUtil.isNotBlank(order.getCouponCode()) && StringUtils.isEmpty(form.getCouponCode()),
+        "订单已使用优惠码");
       // form.setCouponCode("");
     } else {
       order = new Order();
@@ -106,12 +108,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     order.setCouponCode(form.getCouponCode());
     order.setUserId(SecurityUtil.getUser().getId());
     order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
-    if (!StringUtils.equals(form.getMethod(), "balance")) {
-      order.setTotalAmount(calculatePrice(form));
-    } else {
-      order.setTotalAmount("0");
-      form.setTotalAmount("0");
-    }
+    order.setTotalAmount(calculatePrice(form));
     Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
     boolean flag = order.insertOrUpdate();
     String couponCode = form.getCouponCode();
@@ -129,39 +126,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return order.getId();
   }
 
-  public String calculatePrice(OrderVo order) {
-    String price = calculatePrice(order.getContent().trim());
-    if (verifyOrderType(order)) {
-      // 给订单价格加上加速服务
-      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE_STR));
-      if (map == null) {
-        map = new Dict();
-        map.setVal("99");
-      }
-      price = new Money(price).addTo(new Money(map.getVal())).getAmount().toPlainString();
-    }
-    if (!StringUtils.isEmpty(order.getCouponCode())) {
-      // 非空 验证是否优惠码有效
-      Coupon code =
-        couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
-      Assert.notNull(code, INVALID_COUPON);
-      String discount = code.getDiscount();
-      Money old = new Money(price);
-      price = old.multiply(Double.parseDouble(discount)).getAmount().toPlainString();
-    }
-    return price;
-  }
-
   private boolean verifyOrderType(OrderVo form) {
     return StringUtils.equals(ACCELERATE, form.getType());
   }
 
   private boolean compareOrderPrice(OrderVo form, Order order) {
     return new Money(form.getTotalAmount()).equals(new Money(order.getTotalAmount()));
-  }
-
-  private boolean compareOrderPrice(String form, String order) {
-    return new Money(form).equals(new Money(order));
   }
 
   @Override
@@ -187,10 +157,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         if (ACCELERATE.equals(order.getType())) {
           purchaseFlag = true;
           Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE));
-          if (map == null) {
-            map = new Dict();
-            map.setVal("99");
-          }
+          map = Optional.ofNullable(map).orElse(new Dict("99"));
           money.add(new Money(map.getVal()));
         }
         String anchorNum = getAnchorNum(order.getContent());
@@ -256,16 +223,37 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return config.getValue();
   }
 
-  private String calculatePrice(String content) {
+  private void add(Money price, String addValue) {
+    price.addTo(new Money(addValue));
+  }
+
+  private String calculatePrice(OrderVo order) {
+    // 1. 主播价格
+    Money price = new Money();
+    String content = order.getContent().trim();
     String anchorNum = getAnchorNum(content);
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", anchorNum));
-    if (price == null) {
-      price = new Dict();
-      String val = defaultPrice(anchorNum);
-      price.setVal(val);
+    Dict priceDict = dictService.getOne(Wrappers.<Dict>query().eq("name", anchorNum));
+    add(price, Optional.ofNullable(priceDict).orElse(new Dict(defaultPrice(anchorNum))).getVal());
+    // 2. 加速服务
+    if (verifyOrderType(order)) {
+      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE_STR));
+      String accPrice = Optional.ofNullable(map).orElse(new Dict("99")).getVal();
+      add(price, accPrice);
     }
-    Assert.notNull(price, PRICE_NOT_FOUND);
-    return String.valueOf(price.getVal());
+    // 3. 余额 减一个单人主播的价格
+    if ("balance".equals(order.getMethod())) {
+      price.subtractFrom(new Money(defaultPrice(SINGLE_ANCHOR)));
+    }
+    // 4. 打折
+    if (!StringUtils.isEmpty(order.getCouponCode())) {
+      // 非空 验证是否优惠码有效
+      Coupon code =
+        couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
+      Assert.notNull(code, INVALID_COUPON);
+      String discount = code.getDiscount();
+      price.multiply(Double.parseDouble(discount));
+    }
+    return price.getAmount().toPlainString();
   }
 
   private String defaultPrice(String type) {
@@ -341,10 +329,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     audioOrder.updateById();
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
-
-  String textPerMin = "200";
-  String subject = "人工配音";
-  String perMinute = "100";
 
   @Override
   public String generateAudio(List<String> text, String orderId, String voiceType) {
