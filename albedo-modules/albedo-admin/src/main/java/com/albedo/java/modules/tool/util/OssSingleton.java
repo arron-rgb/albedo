@@ -163,6 +163,7 @@ public class OssSingleton {
 
   @Async
   public void removeOldestFile(String bucketName) {
+    // todo 用到的都有问题
     ObjectListing objectListing = client.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
     objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));

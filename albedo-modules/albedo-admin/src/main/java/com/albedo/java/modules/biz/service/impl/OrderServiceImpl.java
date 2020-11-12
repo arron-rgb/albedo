@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -310,11 +311,18 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     }
     String orderId = orderVo.getOrderId();
     Order order = baseMapper.selectById(orderId);
+    Balance balance = balanceService.getByUserId(order.getUserId());
+    Long duration = orderVo.getDuration();
+    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
+    // todo 有效期
+    LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
+    if (availableDate.isBefore(LocalDateTime.now())) {
+      order.setState(FINISHED);
+      order.updateById();
+      throw new RuntimeMsgException("");
+    }
     Video video = Video.builder().dubType(orderVo.getType()).audioText(orderVo.getContentText())
       .userId(order.getUserId()).orderId(orderId).build();
-    Long duration = orderVo.getDuration();
-    Balance balance = balanceService.getByUserId(order.getUserId());
-    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
     video.insert();
     return video;
   }

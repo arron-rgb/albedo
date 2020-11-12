@@ -187,14 +187,6 @@ public class WebOrderResource extends BaseResource {
 
   private List<Order> updateInfo(List<Order> orders) {
     return orders.stream().peek((order) -> {
-
-      Video video = videoService.getById(order.getVideoId());
-      if (video != null) {
-        String originUrl = video.getOriginUrl();
-        if (StringUtils.isNotEmpty(originUrl)) {
-          order.setVideoId(originUrl);
-        }
-      }
       UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
