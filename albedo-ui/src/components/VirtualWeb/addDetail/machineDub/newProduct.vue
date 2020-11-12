@@ -263,25 +263,25 @@ export default {
       },
       words : 0,
       duration : 0,
-      videoOrder : null,
+      orderDetail : null,
     }
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder'
-    });
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
+    }) || null;
     var duration = storeApi.get({
       name: 'duration'
     }) || null;
-    if (videoOrder === null || videoOrder === undefined || duration === null || duration === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail === undefined || duration === null || duration === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     }
     else {
-      this.videoOrder = videoOrder;
+      this.orderDetail = orderDetail;
       this.getScripts()
       this.getCommodityList();
       this.duration = duration || 0;

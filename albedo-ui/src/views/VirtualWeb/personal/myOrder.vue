@@ -9,6 +9,9 @@
         :default-sort = "{prop: 'createdDate', order: 'descending'}"
         v-loading="loading"
       >
+        <el-table-column type="expand">
+
+        </el-table-column>
 <!--        <el-table-column type="expand">-->
 <!--          <template slot-scope="props">-->
 <!--            <el-form label-position="left" inline class="demo-table-expand">-->
@@ -52,20 +55,22 @@
         >
           <template slot-scope="props">
             <span v-if="props.row.state === 0">未付款</span>
-            <span v-if="props.row.state === 1">未接单</span>
-            <span v-if="props.row.state === 2">制作中</span>
-            <span v-if="props.row.state === 3">待完善</span>
-            <span v-if="props.row.state === 4">配音中</span>
-            <span v-if="props.row.state === 5">已完成</span>
+            <span v-else-if="props.row.state === 1">未接单</span>
+            <span v-else-if="props.row.state === 2">制作中</span>
+<!--            <span v-if="props.row.state === 3">待完善</span>-->
+<!--            <span v-if="props.row.state === 4">配音中</span>-->
+            <span v-else-if="props.row.state === 6">已结单</span>
+            <span v-else>可配音</span>
           </template>
         </el-table-column>
         <el-table-column
           label="操作">
-          <template slot-scope="props">
-            <el-tooltip class="item" effect="dark" content="查看" placement="top">
-              <el-button size="mini" v-if="props.row.type === '2'" @click="showDetail(props.row)">查看详情</el-button>
-              <el-button size="mini" type="danger" plain v-else-if="props.row.state === 5" @click="showDetail(props.row)">查看详情</el-button>
-              <el-button size="mini" type="primary" v-else @click="goTo('/addOrder')">查看进度</el-button>
+          <template slot-scope="props" v-if="props.row.type !== '2'">
+            <el-tooltip class="item" content="查看/配音" effect="dark" placement="top">
+<!--              配音订单-->
+<!--              <el-button size="mini" v-if="props.row.type === '2'" @click="goTo('/waiting')">查看详情</el-button>-->
+              <el-button @click="showDetail(props.row, '/addDetail')" v-if="props.row.state >= 3 && props.row.state <= 5">前往配音</el-button>
+              <el-button @click="goTo('/addOrder')" type="primary" v-else-if="props.row.state <= 2">查看进度</el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -110,13 +115,13 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
-    showDetail(data){
+    showDetail(data, url){
       storeApi.set({
-        name: 'orderRecord',
+        name: 'orderDetail',
         content: data,
         type: 'session'
       });
-      this.goTo('/endOrder');
+      this.goTo(url);
     }
   },
   created() {

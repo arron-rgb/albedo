@@ -124,7 +124,7 @@ export default {
       satisfy : '1',//用户意见  1满意   0 不满意
       duration: '',
       dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
-      videoData : null,
+      orderDetail : null,
       loading : false,
       feedback : '',
       timeMax : 120,
@@ -161,22 +161,22 @@ export default {
     ])
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder',
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
     }) || null;
-    if (videoOrder === null || videoOrder === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     }
     else {
       if(this.balance.planName === '旗舰版')
         this.timeMax = 480;
-      this.videoData = videoOrder;
-      console.log(videoOrder);
-      this.playerOptions.sources[0].src = 'https://' + videoOrder.videoId;
+      this.orderDetail = orderDetail;
+      // console.log(orderDetail);
+      this.playerOptions.sources[0].src = 'https://' + orderDetail.videoId;
        // console.log(this.playerOptions.sources[0].src);
     }
     // console.log(videoOrder.videoId);
@@ -191,7 +191,7 @@ export default {
       this.loading = true;
       var data = {
         editDescription : this.feedback,
-        orderId : this.videoData.id,
+        orderId : this.orderDetail.id,
         state : this.satisfy,//用户意见  1满意   0 不满意
       }
       return new Promise((resolve, reject) => {
@@ -201,7 +201,7 @@ export default {
             this.$alert("您的反馈我们已收到，请你耐心等待！", '提示', {
               confirmButtonText: '确定',
               callback: action => {
-                this.goTo('/addOrder')
+                this.goTo('/myOrder')
               }
             })
             else {
@@ -248,7 +248,7 @@ export default {
       this.loading = false;
     }
 
- }
+ },
 }
 
 </script>
