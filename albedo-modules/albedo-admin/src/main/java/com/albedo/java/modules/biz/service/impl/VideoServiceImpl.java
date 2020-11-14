@@ -135,6 +135,6 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   @Override
   public List<VideoMaterial> getMaterials(String orderId) {
     return materialRepository.selectList(
-      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getOrder));
+      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getSort));
   }
 }
