@@ -21,6 +21,6 @@ public class VideoMaterial extends Model<VideoMaterial> {
   private String orderId;
   @TableField(value = "url")
   private String originUrl;
-  private Integer order;
+  private Integer sort;
 
 }

@@ -194,7 +194,7 @@ public class WebOrderResource extends BaseResource {
       if (Objects.isNull(material)) {
         continue;
       }
-      material.setOrder((i + 1) * 10);
+      material.setSort((i + 1) * 10);
       material.updateById();
     }
     return Result.buildOkData("更新成功");
