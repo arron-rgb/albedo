@@ -42,6 +42,9 @@ import io.micrometer.core.instrument.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * 订单Controller Order
@@ -178,8 +181,10 @@ public class WebOrderResource extends BaseResource {
   }
 
   @ApiOperation(value = "员工更新订单状态")
-  @GetMapping(value = "/update")
-  public Result<String> update(String orderId, List<String> videoIds) {
+  @PostMapping(value = "/update")
+  public Result<String> update(Param body) {
+    String orderId = body.getOrderId();
+    List<String> videoIds = body.getVideoIds();
     Order order = service.getById(orderId);
     order.setState(PRODUCTION_COMPLETED);
     order.updateById();
@@ -193,6 +198,15 @@ public class WebOrderResource extends BaseResource {
       material.updateById();
     }
     return Result.buildOkData("更新成功");
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  static class Param {
+    private String orderId;
+    private List<String> videoIds;
   }
 
   private List<Order> updateInfo(List<Order> orders) {
