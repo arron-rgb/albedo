@@ -5,6 +5,8 @@ package com.albedo.java.modules.biz.service;
 
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Dub;
+import com.albedo.java.modules.biz.domain.SubOrderVo;
+import com.albedo.java.modules.biz.domain.Video;
 
 /**
  * 配音表单配置Service 配音表单配置
@@ -13,5 +15,7 @@ import com.albedo.java.modules.biz.domain.Dub;
  * @version 2020-09-07 18:24:16
  */
 public interface DubService extends BaseService<Dub> {
+
+  String dub(SubOrderVo orderVo, Video video);
 
 }

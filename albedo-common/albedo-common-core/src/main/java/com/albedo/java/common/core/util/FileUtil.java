@@ -70,7 +70,6 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
    */
   public static String generateFilePath(String extName) {
     String fileName = concatSimpleFilePath(FileUploadUtil.getDefaultBaseDir(), IdUtil.fastSimpleUUID() + "." + extName);
-    log.info("generateFilePath: {}", fileName);
     // 传入绝对路径
     File touch = FileUtil.touch(fileName);
     return touch.getAbsolutePath();

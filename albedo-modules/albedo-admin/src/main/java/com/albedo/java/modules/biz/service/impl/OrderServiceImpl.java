@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,6 @@ import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.FileUploadUtil;
-import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
@@ -33,12 +33,7 @@ import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.repository.OrderRepository;
 import com.albedo.java.modules.biz.repository.VideoRepository;
-import com.albedo.java.modules.biz.service.BalanceService;
-import com.albedo.java.modules.biz.service.CouponService;
-import com.albedo.java.modules.biz.service.OrderService;
-import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
-import com.albedo.java.modules.biz.util.DubType;
+import com.albedo.java.modules.biz.service.*;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
@@ -72,6 +67,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   CouponService couponService;
   @Resource
   PurchaseRecordService recordService;
+  @Resource
+  DubService dubService;
   @Resource
   AliPayService aliPayService;
   @Resource
@@ -301,15 +298,23 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String videoOrderId = audioOrder.getVideoId();
     Order videoOrder = baseMapper.selectById(videoOrderId);
     Assert.notNull(videoOrder, ORDER_NOT_FOUND);
-    String videoId = videoOrder.getVideoId();
-    Video video = videoRepository.selectById(videoId);
-    Assert.notNull(video, VIDEO_NOT_FOUND);
+    Video video = Video.builder().orderId(videoOrderId).audioText(audioOrder.getContent())
+      .userId(videoOrder.getUserId()).dubType(1).build();
     video.setAudioUrl(audioUrl);
-    video.updateById();
-    audioOrder.setState(BusinessConstants.VALID);
+    String uploadPath = userService.getUploadPath(videoOrder.getUserId());
+    String objectName = ossSingleton.getPath(audioUrl);
+    String filePath = uploadPath + File.separator + objectName;
+    ossSingleton.downloadFile("vlivest-2", objectName, filePath);
+    ossSingleton.uploadFileNonAsync(new File(filePath), objectName, userService.getBucketName(videoOrder.getUserId()));
+    video.setAudioUrl(ossSingleton.getUrl(filePath));
+    video.insert();
+    audioOrder.setState(FINISHED);
     audioOrder.updateById();
-    SpringContextHolder.publishEvent(new VideoEncodeTask(video));
+    redisTemplate.opsForList().rightPush("dub_task", video.getId());
   }
+
+  @Resource
+  RedisTemplate<String, String> redisTemplate;
 
   @Override
   public String generateAudio(List<String> text, String orderId, String voiceType) {
@@ -374,8 +379,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public void dub(SubOrderVo orderVo, Video video) {
-    DubType dubType = new DubType(orderVo, video);;
-    dubType.invoke();
+  public String dub(SubOrderVo orderVo, Video video) {
+    return dubService.dub(orderVo, video);
   }
 }

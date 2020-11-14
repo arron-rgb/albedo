@@ -146,9 +146,12 @@ public class UserOrderResource extends BaseResource {
     Order order = service.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.notNull(orderVo.getType(), "请选择配音方式");
-    service.dub(orderVo, video);
+    String dub = service.dub(orderVo, video);
     order.setState(NOT_UPDATED);
     service.updateById(order);
+    if (StringUtils.isNotEmpty(dub)) {
+      return Result.buildOkData(dub, "请前往支付链接支付");
+    }
     return Result.buildOk("下单成功");
   }
 

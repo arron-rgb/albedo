@@ -63,6 +63,7 @@ public class OssSingleton {
   }
 
   public void uploadFileNonAsync(File file, String objectName, String bucketName) {
+    log.info("开始上传文件{}", objectName);
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
@@ -182,6 +183,10 @@ public class OssSingleton {
   }
 
   public String getPath(String url) {
+    if (url.contains("static")) {
+      url = url.replaceAll("static.vlivest.com/", "");
+      return url;
+    }
     // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-shenzhen.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
     String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");
     String bucket = split[0];

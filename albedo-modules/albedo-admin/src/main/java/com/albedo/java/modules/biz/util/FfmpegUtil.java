@@ -142,8 +142,7 @@ public class FfmpegUtil {
    */
   public String shuffleList(List<VideoMaterial> videoList) {
     // url为本地链接
-    log.info("打乱{}个视频，并合成", videoList.size());
-    // videoList.forEach(video -> delAudio(video.getOriginUrl()));
+    log.info("合成{}个视频", videoList.size());
     if (videoList.size() == 1) {
       return videoList.get(0).getOriginUrl();
     }

@@ -94,7 +94,7 @@ public interface OrderService extends BaseService<Order> {
    * @param orderVo
    * @param video
    */
-  void dub(SubOrderVo orderVo, Video video);
+  String dub(SubOrderVo orderVo, Video video);
 
   /**
    *

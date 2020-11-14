@@ -1,10 +1,11 @@
 package com.albedo.java.modules.biz.service.task;
 
+import static com.albedo.java.common.core.constant.BusinessConstants.IN_PRODUCTION;
 import static com.albedo.java.common.core.constant.BusinessConstants.VALID;
-import static com.albedo.java.common.core.constant.ExceptionNames.EMPTY_AUDIO;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
@@ -12,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.modules.biz.domain.Order;
@@ -26,7 +28,6 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEvent;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.oss.event.ProgressListener;
-import com.baomidou.mybatisplus.core.toolkit.Assert;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
@@ -51,6 +52,7 @@ public class VideoTaskExecutor {
    */
   @Async
   @EventListener(VideoEncodeTask.class)
+  @Transactional(rollbackFor = Exception.class)
   public void concatAudio(VideoEncodeTask event) {
     Video video = event.video;
     String orderId = video.getOrderId();
@@ -58,17 +60,23 @@ public class VideoTaskExecutor {
     List<VideoMaterial> materials = videoService.getMaterials(orderId);
     if (CollectionUtil.isEmpty(materials)) {
       log.error("订单对应素材为空，需要回滚状态");
+      Order order = orderService.getById(orderId);
+      order.setState(IN_PRODUCTION);
+      orderService.updateById(order);
+      return;
     }
     materials.forEach(material -> {
       String url = material.getOriginUrl();
       material.setOriginUrl(checkFileExist(ossSingleton.getPath(url)));
     });
-
+    checkFileExist(ossSingleton.getPath(video.getAudioUrl()));
     String audioUrl = FileUploadUtil.getDefaultBaseDir() + File.separator + ossSingleton.getPath(video.getAudioUrl());
-    Assert.isTrue(FileUtil.isNotEmpty(new File(audioUrl)), EMPTY_AUDIO);
+    if (FileUtil.isEmpty(new File(audioUrl))) {
+      log.error("audio is empty");
+      return;
+    }
     String outputUrl = ffmpegUtil.concatAudio(audioUrl, materials);
     video.setOutputUrl(outputUrl);
-
     String userId = video.getUserId();
     String bucketName = userService.getBucketName(userId);
     String outputPath =
@@ -80,7 +88,6 @@ public class VideoTaskExecutor {
     // 上传视频
     ossSingleton.uploadFileNonAsync(file, file.getName(), bucketName);
     video.setOutputUrl(ossSingleton.getUrl(file.getAbsolutePath()));
-    log.info("上传视频{}", video.getOutputUrl());
     video.updateById();
     // 更新订单状态
     Order order = orderService.getById(orderId);
@@ -164,9 +171,14 @@ public class VideoTaskExecutor {
 
   @Scheduled(fixedDelay = 5000L)
   public void invoke() {
-    String videoId = redisTemplate.opsForList().rightPop("video_encode");
-    log.info("执行{}的合成", videoId);
-    videoService.addAudio(videoId);
+    Long size = redisTemplate.opsForList().size("dub_task");
+    if (Optional.ofNullable(size).orElse(0L) > 0) {
+      String videoId = redisTemplate.opsForList().rightPop("dub_task");
+      log.info("执行{}的合成", videoId);
+      videoService.addAudio(videoId);
+    } else {
+      log.info("空");
+    }
   }
 
 }

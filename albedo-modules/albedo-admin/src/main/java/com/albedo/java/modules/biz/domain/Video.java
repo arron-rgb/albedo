@@ -19,8 +19,6 @@ import lombok.*;
 public class Video extends IdEntity<Video> {
   private String orderId;
   private String userId;
-  @Deprecated
-  private String originUrl;
   private String outputUrl;
   private String audioUrl;
   private String audioText;

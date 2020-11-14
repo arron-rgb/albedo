@@ -2,6 +2,7 @@ package com.albedo.java.modules.sys.service.impl;
 
 import static com.albedo.java.common.core.constant.CommonConstants.*;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.albedo.java.common.core.config.ApplicationConfig;
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.constant.CacheNameConstants;
 import com.albedo.java.common.core.constant.CommonConstants;
@@ -515,6 +517,11 @@ public class UserServiceImpl extends DataServiceImpl<UserRepository, User, UserD
       user.updateById();
     }
     return bucketName;
+  }
+
+  @Override
+  public String getUploadPath(String userId) {
+    return ApplicationConfig.getUploadPath() + File.separator + getBucketName(userId);
   }
 
   @Override
