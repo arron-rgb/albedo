@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.BaseServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
@@ -76,6 +77,8 @@ public class DubServiceImpl extends BaseServiceImpl<DubRepository, Dub> implemen
       case 2:
         machine(orderVo, video);
         break;
+      default:
+        throw new RuntimeMsgException("");
     }
     redisTemplate.opsForList().rightPush("dub_task", video.getId());
     return "";
