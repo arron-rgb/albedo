@@ -4,6 +4,10 @@ import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
 import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -183,6 +187,18 @@ public class OssSingleton {
     String bucket = split[0];
     String object = split[1];
     return bucket + File.separator + object;
+  }
+
+  public static void main(String[] args) throws URISyntaxException {
+    OssSingleton ossSingleton = new OssSingleton();
+    String filePath =
+      "C:\\albedo\\file\\upload\\15e02440c879452abfe0e089652cd972\\2a6affdd94b7a3e001ed04ee2e53bd30.mp4";
+    // String url = ossSingleton.getUrl(filePath);
+    Path file = Paths.get(new URI(filePath));
+    String s = file.getParent().getParent().getFileName().toString();
+    // String parent = file.getParentFile().getParent();
+
+    System.out.println(s);
   }
 
 }

@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUN
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,9 @@ import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
@@ -158,6 +161,8 @@ public class WebOrderResource extends BaseResource {
   }
 
   @Resource
+  MaterialRepository repository;
+  @Resource
   OrderService orderService;
 
   @ApiOperation(value = "员工上传订单视频")
@@ -168,16 +173,25 @@ public class WebOrderResource extends BaseResource {
     String userId = orderInstance.getUserId();
     String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
     String tempPath = FileUploadUtil.upload(uploadPath, file);
-    videoService.uploadVideo(orderId, tempPath, order);
+    videoService.uploadVideo(orderId, tempPath);
     return Result.buildOkData("上传成功");
   }
 
   @ApiOperation(value = "员工更新订单状态")
   @GetMapping(value = "/update")
-  public Result<String> update(String orderId) {
+  public Result<String> update(String orderId, List<String> videoIds) {
     Order order = service.getById(orderId);
     order.setState(PRODUCTION_COMPLETED);
     order.updateById();
+    for (int i = 0, videoIdsSize = videoIds.size(); i < videoIdsSize; i++) {
+      String id = videoIds.get(i);
+      VideoMaterial material = repository.selectById(id);
+      if (Objects.isNull(material)) {
+        continue;
+      }
+      material.setOrder((i + 1) * 10);
+      material.updateById();
+    }
     return Result.buildOkData("更新成功");
   }
 
