@@ -2,10 +2,10 @@
   <div class="uploadContainer">
     <el-upload
       :auto-upload="false"
-      :data="{ orderId : this.videoId}"
+      :data="{ orderId : this.orderId}"
       :file-list="fileList"
       :on-change="onUploadChange"
-      :on-success="uploadSussess"
+      :on-success="uploadSuccess"
       action="/a/biz/order/upload"
       class="upload-demo"
       drag
@@ -31,7 +31,7 @@ export default {
   name: "videoUpload",
   data(){
     return {
-      videoId : '',
+      orderId : '',
       fileList: [],
 
     }
@@ -48,7 +48,7 @@ export default {
         }
       });
     }else{
-      this.videoId = orderData.id;
+      this.orderId = orderData.id;
     }
   },
   methods :{
@@ -70,13 +70,19 @@ export default {
         return;
       }
     },
-    uploadSuccess(key){
-      this.$alert('视频上传成功，辛苦了！', '提示',{
-        confirmButtonText: '确定',
-        callback: action => {
-          this.goTo('/order/order')
-        }
-      });
+    uploadSuccess(res){
+      // console.log(res)
+      if(res.code === MSG_TYPE_SUCCESS){
+        this.$message('视频上传成功！');
+        this.$emit("updataData");//更新父组件中的videoList数据
+      }
+      else
+        this.$alert('视频上传出错，请稍后！', '提示',{
+          confirmButtonText: '确定',
+          // callback: action => {
+          //   this.goTo('/order/order')
+          // }
+        });
     },
     goTo(path){
       this.$router.push({path: path});

@@ -5,7 +5,10 @@
                    class="video-player vjs-custom-skin"
                    ref="videoPlayer">
     </video-player>
-    <el-button :loading="loading" @click="delVideo" type="primary" v-if="this.type === 'staff'">删除</el-button>
+    <div  v-if="this.type === 'staff'">
+<!--      <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>-->
+      <el-button :loading="loading" @click="delVideo" type="primary">删除</el-button>
+    </div>
   </div>
 </template>
 
@@ -19,6 +22,7 @@ export default {
   props:['videoData', 'type'],
   data (){
     return {
+      // num : 1,
       orderData : {},
       loading : false,
       playerOptions : {
@@ -49,9 +53,10 @@ export default {
     }
   },
   created() {
-    // var orderData = storeApi.get({
-    //   name: 'orderData'
-    // }) || null;
+    this.orderData = storeApi.get({
+      name: 'orderData'
+    }) || null;
+
     // if(orderData === null || orderData === undefined){
     //   this.$alert('请先选择相关视频！', '提示',{
     //     confirmButtonText: '确定',
@@ -60,9 +65,9 @@ export default {
     //     }
     //   });
     // }else{
-    //   this.orderData = orderData;
-    //   // this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
-    //   this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+
+      // this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
+      // this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
     // }
     // console.log(this.videoData);
     if(this.type === 'staff')
@@ -79,7 +84,8 @@ export default {
       var data = [this.videoData.id]
       return new Promise((resolve, reject) => {
         crudOrder.delVideo(data).then(res => {
-          location.reload();
+          // location.reload();
+          this.$emit("updataData");
           resolve(res);
           this.loading = false
         }).catch(res => {

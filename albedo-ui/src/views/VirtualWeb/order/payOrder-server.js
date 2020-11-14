@@ -20,12 +20,13 @@ export function edit(data) {
   })
 }
 
-export function update(orderId) {//用户更新视频
+export function update(orderId, videoIds) {//用户更新视频
   return request({
     url: '/biz/order/update',
-    method: 'get',
-    params :{
-      orderId : orderId
+    method: 'post',
+    data :{
+      orderId : orderId,
+      videoIds : videoIds
     }
   })
 }

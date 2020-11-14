@@ -120,12 +120,35 @@
         </el-col>
       </el-row>
 
+      {{this.videoList}}
       <el-row class="box" v-if="orderData.state > 2">
         <el-col span="4">
           产品视频
         </el-col>
         <el-col span="20">
-          <my-video :key="item" :video-data="item" style="float: left; margin: 10px" type="staff" v-for="item in videoList"></my-video>
+          <draggable
+            :list="videoList"
+            class="dragArea list-group"
+            group="comp"
+            tag="el-collapse"
+          >
+            <el-tooltip :key="item"
+                        class="item"
+                        content="拖动以排序"
+                        effect="dark"
+                        placement="top"
+                        style="float: left; margin: 10px; border: 1px solid #dcdfe6; border-radius: 5px"
+                        v-for="(item, i) in videoList">
+              <div>
+                <my-video :video-data="item"
+                            @updataData="getVideo(orderData.id)"
+                            type="staff"
+                            ></my-video>
+<!--                <el-button round>{{i}}</el-button>-->
+              </div>
+            </el-tooltip>
+
+          </draggable>
         </el-col>
       </el-row>
 
@@ -134,7 +157,7 @@
       </el-row>
 
       <el-row class="box" v-if="orderData.state > 1">
-        <video-upload></video-upload>
+        <video-upload @updataData="getVideo(orderData.id)"></video-upload>
       </el-row>
 
       <el-row class="box" style="text-align: center" v-if="orderData.state > 1">
@@ -153,7 +176,7 @@ import videoUpload from '@/components/VirtualWeb/file/videoUpload'
 import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 import myVideo from '@/components/VirtualWeb/file/video'
 import MyOrder from "@/views/VirtualWeb/personal/myOrder";
-
+import draggable from "vuedraggable"
 
 export default {
   name: "orderDetail",
@@ -161,6 +184,7 @@ export default {
     MyOrder,
     audioUpload,
     videoUpload,
+    draggable,
     myVideo
   },
   data(){
@@ -233,8 +257,12 @@ export default {
     },
     updateOrder(){
       this.updateLoading = true;
+      var videoIds = [];
+      for(var i = 0; i < this.videoList.length; i++)
+        videoIds.push(this.videoList[i].id)
+      // console.log(videoIds);
       return new Promise((resolve, reject) => {
-        payOrder.update(this.orderData.id).then( res =>{
+        payOrder.update(this.orderData.id, videoIds).then( res =>{
           if(res.code === MSG_TYPE_SUCCESS){
             this.$alert('订单更新成功，辛苦了！', '提示',{
               confirmButtonText: '确定',
