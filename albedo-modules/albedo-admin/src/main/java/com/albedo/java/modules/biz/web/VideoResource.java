@@ -48,8 +48,8 @@ public class VideoResource extends BaseResource {
   @ApiOperation(value = "获取素材视频")
   @LogOperate(value = "获取素材视频")
   public Result<PageModel<VideoMaterial>> getPage(PageModel<VideoMaterial> pm, String orderId) {
-    PageModel<VideoMaterial> page =
-      materialRepository.selectPage(pm, Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+    PageModel<VideoMaterial> page = materialRepository.selectPage(pm,
+      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getSort));
     return Result.buildOkData(page);
   }
 
