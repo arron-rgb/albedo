@@ -125,16 +125,16 @@
           </el-col>
         </el-row>
 
-        {{orderDetail.videoList}}
+<!--        {{orderDetail.videoList}}-->
         <el-table
           :data="orderDetail.videoList"
-          style="width: 90%; margin: auto">
+          style="width: 90%; margin: auto; padding-bottom: 30px">
 
           <el-table-column
             type="expand">
             <template slot-scope="scope">
-<!--              自行上传音频-->
-              <div v-if="scope.row.dubType === 0 || scope.row.dubType === '0'">
+<!--              音频-->
+              <div v-if="scope.row.dubType === 0 || scope.row.dubType === '0' || scope.row.dubType === 1 || scope.row.dubType === '1'">
                 <el-row class="line">
                   <el-col span="4">
                     您的音频：
@@ -145,28 +145,44 @@
                                 artist: '请试听',
                                 src: scope.row.audioUrl,
                                 theme: '#ff5000'
-                              }" style="width: 90%; margin:  auto"
+                              }" style="width: 100%; margin:  auto"
                              v-if="scope.row.audioUrl !== '' && scope.row.audioUrl !== null"
                     />
                     <span v-else>音频已失效</span>
                   </el-col>
                 </el-row>
+              </div>
+
+<!--              台词文本-->
+              <div v-if="scope.row.dubType === 2 || scope.row.dubType === '2' || scope.row.dubType === 1 || scope.row.dubType === '1'">
                 <el-row class="line">
                   <el-col span="4">
-                    您的视频：
+                    您的台词：
                   </el-col>
                   <el-col span="20">
-                    <span v-if="scope.row.outputUrl === '' || scope.row.outputUrl === null">音频已失效</span>
-                    <el-button @click="download(scope.row.outputUrl)" v-else>
+                    <div style="width: 100%; line-height: 24px; max-height: 200px; overflow-y: auto">{{scope.row.audioText}}</div>
+                  </el-col>
+                </el-row>
+              </div>
+
+<!--              视频展示-->
+              <el-row class="line">
+                <el-col span="4">
+                  <el-row >您的视频：</el-row>
+                </el-col>
+                <el-col span="20">
+                  <span v-if="scope.row.outputUrl === '' || scope.row.outputUrl === null">音频已失效</span>
+                  <el-row style="text-align: center" v-else>
+                    <my-video :video-data="scope.row.outputUrl" style="width: 100%" type="user"></my-video>
+                    <el-button @click="download(scope.row.outputUrl)">
                       下载视频
                       <i class="el-icon-download el-icon--right" style="font-size: 18px"></i>
                     </el-button>
-                    </el-col>
-                </el-row>
-                <el-row>
-                  <my-video :video-data="'https://' + scope.row.outputUrl"></my-video>
-                </el-row>
-              </div>
+                  </el-row>
+                </el-col>
+              </el-row>
+              <el-row>
+              </el-row>
             </template>
           </el-table-column>
 
@@ -198,23 +214,6 @@
             </template>
           </el-table-column>
         </el-table>
-
-        <el-row class="box"  v-if="orderDetail.type === '0' || orderDetail.type === '1'">
-          <el-col span="4">
-            产品视频：
-          </el-col>
-          <el-col span="20">
-            <div v-if="this.orderDetail.videoId === ''">视频已失效</div>
-            <div class='videoPlayer' v-else>
-              <video-player  class="video-player vjs-custom-skin"
-                             ref="videoPlayer"
-                             :playsinline="true"
-                             :options="playerOptions">
-              </video-player>
-            </div>
-
-          </el-col>
-        </el-row>
 
       </el-card>
     </div>
@@ -385,6 +384,8 @@ export default {
 /*  border: 1px solid #d7dae2;*/
 /*}*/
 .line{
+  margin: 10px auto;
+  font-size: 16px;
   line-height: 50px;
 }
 </style>

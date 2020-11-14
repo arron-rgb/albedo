@@ -125,7 +125,7 @@
           产品视频
         </el-col>
         <el-col span="20">
-          <my-video :key="item" :video-data="item" style="float: left; margin: 10px" v-for="item in videoList"></my-video>
+          <my-video :key="item" :video-data="item" style="float: left; margin: 10px" type="staff" v-for="item in videoList"></my-video>
         </el-col>
       </el-row>
 

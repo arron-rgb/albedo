@@ -469,7 +469,7 @@ export default {
             color: rgb(0,116,232);
             border: 1.5px solid rgb(0,116,232);
           }
-          overflow-y: scroll;
+          overflow-y: auto;
           height: 700px;
           //background-color:rgb(245,247,250);
           border:1px solid #ebeef5;
@@ -509,7 +509,7 @@ export default {
           //background-color:rgb(245,247,250);
           //padding:0 15px 15px 15px;
           border:1px solid #ebeef5;
-          overflow-y: scroll;
+          overflow-y: auto;
           height: 700px;
           border-radius: 5px;
           padding: 0 15px;
@@ -551,7 +551,7 @@ export default {
           //}
         }
         .script{
-          overflow-y: scroll;
+          overflow-y:auto;
           box-sizing: border-box;
           //padding-bottom:30px;
           width:390px;

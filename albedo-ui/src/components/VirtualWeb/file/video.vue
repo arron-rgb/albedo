@@ -1,11 +1,11 @@
 <template>
-  <div class='videoPlayer'>
+  <div class='videoPlayer' v-if="videoData !== null && videoData !== undefined && videoData !== []">
     <video-player  :options="playerOptions"
                    :playsinline="true"
                    class="video-player vjs-custom-skin"
                    ref="videoPlayer">
     </video-player>
-    <el-button :loading="loading" @click="delVideo" type="primary">删除</el-button>
+    <el-button :loading="loading" @click="delVideo" type="primary" v-if="this.type === 'staff'">删除</el-button>
   </div>
 </template>
 
@@ -16,7 +16,7 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 
 export default {
   name: "video",
-  props:['videoData'],
+  props:['videoData', 'type'],
   data (){
     return {
       orderData : {},
@@ -49,22 +49,29 @@ export default {
     }
   },
   created() {
-    var orderData = storeApi.get({
-      name: 'orderData'
-    }) || null;
-    if(orderData === null || orderData === undefined){
-      this.$alert('请先选择相关视频！', '提示',{
-        confirmButtonText: '确定',
-        callback: action => {
-          this.goTo('/order/order')
-        }
-      });
-    }else{
-      this.orderData = orderData;
-      this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
-    }
+    // var orderData = storeApi.get({
+    //   name: 'orderData'
+    // }) || null;
+    // if(orderData === null || orderData === undefined){
+    //   this.$alert('请先选择相关视频！', '提示',{
+    //     confirmButtonText: '确定',
+    //     callback: action => {
+    //       this.goTo('/order/order')
+    //     }
+    //   });
+    // }else{
+    //   this.orderData = orderData;
+    //   // this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
+    //   this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    // }
     // console.log(this.videoData);
-    this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    if(this.type === 'staff')
+      this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    else{
+      this.playerOptions.aspectRatio = '16:9';
+      this.playerOptions.sources[0].src = 'https://' + this.videoData;
+    }
+
   },
   methods : {
     delVideo(){
