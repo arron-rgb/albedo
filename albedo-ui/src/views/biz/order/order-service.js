@@ -81,7 +81,7 @@ export function belong(){//保存上传的音频
 
 export function getVideoList(orderId){//获取该订单的videolist
   return request({
-    url: '/biz/video',
+    url: '/biz/video/list',
     method: 'get',
     params:{
       orderId : orderId

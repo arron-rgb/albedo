@@ -130,7 +130,7 @@
           :data="orderDetail.videoList"
           :default-sort = "{prop: 'createdDate', order: 'descending'}"
           :row-class-name="tableRowClassName"
-          style="width: 90%; margin: auto; padding-bottom: 30px">
+          style="width: 95%; margin: auto; padding-bottom: 30px; font-size: 14px">
 
           <el-table-column
             type="expand">
@@ -396,7 +396,7 @@ export default {
 /*  border: 1px solid #d7dae2;*/
 /*}*/
 .line{
-  margin: 10px auto;
+  /*margin: 10px auto;*/
   font-size: 16px;
   line-height: 50px;
 }

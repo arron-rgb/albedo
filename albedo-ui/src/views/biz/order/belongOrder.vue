@@ -30,9 +30,10 @@
           <span v-if="scope.row.state === 0">未付款</span>
           <span style="color: #ff5000"  v-if="scope.row.state === 1">未接单</span>
           <span style="color: orange"  v-if="scope.row.state === 2">已接单</span>
-          <span style="color: deepskyblue" v-if="scope.row.state === 3">待完善</span>
-          <span style="color: pink" v-if="scope.row.state === 4">配音中</span>
-          <span style="color: lightgreen" v-if="scope.row.state === 5">已完成</span>
+          <span style="color: deepskyblue" v-if="scope.row.state === 3">已制作</span>
+          <span style="color: pink" v-if="scope.row.state === 4">已制作</span>
+          <span style="color: lightgreen" v-if="scope.row.state === 5">已制作</span>
+          <span style="color: lightgreen" v-if="scope.row.state === 6">已结单</span>
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" align="center" label="订单类型">
