@@ -128,6 +128,8 @@
 <!--        {{orderDetail.videoList}}-->
         <el-table
           :data="orderDetail.videoList"
+          :default-sort = "{prop: 'createdDate', order: 'descending'}"
+          :row-class-name="tableRowClassName"
           style="width: 90%; margin: auto; padding-bottom: 30px">
 
           <el-table-column
@@ -141,7 +143,7 @@
                   </el-col>
                   <el-col span="20">
                     <aplayer :music="{
-                                title: '上传音频',
+                                title: '您的音频',
                                 artist: '请试听',
                                 src: scope.row.audioUrl,
                                 theme: '#ff5000'
@@ -296,6 +298,16 @@ export default {
       }
   },
   methods:{
+    tableRowClassName({row, rowIndex}) {
+      // console.log(row)
+      if (row.dubType === 1 || row.dubType === '1') {//人工配音
+        return 'warning-row';
+      } else if (row.dubType === 0 || row.dubType === '0') {//上传音频
+        return 'success-row';
+      }
+      else
+        return '';
+    },
     goTo(url, data){
       //带参数跳转
       // console.log(data)
@@ -319,7 +331,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .container{
   width: 1200px;
   margin: auto;
@@ -387,5 +399,12 @@ export default {
   margin: 10px auto;
   font-size: 16px;
   line-height: 50px;
+}
+.el-table .warning-row {
+  background: oldlace;
+}
+
+.el-table .success-row {
+  background: #f0f9eb;
 }
 </style>
