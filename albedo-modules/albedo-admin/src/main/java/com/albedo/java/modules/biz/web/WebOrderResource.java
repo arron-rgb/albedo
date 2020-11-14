@@ -182,7 +182,7 @@ public class WebOrderResource extends BaseResource {
 
   @ApiOperation(value = "员工更新订单状态")
   @PostMapping(value = "/update")
-  public Result<String> update(Param body) {
+  public Result<String> update(@RequestBody Param body) {
     String orderId = body.getOrderId();
     List<String> videoIds = body.getVideoIds();
     Order order = service.getById(orderId);

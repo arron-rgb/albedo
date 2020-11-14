@@ -120,7 +120,7 @@
         </el-col>
       </el-row>
 
-      {{this.videoList}}
+<!--      {{this.videoList}}-->
       <el-row class="box" v-if="orderData.state > 2">
         <el-col span="4">
           产品视频

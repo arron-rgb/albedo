@@ -25,8 +25,10 @@ export function update(orderId, videoIds) {//用户更新视频
     url: '/biz/order/update',
     method: 'post',
     data :{
-      orderId : orderId,
-      videoIds : videoIds
+      // body :{
+        orderId : orderId,
+        videoIds : videoIds
+      // }
     }
   })
 }
