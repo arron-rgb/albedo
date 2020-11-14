@@ -58,14 +58,21 @@ public class VideoResource extends BaseResource {
   @Resource
   OssSingleton ossSingleton;
 
-  @LogOperate(value = "删除视频")
-  @ApiOperation(value = "删除视频")
+  @LogOperate(value = "删除素材视频")
+  @ApiOperation(value = "删除素材视频")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> deleteIds) {
-    materialRepository.selectBatchIds(deleteIds).forEach(video -> {
-      ossSingleton.remove(video.getOriginUrl());
-    });
+    materialRepository.selectBatchIds(deleteIds).forEach(video -> ossSingleton.remove(video.getOriginUrl()));
     materialRepository.deleteBatchIds(deleteIds);
+    return Result.buildOk("删除素材成功");
+  }
+
+  @LogOperate(value = "删除视频")
+  @ApiOperation(value = "删除视频")
+  @DeleteMapping("output")
+  public Result<String> deleteOutput(@RequestBody Set<String> deleteIds) {
+    service.listByIds(deleteIds).forEach(video -> ossSingleton.remove(video.getOutputUrl()));
+    service.removeByIds(deleteIds);
     return Result.buildOk("删除视频成功");
   }
 
