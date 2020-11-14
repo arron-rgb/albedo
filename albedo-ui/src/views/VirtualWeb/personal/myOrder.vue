@@ -9,9 +9,13 @@
         :default-sort = "{prop: 'createdDate', order: 'descending'}"
         v-loading="loading"
       >
-        <el-table-column type="expand">
+<!--        <el-table-column type="expand">-->
+<!--          <template slot-scope="scope">-->
 
-        </el-table-column>
+<!--            {{scope.row.children}}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+
 <!--        <el-table-column type="expand">-->
 <!--          <template slot-scope="props">-->
 <!--            <el-form label-position="left" inline class="demo-table-expand">-->
@@ -66,11 +70,18 @@
         <el-table-column
           label="操作">
           <template slot-scope="props" v-if="props.row.type !== '2'">
-            <el-tooltip class="item" content="查看/配音" effect="dark" placement="top">
 <!--              配音订单-->
 <!--              <el-button size="mini" v-if="props.row.type === '2'" @click="goTo('/waiting')">查看详情</el-button>-->
-              <el-button @click="showDetail(props.row, '/addDetail')" v-if="props.row.state >= 3 && props.row.state <= 5">前往配音</el-button>
-              <el-button @click="goTo('/addOrder')" type="primary" v-else-if="props.row.state <= 2">查看进度</el-button>
+            <el-tooltip class="item" content="查看订单详情" effect="dark" placement="top">
+              <el-button @click="showDetail(props.row, '/endOrder')" type="primary">查看</el-button>
+            </el-tooltip>
+            <el-tooltip class="item" content="前往配音" effect="dark" placement="top">
+              <el-button :disabled="props.row.state < 3 || props.row.state === 6" @click="showDetail(props.row, '/addDetail')">配音</el-button>
+            </el-tooltip>
+          </template>
+          <template slot-scope="props" v-else>
+            <el-tooltip class="item" content="查看订单详情" effect="dark" placement="top">
+              <el-button @click="showDetail(props.row, '/endOrder')" type="primary">查看</el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -122,7 +133,13 @@ export default {
         type: 'session'
       });
       this.goTo(url);
-    }
+    },
+    // getVideos(row, expandedRows){
+      // console.log(row);
+      // row.children = row.id + '\'s children';
+
+      // console.log(expandedRows);
+    // }
   },
   created() {
     this.getData();
