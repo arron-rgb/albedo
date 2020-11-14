@@ -25,4 +25,5 @@ public class Video extends IdEntity<Video> {
   private String audioUrl;
   private String audioText;
   private Integer dubType;
+  private String voiceType;
 }

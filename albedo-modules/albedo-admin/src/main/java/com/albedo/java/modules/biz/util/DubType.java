@@ -113,6 +113,7 @@ public class DubType {
       String filePath = orderService.generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
       String audioUrl = ossSingleton.getUrl(filePath);
+      video.setVoiceType(voiceType);
       video.setAudioText(orderVo.appendContent());
       video.setAudioUrl(audioUrl);
       video.updateById();
