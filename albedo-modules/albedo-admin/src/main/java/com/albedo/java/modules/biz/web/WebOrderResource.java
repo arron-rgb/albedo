@@ -162,13 +162,13 @@ public class WebOrderResource extends BaseResource {
 
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
-  public Result<String> uploadVideo(MultipartFile file, String orderId) throws IOException {
-    Order order = orderService.getById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUND);
-    String userId = order.getUserId();
+  public Result<String> uploadVideo(MultipartFile file, String orderId, Integer order) throws IOException {
+    Order orderInstance = orderService.getById(orderId);
+    Assert.notNull(orderInstance, ORDER_NOT_FOUND);
+    String userId = orderInstance.getUserId();
     String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
     String tempPath = FileUploadUtil.upload(uploadPath, file);
-    videoService.uploadVideo(orderId, tempPath);
+    videoService.uploadVideo(orderId, tempPath, order);
     return Result.buildOkData("上传成功");
   }
 

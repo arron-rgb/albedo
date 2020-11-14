@@ -27,7 +27,6 @@ import com.aliyun.oss.event.ProgressEvent;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.oss.event.ProgressListener;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
@@ -56,8 +55,7 @@ public class VideoTaskExecutor {
     Video video = event.video;
     String orderId = video.getOrderId();
 
-    List<VideoMaterial> materials =
-      materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+    List<VideoMaterial> materials = videoService.getMaterials(orderId);
     if (CollectionUtil.isEmpty(materials)) {
       log.error("订单对应素材为空，需要回滚状态");
     }

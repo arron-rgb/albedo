@@ -53,18 +53,18 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   /**
    * 员工上传视频素材：一条订单可对应多个video
    *
-   *
    * @param orderId
    *          订单id
    * @param tempPath
+   * @param order
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
-  public void uploadVideo(String orderId, String tempPath) {
+  public void uploadVideo(String orderId, String tempPath, Integer order) {
     // 更新订单状态
-    Order order = orderService.getById(orderId);
+    Order orderInstance = orderService.getById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
-    String userId = order.getUserId();
+    String userId = orderInstance.getUserId();
     Balance balance = balanceService.getByUserId(userId);
     // 更新使用状况 单位以GB为基准
     File tempFile = new File(tempPath);
@@ -84,7 +84,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
     // 只要上传视频就插入新的记录
-    VideoMaterial material = VideoMaterial.builder().orderId(orderId).originUrl(ossSingleton.getUrl(tempPath)).build();
+    VideoMaterial material =
+      VideoMaterial.builder().order(order).orderId(orderId).originUrl(ossSingleton.getUrl(tempPath)).build();
     material.insert();
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
@@ -135,6 +136,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
 
   @Override
   public List<VideoMaterial> getMaterials(String orderId) {
-    return materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+    return materialRepository.selectList(
+      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getOrder));
   }
 }

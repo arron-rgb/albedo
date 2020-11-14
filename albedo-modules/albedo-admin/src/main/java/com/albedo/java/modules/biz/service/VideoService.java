@@ -19,10 +19,11 @@ public interface VideoService extends BaseService<Video> {
    *          订单id
    * @param tempPath
    *          本地文件路径
+   * @param order
    * @exception IOException
    *              IO异常
    */
-  void uploadVideo(String orderId, String tempPath) throws IOException;
+  void uploadVideo(String orderId, String tempPath, Integer order) throws IOException;
 
   /**
    * 给某条video添加配音处理
