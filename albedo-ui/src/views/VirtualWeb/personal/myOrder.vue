@@ -58,13 +58,13 @@
           label="订单状态"
         >
           <template slot-scope="props">
-            <span v-if="props.row.state === 0">未付款</span>
-            <span v-else-if="props.row.state === 1">未接单</span>
-            <span v-else-if="props.row.state === 2">制作中</span>
+            <span style="color: #ff5000" v-if="props.row.state === 0">未付款</span>
+            <span style="color: orange" v-else-if="props.row.state === 1">未接单</span>
+            <span style="color: lightgreen" v-else-if="props.row.state === 2">制作中</span>
 <!--            <span v-if="props.row.state === 3">待完善</span>-->
 <!--            <span v-if="props.row.state === 4">配音中</span>-->
             <span v-else-if="props.row.state === 6">已结单</span>
-            <span v-else>可配音</span>
+            <span style="color: deepskyblue" v-else>可配音</span>
           </template>
         </el-table-column>
         <el-table-column

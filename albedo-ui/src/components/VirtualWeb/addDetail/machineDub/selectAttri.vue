@@ -270,7 +270,7 @@ export default {
                 name: 'duration',
               });
               this.loading = false;
-              this.goTo('/addOrder');
+              this.goTo('/myOrder');
             }else{//人工配音
               storeApi.clear({
                 name: 'textList',
@@ -283,7 +283,7 @@ export default {
                 this.$alert("人工配音订单提交成功，请耐心等待！", '提示', {
                   confirmButtonText: '确定',
                   callback: action => {
-                    this.goTo('/addOrder');
+                    this.goTo('/myOrder');
                   }
                 });
                 resolve(res);
