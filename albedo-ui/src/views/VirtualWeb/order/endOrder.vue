@@ -162,7 +162,7 @@
                     您的台词：
                   </el-col>
                   <el-col span="20">
-                    <div style="width: 100%; line-height: 24px; max-height: 200px; overflow-y: auto">{{scope.row.audioText}}</div>
+                    <div style="width: 100%; line-height: 24px; max-height: 200px; overflow-y: auto; margin-bottom: 30px">{{scope.row.audioText}}</div>
                   </el-col>
                 </el-row>
               </div>
