@@ -56,18 +56,18 @@ export default {
     aplayer
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder',
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
     }) || null;
-    if (videoOrder === null || videoOrder === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     } else {
-      console.log(videoOrder);
-      this.videoOrder = videoOrder;
+      // console.log(videoOrder);
+      this.videoOrder = orderDetail;
     }
   },
   methods: {
@@ -150,9 +150,9 @@ export default {
           this.loading = false;
           //清除videoOrder
           storeApi.clear({
-            name: 'videoOrder'
+            name: 'orderDetail'
           });
-          this.goTo('/addOrder');
+          this.goTo('/myOrder');
         }).catch(error => {
           reject(error)
           this.loading = false;
