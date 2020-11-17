@@ -32,7 +32,6 @@ import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.repository.OrderRepository;
-import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.*;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
 import com.albedo.java.modules.sys.domain.Dict;
@@ -253,7 +252,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(NOT_STARTED.equals(order.getState()), "订单状态异常");
-    Assert.isTrue(StringUtils.isEmpty(order.getStaffId()), "该视频已被认领");
+    Assert.isTrue(StringUtils.isEmpty(order.getStaffId()), "该订单已被认领");
     order.setStaffId(staffId);
     order.setState(IN_PRODUCTION);
     saveOrUpdate(order);
@@ -300,7 +299,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.notNull(videoOrder, ORDER_NOT_FOUND);
     Video video = Video.builder().orderId(videoOrderId).audioText(audioOrder.getContent())
       .userId(videoOrder.getUserId()).dubType(1).build();
-    video.setAudioUrl(audioUrl);
     String uploadPath = userService.getUploadPath(videoOrder.getUserId());
     String objectName = ossSingleton.getPath(audioUrl);
     String filePath = uploadPath + File.separator + objectName;
@@ -311,6 +309,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     audioOrder.setState(FINISHED);
     audioOrder.updateById();
     redisTemplate.opsForList().rightPush("dub_task", video.getId());
+
   }
 
   @Resource
@@ -355,9 +354,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Assert.isTrue(roles.contains(ADMIN_ROLE_ID), VIEW_NOT_PERMITTED);
     return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
   }
-
-  @Resource
-  VideoRepository videoRepository;
 
   @Override
   public boolean callback(String orderId) {

@@ -76,6 +76,8 @@ public class VideoTaskExecutor {
       return;
     }
     String outputUrl = ffmpegUtil.concatAudio(audioUrl, materials);
+    // todo 失败的话
+    // redisTemplate.opsForList().rightPush("dub_task", video.getId());
     video.setOutputUrl(outputUrl);
     String userId = video.getUserId();
     String bucketName = userService.getBucketName(userId);
