@@ -106,6 +106,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   @Override
   public void addAudio(String videoId) {
     Video video = baseMapper.selectById(videoId);
+    video.setStatus("配音中");
+    video.updateById();
     Assert.notNull(video, VIDEO_NOT_FOUND);
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));

@@ -187,19 +187,23 @@ public class FfmpegUtil {
     String videoOutputPath = generateFilePath(extName);
     Double priorityDuration = getVideoMetadata(prior).duration;
     List<String> paths = generateList(inferior, priorityDuration);
-    // 合成video
-    builder = new FFmpegBuilder();
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
-    String tempTxt = generateTempTxt(paths);
-    builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
-    String tempExtName = FileUtil.extName(inferior);
-    String tempOutput = generateFilePath(tempExtName);
-    builder.addOutput(tempOutput).setVideoCodec(COPY).done();
+    String tempOutput;
+    if (paths.size() == 1) {
+      tempOutput = paths.get(0);
+    } else {
+      // 合成video
+      builder = new FFmpegBuilder();
+      builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
+      String tempTxt = generateTempTxt(paths);
+      builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
+      String tempExtName = FileUtil.extName(inferior);
+      tempOutput = generateFilePath(tempExtName);
+      builder.addOutput(tempOutput).setVideoCodec(COPY).done();
+      run(builder);
+      FileUtil.del(tempTxt);
+    }
     // 清除声音
-    run(builder);
-    // if (hasAudio(tempOutput)) {
     delAudio(tempOutput);
-    // }
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
     builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
@@ -207,8 +211,7 @@ public class FfmpegUtil {
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
       .setAudioBitRate(16000L).setAudioCodec("aac").done();
     run(builder);
-    // FileUtil.del(tempTxt);
-    // FileUtil.del(tempOutput);
+    FileUtil.del(tempOutput);
     return videoOutputPath;
   }
 
@@ -233,8 +236,13 @@ public class FfmpegUtil {
   }
 
   public static void run(FFmpegBuilder builder, ProgressListener listener) {
-    FFmpegJob job;
-    job = executor.createJob(builder, progress -> System.out.println("Progress: " + progress));
+    FFmpegJob job = null;
+    job = executor.createJob(builder, progress -> {
+      System.out.println("Progress: " + progress);
+      if (progress.isEnd()) {
+        // todo pop
+      }
+    });
     job.run();
   }
 
