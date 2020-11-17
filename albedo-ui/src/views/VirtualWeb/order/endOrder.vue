@@ -162,7 +162,7 @@
                     您的台词：
                   </el-col>
                   <el-col span="20">
-                    <div style="width: 100%; line-height: 24px; max-height: 200px; overflow-y: auto">{{scope.row.audioText}}</div>
+                    <div style="width: 100%; line-height: 24px; max-height: 200px; overflow-y: auto; margin-bottom: 30px">{{scope.row.audioText}}</div>
                   </el-col>
                 </el-row>
               </div>
@@ -173,7 +173,7 @@
                   <el-row >您的视频：</el-row>
                 </el-col>
                 <el-col span="20">
-                  <span v-if="scope.row.outputUrl === '' || scope.row.outputUrl === null">音频已失效</span>
+                  <span v-if="scope.row.outputUrl === '' || scope.row.outputUrl === null">视频已失效/合成中</span>
                   <el-row style="text-align: center" v-else>
                     <my-video :video-data="scope.row.outputUrl" style="width: 100%" type="user"></my-video>
                     <el-button @click="download(scope.row.outputUrl)">

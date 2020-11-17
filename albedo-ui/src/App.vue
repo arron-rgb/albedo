@@ -235,7 +235,7 @@ body {
 .el-menu-item:hover{
   color: #ff5000 !important;
 }
-
+//
 //.el-input__inner:focus{
 //  border: #ff5000 1px solid !important;
 //}
@@ -245,12 +245,12 @@ body {
 //.el-input-number__increase:hover{
 //  color: #ff5000;
 //}
-.el-input-number__decrease:hover{
-  color: #ff5000 !important;
-}
-.el-textarea__inner:focus{
-  border: #ff5000 1px solid !important;
-}
+//.el-input-number__decrease:hover{
+//  color: #ff5000 !important;
+//}
+//.el-textarea__inner:focus{
+//  border: #ff5000 1px solid !important;
+//}
 
 .el-checkbox__input.is-checked+.el-checkbox__label{
   color: #ff5000 !important;
