@@ -305,11 +305,11 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     ossSingleton.downloadFile("vlivest-2", objectName, filePath);
     ossSingleton.uploadFileNonAsync(new File(filePath), objectName, userService.getBucketName(videoOrder.getUserId()));
     video.setAudioUrl(ossSingleton.getUrl(filePath));
+    // video.setStatus("等待配音");
     video.insert();
     audioOrder.setState(FINISHED);
     audioOrder.updateById();
     redisTemplate.opsForList().rightPush("dub_task", video.getId());
-
   }
 
   @Resource

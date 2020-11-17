@@ -200,6 +200,7 @@ public class FfmpegUtil {
       tempOutput = generateFilePath(tempExtName);
       builder.addOutput(tempOutput).setVideoCodec(COPY).done();
       run(builder);
+      FileUtil.del(tempTxt);
     }
     // 清除声音
     delAudio(tempOutput);
@@ -210,8 +211,7 @@ public class FfmpegUtil {
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
       .setAudioBitRate(16000L).setAudioCodec("aac").done();
     run(builder);
-    // FileUtil.del(tempTxt);
-    // FileUtil.del(tempOutput);
+    FileUtil.del(tempOutput);
     return videoOutputPath;
   }
 
@@ -236,7 +236,7 @@ public class FfmpegUtil {
   }
 
   public static void run(FFmpegBuilder builder, ProgressListener listener) {
-    FFmpegJob job;
+    FFmpegJob job = null;
     job = executor.createJob(builder, progress -> {
       System.out.println("Progress: " + progress);
       if (progress.isEnd()) {

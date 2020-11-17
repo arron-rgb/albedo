@@ -19,7 +19,6 @@ import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.VideoMaterial;
-import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
@@ -39,9 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VideoTaskExecutor {
   public VideoTaskExecutor() {}
-
-  @Resource
-  MaterialRepository materialRepository;
 
   /**
    * 将音频与视频合成
@@ -90,6 +86,7 @@ public class VideoTaskExecutor {
     // 上传视频
     ossSingleton.uploadFileNonAsync(file, file.getName(), bucketName);
     video.setOutputUrl(ossSingleton.getUrl(file.getAbsolutePath()));
+    video.setStatus("配音完毕");
     video.updateById();
     // 更新订单状态
     Order order = orderService.getById(orderId);
@@ -178,8 +175,6 @@ public class VideoTaskExecutor {
       String videoId = redisTemplate.opsForList().rightPop("dub_task");
       log.info("执行{}的合成", videoId);
       videoService.addAudio(videoId);
-    } else {
-      log.info("空");
     }
   }
 
