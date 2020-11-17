@@ -28,11 +28,22 @@
 
     <el-row class="formRow">
       <el-col span="6">
-        <span>抬头名称：</span>
+        <span>抬头名称（必填）：</span>
       </el-col>
       <el-col span="15">
         <el-input
           v-model="invoiceData.name"
+        ></el-input>
+      </el-col>
+    </el-row>
+
+    <el-row class="formRow">
+      <el-col span="6">
+        <span>邮箱地址（必填）：</span>
+      </el-col>
+      <el-col span="15">
+        <el-input
+          v-model="invoiceData.email"
         ></el-input>
       </el-col>
     </el-row>
@@ -144,6 +155,11 @@
         prop="name">
       </el-table-column>
       <el-table-column
+        label="邮箱地址"
+        sortable
+        prop="email">
+      </el-table-column>
+      <el-table-column
         label="社会统一信用代码"
         prop="taxNum">
       </el-table-column>
@@ -227,6 +243,7 @@ export default {
         companyLocation: "",//公司地址
         companyPhone: "",//公司电话
         description: "",
+        email: "",
         name: "",//抬头名称
         type : '0',//0-个人，1-企业
         taxNum: "",//纳税人识别号\社会统一信用代码
@@ -282,11 +299,13 @@ export default {
                 name: "",//抬头名称
                 type : '0',//0-个人，1-企业
                 taxNum: "",//纳税人识别号\社会统一信用代码
+                email: ""//邮箱地址
             };
             this.invoiceData = newInvoiceData; // 将数据清空
             resolve();
           }
         }).catch(error => {
+          this.loading = false;
           reject(error)
         })
       })

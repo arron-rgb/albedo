@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 
 import com.albedo.java.common.core.vo.DataDto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,9 @@ public class InvoiceDto extends DataDto<String> {
   public static final String F_ACCOUNTBANK = "accountBank";
   /** F_ACCOUNTNUMBER account_number : 开户账号 */
   public static final String F_ACCOUNTNUMBER = "accountNumber";
+  /** F_EMAIL email : 邮箱地址 */
+  public static final String F_EMAIL = "email";
+
   /** userId 用户id */
   @Size(max = 32)
   private String userId;
@@ -66,5 +70,8 @@ public class InvoiceDto extends DataDto<String> {
   private String accountBank;
   /** accountNumber 开户账号 */
   private String accountNumber;
-
+  @NotNull
+  @Size(max = 255)
+  @TableField("email")
+  private String email;
 }
