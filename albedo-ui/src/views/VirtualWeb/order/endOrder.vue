@@ -145,7 +145,7 @@
                     <aplayer :music="{
                                 title: '您的音频',
                                 artist: '请试听',
-                                src: scope.row.audioUrl,
+                                src: 'https://' + scope.row.audioUrl,
                                 theme: '#ff5000'
                               }" style="width: 100%; margin:  auto"
                              v-if="scope.row.audioUrl !== '' && scope.row.audioUrl !== null"
