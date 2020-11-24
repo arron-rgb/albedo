@@ -26,7 +26,7 @@
           </el-menu-item>
           <el-menu-item class="myItem" index="myReceipt">
             <i class='el-icon-tickets'></i>
-            <span slot="title">开取发票</span>
+            <span slot="title">购买记录</span>
           </el-menu-item>
           <el-menu-item class="myItem" index="historyReceipt">
             <i class='el-icon-s-claim'></i>
