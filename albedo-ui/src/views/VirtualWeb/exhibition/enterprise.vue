@@ -423,15 +423,17 @@ export default {
 
 <style scoped>
 .exhibition_background{
-  /*width: 100%;*/
+  width: 1200px;
+  margin: auto;
   /*height: 400px;*/
   /*background-image: url("~@/assets/enterprise/create.jpg");*/
   background-size: cover;
 }
 .exhibition{
-  width: 100%;
+  width: 1200px;
   background-color: rgba(255, 80, 0, 0.1);
   height: 400px;
+  margin: auto;
   color: white;
   text-align: center;
 }
@@ -451,9 +453,9 @@ export default {
 /*  line-height: 27px;*/
 /*}*/
 .exhibition_link{
-  position: absolute;
-  top: 200px;
-  left: 600px;
+  position: relative;
+  top: 180px;
+  left: 350px;
 }
 .exhibition_link_login{
   display: inline-block;
