@@ -72,7 +72,7 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     try {
       return aliPayService.toPayAsPc(trade);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error(e.getMessage());
       throw new RuntimeMsgException("生成支付链接时发生异常");
     }
   }

@@ -87,6 +87,7 @@ application:
       - ${application.adminPath}/account/*
       - ${application.adminPath}/dict
       - ${application.adminPath}/biz/coupon/query
+      - ${application.adminPath}/biz/contact-info
       - /cdn/*
       - /fonts/*
   static-file-directory:

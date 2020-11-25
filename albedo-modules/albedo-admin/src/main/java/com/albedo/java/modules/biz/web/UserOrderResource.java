@@ -111,6 +111,13 @@ public class UserOrderResource extends BaseResource {
           order.setUserId(username);
         }
       }
+		 user = userService.findUserVoById(order.getLastModifiedBy());
+		if (user != null) {
+			String username = user.getUsername();
+			if (StringUtils.isNotBlank(username)) {
+				order.setLastModifiedBy(username);
+			}
+		}
     });
     return Result.buildOkData(orders);
   }
