@@ -197,21 +197,12 @@ export default {
       return new Promise((resolve, reject) => {
         payOrder.isAccept(data).then(res => {//保存订单并获取订单id
           if (res.code === MSG_TYPE_SUCCESS) {
-            if(this.satisfy === '0')
             this.$alert("您的反馈我们已收到，请你耐心等待！", '提示', {
               confirmButtonText: '确定',
               callback: action => {
                 this.goTo('/myOrder')
               }
             })
-            else {
-              switch (this.dubType){
-                case "0": this.goTo('/uploadDub');break;
-                case "1": this.goTo('/newProduct');break;
-                case "2": this.goTo('/newProduct');break;
-              }
-              resolve();
-            }
           }
           this.loading = false;
         }).catch(error => {
@@ -243,7 +234,14 @@ export default {
           content: this.duration,
           type: 'session'
         });
-        this.isSatisfy();
+        if(this.balance.editTimes > 0 && this.satisfy === '0')
+          this.isSatisfy();
+        else
+          switch (this.dubType){
+            case "0": this.goTo('/uploadDub');break;
+            case "1": this.goTo('/newProduct');break;
+            case "2": this.goTo('/newProduct');break;
+          }
       }
       this.loading = false;
     }
