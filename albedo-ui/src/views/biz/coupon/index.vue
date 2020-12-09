@@ -60,7 +60,7 @@
       <el-table-column align="center" label="使用者" :show-overflow-tooltip="true" prop="userId"/>
       <el-table-column fixed="right" label="操作" v-permission="[permission.del]" width="120px">
         <template slot-scope="scope">
-          <udOperation :data="scope.row" :permission="permission"/>
+          <udOperation :data="scope.row" :permission="permission" />
         </template>
       </el-table-column>
     </el-table>
