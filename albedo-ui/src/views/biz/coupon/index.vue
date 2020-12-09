@@ -47,6 +47,7 @@
       @selection-change="crud.selectionChangeHandler"
     >
       <el-table-column type="selection" width="55"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" sortable />
       <el-table-column align="center" label="优惠码编号" :show-overflow-tooltip="true" prop="code"/>
       <el-table-column align="center" label="使用状态" :show-overflow-tooltip="true" prop="status">
         <template slot-scope="scope">
@@ -54,7 +55,7 @@
         </template>
 
       </el-table-column>
-      <el-table-column align="center" label="折扣" :show-overflow-tooltip="true" prop="discount"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="折扣" prop="discount" sortable/>
       <el-table-column align="center" label="使用的订单id" :show-overflow-tooltip="true" prop="orderId"/>
       <el-table-column align="center" label="使用者" :show-overflow-tooltip="true" prop="userId"/>
       <el-table-column fixed="right" label="操作" v-permission="[permission.del]" width="120px">
