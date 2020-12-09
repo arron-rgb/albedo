@@ -196,15 +196,17 @@ export default {
       });
     },
     changeInvoice(data){
-      this.$alert('确定此订单发票已开并通知用户？', '提示', {
+      this.$confirm('确定此订单发票已开并通知用户？', '提示', {
         confirmButtonText: '确定',
-        callback: action => {
-          this.submitData(data);
-          // this.$message({
-          //   type: 'info',
-          //   message: `action: ${ action }`
-          // });
-        }
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitData(data);
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '请尽快完成开票！'
+        });
       });
     },
     submitData(data){
