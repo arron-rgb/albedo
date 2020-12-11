@@ -104,6 +104,7 @@ export default {
         validate.isDigits(rule, value, callback)
       },
       permission: {
+        edit: 'biz_coupon_edit',
         del: 'biz_coupon_del'
       }
     }
