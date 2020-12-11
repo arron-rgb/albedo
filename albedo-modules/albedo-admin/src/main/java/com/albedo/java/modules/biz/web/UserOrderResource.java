@@ -4,14 +4,12 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.BALANCE_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 
+import com.albedo.java.common.log.annotation.LogOperate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +55,18 @@ public class UserOrderResource extends BaseResource {
   MaterialRepository materialRepository;
   @Resource
   VideoService videoService;
+
+
+  @ApiOperation(value = "订单删除")
+  @DeleteMapping("cancel")
+  public Result<String> delete(String orderId) {
+    Order order = service.getById(orderId);
+    if(!order.getUserId().equals(SecurityUtil.getUser().getId())){
+      return Result.buildFail("无法删除");
+    }
+    service.removeById(order);
+    return Result.buildOk("删除订单成功");
+  }
 
   @ApiOperation(value = "查看当前订单")
   @GetMapping("/current")

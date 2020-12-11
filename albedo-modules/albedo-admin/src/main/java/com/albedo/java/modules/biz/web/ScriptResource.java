@@ -73,7 +73,7 @@ public class ScriptResource extends BaseResource {
    * @param script
    *          the HTTP Script
    */
-  @PreAuthorize("@pms.hasPermission('biz_script_edit2')")
+  @PreAuthorize("@pms.hasPermission('biz_script_edit')")
   @LogOperate(value = "套词编辑")
   @ApiOperation(value = "编辑套词")
   @PostMapping
