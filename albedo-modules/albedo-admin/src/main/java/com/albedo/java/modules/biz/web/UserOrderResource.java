@@ -58,7 +58,7 @@ public class UserOrderResource extends BaseResource {
 
 
   @ApiOperation(value = "订单删除")
-  @DeleteMapping("cancel")
+  @DeleteMapping("/cancel")
   public Result<String> delete(@RequestParam("orderId") String orderId) {
     Order order = service.getById(orderId);
     if(!order.getUserId().equals(SecurityUtil.getUser().getId())){

@@ -86,4 +86,14 @@ export function isAccept(data){
     }
   })
 }
-export default { save, purchase, placeSecond, balance, edit, isAccept, update }
+
+export function cancel(orderId){
+  return request({
+    url: '/biz/order/cancel',
+    method: 'delete',
+    params : {
+      orderId : orderId,
+    }
+  })
+}
+export default { save, purchase, placeSecond, balance, edit, isAccept, update, cancel }

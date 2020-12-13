@@ -127,6 +127,7 @@
 
 <!--        {{orderDetail.videoList}}-->
         <el-table
+          v-if="orderDetail.type !== '2'"
           :data="orderDetail.videoList"
           :default-sort = "{prop: 'createdDate', order: 'descending'}"
           :row-class-name="tableRowClassName"
