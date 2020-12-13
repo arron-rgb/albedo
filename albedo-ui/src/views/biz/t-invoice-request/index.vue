@@ -35,6 +35,14 @@
         <el-col span="6">名称：</el-col>
         <el-col span="18">{{this.invoiceData.name}}</el-col>
       </el-row>
+      <el-row class="box" v-show="this.invoiceData.type === 1">
+        <el-col span="6">税号/社会统一信用代码：</el-col>
+        <el-col span="18">{{this.invoiceData.taxNum}}</el-col>
+      </el-row>
+      <el-row class="box">
+        <el-col span="6">邮箱：</el-col>
+        <el-col span="18">{{this.invoiceData.email}}</el-col>
+      </el-row>
       <el-row class="box">
         <el-col span="6">联系方式：</el-col>
         <el-col span="18">{{this.invoiceData.companyPhone}}</el-col>
@@ -42,10 +50,6 @@
       <el-row class="box">
         <el-col span="6">联系地址：</el-col>
         <el-col span="18">{{this.invoiceData.companyLocation}}</el-col>
-      </el-row>
-      <el-row class="box" v-show="this.invoiceData.type === 1">
-        <el-col span="6">税号/社会统一信用代码：</el-col>
-        <el-col span="18">{{this.invoiceData.taxNum}}</el-col>
       </el-row>
       <el-row class="box" v-show="this.invoiceData.type === 1">
         <el-col span="6">银行账号：</el-col>
