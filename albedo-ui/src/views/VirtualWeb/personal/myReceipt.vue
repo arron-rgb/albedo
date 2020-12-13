@@ -310,7 +310,7 @@ export default {
         })
       })
     },
-    getInvoiceList(){
+    getInvoiceList(){//获得抬头list
       this.tableLoading = true;
       return new Promise((resolve, reject) => {
         crudInvoice.list().then(res => {
@@ -326,7 +326,7 @@ export default {
         })
       })
     },
-    getPurchaseList(){
+    getPurchaseList(){//获得购买记录list
       this.tableLoading = true;
       return new Promise((resolve, reject) => {
         crudInvoiceRequest.list().then(res => {
@@ -367,6 +367,7 @@ export default {
             });
             this.getPurchaseList();
             resolve(res);
+            this.selectVisible = false;
           }
         }).catch(error => {
           this.loading = false;

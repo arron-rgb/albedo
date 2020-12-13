@@ -89,27 +89,28 @@
       @sort-change="crud.sortChange"
       ref="table"
       style="width: 100%;"
+      :default-sort ="{prop:'type'}"
       v-loading="noInvoiceDataLoading"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" sortable />
       <el-table-column :show-overflow-tooltip="true" align="center" label="创建的用户id" prop="createdBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票金额" prop="totalAmount" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票记录id" prop="recordIds" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="修改人" prop="lastModifiedBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="抬头">
         <template slot-scope="scope">
-          <el-button @click="showInvoice(scope.row.invoiceId)">查看</el-button>
+          <el-button @click="showInvoice(scope.row.invoiceId)" type="primary">查看</el-button>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="状态" prop="type">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="状态" prop="type" sortable>
         <template slot-scope="scope">
-          {{scope.row.type === 0 ? '未开' : '已开'}}
+          {{scope.row.type === '0' ? '未开' : '已开'}}
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" v-permission="[permission.edit,permission.del]" width="120px">
         <template slot-scope="scope">
-          <el-button @click="changeInvoice(scope.row)" type="primary">开票</el-button>
+          <el-button :disabled="scope.row.type === '1'" @click="changeInvoice(scope.row)">开票</el-button>
 <!--          <udOperation :data="scope.row" :permission="permission" />-->
         </template>
       </el-table-column>
@@ -172,7 +173,6 @@ export default {
     getNoInvoiceRequest(){//获取未开票订单
       this.noInvoiceDataLoading = true;
       var params = {
-        type : 0
       }
       return new Promise((resolve, reject) => {
         crudTInvoiceRequest.page(params).then(res => {
