@@ -1,9 +1,13 @@
 package com.albedo.java.modules.biz.web;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.albedo.java.modules.biz.domain.Order;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.util.Result;
@@ -62,8 +66,34 @@ public class VideoResource extends BaseResource {
   @ApiOperation(value = "删除素材视频")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> deleteIds) {
-    materialRepository.selectBatchIds(deleteIds).forEach(video -> ossSingleton.remove(video.getOriginUrl()));
+    // todo 删完以后检查order是否还有videoId字段
+//    deleteIds.forEach(videoId->{
+//      VideoMaterial material = materialRepository.selectById(videoId);
+//      String orderId = material.getOrderId();
+//    });
+    List<VideoMaterial> videoMaterials = materialRepository.selectBatchIds(deleteIds);
+    videoMaterials.forEach(video -> ossSingleton.remove(video.getOriginUrl()));
+    Set<String> orderIds = videoMaterials.stream().map(VideoMaterial::getOrderId).collect(Collectors.toSet());
+    orderIds.forEach(orderId->{
+      Order order = orderService.getById(orderId);
+      List<VideoMaterial> materials = materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+      if(materials.isEmpty()){
+        // 为空肯定删完了
+        order.setVideoId("");
+        order.updateById();
+      }else {
+        // 不为空 表示没删完 检查一下当前的有没有被删
+        String videoId = order.getVideoId();
+        if (deleteIds.contains(videoId)) {
+          order.setVideoId(materials.get(0).getId());
+          order.updateById();
+        }
+      }
+    });
+
     materialRepository.deleteBatchIds(deleteIds);
+
+
     return Result.buildOk("删除素材成功");
   }
 

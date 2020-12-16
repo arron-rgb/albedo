@@ -43,22 +43,6 @@ public class FileUploadUtil {
   }
 
   /**
-   * 以默认配置进行文件上传
-   *
-   * @param file
-   *          上传的文件
-   * @return 文件名称
-   * @throws Exception
-   */
-  public static String upload(MultipartFile file) throws IOException {
-    try {
-      return upload(getDefaultBaseDir(), file, MimeTypeUtil.DEFAULT_ALLOWED_EXTENSION);
-    } catch (Exception e) {
-      throw new IOException(e.getMessage(), e);
-    }
-  }
-
-  /**
    * 根据文件路径上传
    *
    * @param baseDir
@@ -131,7 +115,7 @@ public class FileUploadUtil {
    */
   private static String encodingFilename(String fileName) {
     fileName = fileName.replace("_", " ");
-    fileName = Md5Util.hash(fileName + System.nanoTime() + counter++);
+    fileName = fileName.substring(0, fileName.lastIndexOf("."))+"_"+System.nanoTime();
     return fileName;
   }
 
