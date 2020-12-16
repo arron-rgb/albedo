@@ -1,14 +1,17 @@
 package com.albedo.java.modules.biz.service.task;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.IN_PRODUCTION;
-import static com.albedo.java.common.core.constant.BusinessConstants.VALID;
-
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Resource;
 
+import com.albedo.java.common.core.exception.RuntimeMsgException;
+import com.albedo.java.modules.biz.domain.Balance;
+import com.albedo.java.modules.biz.service.BalanceService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -31,6 +34,8 @@ import com.aliyun.oss.event.ProgressListener;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
 /**
  * @author arronshentu
@@ -176,6 +181,21 @@ public class VideoTaskExecutor {
       log.info("执行{}的合成", videoId);
       videoService.addAudio(videoId);
     }
+  }
+@Resource
+  BalanceService balanceService;
+  @Scheduled(fixedDelay = 1000L)
+    public void checkOrderStatus(){
+orderService.list(Wrappers.<Order>lambdaQuery().eq(Order::getState,VALID)).forEach(order->{
+  String userId = order.getUserId();
+  Balance balance = balanceService.getByUserId(userId);
+  LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
+  if (availableDate.isBefore(LocalDateTime.now())) {
+    order.setState(FINISHED);
+    order.updateById();
+    log.info("更新订单{}为已结束", order.getId());
+  }
+});
   }
 
 }
