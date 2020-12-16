@@ -155,7 +155,7 @@ public class UserOrderResource extends BaseResource {
 
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
-  @Transactional(rollbackFor = Exception.class)
+
   public Result<String> placeSecond(@RequestBody SubOrderVo orderVo) {
     // 通用流程
     Video video = service.updateForm(orderVo);
