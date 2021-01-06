@@ -7,7 +7,10 @@
     </video-player>
     <div  v-if="this.type === 'staff'">
 <!--      <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>-->
-      <el-button :loading="loading" @click="delVideo" type="primary">删除</el-button>
+      {{getName(this.videoData.originUrl)}}
+      <el-tooltip content="点击删除" effect="dark" placement="top" style="float: right; top: 8px; right: 10px; position: relative">
+        <el-button :loading="loading" @click="delVideo"  circle icon="el-icon-delete"></el-button>
+      </el-tooltip>
     </div>
   </div>
 </template>
@@ -99,6 +102,10 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {func: data}});
     },
+    getName(s){//从Url截取视频名称
+      var result = s.substring(s.lastIndexOf("\\")+1, s.lastIndexOf("_"));
+      return result;
+    }
   }
 }
 </script>
