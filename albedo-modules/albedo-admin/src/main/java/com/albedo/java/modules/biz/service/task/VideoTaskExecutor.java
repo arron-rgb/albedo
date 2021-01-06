@@ -1,27 +1,13 @@
 package com.albedo.java.modules.biz.service.task;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Resource;
-
-import com.albedo.java.common.core.exception.RuntimeMsgException;
-import com.albedo.java.modules.biz.domain.Balance;
-import com.albedo.java.modules.biz.service.BalanceService;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.aspectj.weaver.ast.Or;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.io.FileUtil;
 import com.albedo.java.common.core.util.FileUploadUtil;
+import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
 import com.albedo.java.modules.biz.domain.VideoMaterial;
+import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
@@ -30,10 +16,19 @@ import com.albedo.java.modules.tool.util.OssSingleton;
 import com.aliyun.oss.event.ProgressEvent;
 import com.aliyun.oss.event.ProgressEventType;
 import com.aliyun.oss.event.ProgressListener;
-
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.io.FileUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static com.albedo.java.common.core.constant.BusinessConstants.*;
 
@@ -42,14 +37,14 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
  */
 @Slf4j
 public class VideoTaskExecutor {
-  public VideoTaskExecutor() {}
+  public VideoTaskExecutor() {
+  }
 
   /**
    * 将音频与视频合成
    * 合成完毕后 1. 将视频上传至oss 2. 更新video表字段 3. 更新订单表字段
    *
-   * @param event
-   *          含有video的信息
+   * @param event 含有video的信息
    */
   @Async
   @EventListener(VideoEncodeTask.class)
@@ -182,20 +177,23 @@ public class VideoTaskExecutor {
       videoService.addAudio(videoId);
     }
   }
-@Resource
+
+  @Resource
   BalanceService balanceService;
+
   @Scheduled(fixedDelay = 1000L)
-    public void checkOrderStatus(){
-orderService.list(Wrappers.<Order>lambdaQuery().eq(Order::getState,VALID)).forEach(order->{
-  String userId = order.getUserId();
-  Balance balance = balanceService.getByUserId(userId);
-  LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
-  if (availableDate.isBefore(LocalDateTime.now())) {
-    order.setState(FINISHED);
-    order.updateById();
-    log.info("更新订单{}为已结束", order.getId());
-  }
-});
+  public void checkOrderStatus() {
+    List<Order> list = orderService.list(Wrappers.<Order>lambdaQuery().eq(Order::getState, PRODUCTION_COMPLETED).eq(Order::getState, VALID));
+    list.forEach(order -> {
+      String userId = order.getUserId();
+      Balance balance = balanceService.getByUserId(userId);
+      LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
+      if (availableDate.isBefore(LocalDateTime.now())) {
+        order.setState(FINISHED);
+        order.updateById();
+        log.info("更新订单{}为已结束", order.getId());
+      }
+    });
   }
 
 }
