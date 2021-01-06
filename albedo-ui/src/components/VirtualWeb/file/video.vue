@@ -103,7 +103,7 @@ export default {
       this.$router.push({path:url, query : {func: data}});
     },
     getName(s){//从Url截取视频名称
-      var result = s.substring(s.lastIndexOf("\\")+1, s.lastIndexOf("_"));
+      var result = s.substring(s.lastIndexOf("/")+1, s.lastIndexOf("_"));
       return result;
     }
   }
