@@ -183,7 +183,8 @@ public class VideoTaskExecutor {
 
   @Scheduled(fixedDelay = 1000L)
   public void checkOrderStatus() {
-    List<Order> list = orderService.list(Wrappers.<Order>lambdaQuery().eq(Order::getState, PRODUCTION_COMPLETED).or().eq(Order::getState, VALID));
+    // todo 找一个状态为>=3的 距离今天最近的订单 到点后唤醒
+    List<Order> list = orderService.list(Wrappers.<Order>lambdaQuery().eq(Order::getState, PRODUCTION_COMPLETED).or().eq(Order::getState, NOT_UPDATED).or().eq(Order::getState, VALID));
     list.forEach(order -> {
       String userId = order.getUserId();
       Balance balance = balanceService.getByUserId(userId);
