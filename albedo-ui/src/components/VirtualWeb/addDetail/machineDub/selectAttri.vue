@@ -299,7 +299,8 @@ export default {
           }
           this.loading = false;
         }).catch(error => {
-          reject(error)
+          reject(error);
+          this.goTo('/myOrder')
           this.loading = false;
         })
       })

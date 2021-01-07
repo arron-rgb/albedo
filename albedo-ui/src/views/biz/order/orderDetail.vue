@@ -300,7 +300,7 @@ export default {
       link.setAttribute("download", 'pic'); //设置下载属性 以及文件名
       // document.body.appendChild(link); //a标签插至页面中
       link.click(); //强制触发a标签事件
-    }
+    },
   }
 }
 </script>
