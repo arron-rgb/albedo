@@ -5,7 +5,7 @@
                    class="video-player vjs-custom-skin"
                    ref="videoPlayer">
     </video-player>
-    <div  v-if="this.type === 'staff'">
+    <div  style="word-wrap: break-word" v-if="this.type === 'staff'">
 <!--      <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>-->
       {{getName(this.videoData.originUrl)}}
       <el-tooltip content="点击删除" effect="dark" placement="top" style="float: right; top: 8px; right: 10px; position: relative">
