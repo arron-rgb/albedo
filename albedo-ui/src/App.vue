@@ -133,16 +133,23 @@ body {
 }
 
 .el-button:hover{
-  background-color: rgba(255, 80, 0, 0.1) ;
-  color: #ff5000 ;
-  border-color: rgba(255, 80, 0, 0.1)
+  background-color: rgba(255, 80, 0, 0.1) !important;
+  color: #ff5000 !important;
+  border-color: rgba(255, 80, 0, 0.1) !important;
 }
 .el-button:focus{
-  background-color: rgba(255, 80, 0, 0.1);
-  color: #ff5000;
-  border-color: rgba(255, 80, 0, 0.1);
+  background-color: rgba(255, 80, 0, 0.1) !important;
+  color: #ff5000 !important;
+  border-color: rgba(255, 80, 0, 0.1) !important;
 }
 
+.el-button.is-disabled:hover{
+  color: #C0C4CC !important;
+  cursor: not-allowed !important;
+  background-image: none !important;
+  background-color: #fff !important;
+  border-color: #e6ebf5 !important;
+}
 //修改el-button默认的样式
 .el-button--primary{
   background-color: #ff5000 !important;

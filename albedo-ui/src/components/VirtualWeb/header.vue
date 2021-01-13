@@ -22,7 +22,7 @@
       <template>
         <div  v-show='!$store.getters.loginSuccess'>
           <div class="sign" index="sign-in">
-            <el-button style="width: 90px;background-color: #ff5000;color: white" @click="goTo('login')">登录</el-button>
+            <el-button @click="goTo('login')" style="width: 90px" type="primary">登录</el-button>
           </div>
           <div style="float: right; margin-right: 10px" index="sign_up">
             <el-link :underline="false" style="color: #909399;line-height: 60px" type="text" @click="goTo('login', 'toRegister')">
