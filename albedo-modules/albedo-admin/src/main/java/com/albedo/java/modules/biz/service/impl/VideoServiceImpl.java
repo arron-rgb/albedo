@@ -1,17 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.ExceptionNames.*;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Assert;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
@@ -28,9 +18,16 @@ import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Assert;
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+
+import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 /**
  * @author arronshentu
@@ -53,8 +50,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   /**
    * 员工上传视频素材：一条订单可对应多个video
    *
-   * @param orderId
-   *          订单id
+   * @param orderId  订单id
    * @param tempPath
    */
   @Override
@@ -67,7 +63,7 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     Balance balance = balanceService.getByUserId(userId);
     // 更新使用状况 单位以GB为基准
     File tempFile = new File(tempPath);
-    double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
+    double storage = balance.getStorage() - ((double) tempFile.length() / 1073741824);
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
     if (!ossSingleton.doesBucketExist(bucketName)) {
@@ -75,7 +71,8 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     }
     if (storage < 0) {
       try {
-        ossSingleton.removeOldestFile(bucketName);
+        removeOldestVideo(userId);
+//        ossSingleton.removeOldestFile(bucketName);
       } catch (Exception ignored) {
         log.error("删除失败");
       }
@@ -97,11 +94,10 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 1. 检查本地是否存在该video对应的视频
    * 2. 如果存在直接渲染，不存在则通过oss拉取视频
    * 3. 渲染时需要保证radio和audio都存在
-   *
+   * <p>
    * 在checkIfFileExist中通知执行渲染任务
    *
-   * @param videoId
-   *          需要合成的videoId
+   * @param videoId 需要合成的videoId
    */
   @Override
   public void addAudio(String videoId) {
@@ -139,4 +135,28 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     return materialRepository.selectList(
       Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getSort));
   }
+
+  @Override
+  public void removeOldestVideo(String userId) {
+    List<Video> videos = baseMapper.selectList(Wrappers.<Video>lambdaQuery().eq(Video::getUserId, userId).orderByAsc(Video::getLastModifiedDate));
+    if (CollectionUtils.isEmpty(videos)) {
+      return;
+    }
+    Video video = videos.get(0);
+//    0c4c183a11d5a0cbd99827a15e199174.oss-cn-hangzhou.aliyuncs.com/ac6e91633a284fde9eeb2c9ffa8cb69c.mp4
+    String outputUrl = video.getOutputUrl();
+    ossSingleton.remove(outputUrl);
+    video.setStatus("视频被删除");
+    video.updateById();
+//    video.deleteById();
+//    String orderId = video.getOrderId();
+//    Order order = orderService.getById(orderId);
+//    if (Objects.nonNull(order)) {
+//      order.setState(VIDEO_DELETED);
+//      order.updateById();
+//    }
+//    videos.
+  }
+
+
 }

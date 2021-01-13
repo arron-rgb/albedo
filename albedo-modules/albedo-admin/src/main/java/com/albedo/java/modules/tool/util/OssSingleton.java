@@ -1,7 +1,19 @@
 package com.albedo.java.modules.tool.util;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
-import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
+import com.albedo.java.common.core.config.ApplicationProperties;
+import com.albedo.java.common.core.util.FileUploadUtil;
+import com.albedo.java.common.core.util.FileUtil;
+import com.albedo.java.modules.biz.service.task.VideoTaskExecutor;
+import com.aliyun.oss.ClientException;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.event.ProgressListener;
+import com.aliyun.oss.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.net.URI;
@@ -12,24 +24,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import com.albedo.java.common.core.config.ApplicationProperties;
-import com.albedo.java.common.core.util.FileUploadUtil;
-import com.albedo.java.common.core.util.FileUtil;
-import com.albedo.java.modules.biz.service.task.VideoTaskExecutor;
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.event.ProgressListener;
-import com.aliyun.oss.model.*;
-
-import lombok.extern.slf4j.Slf4j;
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 
 /**
+ * todo 应该存到同个bucket下按前缀来划分
+ *
  * @author arronshentu
  */
 @Component
@@ -122,13 +122,12 @@ public class OssSingleton {
 
   /**
    * 存储空间的命名规范如下：
-   *
+   * <p>
    * 只能包括小写字母、数字和短划线（-）。
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
    *
-   * @param bucketName
-   *          bucket命名
+   * @param bucketName bucket命名
    */
   public void create(String bucketName, int storageSize) {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
@@ -185,7 +184,7 @@ public class OssSingleton {
   public String getPath(String url) {
     if (url.contains("static")) {
       url = url.replaceAll("static.vlivest.com/", "");
-      return "vlivest-2"+File.separator+url;
+      return "vlivest-2" + File.separator + url;
     }
     // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-shenzhen.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
     String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");

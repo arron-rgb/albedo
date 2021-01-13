@@ -1,19 +1,7 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.*;
-import static com.albedo.java.common.core.constant.CommonConstants.STR_NO;
-import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
-import static com.albedo.java.common.core.constant.ExceptionNames.INVALID_COUPON;
-import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
-
-import java.math.BigDecimal;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.math.Money;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.common.security.util.SecurityUtil;
@@ -23,18 +11,24 @@ import com.albedo.java.modules.biz.domain.Plan;
 import com.albedo.java.modules.biz.domain.PurchaseRecord;
 import com.albedo.java.modules.biz.domain.dto.PlanDto;
 import com.albedo.java.modules.biz.repository.PlanRepository;
-import com.albedo.java.modules.biz.service.BalanceService;
-import com.albedo.java.modules.biz.service.CouponService;
-import com.albedo.java.modules.biz.service.PlanService;
-import com.albedo.java.modules.biz.service.PurchaseRecordService;
+import com.albedo.java.modules.biz.service.*;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.domain.vo.TradePlus;
 import com.albedo.java.modules.tool.service.AliPayService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.math.Money;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.CommonConstants.STR_NO;
+import static com.albedo.java.common.core.constant.CommonConstants.STR_YES;
+import static com.albedo.java.common.core.constant.ExceptionNames.INVALID_COUPON;
+import static com.albedo.java.common.core.constant.ExceptionNames.PURCHASE_RECORD_NOT_FOUND;
 
 /**
  * @author arronshentu
@@ -155,7 +149,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     String bucketName = userService.getBucketName(userId);
     double bucketStorage = ossSingleton.getBucketStorage(bucketName);
     if (storage < bucketStorage) {
-      ossSingleton.removeOldestFile(bucketName);
+      videoService.removeOldestVideo(userId);
+//      ossSingleton.removeOldestFile(bucketName);
       bucketStorage = ossSingleton.getBucketStorage(bucketName);
     }
     balance.setStorage(bucketStorage);
@@ -164,6 +159,8 @@ public class PlanServiceImpl extends DataServiceImpl<PlanRepository, Plan, PlanD
     balance.setGoodsQuantity(goodsQuantity);
   }
 
+  @Resource
+  VideoService videoService;
   @Resource
   UserService userService;
   @Resource
