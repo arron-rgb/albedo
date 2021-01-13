@@ -1,6 +1,6 @@
 <template>
     <div class='problems'>
-      <div class='pageTitle' v-if="data === ''">常见问题</div>
+      <div class='pageTitle' v-if="data === 'https://'">常见问题</div>
       <iframe v-else style="width: 100%; height: 500px; border: none" :src="this.data"></iframe>
     </div>
 </template>

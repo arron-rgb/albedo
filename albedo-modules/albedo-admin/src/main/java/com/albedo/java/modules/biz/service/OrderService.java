@@ -3,7 +3,6 @@ package com.albedo.java.modules.biz.service;
 import java.util.List;
 
 import com.albedo.java.common.core.exception.OrderException;
-import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.persistence.service.BaseService;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.SubOrderVo;
@@ -70,6 +69,8 @@ public interface OrderService extends BaseService<Order> {
    */
   Video updateForm(SubOrderVo orderVo);
 
+  String generateAudio(List<String> text, String orderId, String voiceType);
+
   /**
    * 返回员工名下的订单
    *
@@ -88,29 +89,12 @@ public interface OrderService extends BaseService<Order> {
   boolean callback(String orderId);
 
   /**
-   * 上传配音文件
+   * 配音
    *
    * @param orderVo
    * @param video
    */
-  void dubbingBySelf(SubOrderVo orderVo, Video video);
-
-  /**
-   * tts配音
-   * 1. 调用tts接口合成
-   *
-   * @param orderVo
-   * @param video
-   */
-  void machineDubbing(SubOrderVo orderVo, Video video);
-
-  /**
-   * 下订单等待员工接单
-   *
-   * @param orderVo
-   * @return
-   */
-  Result<String> artificialDubbing(SubOrderVo orderVo);
+  String dub(SubOrderVo orderVo, Video video);
 
   /**
    *
@@ -125,8 +109,6 @@ public interface OrderService extends BaseService<Order> {
    *          音频文件路径
    */
   void uploadAudio(String orderId, String audioUrl);
-
-  Long getDuration(String orderId);
 
   Video getDub(String orderId);
 }

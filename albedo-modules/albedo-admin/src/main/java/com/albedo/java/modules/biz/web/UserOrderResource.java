@@ -4,14 +4,12 @@ import static com.albedo.java.common.core.constant.BusinessConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.BALANCE_NOT_FOUND;
 import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUND;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 
+import com.albedo.java.common.log.annotation.LogOperate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +18,9 @@ import com.albedo.java.common.core.annotation.Token;
 import com.albedo.java.common.core.util.Result;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.common.web.resource.BaseResource;
-import com.albedo.java.modules.biz.domain.Balance;
-import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.SubOrderVo;
-import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.PurchaseRecordService;
@@ -32,8 +28,10 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +52,21 @@ public class UserOrderResource extends BaseResource {
   private final OrderService service;
 
   @Resource
+  MaterialRepository materialRepository;
+  @Resource
   VideoService videoService;
+
+
+  @ApiOperation(value = "订单删除")
+  @DeleteMapping("/cancel")
+  public Result<String> delete(@RequestParam("orderId") String orderId) {
+    Order order = service.getById(orderId);
+    if(!order.getUserId().equals(SecurityUtil.getUser().getId())){
+      return Result.buildFail("无法删除");
+    }
+    service.removeById(order);
+    return Result.buildOk("删除订单成功");
+  }
 
   @ApiOperation(value = "查看当前订单")
   @GetMapping("/current")
@@ -78,16 +90,9 @@ public class UserOrderResource extends BaseResource {
       return Result.buildOkData(order);
     }
     // 把videoId更新为url
-    Video video = videoService.getById(order.getVideoId());
-    if (video == null) {
-      video = videoService.getOneByOrderId(order.getId());
-    }
-    if (video != null && StringUtils.isNotEmpty(video.getOriginUrl())) {
-      String originUrl = video.getOriginUrl();
-      if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-        originUrl = video.getOutputUrl();
-      }
-      order.setVideoId(originUrl);
+    List<VideoMaterial> videos = videoService.getMaterials(order.getId());
+    if (CollectionUtil.isNotEmpty(videos)) {
+      order.setVideoId(videos.get(0).getOriginUrl());
     }
     return Result.buildOkData(order);
   }
@@ -102,14 +107,13 @@ public class UserOrderResource extends BaseResource {
   public Result<List<Order>> listOrder() {
     List<Order> orders = service.list(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()));
     orders.forEach(order -> {
-      Video video = videoService.getById(order.getVideoId());
-      if (video != null) {
-        String originUrl = video.getOriginUrl();
-        if (StringUtils.isNotEmpty(video.getOutputUrl())) {
-          originUrl = video.getOutputUrl();
-        }
-        order.setVideoId(originUrl);
+      List<Video> list = videoService.list(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, order.getId()));
+      if (CollectionUtils.isNotEmpty(list)) {
+        list.stream().filter(video -> StringUtils.isNotEmpty(video.getOutputUrl())).findFirst().ifPresent(video -> {
+          order.setVideoId(video.getOutputUrl());
+        });
       }
+      order.setVideoList(list);
       UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();
@@ -117,6 +121,13 @@ public class UserOrderResource extends BaseResource {
           order.setUserId(username);
         }
       }
+		 user = userService.findUserVoById(order.getLastModifiedBy());
+		if (user != null) {
+			String username = user.getUsername();
+			if (StringUtils.isNotBlank(username)) {
+				order.setLastModifiedBy(username);
+			}
+		}
     });
     return Result.buildOkData(orders);
   }
@@ -144,35 +155,20 @@ public class UserOrderResource extends BaseResource {
 
   @ApiOperation(value = "用户上传二次订单")
   @PostMapping(value = "/placeSecond")
-  @Transactional(rollbackFor = Exception.class)
+
   public Result<String> placeSecond(@RequestBody SubOrderVo orderVo) {
     // 通用流程
     Video video = service.updateForm(orderVo);
     String orderId = orderVo.getOrderId();
     Order order = service.getById(orderId);
-    order.setDubType(String.valueOf(orderVo.getType()));
-    order.setDubText(orderVo.getContentText());
-    order.updateById();
     Assert.notNull(order, ORDER_NOT_FOUND);
-    Assert.state(order.getState().equals(PRODUCTION_COMPLETED), "订单状态出现错误");
     Assert.notNull(orderVo.getType(), "请选择配音方式");
-    switch (orderVo.getType()) {
-      case 0:
-        // 自行上传配音
-        service.dubbingBySelf(orderVo, video);
-        break;
-      case 1:
-        // 人工配音 配音字段的属性及pojo
-        return service.artificialDubbing(orderVo);
-      case 2:
-        // tts配音
-        service.machineDubbing(orderVo, video);
-        break;
-      default:
-        return Result.buildFail("配音类型异常");
-    }
+    String dub = service.dub(orderVo, video);
     order.setState(NOT_UPDATED);
     service.updateById(order);
+    if (StringUtils.isNotEmpty(dub)) {
+      return Result.buildOkData(dub, "请前往支付链接支付");
+    }
     return Result.buildOk("下单成功");
   }
 

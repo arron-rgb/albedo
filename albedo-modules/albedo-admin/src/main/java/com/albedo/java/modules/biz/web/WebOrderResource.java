@@ -6,6 +6,7 @@ import static com.albedo.java.common.core.constant.ExceptionNames.ORDER_NOT_FOUN
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,9 @@ import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
 import com.albedo.java.modules.biz.domain.Order;
-import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 import com.albedo.java.modules.biz.domain.dto.OrderQueryCriteria;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.sys.domain.vo.UserVo;
@@ -40,6 +42,9 @@ import io.micrometer.core.instrument.util.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * 订单Controller Order
@@ -159,14 +164,16 @@ public class WebOrderResource extends BaseResource {
   }
 
   @Resource
+  MaterialRepository repository;
+  @Resource
   OrderService orderService;
 
   @ApiOperation(value = "员工上传订单视频")
   @PostMapping(value = "/upload")
-  public Result<String> uploadVideo(MultipartFile file, String orderId) throws IOException {
-    Order order = orderService.getById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUND);
-    String userId = order.getUserId();
+  public Result<String> uploadVideo(MultipartFile file, String orderId, Integer order) throws IOException {
+    Order orderInstance = orderService.getById(orderId);
+    Assert.notNull(orderInstance, ORDER_NOT_FOUND);
+    String userId = orderInstance.getUserId();
     String uploadPath = ApplicationConfig.getUploadPath() + File.separator + userService.getBucketName(userId);
     String tempPath = FileUploadUtil.upload(uploadPath, file);
     videoService.uploadVideo(orderId, tempPath);
@@ -174,26 +181,36 @@ public class WebOrderResource extends BaseResource {
   }
 
   @ApiOperation(value = "员工更新订单状态")
-  @GetMapping(value = "/update")
-  public Result<String> update(String orderId) {
+  @PostMapping(value = "/update")
+  public Result<String> update(@RequestBody Param body) {
+    String orderId = body.getOrderId();
+    List<String> videoIds = body.getVideoIds();
     Order order = service.getById(orderId);
     order.setState(PRODUCTION_COMPLETED);
-    Assert.notNull(order.getVideoId(), "未查询到视频信息，请稍后重试");
-    Video video = videoService.getById(order.getVideoId());
-    Assert.notNull(video, "未查询到视频信息，请稍后重试或联系工作人员");
-    service.updateById(order);
+    order.updateById();
+    for (int i = 0, videoIdsSize = videoIds.size(); i < videoIdsSize; i++) {
+      String id = videoIds.get(i);
+      VideoMaterial material = repository.selectById(id);
+      if (Objects.isNull(material)) {
+        continue;
+      }
+      material.setSort((i + 1) * 10);
+      material.updateById();
+    }
     return Result.buildOkData("更新成功");
+  }
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  static class Param {
+    private String orderId;
+    private List<String> videoIds;
   }
 
   private List<Order> updateInfo(List<Order> orders) {
     return orders.stream().peek((order) -> {
-      Video video = videoService.getById(order.getVideoId());
-      if (video != null) {
-        String originUrl = video.getOriginUrl();
-        if (StringUtils.isNotEmpty(originUrl)) {
-          order.setVideoId(originUrl);
-        }
-      }
       UserVo user = userService.findUserVoById(order.getUserId());
       if (user != null) {
         String username = user.getUsername();

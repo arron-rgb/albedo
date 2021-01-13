@@ -10,6 +10,13 @@
         v-loading="loading"
       >
 <!--        <el-table-column type="expand">-->
+<!--          <template slot-scope="scope">-->
+
+<!--            {{scope.row.children}}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+
+<!--        <el-table-column type="expand">-->
 <!--          <template slot-scope="props">-->
 <!--            <el-form label-position="left" inline class="demo-table-expand">-->
 <!--              <el-form-item label="视频属性">-->
@@ -51,22 +58,36 @@
           label="订单状态"
         >
           <template slot-scope="props">
-            <span v-if="props.row.state === 0">未付款</span>
-            <span v-if="props.row.state === 1">未接单</span>
-            <span v-if="props.row.state === 2">制作中</span>
-            <span v-if="props.row.state === 3">待完善</span>
-            <span v-if="props.row.state === 4">配音中</span>
-            <span v-if="props.row.state === 5">已完成</span>
+            <span style="color: #ff5000" v-if="props.row.state === 0">未付款</span>
+            <span style="color: orange" v-else-if="props.row.state === 1">未接单</span>
+            <span style="color: lightgreen" v-else-if="props.row.state === 2">制作中</span>
+<!--            <span v-if="props.row.state === 3">待完善</span>-->
+<!--            <span v-if="props.row.state === 4">配音中</span>-->
+            <span v-else-if="props.row.state === 6">已结单</span>
+            <span style="color: deepskyblue" v-else>可配音</span>
           </template>
         </el-table-column>
         <el-table-column
           label="操作">
-          <template slot-scope="props">
-            <el-tooltip class="item" effect="dark" content="查看" placement="top">
-              <el-button size="mini" v-if="props.row.type === '2'" @click="showDetail(props.row)">查看详情</el-button>
-              <el-button size="mini" type="danger" plain v-else-if="props.row.state === 5" @click="showDetail(props.row)">查看详情</el-button>
-              <el-button size="mini" type="primary" v-else @click="goTo('/addOrder')">查看进度</el-button>
-            </el-tooltip>
+          <template slot-scope="props" >
+<!--              配音订单-->
+<!--              <el-button size="mini" v-if="props.row.type === '2'" @click="goTo('/waiting')">查看详情</el-button>-->
+            <div v-if="props.row.type !== '2'">
+              <el-tooltip class="item" content="查看订单详情" effect="dark" placement="top">
+                <el-button @click="showDetail(props.row, '/endOrder')" type="primary">查看</el-button>
+              </el-tooltip>
+              <el-tooltip class="item" content="前往配音" effect="dark" placement="top">
+                <el-button :disabled="props.row.state < 3 || props.row.state === 6" @click="showDetail(props.row, '/addDetail')">配音</el-button>
+              </el-tooltip>
+            </div>
+            <div style="text-align: center" v-else>
+              <el-tooltip v-if="props.row.state === 0" v-else  class="item" content="取消订单" effect="dark" placement="top">
+                <el-button @click="cancel(props.row.id)">取消</el-button>
+              </el-tooltip>
+              <el-tooltip  v-else  class="item" content="查看订单详情" effect="dark" placement="top">
+                <el-button :loading="cancelLoading" @click="showDetail(props.row, '/endOrder')" type="primary">查看</el-button>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -78,6 +99,7 @@
 import crudOrder from "@/views/biz/order/order-service";
 import {MSG_TYPE_SUCCESS} from "@/const/common";
 import storeApi from "@/utils/store";
+import payOrder from "@/views/VirtualWeb/order/payOrder-server";
 
 export default {
   name: "myOrder",
@@ -86,6 +108,7 @@ export default {
       data : [],
       typeList : ["", "success", "info", "warning", "danger"],
       loading : false,
+      cancelLoading :false,
     }
   },
   methods : {
@@ -110,14 +133,36 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {data: data}});
     },
-    showDetail(data){
+    showDetail(data, url){
       storeApi.set({
-        name: 'orderRecord',
+        name: 'orderDetail',
         content: data,
         type: 'session'
       });
-      this.goTo('/endOrder');
+      this.goTo(url);
+    },
+    cancel(orderId){
+      this.cancelLoading = true;
+      return new Promise((resolve, reject) => {
+        payOrder.cancel(orderId).then(res => {//取消订单
+          if (res.code === MSG_TYPE_SUCCESS) {
+            resolve();
+            //订单取消成功，重新获取订单列表
+            this.getData();
+          }
+          this.cancelLoading = false;
+        }).catch(error => {
+          reject(error)
+          this.cancelLoading = false;
+        })
+      })
     }
+    // getVideos(row, expandedRows){
+      // console.log(row);
+      // row.children = row.id + '\'s children';
+
+      // console.log(expandedRows);
+    // }
   },
   created() {
     this.getData();

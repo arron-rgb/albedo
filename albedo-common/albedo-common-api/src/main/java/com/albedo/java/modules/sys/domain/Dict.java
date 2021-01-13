@@ -1,12 +1,12 @@
 /*
- *  Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
- *  <p>
- *  Licensed under the GNU Lesser General Public License 3.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *  <p>
+ * Copyright (c) 2019-2020, somewhere (somewhere0813@gmail.com).
+ * <p>
+ * Licensed under the GNU Lesser General Public License 3.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
  * https://www.gnu.org/licenses/lgpl.html
- *  <p>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,18 +16,19 @@
 
 package com.albedo.java.modules.sys.domain;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
+
 import com.albedo.java.common.core.annotation.DictType;
 import com.albedo.java.common.core.constant.DictNameConstants;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.domain.TreeEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * <p>
@@ -42,60 +43,62 @@ import javax.xml.bind.annotation.XmlAttribute;
 @TableName("sys_dict")
 public class Dict extends TreeEntity<Dict> {
 
-	public static final String F_VAL = "val";
-	public static final String F_SHOW = "show";
-	public static final String F_SQL_SHOW = "show";
-	private static final long serialVersionUID = 1L;
-	/**
-	 * 数据值
-	 */
-	@NotBlank(message = "字典项数据值不能为空")
-	private String val;
-	/**
-	 * 类型
-	 */
-	@NotBlank(message = "字典项数据类型不能为空")
-	private String code;
-	@NotNull
-	@DictType(DictNameConstants.SYS_FLAG)
-	private Integer available = 1;
+  public static final String F_VAL = "val";
+  public static final String F_SHOW = "show";
+  public static final String F_SQL_SHOW = "show";
+  private static final long serialVersionUID = 1L;
+  /**
+   * 数据值
+   */
+  @NotBlank(message = "字典项数据值不能为空")
+  private String val;
+  /**
+   * 类型
+   */
+  @NotBlank(message = "字典项数据类型不能为空")
+  private String code;
+  @NotNull
+  @DictType(DictNameConstants.SYS_FLAG)
+  private Integer available = 1;
 
+  @TableField(exist = false)
+  private String parentCode;
 
-	@TableField(exist = false)
-	private String parentCode;
+  @XmlAttribute
+  public String getVal() {
+    return val;
+  }
 
-	@XmlAttribute
-	public String getVal() {
-		return val;
-	}
+  @Override
+  @XmlAttribute
+  public String getDescription() {
+    return super.getDescription();
+  }
 
-	@Override
-	@XmlAttribute
-	public String getDescription() {
-		return super.getDescription();
-	}
+  @Override
+  public void setDescription(String description) {
+    super.setDescription(description);
+  }
 
-	@Override
-	public void setDescription(String description) {
-		super.setDescription(description);
-	}
+  @Override
+  @XmlAttribute
+  public String getName() {
+    return super.getName();
+  }
 
-	@Override
-	@XmlAttribute
-	public String getName() {
-		return super.getName();
-	}
+  @Override
+  public void setName(String name) {
+    super.setName(name);
+  }
 
-	@Override
-	public void setName(String name) {
-		super.setName(name);
-	}
+  public String getParentCode() {
+    if (StringUtil.isEmpty(parentCode) && parent != null) {
+      parentCode = parent.getCode();
+    }
+    return parentCode;
+  }
 
-	public String getParentCode() {
-		if (StringUtil.isEmpty(parentCode) && parent != null) {
-			parentCode = parent.getCode();
-		}
-		return parentCode;
-	}
-
+  public Dict(String val) {
+    this.val = val;
+  }
 }

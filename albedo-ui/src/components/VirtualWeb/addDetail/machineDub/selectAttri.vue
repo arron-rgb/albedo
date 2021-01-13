@@ -141,7 +141,7 @@ export default {
       price: '',
       dubType: '',
       backData: null,
-      videoOrder: '',
+      orderDetail: '',
       voiceList:[],
       audioTime : 0,
     }
@@ -152,20 +152,20 @@ export default {
     ])
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder',
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
     }) || null;
     var textList = storeApi.get({
         name: 'textList',
       }) || null;
-    if (videoOrder === null || videoOrder === undefined || textList === null || textList === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail=== undefined || textList === null || textList === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        // this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     } else {
-      this.videoOrder = videoOrder;
+      this.orderDetail = orderDetail;
     }
 
     var list = storeApi.get({ name: 'priceData' });//获得所有的静态资源list
@@ -243,9 +243,9 @@ export default {
       }
     },
     saveText(voiceType, description) {//提交支付请求
-      // console.log(this.videoOrder);
+      // console.log(this.orderDetail);
       var data = {
-        orderId: this.videoOrder.id,
+        orderId: this.orderDetail.id,
         voiceType:voiceType === null ? description : [voiceType],
         type: this.dubType,//配音方式  0上传   1下单   2合成
         totalAmount: this.price,
@@ -270,7 +270,7 @@ export default {
                 name: 'duration',
               });
               this.loading = false;
-              this.goTo('/addOrder');
+              this.goTo('/myOrder');
             }else{//人工配音
               storeApi.clear({
                 name: 'textList',
@@ -283,7 +283,7 @@ export default {
                 this.$alert("人工配音订单提交成功，请耐心等待！", '提示', {
                   confirmButtonText: '确定',
                   callback: action => {
-                    this.goTo('/addOrder');
+                    this.goTo('/myOrder');
                   }
                 });
                 resolve(res);
@@ -299,7 +299,8 @@ export default {
           }
           this.loading = false;
         }).catch(error => {
-          reject(error)
+          reject(error);
+          this.goTo('/myOrder')
           this.loading = false;
         })
       })

@@ -22,7 +22,7 @@
       <template>
         <div  v-show='!$store.getters.loginSuccess'>
           <div class="sign" index="sign-in">
-            <el-button style="width: 90px;background-color: #ff5000;color: white" @click="goTo('login')">登录</el-button>
+            <el-button @click="goTo('login')" style="width: 90px" type="primary">登录</el-button>
           </div>
           <div style="float: right; margin-right: 10px" index="sign_up">
             <el-link :underline="false" style="color: #909399;line-height: 60px" type="text" @click="goTo('login', 'toRegister')">
@@ -41,7 +41,7 @@
             <el-menu-item index="myData">个人资料</el-menu-item>
             <el-menu-item index="memberCenter" v-if="$store.state.user.user.roleNames !== '个人用户'">会员中心</el-menu-item>
             <el-menu-item index="myOrder">我的订单</el-menu-item>
-            <el-menu-item index="myReceipt">开取发票</el-menu-item>
+            <el-menu-item index="myReceipt">购买记录</el-menu-item>
             <el-menu-item index="historyReceipt">我的发票</el-menu-item>
 <!--            <el-menu-item index="security">安全中心</el-menu-item>-->
             <el-menu-item @click="open">退出登录</el-menu-item>

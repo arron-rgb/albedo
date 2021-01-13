@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @EnableAsync
+@EnableScheduling
 @SpringBootApplication
 public class AlbedoAdminApplication {
   static String SERVER_PORT = "server.port";

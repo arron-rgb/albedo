@@ -1,24 +1,15 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.PRODUCTION_COMPLETED;
-import static com.albedo.java.common.core.constant.ExceptionNames.*;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Assert;
 import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
 import com.albedo.java.modules.biz.domain.Balance;
 import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 import com.albedo.java.modules.biz.domain.dto.VideoDto;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.repository.VideoRepository;
 import com.albedo.java.modules.biz.service.BalanceService;
 import com.albedo.java.modules.biz.service.OrderService;
@@ -26,11 +17,17 @@ import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
 import com.albedo.java.modules.sys.service.UserService;
 import com.albedo.java.modules.tool.util.OssSingleton;
-import com.aliyuncs.utils.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Assert;
+import javax.annotation.Resource;
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+
+import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 /**
  * @author arronshentu
@@ -39,6 +36,8 @@ import cn.hutool.core.lang.Assert;
 public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, VideoDto, String>
   implements VideoService {
 
+  @Resource
+  MaterialRepository materialRepository;
   @Resource
   OrderService orderService;
   @Resource
@@ -49,32 +48,31 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
   BalanceService balanceService;
 
   /**
-   * 员工上传视频：一条订单可对应多个video
+   * 员工上传视频素材：一条订单可对应多个video
    *
-   *
-   * @param orderId
-   *          订单id
+   * @param orderId  订单id
    * @param tempPath
    */
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void uploadVideo(String orderId, String tempPath) {
     // 更新订单状态
-    Order order = orderService.getById(orderId);
-    Assert.notNull(order, ORDER_NOT_FOUND);
-    String userId = order.getUserId();
+    Order orderInstance = orderService.getById(orderId);
+    Assert.notNull(orderInstance, ORDER_NOT_FOUND);
+    String userId = orderInstance.getUserId();
     Balance balance = balanceService.getByUserId(userId);
     // 更新使用状况 单位以GB为基准
     File tempFile = new File(tempPath);
-    double storage = balance.getStorage() - ((double)tempFile.length() / 1073741824);
+    double storage = balance.getStorage() - ((double) tempFile.length() / 1073741824);
     balance.setStorage(storage);
     String bucketName = userService.getBucketName(userId);
     if (!ossSingleton.doesBucketExist(bucketName)) {
-      createBucket(bucketName, userId);
+      ossSingleton.create(bucketName, balance.getStorage().intValue());
     }
     if (storage < 0) {
       try {
-        ossSingleton.removeOldestFile(bucketName);
+        removeOldestVideo(userId);
+//        ossSingleton.removeOldestFile(bucketName);
       } catch (Exception ignored) {
         log.error("删除失败");
       }
@@ -82,20 +80,13 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     // userId不符合bucket命名规范，则用uuid当bucketName
     // 并且将其更新到qqOpenId字段上
     // 只要上传视频就插入新的记录
-    Video video = Video.builder().userId(userId).orderId(orderId).build();
-    video.setOriginUrl(ossSingleton.getUrl(tempPath));
-    video.setName(tempFile.getName());
-    baseMapper.insert(video);
-    if (StringUtils.isEmpty(order.getVideoId())) {
-      order.setState(PRODUCTION_COMPLETED);
-      order.setVideoId(video.getId());
-      order.updateById();
-    }
+    VideoMaterial material = VideoMaterial.builder().orderId(orderId).originUrl(ossSingleton.getUrl(tempPath)).build();
+    material.insert();
     // 上传视频至oss video命名规则: 数据库中的id+.格式
     // video存储规则:
     // 本地：./upload/bucketName/文件名
     // oss: ./bucketName/文件名
-    ossSingleton.uploadFile(FileUtil.file(tempFile), video.getName(), bucketName);
+    ossSingleton.uploadFile(FileUtil.file(tempFile), FileUtil.getName(tempPath), bucketName);
     balanceService.updateById(balance);
   }
 
@@ -103,18 +94,18 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
    * 1. 检查本地是否存在该video对应的视频
    * 2. 如果存在直接渲染，不存在则通过oss拉取视频
    * 3. 渲染时需要保证radio和audio都存在
-   *
+   * <p>
    * 在checkIfFileExist中通知执行渲染任务
    *
-   * @param videoId
-   *          需要合成的videoId
+   * @param videoId 需要合成的videoId
    */
   @Override
   public void addAudio(String videoId) {
     Video video = baseMapper.selectById(videoId);
+    video.setStatus("配音中");
+    video.updateById();
     Assert.notNull(video, VIDEO_NOT_FOUND);
     Assert.notEmpty(video.getAudioUrl(), AUDIO_NOT_FOUND);
-    Assert.notEmpty(video.getOriginUrl(), VIDEO_DATA_NOT_FOUND);
     SpringContextHolder.publishEvent(new VideoEncodeTask(video));
   }
 
@@ -139,16 +130,33 @@ public class VideoServiceImpl extends DataServiceImpl<VideoRepository, Video, Vi
     return null;
   }
 
-  /**
-   * 每个企业/个人默认一个bucket，命名按企业id或个人id命名
-   * 只能包括小写字母、数字和短划线（-）。
-   * 必须以小写字母或者数字开头和结尾。
-   * 长度必须在3~63字节之间。
-   */
-  private void createBucket(String userId, String bucketName) {
-    Balance balance = balanceService.getOne(Wrappers.<Balance>query().eq("user_id", userId));
-    Double storageSize = balance.getStorage();
-    ossSingleton.create(bucketName, storageSize.intValue());
+  @Override
+  public List<VideoMaterial> getMaterials(String orderId) {
+    return materialRepository.selectList(
+      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getSort));
   }
+
+  @Override
+  public void removeOldestVideo(String userId) {
+    List<Video> videos = baseMapper.selectList(Wrappers.<Video>lambdaQuery().eq(Video::getUserId, userId).orderByAsc(Video::getLastModifiedDate));
+    if (CollectionUtils.isEmpty(videos)) {
+      return;
+    }
+    Video video = videos.get(0);
+//    0c4c183a11d5a0cbd99827a15e199174.oss-cn-hangzhou.aliyuncs.com/ac6e91633a284fde9eeb2c9ffa8cb69c.mp4
+    String outputUrl = video.getOutputUrl();
+    ossSingleton.remove(outputUrl);
+    video.setStatus("视频被删除");
+    video.updateById();
+//    video.deleteById();
+//    String orderId = video.getOrderId();
+//    Order order = orderService.getById(orderId);
+//    if (Objects.nonNull(order)) {
+//      order.setState(VIDEO_DELETED);
+//      order.updateById();
+//    }
+//    videos.
+  }
+
 
 }

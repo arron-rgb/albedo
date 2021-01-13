@@ -348,7 +348,6 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert(111)
           this.submitContact()
         } else {
           // console.log('error submit!!');

@@ -5,10 +5,11 @@ import static com.albedo.java.common.core.constant.CommonConstants.*;
 import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 import java.io.File;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,25 +25,15 @@ import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
 import com.albedo.java.common.core.util.FileUploadUtil;
-import com.albedo.java.common.core.util.Result;
-import com.albedo.java.common.core.util.SpringContextHolder;
 import com.albedo.java.common.core.util.StringUtil;
 import com.albedo.java.common.persistence.service.impl.DataServiceImpl;
-import com.albedo.java.common.security.service.UserDetail;
 import com.albedo.java.common.security.util.SecurityUtil;
 import com.albedo.java.modules.biz.domain.*;
 import com.albedo.java.modules.biz.domain.dto.OrderDto;
 import com.albedo.java.modules.biz.domain.dto.OrderVo;
 import com.albedo.java.modules.biz.repository.OrderRepository;
-import com.albedo.java.modules.biz.repository.VideoRepository;
-import com.albedo.java.modules.biz.service.BalanceService;
-import com.albedo.java.modules.biz.service.CouponService;
-import com.albedo.java.modules.biz.service.OrderService;
-import com.albedo.java.modules.biz.service.PurchaseRecordService;
-import com.albedo.java.modules.biz.service.task.Signal;
-import com.albedo.java.modules.biz.service.task.VideoEncodeTask;
+import com.albedo.java.modules.biz.service.*;
 import com.albedo.java.modules.biz.util.FfmpegUtil;
-import com.albedo.java.modules.biz.util.MoneyUtil;
 import com.albedo.java.modules.sys.domain.Dict;
 import com.albedo.java.modules.sys.service.DictService;
 import com.albedo.java.modules.sys.service.UserService;
@@ -75,6 +67,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Resource
   PurchaseRecordService recordService;
   @Resource
+  DubService dubService;
+  @Resource
   AliPayService aliPayService;
   @Resource
   BalanceService balanceService;
@@ -90,7 +84,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   @Override
   public Order currentOrder() {
     return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING)
-      .ne("state", COMPLETED_SUCCESS).orderByAsc("created_date"), false);
+      .ne("state", BusinessConstants.VALID).orderByAsc("created_date"), false);
   }
 
   @Override
@@ -99,60 +93,35 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order;
     if (!Objects.isNull(currentOrder())) {
       order = currentOrder();
-      Assert.isTrue(StringUtils.isEmpty(form.getCouponCode()), "订单已使用优惠码");
-      // form.setCouponCode("");
+      if (StringUtils.isNotEmpty(form.getCouponCode())) {
+        Assert.isTrue(StringUtil.isBlank(order.getCouponCode()), "订单已使用优惠码");
+      }
     } else {
       order = new Order();
       BeanUtils.copyProperties(form, order);
     }
-    order.setState(UNPAID_ORDER);
-    order.setCouponCode(form.getCouponCode());
-    order.setUserId(SecurityUtil.getUser().getId());
-    order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
-    if (!StringUtils.equals(form.getMethod(), "balance")) {
-      order.setTotalAmount(calculatePrice(form));
-    } else {
-      order.setTotalAmount("0");
-      form.setTotalAmount("0");
-    }
-    Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
-    boolean flag = order.insertOrUpdate();
     String couponCode = form.getCouponCode();
-
+    // 验证是否优惠码有效
     if (StringUtil.isNotEmpty(couponCode)) {
-      // 非空 验证是否优惠码有效
       Coupon coupon = couponService.getOne(Wrappers.<Coupon>query().eq("code", couponCode).eq("status", STR_YES));
       Assert.notNull(coupon, INVALID_COUPON);
       coupon.setUserId(SecurityUtil.getUser().getId());
       coupon.setOrderId(order.getId());
       coupon.setStatus(STR_NO);
-      flag = coupon.updateById() && flag;
+      coupon.updateById();
     }
+    order.setState(UNPAID_ORDER);
+    order.setCouponCode(form.getCouponCode());
+    order.setUserId(SecurityUtil.getUser().getId());
+    order.setContent(StringEscapeUtils.unescapeHtml4(form.getContent()));
+    order.setTotalAmount(calculatePrice(form));
+    Assert.isTrue(compareOrderPrice(form, order), PRICE_ERROR);
+    boolean flag = order.insertOrUpdate();
     Assert.isTrue(flag, "下单失败");
+    if ("balance".equals(order.getMethod()) && new Money(order.getTotalAmount()).equals(new Money())) {
+      price(order.getId(), "");
+    }
     return order.getId();
-  }
-
-  public String calculatePrice(OrderVo order) {
-    String price = calculatePrice(order.getContent().trim());
-    if (verifyOrderType(order)) {
-      // 给订单价格加上加速服务
-      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE_STR));
-      if (map == null) {
-        map = new Dict();
-        map.setVal("99");
-      }
-      price = new Money(price).addTo(new Money(map.getVal())).getAmount().toPlainString();
-    }
-    if (!StringUtils.isEmpty(order.getCouponCode())) {
-      // 非空 验证是否优惠码有效
-      Coupon code =
-        couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()).eq("status", STR_YES));
-      Assert.notNull(code, INVALID_COUPON);
-      String discount = code.getDiscount();
-      Money old = new Money(price);
-      price = old.multiply(Double.parseDouble(discount)).getAmount().toPlainString();
-    }
-    return price;
   }
 
   private boolean verifyOrderType(OrderVo form) {
@@ -160,7 +129,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   private boolean compareOrderPrice(OrderVo form, Order order) {
-    return MoneyUtil.equals(form.getTotalAmount(), order.getTotalAmount());
+    return new Money(form.getTotalAmount()).equals(new Money(order.getTotalAmount()));
   }
 
   @Override
@@ -183,31 +152,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
         balanceService.consumeTimes();
         // 加速订单
         Money money = new Money();
-        if (ACCELERATE.equals(order.getType())) {
-          purchaseFlag = true;
-          Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE));
-          if (map == null) {
-            map = new Dict();
-            map.setVal("99");
-          }
-          money.add(new Money(map.getVal()));
-        }
-        String anchorNum = getAnchorNum(order.getContent());
-        // 双人主播
-        if (StringUtils.equals(anchorNum, DOUBLE_ANCHOR)) {
-          purchaseFlag = true;
-          Dict doubleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", DOUBLE_ANCHOR));
-          Dict singleAnchor = dictService.getOne(Wrappers.<Dict>query().eq("code", SINGLE_ANCHOR));
-          // 加上双人主播的差价
-          if (Objects.isNull(doubleAnchor) || Objects.isNull(singleAnchor)) {
-            money.addTo(new Money("1000"));
-          } else {
-            String addValue = MoneyUtil.moneySub(doubleAnchor.getVal(), singleAnchor.getVal());
-            money.addTo(new Money(addValue));
-          }
-        }
+        purchaseFlag = money.equals(new Money(order.getTotalAmount()));
         // 无需获取支付链接
-        if (!purchaseFlag) {
+        if (purchaseFlag) {
           order.setState(NOT_STARTED);
           baseMapper.updateById(order);
           return "success";
@@ -255,16 +202,35 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return config.getValue();
   }
 
-  private String calculatePrice(String content) {
+  private void add(Money price, String addValue) {
+    price.addTo(new Money(addValue));
+  }
+
+  private String calculatePrice(OrderVo order) {
+    // 1. 主播价格
+    Money price = new Money();
+    String content = order.getContent().trim();
     String anchorNum = getAnchorNum(content);
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("name", anchorNum));
-    if (price == null) {
-      price = new Dict();
-      String val = defaultPrice(anchorNum);
-      price.setVal(val);
+    Dict priceDict = dictService.getOne(Wrappers.<Dict>query().eq("name", anchorNum));
+    add(price, Optional.ofNullable(priceDict).orElse(new Dict(defaultPrice(anchorNum))).getVal());
+    // 2. 加速服务
+    if (verifyOrderType(order)) {
+      Dict map = dictService.getOne(Wrappers.<Dict>query().eq("code", BusinessConstants.ACCELERATE_STR));
+      String accPrice = Optional.ofNullable(map).orElse(new Dict("99")).getVal();
+      add(price, accPrice);
     }
-    Assert.notNull(price, PRICE_NOT_FOUND);
-    return String.valueOf(price.getVal());
+    // 3. 余额 减一个单人主播的价格
+    if ("balance".equals(order.getMethod())) {
+      price.subtractFrom(new Money(defaultPrice(SINGLE_ANCHOR)));
+    }
+    // 4. 打折
+    if (StringUtils.isNotEmpty(order.getCouponCode())) {
+      Coupon code = couponService.getOne(Wrappers.<Coupon>query().eq("code", order.getCouponCode()));
+      code = Optional.ofNullable(code).orElse(new Coupon("1.0"));
+      String discount = code.getDiscount();
+      price.multiplyBy(Double.parseDouble(discount));
+    }
+    return price.getAmount().toPlainString();
   }
 
   private String defaultPrice(String type) {
@@ -286,7 +252,7 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
     Assert.isTrue(NOT_STARTED.equals(order.getState()), "订单状态异常");
-    Assert.isTrue(StringUtils.isEmpty(order.getStaffId()), "该视频已被认领");
+    Assert.isTrue(StringUtils.isEmpty(order.getStaffId()), "该订单已被认领");
     order.setStaffId(staffId);
     order.setState(IN_PRODUCTION);
     saveOrUpdate(order);
@@ -303,49 +269,24 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
 
   @Override
   public Video updateForm(SubOrderVo orderVo) {
-    String orderId = orderVo.getOrderId();
-    Order order = baseMapper.selectById(orderId);
-    String videoId = order.getVideoId();
-    Video video = videoRepository.selectById(videoId);
-    Assert.notNull(video, ORDER_VIDEO_NOT_FOUNT);
-    UserDetail user = SecurityUtil.getUser();
-    Long duration = orderVo.getDuration();
-    Balance balance = balanceService.getByUserId(user.getId());
-    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
-    video.setDuration(duration);
-    videoRepository.updateById(video);
     if (!UPLOAD_AUDIO.equals(orderVo.getType())) {
       Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
     }
+    String orderId = orderVo.getOrderId();
+    Order order = baseMapper.selectById(orderId);
+    Balance balance = balanceService.getByUserId(order.getUserId());
+    Long duration = orderVo.getDuration();
+    Assert.isTrue(balance.getVideoTime().longValue() * 60 > duration, "视频时长超出套餐允许");
+    LocalDateTime availableDate = order.getCreatedDate().plusDays(balance.getLicenseDuration());
+    if (availableDate.isBefore(LocalDateTime.now())) {
+      order.setState(FINISHED);
+      order.updateById();
+      throw new RuntimeMsgException("该订单已超过有效期，请重新下单");
+    }
+    Video video = Video.builder().dubType(orderVo.getType()).audioText(orderVo.getContentText())
+      .userId(order.getUserId()).orderId(orderId).build();
+    video.insert();
     return video;
-  }
-
-  /**
-   * 自行上传配音
-   *
-   * @param orderVo
-   * @param video
-   */
-  @Override
-  public void dubbingBySelf(SubOrderVo orderVo, Video video) {
-    Assert.notEmpty(orderVo.getAudioUrl(), "音频链接不得为空，请检查后重试");
-    video.setAudioUrl(orderVo.getAudioUrl());
-    videoRepository.updateById(video);
-    SpringContextHolder.publishEvent(new Signal(video.getId()));
-  }
-
-  @Override
-  public void machineDubbing(SubOrderVo orderVo, Video video) {
-    List<String> voiceTypes = orderVo.getVoiceType();
-    Assert.notEmpty(voiceTypes, "请选择配音音色");
-    String voiceType = voiceTypes.get(0);
-    String filePath = generateAudio(orderVo.getContent(), orderVo.getOrderId(), voiceType);
-    Assert.notEmpty(orderVo.getContent(), "配音文本不允许为空");
-    String audioUrl = ossSingleton.getUrl(filePath);
-    video.setAudioText(orderVo.appendContent());
-    video.setAudioUrl(audioUrl);
-    video.updateById();
-    SpringContextHolder.publishEvent(new Signal(video.getId()));
   }
 
   @Override
@@ -356,77 +297,25 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     String videoOrderId = audioOrder.getVideoId();
     Order videoOrder = baseMapper.selectById(videoOrderId);
     Assert.notNull(videoOrder, ORDER_NOT_FOUND);
-    String videoId = videoOrder.getVideoId();
-    Video video = videoRepository.selectById(videoId);
-    Assert.notNull(video, VIDEO_NOT_FOUND);
-    video.setAudioUrl(audioUrl);
-    video.updateById();
-    audioOrder.setState(COMPLETED_SUCCESS);
+    Video video = Video.builder().orderId(videoOrderId).audioText(audioOrder.getContent())
+      .userId(videoOrder.getUserId()).dubType(1).build();
+    String uploadPath = userService.getUploadPath(videoOrder.getUserId());
+    String objectName = ossSingleton.getPath(audioUrl);
+    String filePath = uploadPath + File.separator + objectName;
+    ossSingleton.downloadFile("vlivest-2", objectName, filePath);
+    ossSingleton.uploadFileNonAsync(new File(filePath), objectName, userService.getBucketName(videoOrder.getUserId()));
+    video.setAudioUrl(ossSingleton.getUrl(filePath));
+    // video.setStatus("等待配音");
+    video.insert();
+    audioOrder.setState(FINISHED);
     audioOrder.updateById();
-    SpringContextHolder.publishEvent(new VideoEncodeTask(video));
+    redisTemplate.opsForList().rightPush("dub_task", video.getId());
   }
 
-  String textPerMin = "200";
-  String subject = "人工配音";
-  String perMinute = "100";
+  @Resource
+  RedisTemplate<String, String> redisTemplate;
 
   @Override
-  public Result<String> artificialDubbing(SubOrderVo orderVo) {
-    Assert.notEmpty(orderVo.getTotalAmount(), PRICE_FIELD_NOT_FOUND);
-    String content = orderVo.appendContent();
-    int length = orderVo.appendContent().length();
-    String userId = SecurityUtil.getUser().getId();
-    // 向上取整 几分钟 几分钟再乘以单位价格
-    Integer minutes = Double.valueOf(Math.ceil(length / Double.parseDouble(textPerMin))).intValue();
-    Dict price = dictService.getOne(Wrappers.<Dict>query().eq("code", "人工配音单位时间价格"));
-    if (price != null) {
-      perMinute = price.getVal();
-    }
-    double amount = Double.parseDouble(perMinute) * minutes;
-    BigDecimal totalAmount = BigDecimal.valueOf(amount);
-    Balance balance = balanceService.getByUserId(userId);
-    String orderId = orderVo.getOrderId();
-    Order order = getOne(Wrappers.<Order>lambdaQuery().eq(Order::getVideoId, orderId), false);
-    if (order == null) {
-      order = new Order();
-    }
-    // 人工配音的下单方式
-    order.setTotalAmount(totalAmount.toString());
-    order.setType(DUBBING);
-    order.setUserId(userId);
-    order.setContent(content);
-    order.setDescription(String.valueOf(orderVo.getVoiceType()));
-    order.setVideoId(orderId);
-    order.setState(UNPAID_ORDER);
-    order.insertOrUpdate();
-
-    if (balance != null) {
-      Integer audioTime = balance.getAudioTime();
-      // audioTime为可抵扣的时间 单位为分
-      if (audioTime >= minutes) {
-        // 可抵扣
-        balance.setAudioTime(audioTime - minutes);
-        balanceService.updateById(balance);
-        order.setState(NOT_STARTED);
-        baseMapper.updateById(order);
-        return Result.buildOk("支付成功，请等待工作人员接单");
-      } else {
-        // 不够抵扣 计算剩余应该支付的价格
-        balance.setAudioTime(0);
-        balanceService.updateById(balance);
-        amount = Double.parseDouble(perMinute) * (minutes - audioTime);
-        totalAmount = new BigDecimal(amount);
-        order.setTotalAmount(totalAmount.toPlainString());
-        order.updateById();
-      }
-    }
-    Assert.isTrue(MoneyUtil.equals(totalAmount.toPlainString(), orderVo.getTotalAmount()), PRICE_ERROR);
-    TradePlus trade = TradePlus.build(totalAmount.toPlainString(), subject);
-    PurchaseRecord record = PurchaseRecord.buildDub(trade, order.getId());
-    recordService.save(record);
-    return Result.buildOkData(aliPayService.toPayAsPc(trade), "请前往支付链接支付，支付后等待工作人员接单即可");
-  }
-
   public String generateAudio(List<String> text, String orderId, String voiceType) {
     Order order = baseMapper.selectById(orderId);
     Assert.notNull(order, ORDER_NOT_FOUND);
@@ -466,9 +355,6 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
     return baseMapper.selectList(Wrappers.<Order>query().eq("staff_id", SecurityUtil.getUser().getId()));
   }
 
-  @Resource
-  VideoRepository videoRepository;
-
   @Override
   public boolean callback(String orderId) {
     Order order = baseMapper.selectById(orderId);
@@ -484,12 +370,12 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   }
 
   @Override
-  public Long getDuration(String orderId) {
-    return baseMapper.getDuration(orderId);
+  public Video getDub(String orderId) {
+    return baseMapper.getDub(orderId);
   }
 
   @Override
-  public Video getDub(String orderId) {
-    return baseMapper.getDub(orderId);
+  public String dub(SubOrderVo orderVo, Video video) {
+    return dubService.dub(orderVo, video);
   }
 }

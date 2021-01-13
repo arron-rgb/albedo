@@ -48,12 +48,16 @@ public class Balance extends Model<Balance> {
   /**
    * 人工专属配音抵扣配音订单金额
    */
-  Integer audioTime;
+  private Integer audioTime;
   /**
    * 单条视频时长上限
    */
-  Integer videoTime;
+  private Integer videoTime;
 
+  /**
+   * 授权时间
+   */
+  private Integer licenseDuration;
   /**
    * 套餐类型
    */
@@ -65,4 +69,5 @@ public class Balance extends Model<Balance> {
 
   @Version
   private Integer version;
+
 }

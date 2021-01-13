@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.albedo.java.modules.biz.domain.Video;
-import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
@@ -75,6 +73,7 @@ public class FfmpegUtil {
     try {
       FFmpegProbeResult result = ffprobe.probe(filePath);
       Map<String, String> tags = result.getFormat().tags;
+      log.info("{}音频{}", filePath, tags.getOrDefault("hasAudio", "false"));
       return Boolean.parseBoolean(tags.getOrDefault("hasAudio", "false"));
     } catch (IOException e) {
       log.error("{}", e.getMessage());
@@ -85,6 +84,9 @@ public class FfmpegUtil {
   private static final String COPY = "copy";
 
   public static String delAudio(String mediaPath) {
+    // if (!hasAudio(mediaPath)) {
+    // return mediaPath;
+    // }
     FFmpegBuilder builder = new FFmpegBuilder();
     log.info("原视频路径{}", mediaPath);
     builder.addInput(mediaPath);
@@ -106,11 +108,10 @@ public class FfmpegUtil {
    * @param videos
    * @return
    */
-  public String concatAudio(String audioUrl, List<Video> videos) {
+  public String concatAudio(String audioUrl, List<VideoMaterial> videos) {
     String tempOutput = shuffleList(videos);
-    String outputPath = loopOrCut(audioUrl, tempOutput);
-    FileUtil.del(tempOutput);
-    return outputPath;
+    // FileUtil.del(tempOutput);
+    return loopOrCut(audioUrl, tempOutput);
   }
 
   /**
@@ -139,14 +140,13 @@ public class FfmpegUtil {
    * @param videoList
    * @return
    */
-  public String shuffleList(List<Video> videoList) {
-    Assert.notEmpty(videoList, "");
-    videoList.forEach(video -> delAudio(video.getOriginUrl()));
+  public String shuffleList(List<VideoMaterial> videoList) {
+    // url为本地链接
+    log.info("合成{}个视频", videoList.size());
     if (videoList.size() == 1) {
       return videoList.get(0).getOriginUrl();
     }
-    Collections.shuffle(videoList);
-    List<String> videoPaths = videoList.stream().map(Video::getOriginUrl).collect(Collectors.toList());
+    List<String> videoPaths = videoList.stream().map(VideoMaterial::getOriginUrl).collect(Collectors.toList());
     String extName = FileUtil.extName(videoPaths.get(0));
     String videoOutputPath = generateFilePath(extName);
     FFmpegBuilder builder = new FFmpegBuilder();
@@ -155,19 +155,6 @@ public class FfmpegUtil {
     builder.addOutput(videoOutputPath).setVideoCodec(COPY).addExtraArgs("-strict", "-2").done();
     run(builder);
     return videoOutputPath;
-  }
-
-  public String loopOrCut(String mediaPath, Double priorityDuration) {
-    FFmpegBuilder builder = new FFmpegBuilder();
-    List<String> paths = generateList(mediaPath, priorityDuration);
-    String tempTxt = generateTempTxt(paths);
-    builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
-    String tempExtName = FileUtil.extName(mediaPath);
-    String tempOutput = generateFilePath(tempExtName);
-    builder.addOutput(tempOutput).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec(COPY)
-      .done();
-    run(builder);
-    return tempOutput;
   }
 
   private List<String> generateList(String mediaPath, Double priorityDuration) {
@@ -200,27 +187,30 @@ public class FfmpegUtil {
     String videoOutputPath = generateFilePath(extName);
     Double priorityDuration = getVideoMetadata(prior).duration;
     List<String> paths = generateList(inferior, priorityDuration);
-    // 合成video
-    builder = new FFmpegBuilder();
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
-    String tempTxt = generateTempTxt(paths);
-    builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
-    String tempExtName = FileUtil.extName(inferior);
-    String tempOutput = generateFilePath(tempExtName);
-    builder.addOutput(tempOutput).setVideoCodec(COPY).done();
-    // 清除声音
-    run(builder);
-    if (hasAudio(tempOutput)) {
-      delAudio(tempOutput);
+    String tempOutput;
+    if (paths.size() == 1) {
+      tempOutput = paths.get(0);
+    } else {
+      // 合成video
+      builder = new FFmpegBuilder();
+      builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
+      String tempTxt = generateTempTxt(paths);
+      builder.addInput(tempTxt).addExtraArgs("-f", "concat", "-safe", "0");
+      String tempExtName = FileUtil.extName(inferior);
+      tempOutput = generateFilePath(tempExtName);
+      builder.addOutput(tempOutput).setVideoCodec(COPY).done();
+      run(builder);
+      FileUtil.del(tempTxt);
     }
+    // 清除声音
+    delAudio(tempOutput);
     // 音频与视频拼接
     builder = new FFmpegBuilder().addInput(prior);
-    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", "cuda");
+    builder.addExtraArgs("-hwaccel_device", "0", "-hwaccel", gpuParam);
     builder.addInput(tempOutput);
     builder.addOutput(videoOutputPath).setDuration(priorityDuration.longValue(), TimeUnit.SECONDS).setVideoCodec("h264")
-      .setAudioBitRate(16000L).setAudioCodec("aac").setVideoCodec(COPY).done();
+      .setAudioBitRate(16000L).setAudioCodec("aac").done();
     run(builder);
-    FileUtil.del(tempTxt);
     FileUtil.del(tempOutput);
     return videoOutputPath;
   }
@@ -246,8 +236,13 @@ public class FfmpegUtil {
   }
 
   public static void run(FFmpegBuilder builder, ProgressListener listener) {
-    FFmpegJob job;
-    job = executor.createJob(builder, progress -> System.out.println("Progress: " + progress));
+    FFmpegJob job = null;
+    job = executor.createJob(builder, progress -> {
+      System.out.println("Progress: " + progress);
+      if (progress.isEnd()) {
+        // todo pop
+      }
+    });
     job.run();
   }
 

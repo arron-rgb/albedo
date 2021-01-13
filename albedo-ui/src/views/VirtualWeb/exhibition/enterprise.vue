@@ -281,7 +281,7 @@ export default {
               res.data[i].audioTime === 0 ? planData[i].contain[8] = '/' : planData[i].contain[8] = res.data[i].audioTime + 'min';
               res.data[i].videoTime > 9999 ? planData[i].contain[9] = '无限' : planData[i].contain[9] = res.data[i].videoTime + 'h/条';
               planData[i].contain[11] = res.data[i].childAccount;
-              planData[i].contain[14] = res.data[i].storage + 'G';
+              planData[i].contain[13] = res.data[i].storage + 'G';
             }
             this.priceData = planData;
             this.data = res.data
@@ -423,15 +423,17 @@ export default {
 
 <style scoped>
 .exhibition_background{
-  /*width: 100%;*/
+  width: 1200px;
+  margin: auto;
   /*height: 400px;*/
   /*background-image: url("~@/assets/enterprise/create.jpg");*/
   background-size: cover;
 }
 .exhibition{
-  width: 100%;
+  width: 1200px;
   background-color: rgba(255, 80, 0, 0.1);
   height: 400px;
+  margin: auto;
   color: white;
   text-align: center;
 }
@@ -451,9 +453,9 @@ export default {
 /*  line-height: 27px;*/
 /*}*/
 .exhibition_link{
-  position: absolute;
-  top: 200px;
-  left: 600px;
+  position: relative;
+  top: 180px;
+  left: 350px;
 }
 .exhibition_link_login{
   display: inline-block;

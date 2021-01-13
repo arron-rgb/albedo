@@ -124,7 +124,7 @@ export default {
       satisfy : '1',//用户意见  1满意   0 不满意
       duration: '',
       dubType: '',//2 机器配音  1  人工配音    0 自行上传配音
-      videoData : null,
+      orderDetail : null,
       loading : false,
       feedback : '',
       timeMax : 120,
@@ -138,7 +138,7 @@ export default {
         aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
         fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
         sources: [{
-          type: "video/mp4",
+          type: "video/ogg"||"video/webm"||"video/mp4",
           src: null //url地址
         }],
         // poster: require("@/assets/VirtualWeb/NormalUser/img/videoCover.jpg"), //你的封面地址
@@ -161,22 +161,22 @@ export default {
     ])
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder',
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
     }) || null;
-    if (videoOrder === null || videoOrder === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     }
     else {
       if(this.balance.planName === '旗舰版')
         this.timeMax = 480;
-      this.videoData = videoOrder;
-      console.log(videoOrder);
-      this.playerOptions.sources[0].src = 'https://' + videoOrder.videoId;
+      this.orderDetail = orderDetail;
+      // console.log(orderDetail);
+      this.playerOptions.sources[0].src = 'https://' + orderDetail.videoId;
        // console.log(this.playerOptions.sources[0].src);
     }
     // console.log(videoOrder.videoId);
@@ -191,27 +191,18 @@ export default {
       this.loading = true;
       var data = {
         editDescription : this.feedback,
-        orderId : this.videoData.id,
+        orderId : this.orderDetail.id,
         state : this.satisfy,//用户意见  1满意   0 不满意
       }
       return new Promise((resolve, reject) => {
         payOrder.isAccept(data).then(res => {//保存订单并获取订单id
           if (res.code === MSG_TYPE_SUCCESS) {
-            if(this.satisfy === '0')
             this.$alert("您的反馈我们已收到，请你耐心等待！", '提示', {
               confirmButtonText: '确定',
               callback: action => {
-                this.goTo('/addOrder')
+                this.goTo('/myOrder')
               }
             })
-            else {
-              switch (this.dubType){
-                case "0": this.goTo('/uploadDub');break;
-                case "1": this.goTo('/newProduct');break;
-                case "2": this.goTo('/newProduct');break;
-              }
-              resolve();
-            }
           }
           this.loading = false;
         }).catch(error => {
@@ -243,12 +234,19 @@ export default {
           content: this.duration,
           type: 'session'
         });
-        this.isSatisfy();
+        if(this.balance.editTimes > 0 && this.satisfy === '0')
+          this.isSatisfy();
+        else
+          switch (this.dubType){
+            case "0": this.goTo('/uploadDub');break;
+            case "1": this.goTo('/newProduct');break;
+            case "2": this.goTo('/newProduct');break;
+          }
       }
       this.loading = false;
     }
 
- }
+ },
 }
 
 </script>

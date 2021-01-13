@@ -87,6 +87,7 @@ application:
       - ${application.adminPath}/account/*
       - ${application.adminPath}/dict
       - ${application.adminPath}/biz/coupon/query
+      - ${application.adminPath}/biz/contact-info
       - /cdn/*
       - /fonts/*
   static-file-directory:
@@ -97,5 +98,5 @@ path:
   ffprobe: /usr/local/bin/ffprobe
   ffmpeg: /usr/local/bin/ffmpeg
 
-hwflag: '-hwaccel videotoolbox'
-
+oss:
+  endpoint: "https://oss-cn-shenzhen-internal.aliyuncs.com"

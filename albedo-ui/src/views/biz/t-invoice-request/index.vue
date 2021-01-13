@@ -35,6 +35,14 @@
         <el-col span="6">名称：</el-col>
         <el-col span="18">{{this.invoiceData.name}}</el-col>
       </el-row>
+      <el-row class="box" v-show="this.invoiceData.type === 1">
+        <el-col span="6">税号/社会统一信用代码：</el-col>
+        <el-col span="18">{{this.invoiceData.taxNum}}</el-col>
+      </el-row>
+      <el-row class="box">
+        <el-col span="6">邮箱：</el-col>
+        <el-col span="18">{{this.invoiceData.email}}</el-col>
+      </el-row>
       <el-row class="box">
         <el-col span="6">联系方式：</el-col>
         <el-col span="18">{{this.invoiceData.companyPhone}}</el-col>
@@ -42,10 +50,6 @@
       <el-row class="box">
         <el-col span="6">联系地址：</el-col>
         <el-col span="18">{{this.invoiceData.companyLocation}}</el-col>
-      </el-row>
-      <el-row class="box" v-show="this.invoiceData.type === 1">
-        <el-col span="6">税号/社会统一信用代码：</el-col>
-        <el-col span="18">{{this.invoiceData.taxNum}}</el-col>
       </el-row>
       <el-row class="box" v-show="this.invoiceData.type === 1">
         <el-col span="6">银行账号：</el-col>
@@ -85,27 +89,28 @@
       @sort-change="crud.sortChange"
       ref="table"
       style="width: 100%;"
+      :default-sort ="{prop:'type'}"
       v-loading="noInvoiceDataLoading"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" />
+      <el-table-column :show-overflow-tooltip="true" align="center" label="创建时间" prop="createdDate" sortable />
       <el-table-column :show-overflow-tooltip="true" align="center" label="创建的用户id" prop="createdBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票金额" prop="totalAmount" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="开票记录id" prop="recordIds" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="修改人" prop="lastModifiedBy" />
       <el-table-column :show-overflow-tooltip="true" align="center" label="抬头">
         <template slot-scope="scope">
-          <el-button @click="showInvoice(scope.row.invoiceId)">查看</el-button>
+          <el-button @click="showInvoice(scope.row.invoiceId)" type="primary">查看</el-button>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="状态" prop="type">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="状态" prop="type" sortable>
         <template slot-scope="scope">
-          {{scope.row.type === 0 ? '未开' : '已开'}}
+          {{scope.row.type === '0' ? '未开' : '已开'}}
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" v-permission="[permission.edit,permission.del]" width="120px">
         <template slot-scope="scope">
-          <el-button @click="changeInvoice(scope.row)" type="primary">开票</el-button>
+          <el-button :disabled="scope.row.type === '1'" @click="changeInvoice(scope.row)">开票</el-button>
 <!--          <udOperation :data="scope.row" :permission="permission" />-->
         </template>
       </el-table-column>
@@ -168,7 +173,6 @@ export default {
     getNoInvoiceRequest(){//获取未开票订单
       this.noInvoiceDataLoading = true;
       var params = {
-        type : 0
       }
       return new Promise((resolve, reject) => {
         crudTInvoiceRequest.page(params).then(res => {
@@ -196,15 +200,17 @@ export default {
       });
     },
     changeInvoice(data){
-      this.$alert('确定此订单发票已开并通知用户？', '提示', {
+      this.$confirm('确定此订单发票已开并通知用户？', '提示', {
         confirmButtonText: '确定',
-        callback: action => {
-          this.submitData(data);
-          // this.$message({
-          //   type: 'info',
-          //   message: `action: ${ action }`
-          // });
-        }
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitData(data);
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '请尽快完成开票！'
+        });
       });
     },
     submitData(data){

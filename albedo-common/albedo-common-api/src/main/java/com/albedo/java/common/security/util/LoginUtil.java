@@ -54,7 +54,7 @@ public class LoginUtil {
 
     String saveCode = RedisUtil.getCacheString(key);
     RedisUtil.delete(key);
-    if (StringUtils.isEmpty(saveCode) || !StringUtils.equals(saveCode, code)) {
+    if (StringUtils.isEmpty(saveCode) || !StringUtils.equals(saveCode.toLowerCase(), code.toLowerCase())) {
       throw new ValidateCodeException("验证码不合法");
     }
 

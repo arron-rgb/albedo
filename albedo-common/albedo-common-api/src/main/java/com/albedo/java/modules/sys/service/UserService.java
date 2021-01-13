@@ -202,5 +202,7 @@ public interface UserService extends DataService<User, UserDto, String> {
 
   String getBucketName(String userId);
 
+  String getUploadPath(String userId);
+
   String resetPassword(User user);
 }

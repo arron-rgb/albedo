@@ -30,6 +30,7 @@ import com.albedo.java.modules.biz.service.PlanService;
 import com.albedo.java.modules.sys.domain.User;
 import com.albedo.java.modules.sys.domain.dto.UserDto;
 import com.albedo.java.modules.sys.service.UserService;
+import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -170,9 +171,16 @@ public class BalanceServiceImpl extends BaseServiceImpl<BalanceRepository, Balan
     balance.setChildAccount(-1);
     // 给账号初始化套餐信息
     balance.insertOrUpdate();
+    // 把bucket也创了
+    String bucketName = userService.getBucketName(userId);
+    if (!ossSingleton.doesBucketExist(bucketName)) {
+      ossSingleton.create(bucketName, balance.getStorage().intValue());
+    }
     return balance;
   }
 
+  @Resource
+  OssSingleton ossSingleton;
   @Resource
   PlanService planService;
   @Resource

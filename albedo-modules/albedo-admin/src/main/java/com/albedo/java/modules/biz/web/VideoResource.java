@@ -1,14 +1,13 @@
 package com.albedo.java.modules.biz.web;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.IN_PRODUCTION;
-
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.albedo.java.modules.biz.domain.Order;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.albedo.java.common.core.util.Result;
@@ -16,17 +15,16 @@ import com.albedo.java.common.core.vo.PageModel;
 import com.albedo.java.common.data.util.QueryWrapperUtil;
 import com.albedo.java.common.log.annotation.LogOperate;
 import com.albedo.java.common.web.resource.BaseResource;
-import com.albedo.java.modules.biz.domain.Order;
 import com.albedo.java.modules.biz.domain.Video;
+import com.albedo.java.modules.biz.domain.VideoMaterial;
 import com.albedo.java.modules.biz.domain.dto.VideoQueryCriteria;
+import com.albedo.java.modules.biz.repository.MaterialRepository;
 import com.albedo.java.modules.biz.service.OrderService;
 import com.albedo.java.modules.biz.service.VideoService;
 import com.albedo.java.modules.tool.util.OssSingleton;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
-import cn.hutool.core.lang.Assert;
-import io.jsonwebtoken.lang.Collections;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 
@@ -50,50 +48,60 @@ public class VideoResource extends BaseResource {
     return Result.buildOkData(page);
   }
 
+  @GetMapping("list")
+  @ApiOperation(value = "获取素材视频")
+  @LogOperate(value = "获取素材视频")
+  public Result<PageModel<VideoMaterial>> getPage(PageModel<VideoMaterial> pm, String orderId) {
+    PageModel<VideoMaterial> page = materialRepository.selectPage(pm,
+      Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId).orderByAsc(VideoMaterial::getSort));
+    return Result.buildOkData(page);
+  }
+
+  @Resource
+  MaterialRepository materialRepository;
   @Resource
   OssSingleton ossSingleton;
 
-  @LogOperate(value = "删除视频")
-  @ApiOperation(value = "删除视频")
+  @LogOperate(value = "删除素材视频")
+  @ApiOperation(value = "删除素材视频")
   @DeleteMapping
   public Result<String> delete(@RequestBody Set<String> deleteIds) {
-    // 找到对应的订单
-    List<Video> videos = service.listByIds(deleteIds);
-    Set<String> orders = videos.stream().map(Video::getOrderId).collect(Collectors.toSet());
-    Assert.isTrue(orders.size() == 1, "视频对应的订单数量异常");
-    videos = service.list(Wrappers.<Video>lambdaQuery().eq(Video::getOrderId, orders.toArray()[0]));
-    videos = videos.stream().filter(video -> !deleteIds.contains(video.getId())).collect(Collectors.toList());
-    // 循环只执行一次
-    for (String orderId : orders) {
-      Long duration = orderService.getDuration(orderId);
-
-      // 找到订单的视频
+    // todo 删完以后检查order是否还有videoId字段
+//    deleteIds.forEach(videoId->{
+//      VideoMaterial material = materialRepository.selectById(videoId);
+//      String orderId = material.getOrderId();
+//    });
+    List<VideoMaterial> videoMaterials = materialRepository.selectBatchIds(deleteIds);
+    videoMaterials.forEach(video -> ossSingleton.remove(video.getOriginUrl()));
+    Set<String> orderIds = videoMaterials.stream().map(VideoMaterial::getOrderId).collect(Collectors.toSet());
+    orderIds.forEach(orderId->{
       Order order = orderService.getById(orderId);
-      if (Collections.isEmpty(videos)) {
-        // 视频被删光 回滚状态
+      List<VideoMaterial> materials = materialRepository.selectList(Wrappers.<VideoMaterial>lambdaQuery().eq(VideoMaterial::getOrderId, orderId));
+      if(materials.isEmpty()){
+        // 为空肯定删完了
         order.setVideoId("");
-        order.setState(IN_PRODUCTION);
-      } else {
-        Video dub = orderService.getDub(orderId);
-        Video video = videos.get(0);
-        // 将videoId设为随机的video
-        order.setVideoId(video.getId());
-        video.setDuration(duration);
-        video.setAudioText(dub.getAudioText());
-        video.setAudioUrl(dub.getAudioUrl());
-        video.updateById();
+        order.updateById();
+      }else {
+        // 不为空 表示没删完 检查一下当前的有没有被删
+        String videoId = order.getVideoId();
+        if (deleteIds.contains(videoId)) {
+          order.setVideoId(materials.get(0).getId());
+          order.updateById();
+        }
       }
-      order.updateById();
-    }
-    deleteIds.forEach(id -> {
-      Video video = service.getById(id);
-      if (Objects.isNull(video)) {
-        return;
-      }
-      ossSingleton.remove(video.getOriginUrl());
-      ossSingleton.remove(video.getOriginUrl());
-      ossSingleton.remove(video.getAudioUrl());
     });
+
+    materialRepository.deleteBatchIds(deleteIds);
+
+
+    return Result.buildOk("删除素材成功");
+  }
+
+  @LogOperate(value = "删除视频")
+  @ApiOperation(value = "删除视频")
+  @DeleteMapping("output")
+  public Result<String> deleteOutput(@RequestBody Set<String> deleteIds) {
+    service.listByIds(deleteIds).forEach(video -> ossSingleton.remove(video.getOutputUrl()));
     service.removeByIds(deleteIds);
     return Result.buildOk("删除视频成功");
   }

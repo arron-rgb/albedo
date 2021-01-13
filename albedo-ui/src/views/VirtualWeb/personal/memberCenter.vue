@@ -293,12 +293,18 @@ export default {
     this.getBalance();
     // console.log(this.user);
     if(this.data.times === 0 || this.data.times === '0'){
-      this.$alert('套餐余量已不足，请及时购买！', {
+      this.$confirm('套餐余量已不足，请及时购买！','提示', {
         confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(
-        this.goTo('/enterprise')
-      );
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.goTo('/proService')
+      }).catch(() =>{
+        this.$message({
+          type: 'warning',
+          message: '请尽快购买套餐以体检最佳服务哦！'
+        });
+      })
     }
     this.userId = this.user.id;
     this.buildStorageCharts();
@@ -345,7 +351,7 @@ export default {
               }
             },
             {
-              name: '已使用\n' + (this.data.allowedStorage - this.data.storage).toFixed(4) * 100/this.data.allowedStorage + '%',
+              name: '已使用\n' + (this.data.allowedStorage - this.data.storage).toFixed(2) * 100/this.data.allowedStorage + '%',
               value: this.data.allowedStorage - this.data.storage,
               label:{
                 normal : {
@@ -389,8 +395,8 @@ export default {
               }
             },
             {
-              name: '已使用\n' + (this.data.accountAvailable) * 100/this.data.accountAmount + '%',
-              value: this.data.accountAmount - this.data.accountAvailable,
+              name: '已使用\n' + (this.data.accountAvailable * 100/this.data.accountAmount).toFixed(2) + '%',
+              value: this.data.accountAmount,
               label:{
                 normal : {
                   show: true
@@ -464,7 +470,12 @@ export default {
           reject(err)
         })
       });
-    }
+    },
+    goTo(url, data){
+      //带参数跳转
+      // console.log(data)
+      this.$router.push({path:url, query : {func: data}});
+    },
   }
 }
 </script>

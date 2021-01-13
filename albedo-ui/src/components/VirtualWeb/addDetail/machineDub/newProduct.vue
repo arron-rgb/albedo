@@ -57,11 +57,18 @@
     title="编辑话术"
     :visible.sync="scriptVisible"
     width="600px">
-    <el-input
-      type="textarea"
-      :autosize="{minRows: 5}"
-      v-model="editScript.data"
-      @input="onInput"></el-input>
+    <el-form>
+      <el-form-item
+        :rules="[{required: true, min: 1, max: 110, trigger: 'blur', message: '套词内容不能为空且不能超过110字'}]">
+      <el-input
+        :autosize="{minRows: 5}"
+        @input="onInput"
+        maxlength="110"
+        show-word-limit
+        type="textarea"
+        v-model="editScript.data"></el-input>
+      </el-form-item>
+    </el-form>
     <el-button type="primary" @click="saveScript">保存</el-button>
   </el-dialog>
 
@@ -256,25 +263,25 @@ export default {
       },
       words : 0,
       duration : 0,
-      videoOrder : null,
+      orderDetail : null,
     }
   },
   created() {
-    var videoOrder = storeApi.get({
-      name: 'videoOrder'
-    });
+    var orderDetail = storeApi.get({//获取视频订单信息
+      name: 'orderDetail',
+    }) || null;
     var duration = storeApi.get({
       name: 'duration'
     }) || null;
-    if (videoOrder === null || videoOrder === undefined || duration === null || duration === undefined) {
-      this.$alert('请先选择视频基础需求', {
+    if (orderDetail === null || orderDetail === undefined || duration === null || duration === undefined) {
+      this.$alert('请先选择具体视频订单！', {
         confirmButtonText: '确定',
       }).then(
-        this.goTo('/addOrder')
+        this.goTo('/myOrder')
       );
     }
     else {
-      this.videoOrder = videoOrder;
+      this.orderDetail = orderDetail;
       this.getScripts()
       this.getCommodityList();
       this.duration = duration || 0;
@@ -462,7 +469,7 @@ export default {
             color: rgb(0,116,232);
             border: 1.5px solid rgb(0,116,232);
           }
-          overflow-y: scroll;
+          overflow-y: auto;
           height: 700px;
           //background-color:rgb(245,247,250);
           border:1px solid #ebeef5;
@@ -502,7 +509,7 @@ export default {
           //background-color:rgb(245,247,250);
           //padding:0 15px 15px 15px;
           border:1px solid #ebeef5;
-          overflow-y: scroll;
+          overflow-y: auto;
           height: 700px;
           border-radius: 5px;
           padding: 0 15px;
@@ -544,7 +551,7 @@ export default {
           //}
         }
         .script{
-          overflow-y: scroll;
+          overflow-y:auto;
           box-sizing: border-box;
           //padding-bottom:30px;
           width:390px;

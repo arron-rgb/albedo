@@ -52,4 +52,7 @@ public class Coupon extends IdEntity<Coupon> {
   @TableField("user_id")
   private String userId;
 
+  public Coupon(String discount) {
+    this.discount = discount;
+  }
 }

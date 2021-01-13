@@ -9,14 +9,6 @@ import com.albedo.java.modules.biz.domain.Video;
  */
 public interface OrderRepository extends BaseRepository<Order> {
 
-  /**
-   * 查询订单的视频时长
-   *
-   * @param orderId
-   * @return
-   */
-  Long getDuration(String orderId);
-
   Video getDub(String orderId);
 
 }

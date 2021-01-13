@@ -1,11 +1,17 @@
 <template>
-  <div class='videoPlayer'>
+  <div class='videoPlayer' v-if="videoData !== null && videoData !== undefined && videoData !== []">
     <video-player  :options="playerOptions"
                    :playsinline="true"
                    class="video-player vjs-custom-skin"
                    ref="videoPlayer">
     </video-player>
-    <el-button :loading="loading" @click="delVideo" type="primary">删除</el-button>
+    <div  style="word-wrap: break-word" v-if="this.type === 'staff'">
+<!--      <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>-->
+      {{getName(this.videoData.originUrl)}}
+      <el-tooltip content="点击删除" effect="dark" placement="top" style="float: right; top: 8px; right: 10px; position: relative">
+        <el-button :loading="loading" @click="delVideo"  circle icon="el-icon-delete"></el-button>
+      </el-tooltip>
+    </div>
   </div>
 </template>
 
@@ -16,9 +22,10 @@ import {MSG_TYPE_SUCCESS} from "@/const/common";
 
 export default {
   name: "video",
-  props:['videoData'],
+  props:['videoData', 'type'],
   data (){
     return {
+      // num : 1,
       orderData : {},
       loading : false,
       playerOptions : {
@@ -31,7 +38,7 @@ export default {
         aspectRatio: '9:16', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
         fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
         sources: [{
-          type: "video/mp4",
+          type: "video/ogg"||"video/webm"||"video/mp4",
           src: ''//url地址
 
         }],
@@ -49,22 +56,30 @@ export default {
     }
   },
   created() {
-    var orderData = storeApi.get({
+    this.orderData = storeApi.get({
       name: 'orderData'
     }) || null;
-    if(orderData === null || orderData === undefined){
-      this.$alert('请先选择相关视频！', '提示',{
-        confirmButtonText: '确定',
-        callback: action => {
-          this.goTo('/order/order')
-        }
-      });
-    }else{
-      this.orderData = orderData;
-      this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
-    }
+
+    // if(orderData === null || orderData === undefined){
+    //   this.$alert('请先选择相关视频！', '提示',{
+    //     confirmButtonText: '确定',
+    //     callback: action => {
+    //       this.goTo('/order/order')
+    //     }
+    //   });
+    // }else{
+
+      // this.playerOptions.sources[0].src = 'https://' + orderData.videoId;
+      // this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    // }
     // console.log(this.videoData);
-    this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    if(this.type === 'staff')
+      this.playerOptions.sources[0].src = 'https://' + this.videoData.originUrl
+    else{
+      this.playerOptions.aspectRatio = '16:9';
+      this.playerOptions.sources[0].src = 'https://' + this.videoData;
+    }
+
   },
   methods : {
     delVideo(){
@@ -72,7 +87,8 @@ export default {
       var data = [this.videoData.id]
       return new Promise((resolve, reject) => {
         crudOrder.delVideo(data).then(res => {
-          location.reload();
+          // location.reload();
+          this.$emit("updataData");
           resolve(res);
           this.loading = false
         }).catch(res => {
@@ -86,6 +102,10 @@ export default {
       // console.log(data)
       this.$router.push({path:url, query : {func: data}});
     },
+    getName(s){//从Url截取视频名称
+      var result = s.substring(s.lastIndexOf("/")+1, s.lastIndexOf("_"));
+      return result;
+    }
   }
 }
 </script>

@@ -1,17 +1,5 @@
 package com.albedo.java.modules.tool.util;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
-import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
 import com.albedo.java.common.core.config.ApplicationProperties;
 import com.albedo.java.common.core.util.FileUploadUtil;
 import com.albedo.java.common.core.util.FileUtil;
@@ -21,10 +9,27 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.event.ProgressListener;
 import com.aliyun.oss.model.*;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_ID;
+import static com.albedo.java.common.core.constant.BusinessConstants.ALIBABA_SECRET;
 
 /**
+ * todo 应该存到同个bucket下按前缀来划分
+ *
  * @author arronshentu
  */
 @Component
@@ -33,24 +38,22 @@ public class OssSingleton {
 
   ApplicationProperties applicationProperties;
 
-  public OssSingleton(ApplicationProperties applicationProperties) {
+  public OssSingleton(ApplicationProperties applicationProperties, @Value("${oss.endpoint}") String endpoint) {
     this.applicationProperties = applicationProperties;
     String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
     String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
     client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
   }
 
-  private OSS client;
-
-  public void restart() {
-    String accessKeyId = applicationProperties.getKey(ALIBABA_ID);
-    String accessKeySecret = applicationProperties.getKey(ALIBABA_SECRET);
-    String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
-    client = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+  public OssSingleton() {
+    String endpoint = "https://oss-cn-shenzhen.aliyuncs.com";
+    // internalClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    client = new OSSClientBuilder().build(endpoint, "LTAI4G9GELKL2AM8BxufjLUE", "usIxuCax2SM5cQ6uDnNBZ1CARpbuhg");
   }
 
-  // @Async
+  // private OSS internalClient;
+  private final OSS client;
+
   public void uploadFile(File file, String objectName, String bucketName) {
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     ObjectMetadata metadata = new ObjectMetadata();
@@ -60,6 +63,7 @@ public class OssSingleton {
   }
 
   public void uploadFileNonAsync(File file, String objectName, String bucketName) {
+    log.info("开始上传文件{}", objectName);
     PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, file);
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentDisposition("attachment");
@@ -92,21 +96,17 @@ public class OssSingleton {
     return listFiles(bucketName, "").stream().mapToDouble(OSSObjectSummary::getSize).sum() / 1024 / 1024;
   }
 
-  public double getBucketStorage(String bucketName, String keyPrefix) {
-    return listFiles(bucketName, keyPrefix).stream().mapToLong(OSSObjectSummary::getSize).sum();
-  }
-
   public void remove(String bucketName, String objectName) {
     client.deleteObject(bucketName, objectName);
   }
 
   @Async
   public void remove(String url) {
-    if (!StringUtils.contains(url, ".oss-cn-hangzhou.aliyuncs.com/")) {
+    if (!StringUtils.contains(url, ".oss-cn-shenzhen.aliyuncs.com/")) {
       log.error("删除{}失败", url);
       return;
     }
-    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");
     String bucket = split[0];
     String object = split[1];
     try {
@@ -120,19 +120,14 @@ public class OssSingleton {
     return client.doesBucketExist(bucketName);
   }
 
-  public void shutdown() {
-    client.shutdown();
-  }
-
   /**
    * 存储空间的命名规范如下：
-   *
+   * <p>
    * 只能包括小写字母、数字和短划线（-）。
    * 必须以小写字母或者数字开头和结尾。
    * 长度必须在3~63字节之间。
    *
-   * @param bucketName
-   *          bucket命名
+   * @param bucketName bucket命名
    */
   public void create(String bucketName, int storageSize) {
     CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
@@ -140,10 +135,6 @@ public class OssSingleton {
     createBucketRequest.setStorageClass(StorageClass.Standard);
     client.createBucket(createBucketRequest);
     client.setBucketStorageCapacity(bucketName, new UserQos(storageSize));
-  }
-
-  public boolean doesObjectExist(String bucketName, String objectName) {
-    return client.doesObjectExist(bucketName, objectName);
   }
 
   public File downloadFile(String bucketName, String objectName, String filePath) {
@@ -160,21 +151,10 @@ public class OssSingleton {
 
   public File downloadFile(String bucketName, String objectName, String filePath, ProgressListener listener) {
     FileUtil.del(filePath);
+    log.info("下载{}-{}至{}", bucketName, objectName, filePath);
     File file = FileUtil.touch(filePath);
     client.getObject(new GetObjectRequest(bucketName, objectName).withProgressListener(listener), file);
     return file;
-  }
-
-  public String localPathToUrl(String bucketName, String filename) {
-    return concatUrl(bucketName, "oss-cn-hangzhou.aliyuncs.com") + "/" + filename;
-  }
-
-  public String concatUrl(String... paths) {
-    StringBuilder stringBuilder = new StringBuilder();
-    for (String path : paths) {
-      stringBuilder.append(path).append(".");
-    }
-    return stringBuilder.substring(0, stringBuilder.length() - 1);
   }
 
   private String replace(String filePath, String parent) {
@@ -185,7 +165,9 @@ public class OssSingleton {
     return replace(file.getAbsolutePath(), file.getParent());
   }
 
+  @Async
   public void removeOldestFile(String bucketName) {
+    // todo 用到的都有问题
     ObjectListing objectListing = client.listObjects(bucketName);
     List<OSSObjectSummary> objectSummaries = objectListing.getObjectSummaries();
     objectSummaries.sort(Comparator.comparing(OSSObjectSummary::getLastModified));
@@ -195,23 +177,32 @@ public class OssSingleton {
   public String getUrl(String filePath) {
     String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 2);
     String originUrl = filePath.replace(parent + "/", "");
-    originUrl = originUrl.replace("/", ".oss-cn-hangzhou.aliyuncs.com/");
-    return originUrl;
-  }
-
-  public String getUrl(String filePath, String bucketName) {
-    String parent = cn.hutool.core.io.FileUtil.getParent(filePath, 1);
-    String originUrl = filePath.replace(parent + "/", "");
-    originUrl = originUrl.replace("/", "vlivest.oss-cn-hangzhou.aliyuncs.com/");
+    originUrl = originUrl.replace("/", ".oss-cn-shenzhen.aliyuncs.com/");
     return originUrl;
   }
 
   public String getPath(String url) {
-    // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-hangzhou.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
-    String[] split = url.split(".oss-cn-hangzhou.aliyuncs.com/");
+    if (url.contains("static")) {
+      url = url.replaceAll("static.vlivest.com/", "");
+      return "vlivest-2" + File.separator + url;
+    }
+    // 9169280e-3159-4218-be7a-bf0dc298785c.oss-cn-shenzhen.aliyuncs.com/ce1c7a71f6a8b72cf21f7cdabc655114.mp4
+    String[] split = url.split(".oss-cn-shenzhen.aliyuncs.com/");
     String bucket = split[0];
     String object = split[1];
     return bucket + File.separator + object;
+  }
+
+  public static void main(String[] args) throws URISyntaxException {
+    OssSingleton ossSingleton = new OssSingleton();
+    String filePath =
+      "C:\\albedo\\file\\upload\\15e02440c879452abfe0e089652cd972\\2a6affdd94b7a3e001ed04ee2e53bd30.mp4";
+    // String url = ossSingleton.getUrl(filePath);
+    Path file = Paths.get(new URI(filePath));
+    String s = file.getParent().getParent().getFileName().toString();
+    // String parent = file.getParentFile().getParent();
+
+    System.out.println(s);
   }
 
 }

@@ -41,7 +41,7 @@ public class FileResource {
     String filePath = ApplicationConfig.getUploadPath();
     // 上传并返回新文件绝对路径
     String tempPath = FileUploadUtil.upload(filePath, file);
-    ossSingleton.uploadFile(FileUtil.file(tempPath), FileUtil.getName(tempPath), "vlivest");
+    ossSingleton.uploadFile(FileUtil.file(tempPath), FileUtil.getName(tempPath), "vlivest-2");
     FileUtil.del(tempPath);
     Map<Object, Object> data = Maps.newHashMap();
     String url = "static.vlivest.com/" + FileUtil.getName(tempPath);

@@ -22,5 +22,5 @@ public class VideoDto extends DataDto<String> {
   private String originUrl;
   private String logoUrl;
   private String outputUrl;
-  private Integer duration;
+
 }
