@@ -102,6 +102,10 @@ public class OssSingleton {
 
   @Async
   public void remove(String url) {
+    if (StringUtils.isNotEmpty(url)) {
+      log.error("链接为空");
+    }
+    // todo 可能会有旧的数据 hangzhou地区
     if (!StringUtils.contains(url, ".oss-cn-shenzhen.aliyuncs.com/")) {
       log.error("删除{}失败", url);
       return;
