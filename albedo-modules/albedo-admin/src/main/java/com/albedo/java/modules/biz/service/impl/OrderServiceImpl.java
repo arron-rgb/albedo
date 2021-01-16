@@ -1,26 +1,9 @@
 package com.albedo.java.modules.biz.service.impl;
 
-import static com.albedo.java.common.core.constant.BusinessConstants.*;
-import static com.albedo.java.common.core.constant.CommonConstants.*;
-import static com.albedo.java.common.core.constant.ExceptionNames.*;
-
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.math.Money;
+import cn.hutool.core.util.IdUtil;
 import com.albedo.java.common.core.constant.BusinessConstants;
 import com.albedo.java.common.core.exception.OrderException;
 import com.albedo.java.common.core.exception.RuntimeMsgException;
@@ -46,11 +29,25 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.math.Money;
-import cn.hutool.core.util.IdUtil;
+import javax.annotation.Resource;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.albedo.java.common.core.constant.BusinessConstants.*;
+import static com.albedo.java.common.core.constant.CommonConstants.*;
+import static com.albedo.java.common.core.constant.ExceptionNames.*;
 
 /**
  * @author arronshentu
@@ -83,8 +80,9 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
    */
   @Override
   public Order currentOrder() {
+    // todo 似乎还有问题
     return getOne(Wrappers.<Order>query().eq("user_id", SecurityUtil.getUser().getId()).ne("type", DUBBING)
-      .ne("state", BusinessConstants.VALID).orderByAsc("created_date"), false);
+      .lt("state", BusinessConstants.VALID).orderByAsc("created_date"), false);
   }
 
   @Override
@@ -188,7 +186,8 @@ public class OrderServiceImpl extends DataServiceImpl<OrderRepository, Order, Or
   private String getAnchorNum(String content) {
     PlusService<Config> plusService;
     try {
-      plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {});
+      plusService = JSON.parseObject(content.trim(), new TypeReference<PlusService<Config>>() {
+      });
     } catch (JSONException e) {
       throw new RuntimeMsgException(ORDER_PARSE_ERROR);
     }
